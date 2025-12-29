@@ -1,0 +1,129 @@
+{
+    "version": "1.0",
+    "categories": [
+        {
+            "name": "Web Hosting",
+            "slug": "web-hosting",
+            "description": "General web hosting services"
+        },
+        {
+            "name": "E-commerce",
+            "slug": "ecommerce",
+            "description": "E-commerce platforms and hosting"
+        }
+    ],
+    "features": [
+        {
+            "name": "Free SSL",
+            "slug": "free-ssl",
+            "description": ""
+        },
+        {
+            "name": "24/7 Support",
+            "slug": "247-support",
+            "description": ""
+        },
+        {
+            "name": "Free Domain",
+            "slug": "free-domain",
+            "description": ""
+        }
+    ],
+    "comparison_items": [
+        {
+            "post_title": "Sample Platform",
+            "post_name": "sample-platform",
+            "post_status": "publish",
+            "post_content": "",
+            "meta": {
+                "_wpc_website_url": "https://example.com",
+                "_wpc_short_description": "A sample platform showing all available fields",
+                "_wpc_rating": "4.5",
+                "_wpc_price": "$29",
+                "_wpc_price_period": "/mo",
+                "_wpc_external_logo_url": "",
+                "_wpc_details_link": "https://example.com/review",
+                "_wpc_direct_link": "https://example.com/go",
+                "_wpc_button_text": "Visit Website",
+                "_wpc_featured_badge_text": "Editor's Pick",
+                "_wpc_featured_badge_color": "#6366f1",
+                "_wpc_coupon_code": "SAVE20",
+                "_wpc_coupon_label": "Get 20% Off",
+                "_wpc_show_coupon": "1",
+                "_wpc_pros": "Pro item 1\nPro item 2\nPro item 3",
+                "_wpc_cons": "Con item 1\nCon item 2",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Basic",
+                        "price": "$9.99",
+                        "period": "/mo",
+                        "features": "Feature 1\nFeature 2\nFeature 3",
+                        "link": "https://example.com/basic",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Professional",
+                        "price": "$29.99",
+                        "period": "/mo",
+                        "features": "All Basic features\nPriority Support\nAdvanced Analytics",
+                        "link": "https://example.com/pro",
+                        "button_text": "Choose Pro",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "MOST POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Enterprise",
+                        "price": "$99.99",
+                        "period": "/mo",
+                        "features": "All Pro features\nDedicated Support\nCustom Solutions",
+                        "link": "https://example.com/enterprise",
+                        "button_text": "Contact Sales",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "BEST VALUE",
+                        "banner_color": "#f59e0b"
+                    }
+                ]
+            },
+            "categories": [
+                "web-hosting",
+                "ecommerce"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "free-domain"
+            ]
+        }
+    ],
+    "custom_lists": [
+        {
+            "post_title": "Sample Custom List",
+            "post_name": "sample-custom-list",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_list_items": [],
+                "_wpc_enable_comparison": "1",
+                "_wpc_show_filters": "1",
+                "_wpc_initial_visible_count": "6",
+                "_wpc_filter_layout": "top"
+            }
+        }
+    ],
+    "settings": {
+        "wpc_primary_color": "#6366f1",
+        "wpc_accent_color": "#0d9488",
+        "wpc_secondary_color": "#1e293b",
+        "wpc_card_border_color": "#e2e8f0",
+        "wpc_pricing_banner_color": "#10b981"
+    }
+}

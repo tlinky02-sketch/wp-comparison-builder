@@ -1,0 +1,908 @@
+{
+    "version": "1.0",
+    "categories": [
+        {
+            "name": "Shared Hosting",
+            "slug": "shared-hosting",
+            "description": "Affordable hosting for beginners"
+        },
+        {
+            "name": "VPS Hosting",
+            "slug": "vps-hosting",
+            "description": "Virtual private servers for growing sites"
+        },
+        {
+            "name": "Dedicated Hosting",
+            "slug": "dedicated-hosting",
+            "description": "Full server resources for high-traffic sites"
+        },
+        {
+            "name": "Cloud Hosting",
+            "slug": "cloud-hosting",
+            "description": "Scalable cloud infrastructure"
+        },
+        {
+            "name": "Managed WordPress",
+            "slug": "managed-wordpress",
+            "description": "Optimized WordPress hosting"
+        },
+        {
+            "name": "Reseller Hosting",
+            "slug": "reseller-hosting",
+            "description": "Start your own hosting business"
+        }
+    ],
+    "features": [
+        {
+            "name": "Free SSL",
+            "slug": "free-ssl",
+            "description": ""
+        },
+        {
+            "name": "Free Domain",
+            "slug": "free-domain",
+            "description": ""
+        },
+        {
+            "name": "24/7 Support",
+            "slug": "247-support",
+            "description": ""
+        },
+        {
+            "name": "SSD Storage",
+            "slug": "ssd-storage",
+            "description": ""
+        },
+        {
+            "name": "Free Migration",
+            "slug": "free-migration",
+            "description": ""
+        },
+        {
+            "name": "Daily Backups",
+            "slug": "daily-backups",
+            "description": ""
+        },
+        {
+            "name": "CDN Included",
+            "slug": "cdn-included",
+            "description": ""
+        },
+        {
+            "name": "Staging Environment",
+            "slug": "staging-environment",
+            "description": ""
+        },
+        {
+            "name": "Money Back Guarantee",
+            "slug": "money-back-guarantee",
+            "description": ""
+        },
+        {
+            "name": "Unlimited Bandwidth",
+            "slug": "unlimited-bandwidth",
+            "description": ""
+        }
+    ],
+    "comparison_items": [
+        {
+            "post_title": "Bluehost",
+            "post_name": "bluehost",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://bluehost.com",
+                "_wpc_short_description": "Official WordPress.org recommended host with reliable performance",
+                "_wpc_rating": "4.5",
+                "_wpc_price": "$2.95",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "WordPress Recommended",
+                "_wpc_featured_badge_color": "#003087",
+                "_wpc_coupon_code": "STARTER50",
+                "_wpc_coupon_label": "Save 50%",
+                "_wpc_pros": "Easy WordPress setup\nFree domain included\n24/7 expert support\n30-day money back",
+                "_wpc_cons": "Higher renewal rates\nLimited storage on basic plan",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Basic",
+                        "price": "$2.95",
+                        "period": "/mo",
+                        "features": "1 Website\n50GB Storage\nFree SSL",
+                        "link": "https://bluehost.com/basic",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Plus",
+                        "price": "$5.45",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nUnlimited Storage\nFree SSL",
+                        "link": "https://bluehost.com/plus",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Pro",
+                        "price": "$13.95",
+                        "period": "/mo",
+                        "features": "High Performance\nDedicated IP\nDomain Privacy",
+                        "link": "https://bluehost.com/pro",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "managed-wordpress"
+            ],
+            "features": [
+                "free-ssl",
+                "free-domain",
+                "247-support",
+                "money-back-guarantee"
+            ]
+        },
+        {
+            "post_title": "SiteGround",
+            "post_name": "siteground",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://siteground.com",
+                "_wpc_short_description": "Premium hosting with exceptional speed and security",
+                "_wpc_rating": "4.8",
+                "_wpc_price": "$2.99",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "Top Performance",
+                "_wpc_featured_badge_color": "#6366f1",
+                "_wpc_coupon_code": "SPEED40",
+                "_wpc_coupon_label": "40% Off",
+                "_wpc_pros": "Excellent uptime\nFast support response\nFree daily backups\nAdvanced security",
+                "_wpc_cons": "Limited storage\nHigher pricing tier",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "StartUp",
+                        "price": "$2.99",
+                        "period": "/mo",
+                        "features": "1 Website\n10GB Storage\nFree SSL",
+                        "link": "https://siteground.com/startup",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "GrowBig",
+                        "price": "$4.99",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\n20GB Storage\nStaging",
+                        "link": "https://siteground.com/growbig",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "GoGeek",
+                        "price": "$7.99",
+                        "period": "/mo",
+                        "features": "Priority Support\n40GB Storage\nWhite Label",
+                        "link": "https://siteground.com/gogeek",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "managed-wordpress",
+                "cloud-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "daily-backups",
+                "staging-environment"
+            ]
+        },
+        {
+            "post_title": "HostGator",
+            "post_name": "hostgator",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://hostgator.com",
+                "_wpc_short_description": "Affordable hosting with unmetered bandwidth and easy scaling",
+                "_wpc_rating": "4.2",
+                "_wpc_price": "$2.75",
+                "_wpc_price_period": "/mo",
+                "_wpc_pros": "Unmetered bandwidth\n45-day money back\nFree website builder\nEasy to use",
+                "_wpc_cons": "Backup costs extra\nSlower support response",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Hatchling",
+                        "price": "$2.75",
+                        "period": "/mo",
+                        "features": "1 Website\nUnmetered Storage\nFree SSL",
+                        "link": "https://hostgator.com/hatchling",
+                        "button_text": "Sign Up",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Baby",
+                        "price": "$3.50",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nUnmetered Storage\nFree SSL",
+                        "link": "https://hostgator.com/baby",
+                        "button_text": "Sign Up",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Business",
+                        "price": "$5.25",
+                        "period": "/mo",
+                        "features": "Free Dedicated IP\nFree SEO Tools\nPriority Support",
+                        "link": "https://hostgator.com/business",
+                        "button_text": "Sign Up",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "vps-hosting",
+                "reseller-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "unlimited-bandwidth",
+                "money-back-guarantee"
+            ]
+        },
+        {
+            "post_title": "DreamHost",
+            "post_name": "dreamhost",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://dreamhost.com",
+                "_wpc_short_description": "WordPress recommended with 100% uptime guarantee",
+                "_wpc_rating": "4.4",
+                "_wpc_price": "$2.59",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "100% Uptime",
+                "_wpc_featured_badge_color": "#0073aa",
+                "_wpc_pros": "97-day money back\nFree domain privacy\nUnlimited traffic\nGreen hosting",
+                "_wpc_cons": "No phone support\nEmail hosting costs extra",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Shared Starter",
+                        "price": "$2.59",
+                        "period": "/mo",
+                        "features": "1 Website\nFree SSL\nUnlimited Traffic",
+                        "link": "https://dreamhost.com/starter",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Shared Unlimited",
+                        "price": "$3.95",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nFree Email\nUnlimited Storage",
+                        "link": "https://dreamhost.com/unlimited",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "managed-wordpress",
+                "vps-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "free-domain",
+                "ssd-storage",
+                "money-back-guarantee",
+                "unlimited-bandwidth"
+            ]
+        },
+        {
+            "post_title": "A2 Hosting",
+            "post_name": "a2-hosting",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://a2hosting.com",
+                "_wpc_short_description": "Turbo servers for 20X faster page loads",
+                "_wpc_rating": "4.6",
+                "_wpc_price": "$2.99",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "20X Faster",
+                "_wpc_featured_badge_color": "#e44d26",
+                "_wpc_coupon_code": "TURBO20",
+                "_wpc_coupon_label": "20% Discount",
+                "_wpc_pros": "Turbo server speeds\nFree site migration\nAnytime money back\nDeveloper friendly",
+                "_wpc_cons": "Turbo plans cost more\nHigher renewal prices",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Startup",
+                        "price": "$2.99",
+                        "period": "/mo",
+                        "features": "1 Website\n100GB Storage\nFree SSL",
+                        "link": "https://a2hosting.com/startup",
+                        "button_text": "Order Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Drive",
+                        "price": "$5.99",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nUnlimited Storage\nFree Migration",
+                        "link": "https://a2hosting.com/drive",
+                        "button_text": "Order Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Turbo Boost",
+                        "price": "$6.99",
+                        "period": "/mo",
+                        "features": "20X Faster\nNVMe Storage\nPriority Support",
+                        "link": "https://a2hosting.com/turbo",
+                        "button_text": "Order Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "vps-hosting",
+                "dedicated-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "free-migration",
+                "money-back-guarantee"
+            ]
+        },
+        {
+            "post_title": "Cloudways",
+            "post_name": "cloudways",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://cloudways.com",
+                "_wpc_short_description": "Managed cloud hosting on top providers like AWS, Google Cloud",
+                "_wpc_rating": "4.7",
+                "_wpc_price": "$10",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "Best Cloud",
+                "_wpc_featured_badge_color": "#2962ff",
+                "_wpc_pros": "Choose your cloud provider\nPay-as-you-go pricing\nFree staging\nTeam collaboration",
+                "_wpc_cons": "No email hosting\nHigher starting price",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "DigitalOcean",
+                        "price": "$10",
+                        "period": "/mo",
+                        "features": "1GB RAM\n25GB Storage\n1TB Bandwidth",
+                        "link": "https://cloudways.com/do",
+                        "button_text": "Start Free",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Linode",
+                        "price": "$12",
+                        "period": "/mo",
+                        "features": "1GB RAM\n25GB Storage\n1TB Bandwidth",
+                        "link": "https://cloudways.com/linode",
+                        "button_text": "Start Free",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "BEST VALUE",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "AWS",
+                        "price": "$36.51",
+                        "period": "/mo",
+                        "features": "2GB RAM\n20GB Storage\nUnlimited Apps",
+                        "link": "https://cloudways.com/aws",
+                        "button_text": "Start Free",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "cloud-hosting",
+                "managed-wordpress",
+                "vps-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "free-migration",
+                "staging-environment",
+                "cdn-included"
+            ]
+        },
+        {
+            "post_title": "Kinsta",
+            "post_name": "kinsta",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://kinsta.com",
+                "_wpc_short_description": "Premium managed WordPress on Google Cloud Platform",
+                "_wpc_rating": "4.9",
+                "_wpc_price": "$35",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "Premium Choice",
+                "_wpc_featured_badge_color": "#5333ed",
+                "_wpc_pros": "Google Cloud powered\nFree CDN and SSL\nExpert WordPress support\nHack-fix guarantee",
+                "_wpc_cons": "Higher price point\nWordPress only",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Starter",
+                        "price": "$35",
+                        "period": "/mo",
+                        "features": "1 Site\n25K Visits\n10GB Storage",
+                        "link": "https://kinsta.com/starter",
+                        "button_text": "Try Free",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Business 1",
+                        "price": "$115",
+                        "period": "/mo",
+                        "features": "5 Sites\n100K Visits\n30GB Storage",
+                        "link": "https://kinsta.com/business1",
+                        "button_text": "Try Free",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Enterprise 1",
+                        "price": "$675",
+                        "period": "/mo",
+                        "features": "60 Sites\n1M Visits\n100GB Storage",
+                        "link": "https://kinsta.com/enterprise",
+                        "button_text": "Contact Us",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "managed-wordpress",
+                "cloud-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "daily-backups",
+                "staging-environment",
+                "cdn-included",
+                "free-migration"
+            ]
+        },
+        {
+            "post_title": "WP Engine",
+            "post_name": "wp-engine",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://wpengine.com",
+                "_wpc_short_description": "Enterprise-grade managed WordPress platform",
+                "_wpc_rating": "4.7",
+                "_wpc_price": "$20",
+                "_wpc_price_period": "/mo",
+                "_wpc_pros": "Automatic backups\nBuilt-in CDN\nGenesis framework\nDev Stage Prod environments",
+                "_wpc_cons": "No email hosting\nPlugins restrictions",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Startup",
+                        "price": "$20",
+                        "period": "/mo",
+                        "features": "1 Site\n25K Visits\n10GB Storage",
+                        "link": "https://wpengine.com/startup",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Growth",
+                        "price": "$77",
+                        "period": "/mo",
+                        "features": "10 Sites\n100K Visits\n20GB Storage",
+                        "link": "https://wpengine.com/growth",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Scale",
+                        "price": "$194",
+                        "period": "/mo",
+                        "features": "30 Sites\n400K Visits\n50GB Storage",
+                        "link": "https://wpengine.com/scale",
+                        "button_text": "Get Started",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "managed-wordpress",
+                "cloud-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "daily-backups",
+                "staging-environment",
+                "cdn-included"
+            ]
+        },
+        {
+            "post_title": "Hostinger",
+            "post_name": "hostinger",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://hostinger.com",
+                "_wpc_short_description": "Budget-friendly hosting with premium features",
+                "_wpc_rating": "4.3",
+                "_wpc_price": "$1.99",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "Best Value",
+                "_wpc_featured_badge_color": "#673de6",
+                "_wpc_coupon_code": "EXTRA10",
+                "_wpc_coupon_label": "Extra 10% Off",
+                "_wpc_pros": "Very affordable\nFree SSL and domain\nLiteSpeed servers\n30-day guarantee",
+                "_wpc_cons": "Support queue times\nBasic plan limitations",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Single",
+                        "price": "$1.99",
+                        "period": "/mo",
+                        "features": "1 Website\n50GB Storage\nFree SSL",
+                        "link": "https://hostinger.com/single",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Premium",
+                        "price": "$2.99",
+                        "period": "/mo",
+                        "features": "100 Sites\n100GB Storage\nFree Domain",
+                        "link": "https://hostinger.com/premium",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Business",
+                        "price": "$3.99",
+                        "period": "/mo",
+                        "features": "100 Sites\n200GB Storage\nDaily Backups",
+                        "link": "https://hostinger.com/business",
+                        "button_text": "Start Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "vps-hosting",
+                "cloud-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "free-domain",
+                "247-support",
+                "ssd-storage",
+                "money-back-guarantee"
+            ]
+        },
+        {
+            "post_title": "Namecheap",
+            "post_name": "namecheap",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://namecheap.com",
+                "_wpc_short_description": "Reliable hosting from a trusted domain registrar",
+                "_wpc_rating": "4.1",
+                "_wpc_price": "$1.58",
+                "_wpc_price_period": "/mo",
+                "_wpc_pros": "Affordable pricing\nFree WhoisGuard\ncPanel included\n30-day guarantee",
+                "_wpc_cons": "Limited storage on basic\nNo phone support",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Stellar",
+                        "price": "$1.58",
+                        "period": "/mo",
+                        "features": "3 Websites\n20GB Storage\nFree SSL",
+                        "link": "https://namecheap.com/stellar",
+                        "button_text": "Buy Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Stellar Plus",
+                        "price": "$2.68",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nUnmetered Storage\nAuto Backup",
+                        "link": "https://namecheap.com/stellar-plus",
+                        "button_text": "Buy Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Stellar Business",
+                        "price": "$4.80",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\n50GB Storage\nCloud Storage",
+                        "link": "https://namecheap.com/stellar-business",
+                        "button_text": "Buy Now",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "reseller-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "money-back-guarantee"
+            ]
+        },
+        {
+            "post_title": "Liquid Web",
+            "post_name": "liquid-web",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://liquidweb.com",
+                "_wpc_short_description": "Enterprise hosting with heroic support and 100% uptime",
+                "_wpc_rating": "4.8",
+                "_wpc_price": "$15",
+                "_wpc_price_period": "/mo",
+                "_wpc_pros": "100% uptime SLA\nHeroic support\nManaged services\nHigh-performance",
+                "_wpc_cons": "Premium pricing\nComplex for beginners",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Spark",
+                        "price": "$15",
+                        "period": "/mo",
+                        "features": "1 Site\n15GB Storage\n2TB Bandwidth",
+                        "link": "https://liquidweb.com/spark",
+                        "button_text": "Get Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Maker",
+                        "price": "$29",
+                        "period": "/mo",
+                        "features": "25 Sites\n40GB Storage\n5TB Bandwidth",
+                        "link": "https://liquidweb.com/maker",
+                        "button_text": "Get Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Designer",
+                        "price": "$49",
+                        "period": "/mo",
+                        "features": "50 Sites\n100GB Storage\n10TB Bandwidth",
+                        "link": "https://liquidweb.com/designer",
+                        "button_text": "Get Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "managed-wordpress",
+                "vps-hosting",
+                "dedicated-hosting",
+                "cloud-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "247-support",
+                "ssd-storage",
+                "daily-backups",
+                "staging-environment",
+                "free-migration"
+            ]
+        },
+        {
+            "post_title": "InMotion Hosting",
+            "post_name": "inmotion-hosting",
+            "post_status": "publish",
+            "meta": {
+                "_wpc_website_url": "https://inmotionhosting.com",
+                "_wpc_short_description": "US-based hosting with excellent customer service",
+                "_wpc_rating": "4.4",
+                "_wpc_price": "$2.49",
+                "_wpc_price_period": "/mo",
+                "_wpc_pros": "90-day money back\nFree website migration\nUS-based support\nFree domain",
+                "_wpc_cons": "Slower international speeds\nAdd-ons cost extra",
+                "_wpc_pricing_plans": [
+                    {
+                        "name": "Core",
+                        "price": "$2.49",
+                        "period": "/mo",
+                        "features": "2 Websites\n100GB Storage\nFree SSL",
+                        "link": "https://inmotionhosting.com/core",
+                        "button_text": "Start Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Launch",
+                        "price": "$4.49",
+                        "period": "/mo",
+                        "features": "Unlimited Sites\nUnlimited Storage\nFree Domain",
+                        "link": "https://inmotionhosting.com/launch",
+                        "button_text": "Start Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "1",
+                        "banner_text": "POPULAR",
+                        "banner_color": "#10b981"
+                    },
+                    {
+                        "name": "Power",
+                        "price": "$6.99",
+                        "period": "/mo",
+                        "features": "50 Sites\nUnlimited Storage\nFree Backups",
+                        "link": "https://inmotionhosting.com/power",
+                        "button_text": "Start Hosting",
+                        "show_popup": "1",
+                        "show_table": "1",
+                        "show_banner": "0",
+                        "banner_text": "",
+                        "banner_color": "#10b981"
+                    }
+                ]
+            },
+            "categories": [
+                "shared-hosting",
+                "vps-hosting",
+                "dedicated-hosting"
+            ],
+            "features": [
+                "free-ssl",
+                "free-domain",
+                "247-support",
+                "ssd-storage",
+                "free-migration",
+                "money-back-guarantee"
+            ]
+        }
+    ],
+    "settings": {
+        "wpc_primary_color": "#6366f1",
+        "wpc_accent_color": "#0d9488",
+        "wpc_secondary_color": "#1e293b",
+        "wpc_featured_color": "#f59e0b"
+    }
+}
