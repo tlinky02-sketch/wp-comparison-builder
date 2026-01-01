@@ -17,6 +17,7 @@ function wpc_create_comparison_sets_table() {
         set_name varchar(255) NOT NULL,
         competitor_ids text NOT NULL,
         button_text varchar(255) DEFAULT 'Compare Alternatives',
+        display_mode varchar(20) DEFAULT 'button',
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY  (id),
         KEY item_id (item_id)
@@ -24,15 +25,25 @@ function wpc_create_comparison_sets_table() {
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
+    
+    // FORCE CHECK: Ensure display_mode column exists (dbDelta can be finicky with ALTER)
+    $column = $wpdb->get_results( "SHOW COLUMNS FROM $table_name LIKE 'display_mode'" );
+    if ( empty( $column ) ) {
+        $wpdb->query( "ALTER TABLE $table_name ADD display_mode varchar(20) DEFAULT 'button'" );
+    }
 }
 
-// Run on plugin activation - NOTE: WPC_PLUGIN_DIR must be defined in main file
+// Run on plugin activation
 register_activation_hook( WPC_PLUGIN_DIR . 'wp-comparison-builder.php', 'wpc_create_comparison_sets_table' );
 
-// Also run on admin_init in case missed
+// Run on admin_init for updates
 add_action( 'admin_init', function() {
-    if ( ! get_option( 'wpc_comparison_sets_table_created' ) ) {
+    $db_ver = '1.3'; // Bumped to 1.3 to force ALTER TABLE
+    $installed_ver = get_option( 'wpc_comparison_sets_db_version' );
+    
+    if ( $installed_ver !== $db_ver ) {
         wpc_create_comparison_sets_table();
+        update_option( 'wpc_comparison_sets_db_version', $db_ver );
         update_option( 'wpc_comparison_sets_table_created', '1' );
     }
 });
@@ -55,6 +66,7 @@ function wpc_save_comparison_set() {
     $set_name = sanitize_text_field( $_POST['set_name'] );
     $competitor_ids = sanitize_text_field( $_POST['competitor_ids'] );
     $button_text = sanitize_text_field( $_POST['button_text'] );
+    $display_mode = !empty($_POST['display_mode']) ? sanitize_text_field( $_POST['display_mode'] ) : 'button';
     
     if ( empty( $set_name ) ) {
         wp_send_json_error( 'Set name is required' );
@@ -66,15 +78,16 @@ function wpc_save_comparison_set() {
             'item_id' => $item_id,
             'set_name' => $set_name,
             'competitor_ids' => $competitor_ids,
-            'button_text' => $button_text
+            'button_text' => $button_text,
+            'display_mode' => $display_mode
         ),
-        array( '%d', '%s', '%s', '%s' )
+        array( '%d', '%s', '%s', '%s', '%s' )
     );
     
     if ( $result ) {
         wp_send_json_success( array( 'id' => $wpdb->insert_id ) );
     } else {
-        wp_send_json_error( 'Failed to save' );
+        wp_send_json_error( 'DB Error: ' . $wpdb->last_error );
     }
 }
 
@@ -96,6 +109,7 @@ function wpc_update_comparison_set() {
     $set_name = sanitize_text_field( $_POST['set_name'] );
     $competitor_ids = sanitize_text_field( $_POST['competitor_ids'] );
     $button_text = sanitize_text_field( $_POST['button_text'] );
+    $display_mode = !empty($_POST['display_mode']) ? sanitize_text_field( $_POST['display_mode'] ) : 'button';
     
     if ( empty( $set_name ) ) {
         wp_send_json_error( 'Set name is required' );
@@ -106,17 +120,18 @@ function wpc_update_comparison_set() {
         array(
             'set_name' => $set_name,
             'competitor_ids' => $competitor_ids,
-            'button_text' => $button_text
+            'button_text' => $button_text,
+            'display_mode' => $display_mode
         ),
         array( 'id' => $set_id ),
-        array( '%s', '%s', '%s' ),
+        array( '%s', '%s', '%s', '%s' ),
         array( '%d' )
     );
     
     if ( $result !== false ) {
         wp_send_json_success();
     } else {
-        wp_send_json_error( 'Failed to update' );
+        wp_send_json_error( 'DB Update Failed: ' . $wpdb->last_error );
     }
 }
 

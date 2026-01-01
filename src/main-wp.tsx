@@ -545,6 +545,28 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
         );
     }
 
+    // RENDER: Comparison Table Mode (Pure Table View)
+    if (config.viewMode === 'comparison-table') {
+        if (loading) {
+            return (
+                <div className="wpc-comparison-wrapper py-4">
+                    <div className="w-full h-64 bg-card rounded-xl border border-border animate-pulse flex items-center justify-center text-muted-foreground">
+                        Loading comparison...
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="wpc-comparison-wrapper">
+                <Toaster />
+                <div className="w-full">
+                    <ComparisonTable items={filteredItems} onRemove={() => { }} />
+                </div>
+            </div>
+        );
+    }
+
     // RENDER: Loading State - Show skeleton placeholder for SEO (prevents CLS)
     if (loading) {
         // Show a skeleton that matches the filter bar to prevent layout shift

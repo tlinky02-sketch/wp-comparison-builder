@@ -24,6 +24,7 @@ function wpc_compare_button_shortcode( $atts ) {
         'id'          => '',
         'text'        => 'Compare Alternatives',
         'competitors' => '', // comma-separated item IDs
+        'mode'        => 'button', // button | table
     ), $atts );
     
     $item_id = intval( $attributes['id'] );
@@ -58,7 +59,32 @@ function wpc_compare_button_shortcode( $atts ) {
         }
     }
     
-    // Get competitor item objects
+    // Check mode
+    $is_table_mode = ( isset($attributes['mode']) && $attributes['mode'] === 'table' );
+    
+    // Prepare IDs string for React config
+    // Ensure current item ($item_id) is NOT in the list passed to config if React expects just competitors?
+    // Usually comparison table includes the main item + competitors.
+    // Logic: If IDs provided, React render those.
+    // We should probably include $item_id in the list if it's not there? 
+    // Wait, the button logic compares "Item ID" with "Selected".
+    // I'll stick to passing $competitor_ids into `ids`. The React app likely adds the "Main Item" via another way or we need to add it?
+    // Re-reading logic: compare button usually implies "Add to comparison".
+    // If table mode, we likely want "Main Item vs Competitors".
+    // I will pass `$competitor_ids` into `ids`.
+    
+    // Prepare IDs for React
+    $react_ids = $competitor_ids;
+    if ( $is_table_mode ) {
+        // In table mode, we must include the main item itself to show the comparison
+        array_unshift( $react_ids, $item_id );
+        // Ensure uniqueness just in case
+        $react_ids = array_unique( $react_ids );
+    }
+    
+    $json_ids = json_encode(array_values($react_ids));
+
+    // Get competitor item objects (only needed for Button Dropdown rendering)
     $query_args = array(
         'post_type' => 'comparison_item',
         'posts_per_page' => -1,
@@ -67,18 +93,25 @@ function wpc_compare_button_shortcode( $atts ) {
         'order' => 'ASC',
     );
 
-    if ( empty( $competitor_ids ) ) {
-        // If no specific competitors set, show all other items
+    if ( empty( $competitor_ids ) && !$is_table_mode ) {
+        // If no specific competitors set, show all other items (For dropdown search)
         $query_args['post__not_in'] = array( $item_id );
+         $all_items = get_posts( $query_args );
+    } elseif ( !$is_table_mode ) {
+        // Show only selected competitors in dropdown? No, usually dropdown shows ALL to select from?
+        // Wait, "competitors" param in shortcode usually defines "Pre-selected" or "Allowed"?
+        // Standard "Compare Alternatives" usually allows searching ALL. 
+        // So keeping empty logic is safer?
+        // Actually, if `competitors` logic earlier was used to limit scope, then lines 73-76 did that.
+        // Let's preserve original logic for all_items query.
+        if ( ! empty( $competitor_ids ) ) {
+             $query_args['post__in'] = $competitor_ids;
+        } else {
+             $query_args['post__not_in'] = array( $item_id );
+        }
+        $all_items = get_posts( $query_args );
     } else {
-        // Show only selected competitors
-        $query_args['post__in'] = $competitor_ids;
-    }
-
-    $all_items = get_posts( $query_args );
-    
-    if ( empty( $all_items ) ) {
-        return ''; // No other items to compare with
+        $all_items = array(); // Table mode doesn't use the dropdown PHP loop
     }
     
     // Generate unique ID for this button
@@ -94,6 +127,7 @@ function wpc_compare_button_shortcode( $atts ) {
     ob_start();
     ?>
 
+    <?php if ( ! $is_table_mode ) : ?>
     <div class="wpc-compare-wrapper" style="margin-bottom: 24px;">
         <div class="wpc-compare-button-wrapper" style="display: inline-block; position: relative;">
             <button 
@@ -147,7 +181,7 @@ function wpc_compare_button_shortcode( $atts ) {
                     </div>
                 </div>
                 <div id="<?php echo $unique_id; ?>-options">
-                    <?php foreach ( $all_items as $p ) : 
+                    <?php if (!empty($all_items)): foreach ( $all_items as $p ) : 
                         $logo = get_the_post_thumbnail_url( $p->ID, 'thumbnail' );
                         if ( ! $logo ) {
                             $logo = get_post_meta( $p->ID, '_wpc_external_logo_url', true );
@@ -179,14 +213,15 @@ function wpc_compare_button_shortcode( $atts ) {
                             </svg>
                         </div>
                     </div>
-                    <?php endforeach; ?>
+                    <?php endforeach; endif; ?>
                 </div>
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- React Comparison Container -->
-    <div id="wpc-compare-<?php echo $item_id; ?>" class="wpc-root" data-config='{"ids":[],"featured":[],"hideFilters":true,"compareButtonMode":true}' style="display: block; width: 100%; margin-top: 12px;"></div>
+    <div id="wpc-compare-<?php echo $item_id; ?>" class="wpc-root" data-config='{"ids":<?php echo $json_ids; ?>,"featured":[],"hideFilters":true,"viewMode":"<?php echo $is_table_mode ? 'comparison-table' : 'default'; ?>","compareButtonMode":<?php echo $is_table_mode ? 'false' : 'true'; ?>}' style="display: block; width: 100%; margin-top: 12px;"></div>
     
     <style>
     @media (max-width: 768px) {
