@@ -2065,6 +2065,8 @@ function wpc_render_meta_box( $post ) {
                     setVal('wpc_dashboard_image', data.visuals.dashboard_image);
                     setVal('wpc_featured_badge_text', data.visuals.badge_text);
                     setVal('wpc_featured_color', data.visuals.badge_color);
+                    setVal('wpc_hero_subtitle', data.visuals.hero_subtitle);
+                    setVal('wpc_analysis_label', data.visuals.analysis_label);
 
                     if (data.visuals.colors) {
                         setCheck('wpc_enable_design_overrides', true);
@@ -2549,6 +2551,21 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     "direct_link": "https://{name}.com",
     "button_text": "Visit Website"
   },
+  "visuals": {
+    "logo": "https://logo.clearbit.com/{name}.com",
+    "dashboard_image": "",
+    "badge_text": "Editor\'s Choice",
+    "badge_color": "#10b981",
+    "hero_subtitle": "The best solution for...",
+    "analysis_label": "Our Analysis",
+    "colors": {
+      "primary": "",
+      "accent": "",
+      "border": "",
+      "coupon_bg": "",
+      "coupon_text": ""
+    }
+  },
   "content": {
     "pros": ["Pro 1", "Pro 2", "Pro 3", "Pro 4", "Pro 5"],
     "cons": ["Con 1", "Con 2", "Con 3"],
@@ -2569,7 +2586,9 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "features": ["Feature 1", "Feature 2", "Feature 3"], 
       "button_text": "Get Started", 
       "show_table": true, 
-      "show_popup": true
+      "show_popup": true,
+      "link": "",
+      "coupon": ""
     },
     {
       "name": "Pro", 
@@ -2581,13 +2600,11 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "show_table": true, 
       "show_popup": true, 
       "banner_text": "MOST POPULAR", 
-      "banner_color": "#10b981"
+      "banner_color": "#10b981",
+      "link": "",
+      "coupon": "SAVE20"
     }
   ],
-  "visuals": {
-    "badge_text": "Editor\'s Choice",
-    "badge_color": "#10b981"
-  },
   "categories": ["Category 1", "Category 2"],
   "tags": ["Tag 1", "Tag 2"],
   "custom_fields": [
@@ -2595,8 +2612,17 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       {"name": "Headquarters", "value": "San Francisco, USA"}
   ],
   "seo": {
-      "schema_type": "SoftwareApplication",
-      "brand": "{name}"
+      "schema_type": "SoftwareApplication", 
+      "brand": "{name}",
+      "sku": "",
+      "gtin": "",
+      "condition": "NewCondition",
+      "availability": "InStock",
+      "mfg_date": "",
+      "exp_date": "",
+      "service_type": "",
+      "area_served": "",
+      "duration": ""
   },
   "plan_features": [
       { "name": "Feature Name", "included_in": [0, 1] }
@@ -2606,7 +2632,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
   ],
   "recommended_tools": ["Tool Name A", "Tool Name B"]
 }
-Be accurate and specific to the actual product/service. Use proper JSON quoting.`,
+Be accurate and specific to the actual product/service. Use proper JSON quoting. For 'schema_type', use one of: SoftwareApplication, Product, Service, Course.`,
 
             description: `Generate a compelling 2-3 sentence marketing description for "{name}". Return JSON: {"description": "..."}`,
             
@@ -3197,6 +3223,8 @@ function wpc_save_meta_box( $post_id ) {
     }
 
     // Save Terms (Category - Multiple)
+    // FIXED: wpc_category input does not exist (handled by WP sidebar).
+    // Removing to prevent accidental wiping.
     if ( isset( $_POST['wpc_category'] ) ) {
         $cat_ids = array_map( 'intval', $_POST['wpc_category'] );
         wp_set_post_terms( $post_id, $cat_ids, 'comparison_category' );
@@ -3322,6 +3350,9 @@ function wpc_save_meta_box( $post_id ) {
     }
 
     // Save Features Terms
+    // FIXED: wpc_features input does not exist in our metabox (handled by WP sidebar).
+    // This logic was ensuring terms were CLEARED on every save. Removing it.
+    // Save Features Terms
     if ( isset( $_POST['wpc_features'] ) ) {
         $feature_ids = array_map( 'intval', $_POST['wpc_features'] );
         wp_set_post_terms( $post_id, $feature_ids, 'comparison_feature' );
@@ -3345,8 +3376,139 @@ function wpc_save_meta_box( $post_id ) {
     } else {
         delete_post_meta( $post_id, '_wpc_custom_fields' );
     }
+    // DIRECT WRITE TO CUSTOM TABLE
+    if ( class_exists('WPC_Database') ) {
+        $db = new WPC_Database();
+        
+        // Prepare data for custom table (matching column names)
+        $table_data = array(
+            // Core Data
+            'public_name' => isset($_POST['wpc_public_name']) ? sanitize_text_field($_POST['wpc_public_name']) : '',
+            'short_description' => isset($_POST['wpc_short_description']) ? sanitize_textarea_field($_POST['wpc_short_description']) : '',
+            'price' => isset($_POST['wpc_price']) ? sanitize_text_field($_POST['wpc_price']) : '',
+            'period' => isset($_POST['wpc_period']) ? sanitize_text_field($_POST['wpc_period']) : '',
+            'rating' => isset($_POST['wpc_rating']) ? sanitize_text_field($_POST['wpc_rating']) : '',
+            
+            // Links & Buttons
+            'details_link' => isset($_POST['wpc_details_link']) ? esc_url_raw($_POST['wpc_details_link']) : '',
+            'direct_link' => isset($_POST['wpc_direct_link']) ? esc_url_raw($_POST['wpc_direct_link']) : '',
+            'button_text' => isset($_POST['wpc_button_text']) ? sanitize_text_field($_POST['wpc_button_text']) : '',
+            'footer_button_text' => isset($_POST['wpc_footer_button_text']) ? sanitize_text_field($_POST['wpc_footer_button_text']) : '',
+            
+            // Visuals
+            'logo_url' => isset($_POST['wpc_external_logo_url']) ? esc_url_raw($_POST['wpc_external_logo_url']) : '',
+            'dashboard_image' => isset($_POST['wpc_dashboard_image']) ? esc_url_raw($_POST['wpc_dashboard_image']) : '',
+            'hero_subtitle' => isset($_POST['wpc_hero_subtitle']) ? sanitize_text_field($_POST['wpc_hero_subtitle']) : '',
+            'analysis_label' => isset($_POST['wpc_analysis_label']) ? sanitize_text_field($_POST['wpc_analysis_label']) : '',
+            'badge_text' => isset($_POST['wpc_featured_badge_text']) ? sanitize_text_field($_POST['wpc_featured_badge_text']) : '',
+            'badge_color' => isset($_POST['wpc_featured_color']) ? sanitize_hex_color($_POST['wpc_featured_color']) : '',
+            
+            // Product/Schema Details
+            'condition_status' => isset($_POST['wpc_condition']) ? sanitize_text_field($_POST['wpc_condition']) : '',
+            'availability' => isset($_POST['wpc_availability']) ? sanitize_text_field($_POST['wpc_availability']) : '',
+            'mfg_date' => isset($_POST['wpc_mfg_date']) ? sanitize_text_field($_POST['wpc_mfg_date']) : '',
+            'exp_date' => isset($_POST['wpc_exp_date']) ? sanitize_text_field($_POST['wpc_exp_date']) : '',
+            'service_type' => isset($_POST['wpc_service_type']) ? sanitize_text_field($_POST['wpc_service_type']) : '',
+            'area_served' => isset($_POST['wpc_area_served']) ? sanitize_text_field($_POST['wpc_area_served']) : '',
+            'duration' => isset($_POST['wpc_duration']) ? sanitize_text_field($_POST['wpc_duration']) : '',
+            'brand' => isset($_POST['wpc_brand']) ? sanitize_text_field($_POST['wpc_brand']) : '',
+            'sku' => isset($_POST['wpc_sku']) ? sanitize_text_field($_POST['wpc_sku']) : '',
+            'gtin' => isset($_POST['wpc_gtin']) ? sanitize_text_field($_POST['wpc_gtin']) : '',
+            'product_category' => isset($_POST['wpc_product_category']) ? sanitize_text_field($_POST['wpc_product_category']) : '',
+            
+            // Pricing Settings
+            'coupon_code' => isset($_POST['wpc_coupon_code']) ? sanitize_text_field($_POST['wpc_coupon_code']) : '',
+            'show_coupon' => isset($_POST['wpc_show_coupon']) ? 1 : 0,
+            'hide_plan_features' => isset($_POST['wpc_hide_plan_features']) ? 1 : 0,
+            'show_plan_links' => isset($_POST['wpc_show_plan_links']) ? 1 : 0,
+            'show_plan_links_popup' => isset($_POST['wpc_show_plan_links_popup']) ? 1 : 0,
+            'show_plan_buttons' => isset($_POST['wpc_show_plan_buttons']) ? 1 : 0,
+            'table_btn_pos' => isset($_POST['wpc_table_btn_pos']) ? sanitize_text_field($_POST['wpc_table_btn_pos']) : '',
+            'popup_btn_pos' => isset($_POST['wpc_popup_btn_pos']) ? sanitize_text_field($_POST['wpc_popup_btn_pos']) : '',
+            
+            // Complex Data (Arrays - will be JSON encoded by WPC_Database)
+            'pros' => isset($_POST['wpc_pros']) ? array_filter(array_map('trim', explode("\n", sanitize_textarea_field($_POST['wpc_pros'])))) : array(),
+            'cons' => isset($_POST['wpc_cons']) ? array_filter(array_map('trim', explode("\n", sanitize_textarea_field($_POST['wpc_cons'])))) : array(),
+            'pricing_plans' => isset($_POST['wpc_plans']) ? $plans : array(),
+            'use_cases' => isset($_POST['wpc_use_cases']) ? $use_cases : array(),
+            'plan_features' => isset($_POST['wpc_plan_features']) ? $features : array(),
+            'competitors' => isset($_POST['wpc_competitors']) ? array_map('intval', $_POST['wpc_competitors']) : array(),
+            'selected_tools' => (get_option('wpc_enable_tools_module', false) && isset($_POST['wpc_selected_tools'])) ? array_map('intval', $_POST['wpc_selected_tools']) : array(),
+            
+            // Design Overrides (JSON)
+            'design_overrides' => array(
+                'enabled' => isset($_POST['wpc_enable_design_overrides']) ? '1' : '0',
+                'primary' => isset($_POST['wpc_primary_color']) ? sanitize_hex_color($_POST['wpc_primary_color']) : '',
+                'accent' => isset($_POST['wpc_accent_color']) ? sanitize_hex_color($_POST['wpc_accent_color']) : '',
+                'border' => isset($_POST['wpc_border_color']) ? sanitize_hex_color($_POST['wpc_border_color']) : '',
+                'coupon_bg' => isset($_POST['wpc_color_coupon_bg']) ? sanitize_hex_color($_POST['wpc_color_coupon_bg']) : '',
+                'coupon_text' => isset($_POST['wpc_color_coupon_text']) ? sanitize_hex_color($_POST['wpc_color_coupon_text']) : '',
+                'show_footer_popup' => isset($_POST['wpc_show_footer_popup']) ? '1' : '0',
+                'show_footer_table' => isset($_POST['wpc_show_footer_table']) ? '1' : '0',
+            ),
+            
+            // Pros/Cons Colors (JSON)
+            'pros_cons_colors' => array(
+                'enabled' => isset($_POST['wpc_enable_pros_cons_colors']) ? '1' : '0',
+                'pros_bg' => isset($_POST['wpc_color_pros_bg']) ? sanitize_hex_color($_POST['wpc_color_pros_bg']) : '',
+                'pros_text' => isset($_POST['wpc_color_pros_text']) ? sanitize_hex_color($_POST['wpc_color_pros_text']) : '',
+                'cons_bg' => isset($_POST['wpc_color_cons_bg']) ? sanitize_hex_color($_POST['wpc_color_cons_bg']) : '',
+                'cons_text' => isset($_POST['wpc_color_cons_text']) ? sanitize_hex_color($_POST['wpc_color_cons_text']) : '',
+            ),
+            
+            // Feature Table Options (JSON)
+            'feature_table_options' => isset($_POST['wpc_feature_table_options']) ? array(
+                'display_mode' => sanitize_text_field($_POST['wpc_feature_table_options']['display_mode'] ?? 'full_table'),
+                'header_label' => sanitize_text_field($_POST['wpc_feature_table_options']['header_label'] ?? ''),
+                'header_bg' => sanitize_hex_color($_POST['wpc_feature_table_options']['header_bg'] ?? '#f3f4f6'),
+                'check_color' => sanitize_hex_color($_POST['wpc_feature_table_options']['check_color'] ?? '#10b981'),
+                'x_color' => sanitize_hex_color($_POST['wpc_feature_table_options']['x_color'] ?? '#ef4444'),
+                'alt_row_bg' => sanitize_hex_color($_POST['wpc_feature_table_options']['alt_row_bg'] ?? '#f9fafb'),
+            ) : array(),
+            
+            // Text Labels (JSON)
+            'text_labels' => array(
+                'pros_label' => isset($_POST['wpc_txt_pros_label']) ? sanitize_text_field($_POST['wpc_txt_pros_label']) : '',
+                'cons_label' => isset($_POST['wpc_txt_cons_label']) ? sanitize_text_field($_POST['wpc_txt_cons_label']) : '',
+                'price_label' => isset($_POST['wpc_txt_price_label']) ? sanitize_text_field($_POST['wpc_txt_price_label']) : '',
+                'rating_label' => isset($_POST['wpc_txt_rating_label']) ? sanitize_text_field($_POST['wpc_txt_rating_label']) : '',
+                'mo_suffix' => isset($_POST['wpc_txt_mo_suffix']) ? sanitize_text_field($_POST['wpc_txt_mo_suffix']) : '',
+                'visit_site' => isset($_POST['wpc_txt_visit_site']) ? sanitize_text_field($_POST['wpc_txt_visit_site']) : '',
+                'coupon_label' => isset($_POST['wpc_txt_coupon_label']) ? sanitize_text_field($_POST['wpc_txt_coupon_label']) : '',
+                'copied_label' => isset($_POST['wpc_txt_copied_label']) ? sanitize_text_field($_POST['wpc_txt_copied_label']) : '',
+                'feature_header' => isset($_POST['wpc_txt_feature_header']) ? sanitize_text_field($_POST['wpc_txt_feature_header']) : '',
+            ),
+        );
+        
+        // Write to custom table
+        $result = $db->update_item($post_id, $table_data);
+        
+        // Store result for admin notice
+        set_transient('wpc_last_save_debug_' . $post_id, array(
+            'hero_subtitle' => $table_data['hero_subtitle'],
+            'analysis_label' => $table_data['analysis_label'],
+            'result' => $result ? 'SUCCESS' : 'FAILED'
+        ), 60);
+    }
 }
 add_action( 'save_post', 'wpc_save_meta_box' );
+
+// Admin Notice to show save debug info
+add_action('admin_notices', function() {
+    global $post;
+    if ($post && $post->post_type === 'comparison_item') {
+        $debug = get_transient('wpc_last_save_debug_' . $post->ID);
+        if ($debug) {
+            delete_transient('wpc_last_save_debug_' . $post->ID);
+            $class = $debug['result'] === 'SUCCESS' ? 'notice-success' : 'notice-error';
+            echo '<div class="notice ' . $class . ' is-dismissible">';
+            echo '<p><strong>Custom Table Save:</strong> ' . $debug['result'] . '</p>';
+            echo '<p>Hero Subtitle: "' . esc_html($debug['hero_subtitle']) . '"</p>';
+            echo '<p>Analysis Label: "' . esc_html($debug['analysis_label']) . '"</p>';
+            echo '</div>';
+        }
+    }
+});
 
 /**
  * Custom Admin Columns for Comparison Items

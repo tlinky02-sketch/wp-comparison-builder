@@ -41,3 +41,17 @@ function wpc_render_modules_tab() {
     </form>
     <?php
 }
+
+/**
+ * Handle Module Activation Logic
+ */
+add_action( 'update_option_wpc_enable_tools_module', 'wpc_on_tools_module_update', 10, 3 );
+function wpc_on_tools_module_update( $old_value, $new_value, $option ) {
+    // If module is being enabled
+    if ( $new_value === '1' ) {
+        if ( class_exists('WPC_Tools_Database') ) {
+            $db = new WPC_Tools_Database();
+            $db->create_table();
+        }
+    }
+}

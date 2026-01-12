@@ -70,9 +70,30 @@ function wpc_add_tool_meta_boxes() {
 function wpc_render_tool_meta_box( $post ) {
     wp_nonce_field( 'wpc_save_tool', 'wpc_tool_nonce' );
     
+    // Default values (fallback)
     $badge = get_post_meta( $post->ID, '_tool_badge', true );
     $link = get_post_meta( $post->ID, '_tool_link', true );
     $button_text = get_post_meta( $post->ID, '_tool_button_text', true ) ?: 'View Details';
+    $short_desc = get_post_meta( $post->ID, '_wpc_tool_short_description', true );
+    $rating = get_post_meta( $post->ID, '_wpc_tool_rating', true ) ?: '4.5';
+    // Logic later in file handles features/pricing
+    
+    // Try Custom Table Check
+    $pricing = get_post_meta( $post->ID, '_wpc_tool_pricing_plans', true );
+    $features_val = ''; // Logic below text area usually handles this via get_post_meta call
+
+    if ( class_exists('WPC_Tools_Database') ) {
+        $db = new WPC_Tools_Database();
+        $tool = $db->get_tool( $post->ID );
+        if ( $tool ) {
+            $badge = $tool->badge_text;
+            $link = $tool->link;
+            $button_text = $tool->button_text;
+            $short_desc = $tool->short_description;
+            $rating = $tool->rating;
+            $pricing = $tool->pricing_plans;
+        }
+    }
     
     // AI Check
     $ai_profiles = class_exists( 'WPC_AI_Handler' ) ? WPC_AI_Handler::get_profiles() : array();
@@ -257,6 +278,11 @@ function wpc_render_tool_meta_box( $post ) {
         <label class="wpc-tool-label">Features (one per line)</label>
         <?php
         $features = get_post_meta( $post->ID, '_wpc_tool_features', true );
+        
+        // Custom Table Override for Features
+        if ( isset($tool) && is_object($tool) && !empty($tool->features) ) {
+             $features = implode("\n", $tool->features);
+        }
         ?>
         <textarea name="wpc_tool_features" class="wpc-tool-input" rows="6" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"><?php echo esc_textarea( $features ); ?></textarea>
         <p class="description">Main features of this tool (displayed in comparison)</p>
@@ -321,35 +347,60 @@ function wpc_save_tool_meta( $post_id ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-    update_post_meta( $post_id, '_tool_badge', sanitize_text_field( $_POST['wpc_tool_badge'] ?? '' ) );
-    update_post_meta( $post_id, '_tool_link', esc_url_raw( $_POST['wpc_tool_link'] ?? '' ) );
-    update_post_meta( $post_id, '_tool_button_text', sanitize_text_field( $_POST['wpc_tool_button_text'] ?? 'View Details' ) );
+    $badge = sanitize_text_field( $_POST['wpc_tool_badge'] ?? '' );
+    $link = esc_url_raw( $_POST['wpc_tool_link'] ?? '' );
+    $button_text = sanitize_text_field( $_POST['wpc_tool_button_text'] ?? 'View Details' );
     
     // Save new item-like fields
-    update_post_meta( $post_id, '_wpc_tool_short_description', sanitize_textarea_field( $_POST['wpc_tool_short_description'] ?? '' ) );
-    update_post_meta( $post_id, '_wpc_tool_rating', floatval( $_POST['wpc_tool_rating'] ?? 4.5 ) );
-    update_post_meta( $post_id, '_wpc_tool_features', sanitize_textarea_field( $_POST['wpc_tool_features'] ?? '' ) );
+    $short_desc = sanitize_textarea_field( $_POST['wpc_tool_short_description'] ?? '' );
+    $rating = floatval( $_POST['wpc_tool_rating'] ?? 4.5 );
+    $features_raw = sanitize_textarea_field( $_POST['wpc_tool_features'] ?? '' );
     
-    // Save pricing plans (Array from repeater)
+    // Dual-Write: Post Meta (Backup)
+    update_post_meta( $post_id, '_tool_badge', $badge );
+    update_post_meta( $post_id, '_tool_link', $link );
+    update_post_meta( $post_id, '_tool_button_text', $button_text );
+    update_post_meta( $post_id, '_wpc_tool_short_description', $short_desc );
+    update_post_meta( $post_id, '_wpc_tool_rating', $rating );
+    update_post_meta( $post_id, '_wpc_tool_features', $features_raw );
+    
+    // Save pricing plans
+    $plans = array();
     if ( isset( $_POST['wpc_tool_pricing_plans'] ) && is_array( $_POST['wpc_tool_pricing_plans'] ) ) {
-        $plans = array();
         foreach ( $_POST['wpc_tool_pricing_plans'] as $plan ) {
-            // Convert features textarea to array
-            $features = array();
+            $plan_features = array();
             if ( ! empty( $plan['features'] ) ) {
-                $features = array_filter( array_map( 'trim', explode( "\n", $plan['features'] ) ) );
+                $plan_features = array_filter( array_map( 'trim', explode( "\n", $plan['features'] ) ) );
             }
             
             $plans[] = array(
                 'name'     => sanitize_text_field( $plan['name'] ?? '' ),
                 'price'    => sanitize_text_field( $plan['price'] ?? '' ),
                 'period'   => sanitize_text_field( $plan['period'] ?? '' ),
-                'features' => $features
+                'features' => $plan_features
             );
         }
         update_post_meta( $post_id, '_wpc_tool_pricing_plans', $plans );
     } else {
         delete_post_meta( $post_id, '_wpc_tool_pricing_plans' );
+    }
+
+    // Dual-Write: Custom Table (Primary)
+    if ( class_exists('WPC_Tools_Database') ) {
+        $db = new WPC_Tools_Database();
+        $db->create_table(); // Ensure exists
+
+        $data = [
+            'badge_text'        => $badge,
+            'link'              => $link,
+            'button_text'       => $button_text,
+            'short_description' => $short_desc,
+            'rating'            => $rating,
+            'features'          => array_filter( array_map( 'trim', explode( "\n", $features_raw ) ) ),
+            'pricing_plans'     => $plans
+        ];
+        
+        $db->update_tool( $post_id, $data );
     }
 }
 

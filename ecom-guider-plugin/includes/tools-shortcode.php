@@ -99,26 +99,51 @@ function wpc_get_tool_data( $tool_id ) {
     }
 
     $logo = get_the_post_thumbnail_url( $tool_id, 'medium' );
-    $short_desc = get_post_meta( $tool_id, '_wpc_tool_short_description', true );
+    
+    // Default / Check for Custom Table Data
+    $data = null;
+    if ( class_exists('WPC_Tools_Database') ) {
+        $db = new WPC_Tools_Database();
+        $tool = $db->get_tool($tool_id);
+        if ($tool) {
+            $data = [
+                'badge' => $tool->badge_text,
+                'short_description' => $tool->short_description,
+                'rating' => $tool->rating,
+                'link' => $tool->link,
+                'button_text' => $tool->button_text,
+                'pricing_plans' => $tool->pricing_plans,
+                'features' => $tool->features
+            ];
+        }
+    }
+
+    // Fallbacks (Meta)
+    $badge = $data['badge'] ?? get_post_meta( $tool_id, '_tool_badge', true );
+    $short_desc = $data['short_description'] ?? get_post_meta( $tool_id, '_wpc_tool_short_description', true );
+    $rating = $data['rating'] ?? floatval( get_post_meta( $tool_id, '_wpc_tool_rating', true ) ?: 4.5 );
+    $link = $data['link'] ?? get_post_meta( $tool_id, '_tool_link', true );
+    $button_text = $data['button_text'] ?? get_post_meta( $tool_id, '_tool_button_text', true ) ?: 'View Details';
+    $pricing = $data['pricing_plans'] ?? get_post_meta( $tool_id, '_wpc_tool_pricing_plans', true );
+    
+    $features = $data['features'] ?? [];
+    if ( empty($features) ) {
+        $features_text = get_post_meta( $tool_id, '_wpc_tool_features', true );
+        $features = ! empty( $features_text ) ? array_filter( array_map( 'trim', explode( "\n", $features_text ) ) ) : array();
+    }
+
     $description = ! empty( $short_desc ) ? $short_desc : wp_strip_all_tags( get_the_content( null, false, $post ) );
-    
-    // Get features as array
-    $features_text = get_post_meta( $tool_id, '_wpc_tool_features', true );
-    $features = ! empty( $features_text ) ? array_filter( array_map( 'trim', explode( "\n", $features_text ) ) ) : array();
-    
-    // Get pricing plans
-    $pricing = get_post_meta( $tool_id, '_wpc_tool_pricing_plans', true );
     
     // Return in EXACT item format (matches comparison items)
     return array(
         'id'                => $tool_id,
         'name'             => $post->post_title,
         'logo'             => $logo ?: '',
-        'badge'            => get_post_meta( $tool_id, '_tool_badge', true ),
+        'badge'            => $badge,
         'short_description' => $description,
-        'rating'           => floatval( get_post_meta( $tool_id, '_wpc_tool_rating', true ) ?: 4.5 ),
-        'link'             => get_post_meta( $tool_id, '_tool_link', true ),
-        'button_text'      => get_post_meta( $tool_id, '_tool_button_text', true ) ?: 'View Details',
+        'rating'           => floatval($rating),
+        'link'             => $link,
+        'button_text'      => $button_text,
         'pricing_plans'    => ! empty( $pricing ) && is_array( $pricing ) ? $pricing : array(),
         'features'         => $features,
         // Add empty fields that items have (for compatibility)

@@ -24,11 +24,12 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
             <div className="relative bg-card w-full max-w-6xl rounded-2xl shadow-2xl border border-border p-6 md:p-10 mb-8 flex flex-col">
                 <button
                     onClick={onClose}
+                    aria-label={(window as any).wpcSettings?.texts?.close || 'Close'}
                     className="absolute top-4 right-4 p-2 rounded-full transition-colors z-10 border"
                     style={{
-                        backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+                        backgroundColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
                         color: 'white',
-                        borderColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+                        borderColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
                     }}
                     onMouseEnter={(e) => {
                         const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;

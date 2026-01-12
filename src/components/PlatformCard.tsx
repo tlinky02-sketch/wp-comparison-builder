@@ -58,6 +58,8 @@ export interface ComparisonItem {
     content?: string;
     hero_subtitle?: string; // New field for Hero
     analysis_label?: string; // New field for Hero
+    table_btn_pos?: string;
+    popup_btn_pos?: string;
     product_details?: {
         category?: string;
         brand?: string;
@@ -174,6 +176,9 @@ const PlatformCard = ({
     const featuredText = badgeText || (isFeatured ? (item.featured_badge_text || labels?.featuredBadge || "Featured") : null);
     const featuredColor = badgeColor || item.featured_badge_color || ((window as any).wpcSettings?.colors?.primary) || "#6366f1";
 
+    // Hierarchy: Item Override > Global Default
+    const isDesignOverrideEnabled = item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1';
+
     // Logic for Badge Style
     const badgeStyleInfo = (window as any).wpcSettings?.design_overrides?.badge_style || badgeStyle;
     const isFlush = badgeStyle === 'flush';
@@ -181,6 +186,18 @@ const PlatformCard = ({
     // Normalize comparison props to handle string inputs from PHP
     const isComparisonEnabled = enableComparison !== false && (enableComparison as any) !== '0';
     const isCheckboxesVisible = showCheckboxes !== false && (showCheckboxes as any) !== '0';
+
+    // Primary Color
+    const globalPrimary = (window as any).wpcSettings?.colors?.primary || "#6366f1";
+    const primaryColor = (isDesignOverrideEnabled && item.design_overrides?.primary)
+        ? item.design_overrides.primary
+        : globalPrimary;
+
+    // Border Color
+    const globalBorder = (window as any).wpcSettings?.colors?.border;
+    const borderColor = (isDesignOverrideEnabled && item.design_overrides?.border)
+        ? item.design_overrides.border
+        : globalBorder;
 
     return (
         <div
@@ -202,8 +219,8 @@ const PlatformCard = ({
                 // Active State (Selected) vs Default State (Normal + Hover)
                 // Hover effects should applied ALWAYS for visual feedback, even if selection is disabled via master switch
                 (isComparisonEnabled && isSelected)
-                    ? "border-primary shadow-lg ring-2 ring-primary/20 scale-[1.02]"
-                    : "border-border hover:border-primary/50 hover:shadow-xl hover:-translate-y-1",
+                    ? "shadow-lg ring-2 scale-[1.02]" // Colors handled via style
+                    : "hover:shadow-xl hover:-translate-y-1", // Border color handled via style
 
                 disabled && !isSelected && "opacity-50 cursor-not-allowed",
                 isFeatured ? "border-4" : "border-2",
@@ -211,10 +228,18 @@ const PlatformCard = ({
                 isFlush && featuredText ? "overflow-hidden" : ""
             )}
             style={{
-                borderColor: isFeatured && !isSelected // Only override border color if NOT selected (selected uses primary)
+                // DYNAMIC BORDER COLOR HIERARCHY
+                // 1. Featured & Not Selected -> Featured Badge Color
+                // 2. Selected -> Primary Color
+                // 3. Default -> Border Color (Global or Override)
+                borderColor: (isFeatured && !isSelected)
                     ? featuredColor
-                    : ((isComparisonEnabled && isSelected) ? undefined : (window as any).wpcSettings?.colors?.border)
-            }}
+                    : ((isComparisonEnabled && isSelected) ? primaryColor : borderColor),
+
+                // DYNAMIC RING COLOR (For Selected State)
+                // We use CSS variable for ring opacity but need javascript for the custom color
+                '--tw-ring-color': isComparisonEnabled && isSelected ? `${primaryColor}33` : undefined, // 20% opacity approx
+            } as React.CSSProperties}
         >
             {/* Custom Badge (Overrides Featured if present, or stacks) */}
             {hasCustomBadge ? (
@@ -444,11 +469,13 @@ const PlatformCard = ({
                                 <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
                             </li>
                         )}
-                        <li className="flex items-center gap-2 text-sm text-foreground/80">
-                            <Check className="w-4 h-4 text-primary shrink-0"
-                                style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
-                            <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>
-                        </li>
+                        {item.features.support && (
+                            <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <Check className="w-4 h-4 text-primary shrink-0"
+                                    style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
+                                <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>
+                            </li>
+                        )}
                     </>
                 )}
             </ul>

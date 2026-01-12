@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function wpc_create_comparison_sets_table() {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'wpc_comparison_sets';
+    $table_name = $wpdb->prefix . 'wpc_lists';
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
@@ -60,7 +60,7 @@ function wpc_save_comparison_set() {
     }
     
     global $wpdb;
-    $table_name = $wpdb->prefix . 'wpc_comparison_sets';
+    $table_name = $wpdb->prefix . 'wpc_lists';
     
     $item_id = intval( $_POST['item_id'] );
     $set_name = sanitize_text_field( $_POST['set_name'] );
@@ -103,7 +103,7 @@ function wpc_update_comparison_set() {
     }
     
     global $wpdb;
-    $table_name = $wpdb->prefix . 'wpc_comparison_sets';
+    $table_name = $wpdb->prefix . 'wpc_lists';
     
     $set_id = intval( $_POST['set_id'] );
     $set_name = sanitize_text_field( $_POST['set_name'] );
@@ -147,7 +147,7 @@ function wpc_delete_comparison_set() {
     }
     
     global $wpdb;
-    $table_name = $wpdb->prefix . 'wpc_comparison_sets';
+    $table_name = $wpdb->prefix . 'wpc_lists';
     $set_id = intval( $_POST['set_id'] );
     
     $result = $wpdb->delete( $table_name, array( 'id' => $set_id ), array( '%d' ) );
@@ -164,7 +164,7 @@ function wpc_delete_comparison_set() {
  */
 function wpc_get_saved_sets( $item_id ) {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'wpc_comparison_sets';
+    $table_name = $wpdb->prefix . 'wpc_lists';
     
     // Check if table exists first to avoid error on fresh install before init
     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name ) {

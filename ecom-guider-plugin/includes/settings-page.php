@@ -129,6 +129,16 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_text_search' );
     register_setting( 'wpc_settings_group', 'wpc_text_coupon_label' );
     
+    // Additional UI Text Settings (Previously Hardcoded)
+    register_setting( 'wpc_settings_group', 'wpc_text_preview' );
+    register_setting( 'wpc_settings_group', 'wpc_text_select_plan' );
+    register_setting( 'wpc_settings_group', 'wpc_text_pricing_header' );
+    register_setting( 'wpc_settings_group', 'wpc_text_pricing_sub' );
+    register_setting( 'wpc_settings_group', 'wpc_text_table_price' );
+    register_setting( 'wpc_settings_group', 'wpc_text_table_features' );
+    register_setting( 'wpc_settings_group', 'wpc_text_close' );
+    register_setting( 'wpc_settings_group', 'wpc_text_no_plans' );
+    
     // Color Settings
     register_setting( 'wpc_settings_group', 'wpc_color_pros_bg' );
     register_setting( 'wpc_settings_group', 'wpc_color_pros_text' );
@@ -2855,8 +2865,111 @@ function wpc_render_danger_zone_tab() {
             </div>
         </div>
         
-        <!-- Tips Section -->
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px;">
+    <?php
+    // Conditional Migration Logic
+    $migration_needed = false;
+    $debug_info = [];
+    
+    // 1. Count all Comparison Items (Publish, Draft, Pending, Private)
+    $count_obj = wp_count_posts('comparison_item');
+    $total_wp_items = 0;
+    
+    if ( isset( $count_obj->publish ) ) {
+        // Sum detailed statuses just to be safe
+        $total_wp_items = (int)$count_obj->publish + (int)$count_obj->draft + (int)$count_obj->pending + (int)$count_obj->private + (int)$count_obj->future;
+    }
+    
+    $db_count = 0;
+    $table_exists = false;
+    
+    // 2. Check Custom Table
+    if ( class_exists('WPC_Database') ) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpc_items';
+        
+        $table_check = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");
+        
+        if ( $table_check === $table_name ) {
+             $table_exists = true;
+             $db_count = (int) $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+             
+             // If DB count is less than WP count, migration makes sense
+             if ( $db_count < $total_wp_items ) {
+                 $migration_needed = true;
+             }
+        } else {
+            // Table MISSING! Definitely need migration (which initializes DB)
+            $table_exists = false;
+            if ( $total_wp_items > 0 ) {
+                $migration_needed = true;
+            }
+        }
+    }
+    
+    // 3. Force Show override
+    if ( isset($_GET['force_migration']) && $_GET['force_migration'] == '1' ) {
+        $migration_needed = true;
+    }
+
+    if ( $migration_needed ) : ?>
+        <div style="background: #fffbeb; border-left: 5px solid #f59e0b; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <span class="dashicons dashicons-database" style="font-size: 30px; width: 30px; height: 30px; color: #f59e0b;"></span>
+                <div>
+                    <h3 style="margin: 0; color: #92400e;"><?php _e( 'Database Optimization Required', 'wp-comparison-builder' ); ?></h3>
+                </div>
+            </div>
+            
+            <p style="margin-top: 0; color: #b45309;">
+                <?php 
+                if ( ! $table_exists ) {
+                    _e( 'The custom performance table needs to be initialized.', 'wp-comparison-builder' );
+                } else {
+                    printf( __( 'We detected %d items that need to be migrated to the new high-performance storage engine.', 'wp-comparison-builder' ), ($total_wp_items - $db_count) ); 
+                }
+                ?>
+            </p>
+            
+            <div style="margin: 10px 0; font-size: 11px; color: #92400e; background: rgba(245, 158, 11, 0.1); padding: 5px; border-radius: 3px;">
+                <strong>Debug Info:</strong> WP Items: <?php echo $total_wp_items; ?> | DB Rows: <?php echo $db_count; ?> | Table: <?php echo $table_exists ? 'Exists' : 'Missing'; ?>
+            </div>
+            
+            <button type="button" class="button button-primary" id="wpc-run-migration-btn" style="background: #f59e0b; border-color: #d97706; color: #fff;">
+                <?php _e( 'Optimize Database Now', 'wp-comparison-builder' ); ?>
+            </button>
+        </div>
+        
+        <script>
+        document.getElementById('wpc-run-migration-btn').addEventListener('click', function() {
+            wpcAdmin.confirm(
+                'Optimize Database?',
+                'This will copy your existing items to the new performance table.<br><br>It is recommended to backup your database before proceeding.',
+                function() {
+                     var btn = document.getElementById('wpc-run-migration-btn');
+                     wpcAdmin.loading(btn, 'Optimizing...');
+                     
+                     jQuery.post(ajaxurl, {
+                        action: 'wpc_run_migration',
+                        nonce: '<?php echo wp_create_nonce('wpc_import_export_nonce'); ?>'
+                     }, function(response) {
+                        if (response.success) {
+                            wpcAdmin.toast('Success! Database optimized.', 'success');
+                            setTimeout(function() { location.reload(); }, 1500);
+                        } else {
+                            wpcAdmin.toast('Error: ' + response.data, 'error');
+                            wpcAdmin.reset(btn);
+                        }
+                     });
+                },
+                'Run Optimizer',
+                '#f59e0b'
+            );
+        });
+        </script>
+    <?php endif; ?>
+
+    <!-- Tips Section -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px;">
             <h3 style="margin: 0 0 15px 0; color: #334155;">&#x1F4A1; Tips</h3>
             <ul style="margin: 0; padding-left: 20px; color: #64748b;">
                 <li><strong>Maintenance Tools</strong> are safe to run anytime – they don't delete your content</li>
@@ -4664,3 +4777,43 @@ function wpc_render_ai_tab() {
     </script>
     <?php
 }
+
+/**
+ * Handle Migration via AJAX
+ */
+add_action( 'wp_ajax_wpc_run_migration', 'wpc_run_migration_ajax' );
+function wpc_run_migration_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+
+    check_ajax_referer( 'wpc_import_export_nonce', 'nonce' );
+
+    if ( ! class_exists('WPC_Migrator') ) {
+        require_once WPC_PLUGIN_DIR . 'includes/class-wpc-migrator.php';
+    }
+
+    $migrator = new WPC_Migrator();
+    $result = $migrator->run_migration();
+    
+    // Also run Tools Migration
+    $tools_result = $migrator->migrate_tools();
+
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
+    } else {
+        $msg = "Items: Processed {$result['processed']}, Updated {$result['updated']}.";
+        if ( $tools_result['success'] ) {
+            $msg .= " Tools: Migrated {$tools_result['count']}. ";
+        }
+        if ( !empty($result['errors']) || !empty($tools_result['errors']) ) {
+            $msg .= " Some errors occurred.";
+        }
+        wp_send_json_success( $msg );
+    }
+}
+
+/**
+ * Danger Zone Tab
+ */
+

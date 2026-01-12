@@ -72,7 +72,7 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
                     {/* Actions */}
                     <div className="flex flex-wrap gap-4">
                         <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-primary/20" onClick={handleVisit}>
-                            Visit {item.name} <ExternalLink className="w-4 h-4 ml-2" />
+                            {((window as any).wpcSettings?.texts?.visit || 'Visit')} {item.name} <ExternalLink className="w-4 h-4 ml-2" />
                         </Button>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
                             />
                         ) : (
                             <div className="aspect-[16/10] bg-muted/20 flex items-center justify-center text-muted-foreground">
-                                Preview
+                                {(window as any).wpcSettings?.texts?.preview || 'Preview'}
                             </div>
                         )}
                     </div>

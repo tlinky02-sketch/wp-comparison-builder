@@ -42,6 +42,30 @@ require_once WPC_PLUGIN_DIR . 'includes/migration.php';
 require_once WPC_PLUGIN_DIR . 'includes/ai-handler.php';
 require_once WPC_PLUGIN_DIR . 'includes/tools-cpt.php'; // Recommended Tools Module
 require_once WPC_PLUGIN_DIR . 'includes/settings-page-modules.php'; // Modules Settings Tab
+require_once WPC_PLUGIN_DIR . 'includes/class-wpc-database.php'; // Database Class
+require_once WPC_PLUGIN_DIR . 'includes/class-wpc-migrator.php'; // Migrator Class
+require_once WPC_PLUGIN_DIR . 'includes/class-wpc-tools-db.php'; // Tools Database Class
+
+// Initialize Database Table on Activation
+register_activation_hook( __FILE__, 'wpc_install_db' );
+function wpc_install_db() {
+    // Items Table
+    if ( class_exists('WPC_Database') ) {
+        $db = new WPC_Database();
+        $db->create_table();
+    }
+    
+    // Tools Table (Conditional)
+    if ( class_exists('WPC_Tools_Database') ) {
+        // We create it if the module is enabled OR if we just want to ensure it exists for safety 
+        // given that activation usually implies "setup everything needed".
+        // Use module check to be consistent with Migrator logic.
+        if ( get_option( 'wpc_enable_tools_module' ) === '1' ) {
+            $tools_db = new WPC_Tools_Database();
+            $tools_db->create_table();
+        }
+    }
+}
 
 /**
  * Register Scripts and Styles
@@ -106,6 +130,14 @@ function wpc_register_scripts() {
         'selected' => get_option('wpc_text_selected', ''),
         'clearAll' => get_option('wpc_text_clear_all', ''),
         'about' => get_option('wpc_text_about', ''),
+        'preview' => get_option('wpc_text_preview', 'Preview'),
+        'selectPlan' => get_option('wpc_text_select_plan', 'Select'),
+        'pricingHeader' => get_option('wpc_text_pricing_header', 'Pricing Plans: {name}'),
+        'pricingSub' => get_option('wpc_text_pricing_sub', 'Compare available plans explicitly'),
+        'tablePrice' => get_option('wpc_text_table_price', 'Price'),
+        'tableFeatures' => get_option('wpc_text_table_features', 'Features'),
+        'close' => get_option('wpc_text_close', 'Close'),
+        'noPlans' => get_option('wpc_text_no_plans', 'No specific pricing plans available for display.'),
     );
 
     // Hybrid Approach: Preload Data Globally

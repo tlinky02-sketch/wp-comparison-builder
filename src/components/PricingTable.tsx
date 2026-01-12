@@ -78,9 +78,10 @@ const PricingTable = ({
     // Global Visual Settings
     const visuals = settings?.visuals || {};
     // Button Position Logic
+    // Hierarchy: 1. List Override (Config) 2. Item Override 3. Global Setting
     const positionSetting = displayContext === 'popup'
-        ? (config?.ptBtnPosPopup || visuals.wpc_pt_btn_pos_popup)
-        : (config?.ptBtnPosTable || visuals.wpc_pt_btn_pos_table);
+        ? (config?.ptBtnPosPopup || item.popup_btn_pos || visuals.wpc_pt_btn_pos_popup)
+        : (config?.ptBtnPosTable || item.table_btn_pos || visuals.wpc_pt_btn_pos_table);
     const buttonPosition = positionSetting || 'after_price'; // Default to 'after_price'
 
     const defaultStyles = {
@@ -173,7 +174,7 @@ const PricingTable = ({
     if (plans.length === 0) {
         return (
             <div className="text-center py-12 bg-secondary/20 rounded-xl mb-8">
-                <p className="text-muted-foreground">No specific pricing plans available for display.</p>
+                <p className="text-muted-foreground">{(window as any).wpcSettings?.texts?.noPlans || 'No specific pricing plans available for display.'}</p>
             </div>
         );
     }
@@ -191,8 +192,8 @@ const PricingTable = ({
                             </div>
                         )}
                     </div>
-                    <h2 className="text-3xl font-bold mb-2">Pricing Plans: {item.name}</h2>
-                    <p className="text-muted-foreground">Compare available plans explicitly</p>
+                    <h2 className="text-3xl font-bold mb-2">{((window as any).wpcSettings?.texts?.pricingHeader || 'Pricing Plans: {name}').replace('{name}', item.name)}</h2>
+                    <p className="text-muted-foreground">{(window as any).wpcSettings?.texts?.pricingSub || 'Compare available plans explicitly'}</p>
                 </div>
             )}
 
@@ -265,7 +266,7 @@ const PricingTable = ({
                                                         e.currentTarget.style.filter = 'brightness(100%)';
                                                     }}
                                                 >
-                                                    {plan.button_text || 'Select'}
+                                                    {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
                                                 </a>
                                             )}
                                         </td>
@@ -357,7 +358,7 @@ const PricingTable = ({
                     <div className="divide-y divide-border" style={{ borderColor: 'var(--pt-border)' }}>
                         {/* Price Row */}
                         <div className="bg-muted/10">
-                            <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">Price</div>
+                            <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{(window as any).wpcSettings?.texts?.tablePrice || 'Price'}</div>
                             <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
                                 {plans.map((plan, idx) => (
                                     <div key={idx} className="p-2 text-center">
@@ -397,7 +398,7 @@ const PricingTable = ({
                                                         e.currentTarget.style.filter = 'brightness(100%)';
                                                     }}
                                                 >
-                                                    {plan.button_text || 'Select'}
+                                                    {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
                                                 </a>
                                             )}
                                         </div>
@@ -409,7 +410,7 @@ const PricingTable = ({
                         {/* Features Row */}
                         {showFeatures && (
                             <div>
-                                <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">Features</div>
+                                <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{(window as any).wpcSettings?.texts?.tableFeatures || 'Features'}</div>
                                 <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
                                     {plans.map((plan, idx) => (
                                         <div key={idx} className="p-2 align-top text-xs">
