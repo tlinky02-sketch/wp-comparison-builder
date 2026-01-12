@@ -171,7 +171,7 @@ const PlatformCard = ({
 
     // Determine badge styling
     const hasCustomBadge = !!item.badge?.text;
-    const featuredText = badgeText || item.featured_badge_text || (isFeatured ? (labels?.featuredBadge || "Featured") : null);
+    const featuredText = badgeText || (isFeatured ? (item.featured_badge_text || labels?.featuredBadge || "Featured") : null);
     const featuredColor = badgeColor || item.featured_badge_color || ((window as any).wpcSettings?.colors?.primary) || "#6366f1";
 
     // Logic for Badge Style
