@@ -31,12 +31,17 @@ require_once WPC_PLUGIN_DIR . 'includes/sample-data.php';
 require_once WPC_PLUGIN_DIR . 'includes/seo-schema.php';
 require_once WPC_PLUGIN_DIR . 'includes/compare-button-shortcode.php';
 require_once WPC_PLUGIN_DIR . 'includes/feature-table-shortcode.php';
+require_once WPC_PLUGIN_DIR . 'includes/pros-cons-shortcode.php';
+require_once WPC_PLUGIN_DIR . 'includes/use-cases-shortcode.php'; // New Use Cases Feature
+require_once WPC_PLUGIN_DIR . 'includes/tools-shortcode.php'; // Recommended Tools
 require_once WPC_PLUGIN_DIR . 'includes/comparison-sets-db.php';
 require_once WPC_PLUGIN_DIR . 'includes/compare-alternatives-admin.php';
 
 require_once WPC_PLUGIN_DIR . 'includes/list-meta-box.php';
 require_once WPC_PLUGIN_DIR . 'includes/migration.php';
 require_once WPC_PLUGIN_DIR . 'includes/ai-handler.php';
+require_once WPC_PLUGIN_DIR . 'includes/tools-cpt.php'; // Recommended Tools Module
+require_once WPC_PLUGIN_DIR . 'includes/settings-page-modules.php'; // Modules Settings Tab
 
 /**
  * Register Scripts and Styles
@@ -128,6 +133,7 @@ function wpc_register_scripts() {
             'couponText' => get_option( 'wpc_color_coupon_text', '#92400e' ),
             'couponHover' => get_option( 'wpc_color_coupon_hover', '#fde68a' ),
             'copied' => get_option( 'wpc_color_copied', '#10b981' ),
+            'stars' => get_option( 'wpc_star_rating_color', '#fbbf24' ), // Star Color
         ),
         'texts' => $text_labels, // <--- NEW TEXTS OBJECT
         'visuals' => array( // New object for PT visuals
@@ -723,20 +729,69 @@ function wpc_list_shortcode( $atts ) {
         $show_plans = get_option( 'wpc_show_plan_buttons', '1' ) === '1';
     }
 
-    // Convert Filter IDs to Names for Frontend
-    $filter_cat_names = [];
-    if (is_array($filter_cats)) {
-        foreach($filter_cats as $fcid) {
-            $term = get_term($fcid, 'comparison_category');
-            if($term && !is_wp_error($term)) $filter_cat_names[] = $term->name;
-        }
+    // Verify Source Type to prevent contamination
+    $source_type = get_post_meta( $post_id, '_wpc_list_source_type', true ) ?: 'item';
+    
+    // Fallback: If Tools module is disabled globally, force source to 'item'
+    // so we don't try to load tool filters that aren't available/wanted.
+    if ( get_option( 'wpc_enable_tools_module' ) !== '1' ) {
+        $source_type = 'item';
     }
 
+    // Convert Filter IDs to Names for Frontend
+    $filter_cat_names = [];
     $filter_feat_names = [];
-    if (is_array($filter_feats)) {
-        foreach($filter_feats as $ffid) {
-            $term = get_term($ffid, 'comparison_feature');
-            if($term && !is_wp_error($term)) $filter_feat_names[] = $term->name;
+
+    // Process Item Filters (Only if source includes items)
+    if ( $source_type === 'item' || $source_type === 'both' ) {
+        if (is_array($filter_cats)) {
+            foreach($filter_cats as $fcid) {
+                // Robust Term Lookup (Handle Migration/Legacy)
+                $term = get_term($fcid, 'comparison_category');
+                if (!$term || is_wp_error($term)) {
+                    $term = get_term($fcid, 'ecommerce_type'); // Legacy Check
+                }
+                if (!$term || is_wp_error($term)) {
+                    $term = get_term($fcid); // Generic Check
+                }
+
+                if($term && !is_wp_error($term)) $filter_cat_names[] = $term->name;
+            }
+        }
+
+        if (is_array($filter_feats)) {
+            foreach($filter_feats as $ffid) {
+                // Robust Term Lookup (Handle Migration/Legacy)
+                $term = get_term($ffid, 'comparison_feature');
+                if (!$term || is_wp_error($term)) {
+                    $term = get_term($ffid, 'ecommerce_feature'); // Legacy Check
+                }
+                if (!$term || is_wp_error($term)) {
+                    $term = get_term($ffid); // Generic Check
+                }
+
+                if($term && !is_wp_error($term)) $filter_feat_names[] = $term->name;
+            }
+        }
+    }
+    
+    // Process Tool Filters (Only if source includes tools)
+    if ( $source_type === 'tool' || $source_type === 'both' ) {
+        $filter_tool_cats = get_post_meta( $post_id, '_wpc_list_filter_tool_cats', true ) ?: [];
+        $filter_tool_tags = get_post_meta( $post_id, '_wpc_list_filter_tool_tags', true ) ?: [];
+
+        if (is_array($filter_tool_cats)) {
+            foreach($filter_tool_cats as $fcid) {
+                $term = get_term($fcid, 'tool_category');
+                if($term && !is_wp_error($term)) $filter_cat_names[] = $term->name;
+            }
+        }
+
+        if (is_array($filter_tool_tags)) {
+            foreach($filter_tool_tags as $ffid) {
+                $term = get_term($ffid, 'tool_tag');
+                if($term && !is_wp_error($term)) $filter_feat_names[] = $term->name;
+            }
         }
     }
     
@@ -765,6 +820,7 @@ function wpc_list_shortcode( $atts ) {
     $data = wpc_get_items();
     $items = $data['items'];
 
+    // 2. Filter & Modify Data
     // 2. Filter & Modify Data
     if ( ! empty( $specific_ids ) ) {
         $items = array_filter( $items, function($item) use ($specific_ids) {
@@ -801,6 +857,10 @@ function wpc_list_shortcode( $atts ) {
             }
             return $item;
         }, $items);
+    } else {
+        // If no IDs are specifically saved, we should show NOTHING (empty list), 
+        // DO NOT fallback to showing all items.
+        $items = [];
     }
     
     // Limit
@@ -988,6 +1048,7 @@ function wpc_list_shortcode( $atts ) {
     $view_action = get_post_meta($post_id, '_wpc_list_view_action', true) ?: 'popup';
 
     $config = array(
+        'initialItems' => array_values($items), // Pass the heavily filtered items to frontend
         'ids'      => $sorted_ids,
         'style'    => $final_style, // Pass resolved style
         'featured' => !empty($featured_str) ? array_map('trim', explode(',', $featured_str)) : [],

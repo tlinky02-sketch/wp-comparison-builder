@@ -71,8 +71,15 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     const preloadedData = preloadedSettings?.initialData;
 
     const [items, setItems] = useState<ComparisonItem[]>(() => {
+        // Priority 1: List-specific items passed via data-config (Shortcode)
+        if (config.initialItems && Array.isArray(config.initialItems) && config.initialItems.length > 0) {
+            return config.initialItems;
+        }
+
+        // Priority 2: Global preloaded data (WP Localization)
         if (preloadedData?.items) return preloadedData.items;
         if (preloadedData?.providers) return preloadedData.providers; // Legacy
+
         return [];
     });
     const [categories, setCategories] = useState<string[]>(() => preloadedData?.categories || []);
@@ -134,12 +141,18 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
 
         const fetchData = async () => {
             // Check for preloaded data (try new name first, then old)
+            // Check for preloaded data (try new name first, then old)
             const settings = window.wpcSettings || window.ecommerceGuiderSettings || window.hostingGuiderSettings;
             const initialData = settings?.initialData;
 
             if (initialData) {
-                if (initialData.items) setItems(initialData.items);
-                else if (initialData.providers) setItems(initialData.providers); // Legacy support
+                // IMPORTANT: If we already have items from config.initialItems (passed via shortcode),
+                // DO NOT overwrite them with global initialData.items (which contains ALL items).
+                // Only use global data if we have no local items.
+                if (!config.initialItems || config.initialItems.length === 0) {
+                    if (initialData.items) setItems(initialData.items);
+                    else if (initialData.providers) setItems(initialData.providers); // Legacy support
+                }
 
                 if (initialData.categories) setCategories(initialData.categories);
                 if (initialData.filterableFeatures) setFilterableFeatures(initialData.filterableFeatures);
@@ -1042,11 +1055,19 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
 // Helper to get React props from data attributes
 const getPropsFromRoot = (rootId: string | HTMLElement) => {
     const root = typeof rootId === 'string' ? document.getElementById(rootId) : rootId;
-    if (root && root.dataset.config) {
-        try {
-            return JSON.parse(root.dataset.config);
-        } catch (e) {
-            console.error("Error parsing config", e);
+    if (root) {
+        if (root.dataset.config) {
+            try {
+                return JSON.parse(root.dataset.config);
+            } catch (e) {
+                console.error("Error parsing config", e);
+            }
+        } else if (root.dataset.props) {
+            try {
+                return JSON.parse(root.dataset.props);
+            } catch (e) {
+                console.error("Error parsing props", e);
+            }
         }
     }
     return {};
@@ -1090,3 +1111,20 @@ try {
 } catch (e) {
     console.error('WPC: Error mounting hero instances', e);
 }
+// Mount Best Use Cases
+const useCasesRoots = document.querySelectorAll('.wpc-use-cases-root');
+useCasesRoots.forEach((el) => {
+    const root = el as HTMLElement;
+    if (root && !root.hasAttribute('data-react-mounted')) {
+        root.setAttribute('data-react-mounted', 'true');
+        const config = getPropsFromRoot(root);
+
+        import('./components/BestUseCases').then(({ default: BestUseCases }) => {
+            ReactDOM.createRoot(root).render(
+                <React.StrictMode>
+                    <BestUseCases {...config} />
+                </React.StrictMode>
+            );
+        });
+    }
+});

@@ -29,7 +29,7 @@ function wpc_get_items() {
 
     // Query all items (support both new and legacy types)
     $args = array(
-        'post_type'      => array( 'comparison_item', 'ecommerce_provider' ),
+        'post_type'      => array( 'comparison_item', 'ecommerce_provider', 'comparison_tool' ),
         'posts_per_page' => -1,
         'post_status'    => 'publish',
     );
@@ -43,25 +43,44 @@ function wpc_get_items() {
             $query->the_post();
             $id = get_the_ID();
 
-            // Meta with fallbacks
-            $price = get_post_meta( $id, '_wpc_price', true ) ?: get_post_meta( $id, '_ecommerce_price', true ) ?: '0';
-            $period = get_post_meta( $id, '_wpc_period', true ) ?: get_post_meta( $id, '_ecommerce_period', true ) ?: '';
-            $rating = get_post_meta( $id, '_wpc_rating', true ) ?: get_post_meta( $id, '_ecommerce_rating', true ) ?: 4.0;
-            $pros_raw = get_post_meta( $id, '_wpc_pros', true ) ?: get_post_meta( $id, '_ecommerce_pros', true );
-            $cons_raw = get_post_meta( $id, '_wpc_cons', true ) ?: get_post_meta( $id, '_ecommerce_cons', true );
+            // Taxonomies - check both Item and Tool taxonomies
+            $post_type = get_post_type($id);
             
-            // Taxonomies - check both
-            $categories = get_the_terms( $id, 'comparison_category' );
-            if ( ! $categories || is_wp_error( $categories ) ) {
-                $categories = get_the_terms( $id, 'ecommerce_type' );
-            }
-            // ... (rest of category logic)
+            $categories = array();
+            $features = array();
             
-            // Features - check both
-            $features = get_the_terms( $id, 'comparison_feature' );
-            if ( ! $features || is_wp_error( $features ) ) {
-                $features = get_the_terms( $id, 'ecommerce_feature' );
+            $post_type = get_post_type($id);
+            $categories = false;
+            $features = false;
+            $debug_all_terms = array(); // DEBUG: Store all found terms
+
+            // DEBUG: Get all taxonomies for this post type
+            $taxonomies = get_object_taxonomies($post_type);
+            foreach ($taxonomies as $tax) {
+                $terms = get_the_terms($id, $tax);
+                if ($terms && !is_wp_error($terms)) {
+                    $debug_all_terms[$tax] = wp_list_pluck($terms, 'name');
+                }
             }
+
+            if ( $post_type === 'comparison_tool' ) {
+                $categories = get_the_terms( $id, 'tool_category' );
+                if (!$categories || is_wp_error($categories)) $categories = wp_get_post_terms( $id, 'tool_category' ); 
+                
+                $features = get_the_terms( $id, 'tool_tag' );
+                 if (!$features || is_wp_error($features)) $features = wp_get_post_terms( $id, 'tool_tag' );
+            } else {
+                $categories = get_the_terms( $id, 'comparison_category' );
+                if ( ! $categories || is_wp_error( $categories ) ) {
+                    $categories = get_the_terms( $id, 'ecommerce_type' );
+                }
+                
+                $features = get_the_terms( $id, 'comparison_feature' );
+                if ( ! $features || is_wp_error( $features ) ) {
+                    $features = get_the_terms( $id, 'ecommerce_feature' );
+                }
+            }
+
             $category_names = array();
             if ( $categories && ! is_wp_error( $categories ) ) {
                 foreach ( $categories as $c ) {
@@ -69,19 +88,14 @@ function wpc_get_items() {
                     if (!in_array($c->name, $all_categories)) $all_categories[] = $c->name;
                 }
             }
-
-            $features = get_the_terms( $id, 'comparison_feature' );
             
-            // Default Feature Map for Frontend
-            // We will need to update the React frontend to respect these keys
+            // Feature mapping logic... (reused)
             $feature_map = array(
                 'products' => 'Unlimited', 
                 'fees' => '0%',
                 'ssl' => false,
                 'support' => '24/7',
                 'channels' => 'Multi',
-                // Keep some old ones for compatibility until frontend is updated?
-                // Actually safer to providing them as null or defaults to prevent crash
                 'storage' => 'N/A', 
                 'bandwidth' => 'N/A'
             );
@@ -90,15 +104,14 @@ function wpc_get_items() {
             if ( $features && ! is_wp_error( $features ) ) {
                 foreach ( $features as $f ) {
                     $name = $f->name;
-                    $feature_names[] = $name; // Collect raw names
-                    $name_lower = strtolower($name);
-                    
+                    $feature_names[] = $name; 
                     if (!in_array($name, $all_feature_terms)) $all_feature_terms[] = $name;
-
-                    // Mapping Logic for Ecommerce
+                    
+                    // Simple mapping for tools as well
+                    $name_lower = strtolower($name);
                     if ( strpos( $name_lower, 'ssl' ) !== false ) $feature_map['ssl'] = true;
                     if ( strpos( $name_lower, 'support' ) !== false ) $feature_map['support'] = $name;
-                    
+
                     // Products
                     if ( strpos( $name_lower, 'product' ) !== false ) {
                         $feature_map['products'] = trim(str_ireplace(array('products', 'unlimited'), '', $name));
@@ -112,27 +125,58 @@ function wpc_get_items() {
                 }
             }
 
-            // Features processing done above within loop logic, using $features variable which now has fallback
-            
             // Image
             $logo_url = get_the_post_thumbnail_url( $id, 'full' );
             if ( ! $logo_url ) {
                 $logo_url = get_post_meta( $id, '_wpc_external_logo_url', true ) ?: get_post_meta( $id, '_ecommerce_external_logo_url', true ) ?: '';
             }
 
-            // Details Link 
-            $details_link = get_post_meta( $id, '_wpc_details_link', true ) ?: get_post_meta( $id, '_ecommerce_details_link', true ) ?: '#';
-            $direct_link = get_post_meta( $id, '_wpc_direct_link', true ) ?: '';
-            
-            // Pricing Plans
-            $pricing_plans = get_post_meta( $id, '_wpc_pricing_plans', true ) ?: get_post_meta( $id, '_ecommerce_pricing_plans', true ) ?: array();
-            $hide_plan_features = get_post_meta( $id, '_wpc_hide_plan_features', true ) === '1' || get_post_meta( $id, '_ecommerce_hide_plan_features', true ) === '1';
-            $show_plan_links = get_post_meta( $id, '_wpc_show_plan_links', true ) === '1' || get_post_meta( $id, '_ecommerce_show_plan_links', true ) === '1';
-            $show_coupon = get_post_meta( $id, '_wpc_show_coupon', true ) === '1' || get_post_meta( $id, '_ecommerce_show_coupon', true ) === '1';
+            // Meta Mapping based on Post Type
+            if ( $post_type === 'comparison_tool' ) {
+                $price = get_post_meta( $id, '_tool_price', true ) ?: ''; // Tools might not have single price, handled in pricing plans
+                $period = ''; 
+                $rating = get_post_meta( $id, '_wpc_tool_rating', true ) ?: 4.5;
+                $details_link = get_post_meta( $id, '_tool_link', true ) ?: '#';
+                $direct_link = ''; 
+                $pricing_plans = get_post_meta( $id, '_wpc_tool_pricing_plans', true ) ?: array();
+                $hide_plan_features = false;
+                $show_plan_links = true;
+                $show_coupon = false;
+                $badge_text = get_post_meta( $id, '_tool_badge', true );
+                $button_text = get_post_meta( $id, '_tool_button_text', true ) ?: 'View Details';
+                $description = get_post_meta( $id, '_wpc_tool_short_description', true ) ?: get_the_excerpt();
+                
+                // Construct basic price from first plan if needed
+                if ( empty( $price ) && ! empty( $pricing_plans[0]['price'] ) ) {
+                   $price = $pricing_plans[0]['price'];
+                   $period = $pricing_plans[0]['period'] ?? '';
+                }
+
+            } else {
+                // Comparison Item Meta
+                $price = get_post_meta( $id, '_wpc_price', true ) ?: get_post_meta( $id, '_ecommerce_price', true ) ?: '0';
+                $period = get_post_meta( $id, '_wpc_period', true ) ?: get_post_meta( $id, '_ecommerce_period', true ) ?: '';
+                $rating = get_post_meta( $id, '_wpc_rating', true ) ?: get_post_meta( $id, '_ecommerce_rating', true ) ?: 4.0;
+                $details_link = get_post_meta( $id, '_wpc_details_link', true ) ?: get_post_meta( $id, '_ecommerce_details_link', true ) ?: '#';
+                $direct_link = get_post_meta( $id, '_wpc_direct_link', true ) ?: '';
+                $pricing_plans = get_post_meta( $id, '_wpc_pricing_plans', true ) ?: get_post_meta( $id, '_ecommerce_pricing_plans', true ) ?: array();
+                $hide_plan_features = get_post_meta( $id, '_wpc_hide_plan_features', true ) === '1';
+                $show_plan_links = get_post_meta( $id, '_wpc_show_plan_links', true ) === '1';
+                $show_coupon = get_post_meta( $id, '_wpc_show_coupon', true ) === '1';
+                $badge_text = get_post_meta( $id, '_wpc_badge_text', true );
+                $button_text = get_post_meta( $id, '_wpc_button_text', true );
+                $description = get_post_meta( $id, '_wpc_short_description', true ) ?: get_the_excerpt();
+            }
+
+            // Pros/Cons (Tools don't use these typically, but we can support if added later)
+            $pros_raw = get_post_meta( $id, '_wpc_pros', true );
+            $cons_raw = get_post_meta( $id, '_wpc_cons', true );
 
             $items[] = array(
                 'id'       => (string) $id,
-                'name'     => get_the_title(),
+                'post_type'   => $post_type, // Debugging
+                'debug_terms' => $debug_all_terms, // DEBUG
+                'name'     => get_post_meta($id, '_wpc_public_name', true) ?: get_the_title(),
                 'logo'     => $logo_url,
                 'rating'   => (float) $rating,
                 'category' => $category_names,
@@ -143,8 +187,11 @@ function wpc_get_items() {
                 'hide_plan_features' => $hide_plan_features, 
                 'show_plan_links' => $show_plan_links,
                 'show_coupon' => $show_coupon,
+                // ... prose/cons
                 'pros'     => $pros_raw ? explode( "\n", $pros_raw ) : array(),
                 'cons'     => $cons_raw ? explode( "\n", $cons_raw ) : array(),
+                
+                // ... labels (use global or item specific)
                 'prosLabel' => get_post_meta( $id, '_wpc_txt_pros_label', true ) ?: '',
                 'consLabel' => get_post_meta( $id, '_wpc_txt_cons_label', true ) ?: '',
                 'priceLabel' => get_post_meta( $id, '_wpc_txt_price_label', true ) ?: '',
@@ -158,19 +205,11 @@ function wpc_get_items() {
                 'details_link' => $details_link,
                 'direct_link' => $direct_link,
                 'permalink' => get_permalink($id),
-                'description' => get_the_excerpt(),
-                'primary_categories' => (function() use ($id) {
-                    $p_ids = get_post_meta( $id, '_wpc_primary_cats', true ) ?: [];
-                    $p_names = [];
-                    foreach($p_ids as $pid) {
-                        $term = get_term($pid, 'comparison_category');
-                        if ($term && !is_wp_error($term)) $p_names[] = $term->name;
-                    }
-                    return $p_names;
-                })(),
-
+                'description' => $description,
+                
+                // Badge Logic
                 'badge' => array(
-                    'text' => get_post_meta( $id, '_wpc_badge_text', true ),
+                    'text' => $badge_text,
                     'color' => get_post_meta( $id, '_wpc_badge_color', true )
                 ),
                 'featured_badge_text' => get_post_meta( $id, '_wpc_featured_badge_text', true ),
@@ -190,7 +229,7 @@ function wpc_get_items() {
                     'duration' => get_post_meta($id, '_wpc_duration', true),
                 ),
                 'custom_fields' => get_post_meta($id, '_wpc_custom_fields', true) ?: [],
-                'button_text' => get_post_meta( $id, '_wpc_button_text', true ),
+                'button_text' => $button_text, // Use the variable
                 'hero_subtitle' => get_post_meta( $id, '_wpc_hero_subtitle', true ),
                 'analysis_label' => get_post_meta( $id, '_wpc_analysis_label', true ),
                 'dashboard_image' => get_post_meta( $id, '_wpc_dashboard_image', true ),
@@ -227,9 +266,9 @@ function wpc_get_items() {
         wp_reset_postdata();
     }
 
-    // Get ALL available terms for the filter list
-    $all_cat_terms = get_terms( array( 'taxonomy' => 'comparison_category', 'hide_empty' => false ) );
-    $all_feat_terms = get_terms( array( 'taxonomy' => 'comparison_feature', 'hide_empty' => false ) );
+    // Get ALL available terms for the filter list (Items + Tools)
+    $all_cat_terms = get_terms( array( 'taxonomy' => array('comparison_category', 'tool_category'), 'hide_empty' => false ) );
+    $all_feat_terms = get_terms( array( 'taxonomy' => array('comparison_feature', 'tool_tag'), 'hide_empty' => false ) );
 
     $all_cat_names = ! is_wp_error($all_cat_terms) ? wp_list_pluck($all_cat_terms, 'name') : [];
     $all_feat_names = ! is_wp_error($all_feat_terms) ? wp_list_pluck($all_feat_terms, 'name') : [];

@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, ExternalLink, Star } from "lucide-react";
+import { Star, ExternalLink, ArrowRight, X, Clock, Calendar, Check, Monitor, Shield, Zap } from "lucide-react";
+import StarRating from './StarRating';
 import { ComparisonItem } from "./PlatformCard";
 import { cn } from "@/lib/utils";
 
@@ -25,18 +27,7 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
 
     return (
         <div className="mb-12">
-            {/* Breadcrumbs / Back */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-                <button onClick={onBack} className="hover:text-primary flex items-center gap-1 transition-colors">
-                    Home
-                </button>
-                <span>/</span>
-                <button onClick={onBack} className="hover:text-primary transition-colors">
-                    Reviews
-                </button>
-                <span>/</span>
-                <span className="text-foreground font-medium">{item.name}</span>
-            </div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
@@ -70,11 +61,10 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
 
                     {/* Rating */}
                     <div className="flex items-center gap-2 mb-8 w-fit">
-                        <div className="flex">
-                            {[1, 2, 3, 4, 5].map((s) => (
-                                <Star key={s} className={cn("w-5 h-5", s <= Math.round(item.rating) ? "fill-amber-400 text-amber-400" : "fill-muted text-muted/30")} />
-                            ))}
-                        </div>
+                        {(() => {
+                            const starColor = (window as any).wpcSettings?.colors?.stars || '#fbbf24';
+                            return <StarRating rating={item.rating || 0} color={starColor} size={20} />;
+                        })()}
                         <span className="font-bold text-foreground">{item.rating}/5</span>
                         {item.analysis_label && <span className="text-sm text-muted-foreground">({item.analysis_label})</span>}
                     </div>

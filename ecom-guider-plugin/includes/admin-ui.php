@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -22,9 +22,12 @@ add_action( 'add_meta_boxes', 'wpc_add_meta_boxes' );
  * Enqueue Admin Scripts
  */
 function wpc_admin_ui_scripts() {
-    wp_enqueue_media();
-    wp_enqueue_style( 'wp-color-picker' );
-    wp_enqueue_script( 'wp-color-picker' );
+    global $post_type;
+    if ( 'comparison_item' === $post_type || 'comparison_tool' === $post_type || 'comparison_list' === $post_type ) {
+        wp_enqueue_media();
+        wp_enqueue_style( 'wp-color-picker' );
+        wp_enqueue_script( 'wp-color-picker' );
+    }
 }
 add_action( 'admin_enqueue_scripts', 'wpc_admin_ui_scripts' );
 
@@ -166,6 +169,9 @@ function wpc_render_meta_box( $post ) {
             $ai_configured = ! empty( $ai_profiles );
         }
         
+        // Fetch Admin Layout Preference
+        $admin_layout = get_option( 'wpc_admin_layout_style', 'topbar' );
+        
         // Find default profile name for display
         $default_profile_name = '';
         foreach ( $ai_profiles as $p ) {
@@ -255,12 +261,87 @@ function wpc_render_meta_box( $post ) {
             @keyframes wpc-ai-spin { to { transform: rotate(360deg); } }
             .wpc-ai-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
             .wpc-ai-section-header h3 { margin: 0; }
+
+            /* Admin Layout Styles */
+            .wpc-admin-container { display: block; } /* Default */
+            
+            /* Sidebar Layout Mode */
+            .wpc-admin-container.wpc-layout-sidebar {
+                display: flex;
+                gap: 20px;
+                align-items: flex-start;
+                margin-top: 20px;
+            }
+            .wpc-admin-container.wpc-layout-sidebar .wpc-tab-nav {
+                flex-direction: column;
+                width: 220px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 50px;
+                border-bottom: none;
+                margin: 0;
+                padding: 0;
+            }
+            .wpc-admin-container.wpc-layout-sidebar .wpc-tab-nav li {
+                width: 100%;
+                margin: 0 0 5px 0;
+                border: 1px solid transparent;
+                border-radius: 4px;
+                float: none; /* Override potential float */
+                display: block;
+                box-sizing: border-box;
+            }
+            .wpc-admin-container.wpc-layout-sidebar .wpc-tab-nav li.active {
+                border-color: #e2e8f0;
+                background: #fff;
+                color: #6366f1;
+                border-bottom: 1px solid #e2e8f0; /* Ensure border is uniform */
+            }
+            .wpc-admin-container.wpc-layout-sidebar .wpc-tab-content {
+                flex-grow: 1;
+                width: 100%;
+                min-width: 0; /* Prevent flex overflow */
+                background: #fff;
+                padding: 20px;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }
+            
+            /* Make Topbar scrollable on small screens */
+            .wpc-tab-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2px;
+            }
+            
+            /* Responsiveness */
+            @media (max-width: 960px) {
+                .wpc-admin-container.wpc-layout-sidebar {
+                    flex-direction: column;
+                }
+                .wpc-admin-container.wpc-layout-sidebar .wpc-tab-nav {
+                    width: 100%;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    position: static;
+                    border-bottom: 1px solid #ccc;
+                    margin-bottom: 20px;
+                }
+                .wpc-admin-container.wpc-layout-sidebar .wpc-tab-nav li {
+                    width: auto;
+                    margin-bottom: -1px;
+                }
+            }
         </style>
         
         <!-- AI Nonce -->
         <?php if ( $ai_configured ) : ?>
         <input type="hidden" id="wpc_ai_item_nonce" name="wpc_ai_item_nonce" value="<?php echo wp_create_nonce( 'wpc_ai_nonce' ); ?>" />
         <?php endif; ?>
+        
+        <!-- Admin Layout Wrapper -->
+        <div class="wpc-admin-container wpc-layout-<?php echo esc_attr( $admin_layout ); ?>">
         
         <ul class="wpc-tab-nav">
             <li class="active" onclick="wpcOpenItemTab(event, 'general')">General Info</li>
@@ -269,8 +350,12 @@ function wpc_render_meta_box( $post ) {
             <li onclick="wpcOpenItemTab(event, 'content')">Content & Footer</li>
             <li onclick="wpcOpenItemTab(event, 'pricing')">Pricing Plans</li>
             <li onclick="wpcOpenItemTab(event, 'plan_features')">Plan Features</li>
-            <li onclick="wpcOpenItemTab(event, 'shortcodes')">📋 Shortcodes</li>
+            <li onclick="wpcOpenItemTab(event, 'shortcodes')">Shortcodes</li>
             <li onclick="wpcOpenItemTab(event, 'seo')">SEO Schema</li>
+            <li onclick="wpcOpenItemTab(event, 'use_cases')">Best Use Cases</li>
+            <?php if ( get_option( 'wpc_enable_tools_module', false ) ) : ?>
+            <li onclick="wpcOpenItemTab(event, 'tools_collections')">🔧 Tool Collections</li>
+            <?php endif; ?>
             <li onclick="wpcOpenItemTab(event, 'import')">Data Import</li>
         </ul>
 
@@ -388,6 +473,22 @@ function wpc_render_meta_box( $post ) {
             </div>
 
             <h3 class="wpc-section-title">Basic Information</h3>
+            <div class="wpc-row">
+                <div class="wpc-col">
+                    <label class="wpc-label"><?php _e( 'Public Name (Frontend Display)', 'wp-comparison-builder' ); ?></label>
+                    <input type="text" name="wpc_public_name" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_public_name', true ) ); ?>" class="wpc-input" placeholder="e.g. Hostinger (Displayed to visitors)" />
+                    <p class="description">Required. This name is shown on the website. The top title is for Admin only.</p>
+                </div>
+            </div>
+            
+            <div class="wpc-row">
+                <div class="wpc-col">
+                    <label class="wpc-label"><?php _e( 'Details / Short Description', 'wp-comparison-builder' ); ?></label>
+                    <textarea name="wpc_short_description" id="wpc_short_description" rows="4" class="wpc-input" placeholder="Enter a brief description..."><?php echo esc_textarea( get_post_meta( $post->ID, '_wpc_short_description', true ) ); ?></textarea>
+                    <p class="description">Used for comparison tables and summaries (formerly Excerpt).</p>
+                </div>
+            </div>
+
             <div class="wpc-row">
                 <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Price (e.g. $29.00)', 'wp-comparison-builder' ); ?></label>
@@ -1480,6 +1581,22 @@ function wpc_render_meta_box( $post ) {
                 </div>
             </div>
 
+            <!-- Best Use Cases Shortcode -->
+            <div style="background:#f5f3ff; border:2px solid #8b5cf6; padding:20px; border-radius:8px; margin-bottom:20px;">
+                <div style="display:flex; align-items:start; gap:15px;">
+                    <div style="flex: 1;">
+                        <h3 style="margin-top:0; margin-bottom:8px; color: #7c3aed; font-size:16px;">Best Use Cases</h3>
+                        <p style="margin-bottom: 12px; font-size:13px; color: #6b7280;">Displays the "Best For..." highlights grid.</p>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
+                            <code style="background:#fff; padding:10px 14px; border:1px solid #dde1e5; border-radius:6px; font-size:13px; color:#7c3aed; flex: 1; min-width: 200px;">
+                                [wpc_use_cases id="<?php echo $post->ID; ?>"]
+                            </code>
+                            <button type="button" class="button button-primary" onclick="wpcCopyShortcodeGeneric('[wpc_use_cases id=<?php echo $post->ID; ?>]', this)">📋 Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script>
             function wpcCopyShortcodeGeneric(text, btn) {
                 if (!navigator.clipboard) {
@@ -1528,6 +1645,204 @@ function wpc_render_meta_box( $post ) {
             </div>
         </div>
 
+        <!-- TAB: USE CASES -->
+        <div id="wpc-tab-use_cases" class="wpc-tab-content">
+            <h3 class="wpc-section-title">Best Use Cases Highlights</h3>
+            <p class="description" style="margin-bottom: 20px;">Add highlights for "Best For..." scenarios. These will be displayed in a responsive grid using the <code>[wpc_use_cases]</code> shortcode.</p>
+
+            <div style="background:#f5f3ff; border:1px solid #8b5cf6; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                <div style="flex:1">
+                     <strong style="color:#7c3aed; display:block; margin-bottom:4px;">Shortcode for this Item:</strong>
+                     <div style="display:flex; gap:10px;">
+                         <code style="background:#fff; padding:6px 10px; border:1px solid #ddd; border-radius:4px; color:#7c3aed; flex:1;">[wpc_use_cases id="<?php echo $post->ID; ?>"]</code>
+                         <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_use_cases id=<?php echo $post->ID; ?>]'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                     </div>
+                </div>
+            </div>
+
+            <div id="wpc-use-cases-list">
+                <?php
+                $use_cases = get_post_meta( $post->ID, '_wpc_use_cases', true );
+                if ( ! is_array( $use_cases ) ) $use_cases = [];
+                
+                foreach ( $use_cases as $index => $case ) :
+                    $name = isset( $case['name'] ) ? esc_attr( $case['name'] ) : '';
+                    $desc = isset( $case['desc'] ) ? esc_textarea( $case['desc'] ) : '';
+                    $icon = isset( $case['icon'] ) ? esc_attr( $case['icon'] ) : '';
+                    $image = isset( $case['image'] ) ? esc_url( $case['image'] ) : '';
+                ?>
+                <div class="wpc-use-case-item" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 10px; position: relative;">
+                    <button type="button" class="button-link-delete" style="position: absolute; top: 10px; right: 10px; color: #ef4444; text-decoration: none;" onclick="this.closest('.wpc-use-case-item').remove()">Remove</button>
+                    
+                    <div class="wpc-row" style="margin-bottom: 10px;">
+                        <div class="wpc-col">
+                            <label class="wpc-label">Name / Title</label>
+                            <input type="text" name="wpc_use_cases[<?php echo $index; ?>][name]" value="<?php echo $name; ?>" class="wpc-input" placeholder="e.g. Best for Dropshipping" />
+                        </div>
+                        <div class="wpc-col">
+                            <label class="wpc-label">Icon Class (FontAwesome/Lucide)</label>
+                            <input type="text" name="wpc_use_cases[<?php echo $index; ?>][icon]" value="<?php echo $icon; ?>" class="wpc-input" placeholder="e.g. fa-solid fa-rocket" />
+                        </div>
+                    </div>
+                    
+                    <div class="wpc-row" style="margin-bottom: 10px;">
+                        <div class="wpc-col">
+                             <label class="wpc-label">Description</label>
+                             <textarea name="wpc_use_cases[<?php echo $index; ?>][desc]" class="wpc-input" style="height: 60px;"><?php echo $desc; ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wpc-row" style="margin-bottom: 0;">
+                        <div class="wpc-col">
+                            <label class="wpc-label">Custom Image (Optional)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" name="wpc_use_cases[<?php echo $index; ?>][image]" value="<?php echo $image; ?>" class="wpc-input wpc-uc-image-input" placeholder="https://..." />
+                                <button type="button" class="button wpc-uc-upload-btn">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <button type="button" class="button button-primary" onclick="wpcAddUseCase()">+ Add Use Case</button>
+
+            <script>
+            function wpcAddUseCase() {
+                const list = document.getElementById('wpc-use-cases-list');
+                const index = list.children.length;
+                const item = document.createElement('div');
+                item.className = 'wpc-use-case-item';
+                item.style.cssText = 'background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 10px; position: relative; animation: wpcSlideDown 0.3s ease-out;';
+                item.innerHTML = `
+                    <button type="button" class="button-link-delete" style="position: absolute; top: 10px; right: 10px; color: #ef4444; text-decoration: none;" onclick="this.closest('.wpc-use-case-item').remove()">Remove</button>
+                    
+                    <div class="wpc-row" style="margin-bottom: 10px;">
+                        <div class="wpc-col">
+                            <label class="wpc-label">Name / Title</label>
+                            <input type="text" name="wpc_use_cases[${index}][name]" class="wpc-input" placeholder="e.g. Best for Dropshipping" />
+                        </div>
+                        <div class="wpc-col">
+                            <label class="wpc-label">Icon Class (FontAwesome/Lucide)</label>
+                            <input type="text" name="wpc_use_cases[${index}][icon]" class="wpc-input" placeholder="e.g. fa-solid fa-rocket" />
+                        </div>
+                    </div>
+                    
+                    <div class="wpc-row" style="margin-bottom: 10px;">
+                        <div class="wpc-col">
+                             <label class="wpc-label">Description</label>
+                             <textarea name="wpc_use_cases[${index}][desc]" class="wpc-input" style="height: 60px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wpc-row" style="margin-bottom: 0;">
+                        <div class="wpc-col">
+                            <label class="wpc-label">Custom Image (Optional)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" name="wpc_use_cases[${index}][image]" class="wpc-input wpc-uc-image-input" placeholder="https://..." />
+                                <button type="button" class="button wpc-uc-upload-btn">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+                
+                // Re-bind uploader
+                wpcBindUseCaseUploaders();
+            }
+
+            function wpcBindUseCaseUploaders() {
+                jQuery('.wpc-uc-upload-btn').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    var btn = jQuery(this);
+                    var input = btn.siblings('.wpc-uc-image-input');
+                    
+                    var mediaUploader = wp.media({
+                        title: 'Choose Image',
+                        button: { text: 'Choose Image' },
+                        multiple: false
+                    });
+                    
+                    mediaUploader.on('select', function() {
+                        var attachment = mediaUploader.state().get('selection').first().toJSON();
+                        input.val(attachment.url);
+                    });
+                    
+                    mediaUploader.open();
+                });
+            }
+            
+            jQuery(document).ready(function() {
+                wpcBindUseCaseUploaders();
+            });
+            </script>
+        </div>
+
+        <?php if ( get_option( 'wpc_enable_tools_module', false ) ) : ?>
+        <!-- TAB: TOOL COLLECTIONS -->
+        <div id="wpc-tab-tools_collections" class="wpc-tab-content">
+            <h3 class="wpc-section-title">Recommended Tools</h3>
+            <p class="description">
+                Select tools to associate with this item. Use the shortcode <code>[wpc_tools]</code> to display them on your site.
+            </p>
+            
+            <?php
+            // Get all published tools
+            $tools_query = new WP_Query(array(
+                'post_type' => 'comparison_tool',
+                'posts_per_page' => -1,
+                'post_status' => 'publish',
+                'orderby' => 'title',
+                'order' => 'ASC'
+            ));
+            
+            $selected_tools = get_post_meta( $post->ID, '_wpc_selected_tools', true ) ?: array();
+            ?>
+            
+            <?php if ( $tools_query->have_posts() ) : ?>
+                <div style="background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 20px; margin: 20px 0;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                        <?php while ( $tools_query->have_posts() ) : $tools_query->the_post(); ?>
+                            <?php
+                            $tool_id = get_the_ID();
+                            $checked = in_array( $tool_id, (array) $selected_tools );
+                            $badge = get_post_meta( $tool_id, '_tool_badge', true );
+                            $logo = get_the_post_thumbnail_url( $tool_id, 'thumbnail' );
+                            ?>
+                            <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid <?php echo $checked ? '#6366f1' : '#e5e7eb'; ?>; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: <?php echo $checked ? '#f0f4ff' : '#fff'; ?>;">
+                                <input type="checkbox" name="wpc_selected_tools[]" value="<?php echo $tool_id; ?>" <?php checked( $checked ); ?> style="margin: 0;" />
+                                <?php if ( $logo ) : ?>
+                                <img src="<?php echo esc_url( $logo ); ?>" alt="" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px;" />
+                                <?php endif; ?>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-weight: 600; font-size: 14px; color: #0f172a; margin-bottom: 2px;"><?php the_title(); ?></div>
+                                    <?php if ( $badge ) : ?>
+                                    <div style="font-size: 11px; color: #6366f1;"><?php echo esc_html( $badge ); ?></div>
+                                    <?php endif; ?>
+                                </div>
+                            </label>
+                        <?php endwhile; wp_reset_postdata(); ?>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <strong style="color: #1e40af;">Shortcode:</strong>
+                    <p style="margin: 10px 0 0 0;">
+                        Use <code>[wpc_tools]</code> on this item's page to display selected tools automatically.
+                        <br>Or use <code>[wpc_tools ids="<?php echo implode(',', array_slice((array)$selected_tools, 0, 3)); ?>"]</code> to display specific tools anywhere.
+                    </p>
+                </div>
+            <?php else : ?>
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <strong style="color: #92400e;">No tools found.</strong>
+                    <p style="margin: 10px 0 0 0;">
+                        <a href="<?php echo admin_url('post-new.php?post_type=comparison_tool'); ?>">Create your first tool</a> to get started.
+                    </p>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <!-- TAB: DATA IMPORT -->
         <div id="wpc-tab-import" class="wpc-tab-content">
             <h3 class="wpc-section-title">Import Data from JSON</h3>
@@ -1567,7 +1882,8 @@ function wpc_render_meta_box( $post ) {
 
             function wpcShowExampleJson() {
                 const example = {
-                    "title": "Hostinger Review 2024",
+                    "public_name": "Product Name",
+                    "title": "Product Name Review 2024",
                     "general": {
                         "price": "$29.00",
                         "period": "/mo",
@@ -1622,16 +1938,20 @@ function wpc_render_meta_box( $post ) {
                         "brand": "ProviderName",
                         "sku": "SKU123"
                     },
-                    "categories": ["Hosting", "WordPress"],
-                    "tags": ["Fast", "Cheap"],
-                    "competitors": ["Other Host A", "Other Host B"],
+                    "categories": ["Category A", "Category B"],
+                    "tags": ["Tag 1", "Tag 2"],
+                    "competitors": ["Competitor A", "Competitor B"],
                     // Note: Ensure plans are loaded before importing features for best results
                     "plan_features": [
                         { "name": "Free SSL", "included_in": [0] }
                     ],
                     "custom_fields": [
                         { "name": "Server Location", "value": "USA" }
-                    ]
+                    ],
+                    "use_cases": [
+                        { "name": "Startups", "desc": "Great for early stage...", "icon": "fa-solid fa-rocket", "image": "" }
+                    ],
+                    "recommended_tools": ["Tool Name A", "Tool Name B"]
                 };
                 document.getElementById('wpc-import-json').value = JSON.stringify(example, null, 2);
             }
@@ -1699,11 +2019,11 @@ function wpc_render_meta_box( $post ) {
                          titleEl.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                 }
+                if (data.public_name) {
+                    setVal('wpc_public_name', data.public_name);
+                }
                 if (data.description) {
                     setVal('wpc_short_description', data.description);
-                    // Also try standard WP Excerpt
-                    const excerpt = document.getElementById('excerpt');
-                    if (excerpt) excerpt.value = data.description;
                 }
 
                 // 1. General
@@ -1718,8 +2038,14 @@ function wpc_render_meta_box( $post ) {
 
                 // 2. Content
                 if (data.content) {
-                    if (data.content.pros) document.querySelector('[name="wpc_pros"]').value = data.content.pros;
-                    if (data.content.cons) document.querySelector('[name="wpc_cons"]').value = data.content.cons;
+                    if (data.content.pros) {
+                        const prosVal = Array.isArray(data.content.pros) ? data.content.pros.join('\n') : data.content.pros;
+                        document.querySelector('[name="wpc_pros"]').value = prosVal;
+                    }
+                    if (data.content.cons) {
+                        const consVal = Array.isArray(data.content.cons) ? data.content.cons.join('\n') : data.content.cons;
+                        document.querySelector('[name="wpc_cons"]').value = consVal;
+                    }
                     
                     if (data.content.labels) {
                         setVal('wpc_txt_pros_label', data.content.labels.pros);
@@ -1780,7 +2106,10 @@ function wpc_render_meta_box( $post ) {
                         if (find('input[name*="[banner_text]"]')) find('input[name*="[banner_text]"]').value = plan.banner_text || '';
                         if (find('input[name*="[banner_color]"]')) find('input[name*="[banner_color]"]').value = plan.banner_color || '#10b981';
 
-                        if (find('textarea[name*="[features]"]')) find('textarea[name*="[features]"]').value = plan.features || '';
+                        if (find('textarea[name*="[features]"]')) {
+                            const featVal = Array.isArray(plan.features) ? plan.features.join('\n') : (plan.features || '');
+                            find('textarea[name*="[features]"]').value = featVal;
+                        }
                         if (find('input[name*="[link]"]')) find('input[name*="[link]"]').value = plan.link || '';
                         if (find('input[name*="[button_text]"]')) find('input[name*="[button_text]"]').value = plan.button_text || '';
 
@@ -1874,6 +2203,53 @@ function wpc_render_meta_box( $post ) {
                 }
                 if (data.tags && Array.isArray(data.tags)) {
                     await wpcProcessTerms('comparison_feature', data.tags, 'wpc-feature-list');
+                }
+
+                // 10. Use Cases (Meta)
+                if (data.use_cases && Array.isArray(data.use_cases)) {
+                    // Clear existing (optional, but cleaner)
+                    const list = document.getElementById('wpc-use-cases-list');
+                    if (list) {
+                        list.innerHTML = ''; 
+                        data.use_cases.forEach(uc => {
+                            if (typeof wpcAddUseCase === 'function') {
+                                wpcAddUseCase();
+                                const row = list.lastElementChild;
+                                if (row) {
+                                    const nameIn = row.querySelector('input[name*="[name]"]');
+                                    const iconIn = row.querySelector('input[name*="[icon]"]');
+                                    const descIn = row.querySelector('textarea[name*="[desc]"]');
+                                    const imgIn  = row.querySelector('input[name*="[image]"]');
+                                    
+                                    if (nameIn) nameIn.value = uc.name || '';
+                                    if (iconIn) iconIn.value = uc.icon || '';
+                                    if (descIn) descIn.value = uc.desc || '';
+                                    if (imgIn) imgIn.value = uc.image || '';
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // 11. Recommended Tools (Checkboxes)
+                if (data.recommended_tools && Array.isArray(data.recommended_tools)) {
+                    const toolsContainer = document.getElementById('wpc-tab-tools_collections');
+                    if (toolsContainer) {
+                        const labels = toolsContainer.querySelectorAll('label');
+                        data.recommended_tools.forEach(toolName => {
+                             labels.forEach(lbl => {
+                                 // Check if label text contains tool name (basic matching)
+                                 if (lbl.innerText.trim().toLowerCase().includes(toolName.trim().toLowerCase())) {
+                                     const cb = lbl.querySelector('input[type="checkbox"]');
+                                     if (cb) {
+                                         cb.checked = true;
+                                         // Trigger change for visual feedback if any
+                                         cb.dispatchEvent(new Event('change'));
+                                     }
+                                 }
+                             });
+                        });
+                    }
                 }
 
                 wpcShowToast('Import Complete! Please save the post.');
@@ -2162,6 +2538,7 @@ function wpc_render_meta_box( $post ) {
             all: `Generate comprehensive comparison data for "{name}".
 Return a JSON object with this EXACT structure (for importing into a comparison tool):
 {
+  "public_name": "{name}",
   "title": "{name} Review",
   "description": "2-3 sentence marketing description of {name} including key selling points.",
   "general": {
@@ -2173,8 +2550,8 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     "button_text": "Visit Website"
   },
   "content": {
-    "pros": "Pro 1\\nPro 2\\nPro 3\\nPro 4\\nPro 5",
-    "cons": "Con 1\\nCon 2\\nCon 3",
+    "pros": ["Pro 1", "Pro 2", "Pro 3", "Pro 4", "Pro 5"],
+    "cons": ["Con 1", "Con 2", "Con 3"],
      "labels": {
       "pros": "Pros",
       "cons": "Cons",
@@ -2189,7 +2566,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "name": "Basic", 
       "price": "$9", 
       "period": "/mo", 
-      "features": "Feature 1\\nFeature 2\\nFeature 3", 
+      "features": ["Feature 1", "Feature 2", "Feature 3"], 
       "button_text": "Get Started", 
       "show_table": true, 
       "show_popup": true
@@ -2198,7 +2575,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "name": "Pro", 
       "price": "$29", 
       "period": "/mo", 
-      "features": "All Basic features\\nPro Feature 1\\nPro Feature 2", 
+      "features": ["All Basic features", "Pro Feature 1", "Pro Feature 2"], 
       "button_text": "Choose Pro", 
       "is_popular": true, 
       "show_table": true, 
@@ -2220,7 +2597,14 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
   "seo": {
       "schema_type": "SoftwareApplication",
       "brand": "{name}"
-  }
+  },
+  "plan_features": [
+      { "name": "Feature Name", "included_in": [0, 1] }
+  ],
+  "use_cases": [
+      { "name": "Startups", "desc": "Great for early stage...", "icon": "fa-solid fa-rocket", "image": "" }
+  ],
+  "recommended_tools": ["Tool Name A", "Tool Name B"]
 }
 Be accurate and specific to the actual product/service. Use proper JSON quoting.`,
 
@@ -2228,7 +2612,7 @@ Be accurate and specific to the actual product/service. Use proper JSON quoting.
             
             pros_cons: `Generate 5 pros and 3 cons for "{name}". Return JSON: {"pros": ["..."], "cons": ["..."]}`,
             
-            pricing: `Generate 3 realistic pricing plans for "{name}". Return JSON: {"pricing_plans": [{"name": "...", "price": "$X", "period": "/mo", "features": "Feature 1\\nFeature 2", "button_text": "..."}]}`,
+            pricing: `Generate 3 realistic pricing plans for "{name}". Return JSON: {"pricing_plans": [{"name": "...", "price": "$X", "period": "/mo", "features": ["Feature 1", "Feature 2"], "button_text": "..."}]}`,
             
             categories: `Suggest 2-3 relevant categories and 3-5 tags for "{name}". Return JSON: {"suggested_categories": ["..."], "suggested_tags": ["..."]}`
         };
@@ -2541,6 +2925,7 @@ Be accurate and specific to the actual product/service. Use proper JSON quoting.
             );
         }
     </script>
+    </div> <!-- .wpc-admin-container -->
     <?php
 }
 
@@ -2575,6 +2960,32 @@ function wpc_save_meta_box( $post_id ) {
 
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
         return;
+    }
+
+    // Permissions Check
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    // Save Public Name
+    if ( isset( $_POST['wpc_public_name'] ) ) {
+        update_post_meta( $post_id, '_wpc_public_name', sanitize_text_field( $_POST['wpc_public_name'] ) );
+    }
+
+    // Save Short Description (Details)
+    if ( isset( $_POST['wpc_short_description'] ) ) {
+        $desc = sanitize_textarea_field( $_POST['wpc_short_description'] );
+        update_post_meta( $post_id, '_wpc_short_description', $desc );
+        
+        // Sync to actual post_excerpt (Commented out for debugging save issue)
+        /*
+        remove_action( 'save_post', 'wpc_save_meta_box' );
+        wp_update_post( array(
+            'ID' => $post_id,
+            'post_excerpt' => $desc
+        ) );
+        add_action( 'save_post', 'wpc_save_meta_box' );
+        */
     }
 
     // Save Schema & Product Data
@@ -2683,6 +3094,12 @@ function wpc_save_meta_box( $post_id ) {
     if ( isset( $_POST['wpc_dashboard_image'] ) ) {
         update_post_meta( $post_id, '_wpc_dashboard_image', esc_url_raw( $_POST['wpc_dashboard_image'] ) );
     }
+    if ( isset( $_POST['wpc_hero_subtitle'] ) ) {
+        update_post_meta( $post_id, '_wpc_hero_subtitle', sanitize_text_field( $_POST['wpc_hero_subtitle'] ) );
+    }
+    if ( isset( $_POST['wpc_analysis_label'] ) ) {
+        update_post_meta( $post_id, '_wpc_analysis_label', sanitize_text_field( $_POST['wpc_analysis_label'] ) );
+    }
     if ( isset( $_POST['wpc_show_coupon'] ) ) {
         update_post_meta( $post_id, '_wpc_show_coupon', '1' );
     } else {
@@ -2721,6 +3138,34 @@ function wpc_save_meta_box( $post_id ) {
         update_post_meta( $post_id, '_wpc_pricing_plans', $plans );
     } else {
         delete_post_meta( $post_id, '_wpc_pricing_plans' );
+    }
+
+    // Save Best Use Cases
+    if ( isset( $_POST['wpc_use_cases'] ) && is_array( $_POST['wpc_use_cases'] ) ) {
+        $use_cases = array();
+        foreach ( $_POST['wpc_use_cases'] as $uc ) {
+            if ( ! empty( $uc['name'] ) ) {
+                $use_cases[] = array(
+                    'name'  => sanitize_text_field( $uc['name'] ),
+                    'desc'  => sanitize_textarea_field( $uc['desc'] ),
+                    'icon'  => sanitize_text_field( $uc['icon'] ),
+                    'image' => esc_url_raw( $uc['image'] ),
+                );
+            }
+        }
+        update_post_meta( $post_id, '_wpc_use_cases', $use_cases );
+    } else {
+        delete_post_meta( $post_id, '_wpc_use_cases' );
+    }
+
+    // Save Selected Tools (Recommended Tools Module)
+    if ( get_option( 'wpc_enable_tools_module', false ) ) {
+        if ( isset( $_POST['wpc_selected_tools'] ) && is_array( $_POST['wpc_selected_tools'] ) ) {
+            $selected_tools = array_map( 'intval', $_POST['wpc_selected_tools'] );
+            update_post_meta( $post_id, '_wpc_selected_tools', $selected_tools );
+        } else {
+            delete_post_meta( $post_id, '_wpc_selected_tools' );
+        }
     }
 
     // Save Visibility Flags

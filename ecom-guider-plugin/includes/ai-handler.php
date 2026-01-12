@@ -607,6 +607,37 @@ class WPC_AI_Handler {
         }
         return '';
     }
+    
+    /**
+     * Generate Tool Data (for Recommended Tools)
+     */
+    public function generate_tool_data( $tool_name ) {
+        $prompt = "Generate data for a recommended tool/app named '{$tool_name}'. 
+
+Return ONLY valid JSON (no explanations) with this structure:
+{
+  \"title\": \"Tool Name\",
+  \"description\": \"One sentence description (max 120 characters)\",
+  \"badge\": \"Category badge (e.g. 'Best Marketing', 'Top Design Tool')\",
+  \"link\": \"https://example.com (official website)\"
+}
+
+Be concise and accurate.";
+
+        $result = self::generate( $prompt );
+        
+        if ( is_wp_error( $result ) ) {
+            return $result;
+        }
+        
+        // Parse JSON
+        $parsed = json_decode( $result, true );
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            return new WP_Error( 'parse_error', 'Failed to parse AI response: ' . json_last_error_msg() );
+        }
+        
+        return $parsed;
+    }
 }
 
 // AJAX Handlers

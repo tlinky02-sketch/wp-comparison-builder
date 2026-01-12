@@ -31,7 +31,7 @@ function wpc_register_cpt() {
         'capability_type'    => 'post',
         'has_archive'        => false,
         'hierarchical'       => false,
-        'supports'           => array( 'title', 'thumbnail', 'excerpt' ), 
+        'supports'           => array( 'title', 'thumbnail' ), 
         'show_in_rest'       => true, 
     ));
 

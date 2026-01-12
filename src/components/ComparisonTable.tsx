@@ -117,7 +117,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         <table className="w-full relative table-fixed">
           <thead>
             <tr className="border-b border-border bg-muted/40 backdrop-blur">
-              <th className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-base sticky left-0 bg-background/95 backdrop-blur z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] w-[20%]">
+              <th className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-base sticky left-0 bg-background/95 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] w-[20%]">
                 {getText('featureHeader', "Feature")}
               </th>
               {items.map((item) => {

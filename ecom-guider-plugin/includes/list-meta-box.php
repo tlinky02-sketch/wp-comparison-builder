@@ -73,13 +73,30 @@ function wpc_render_list_meta_box( $post ) {
     $initial_visible_count = get_post_meta( $post->ID, '_wpc_list_initial_visible', true );
     if (empty($initial_visible_count)) $initial_visible_count = '8'; // Default to 8
 
+    // List Source Type
+    $source_type = get_post_meta( $post->ID, '_wpc_list_source_type', true ) ?: 'item';
+
     // Get Terms for filters configuration
     $all_cats = get_terms( array( 'taxonomy' => 'comparison_category', 'hide_empty' => false ) );
     $all_feats = get_terms( array( 'taxonomy' => 'comparison_feature', 'hide_empty' => false ) );
 
-    // Get all comparison items
+    // Get Tool Terms (New)
+    $all_tool_cats = get_terms( array( 'taxonomy' => 'tool_category', 'hide_empty' => false ) );
+    $all_tool_tags = get_terms( array( 'taxonomy' => 'tool_tag', 'hide_empty' => false ) );
+    
+    // Get filter values
+    $filter_tool_cats = get_post_meta( $post->ID, '_wpc_list_filter_tool_cats', true ) ?: [];
+    $filter_tool_tags = get_post_meta( $post->ID, '_wpc_list_filter_tool_tags', true ) ?: [];
+
+    // Determine Post Types
+    $query_post_types = array();
+    if ( $source_type === 'item' || $source_type === 'both' ) $query_post_types[] = 'comparison_item';
+    if ( $source_type === 'tool' || $source_type === 'both' ) $query_post_types[] = 'comparison_tool';
+    if ( empty( $query_post_types ) ) $query_post_types = array( 'comparison_item' );
+
+    // Get all comparison items/tools
     $all_items = get_posts( array(
-        'post_type' => 'comparison_item',
+        'post_type' => $query_post_types,
         'posts_per_page' => -1,
         'post_status' => 'publish',
         'orderby' => 'title',
@@ -171,12 +188,27 @@ function wpc_render_list_meta_box( $post ) {
 
         <!-- TAB 1: GENERAL -->
         <div id="wpc-tab-general" class="wpc-tab-content active">
+            
+            <!-- Source Selection -->
+            <div style="margin-bottom: 20px; padding: 15px; background: #f0f6fc; border: 1px solid #cce5ff; border-radius: 4px;">
+                <label class="wpc-label" style="font-weight: bold; margin-bottom: 5px; display: block;">List Source Type</label>
+                <select name="wpc_list_source_type" id="wpc_list_source_type" class="wpc-input" style="max-width: 300px;">
+                    <option value="item" <?php selected( $source_type, 'item' ); ?>>Comparison Items Only</option>
+                    <option value="tool" <?php selected( $source_type, 'tool' ); ?>>Recommended Tools Only</option>
+                    <option value="both" <?php selected( $source_type, 'both' ); ?>>Both Items & Tools</option>
+                </select>
+                <p class="description">Select what type of content to include in this list. Click "Update" to refresh the list below.</p>
+            </div>
+
             <p class="description">
                 <?php _e( 'Select items to include. <strong>Drag and drop rows to reorder them (selected items first).</strong>', 'wp-comparison-builder' ); ?>
             </p>
             
-            <div style="background: #fff; border: 1px solid #c3c4c7;">
-                <table class="widefat fixed striped">
+            <!-- Search Box -->
+            <input type="text" id="wpc-list-search" placeholder="Search items..." style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;" />
+
+            <div style="background: #fff; border: 1px solid #c3c4c7; max-height: 500px; overflow-y: auto;">
+                <table class="widefat fixed striped" id="wpc-items-table">
                     <thead>
                         <tr>
                             <th style="width: 30px;"><span class="dashicons dashicons-menu" title="Drag to reorder"></span></th>
@@ -230,24 +262,80 @@ function wpc_render_list_meta_box( $post ) {
             <!-- Custom Filters (Moved to General) -->
             <div class="wpc-field-group wpc-custom-filters-group">
                 <label class="wpc-field-label">Custom Filter Terms (Optional)</label>
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
-                        <strong>Categories</strong>
-                        <?php if ( ! empty( $all_cats ) && ! is_wp_error( $all_cats ) ) : ?>
-                            <?php foreach ( $all_cats as $cat ) : ?>
-                                <label style="display:block;"><input type="checkbox" name="wpc_list_filter_cats[]" value="<?php echo esc_attr( $cat->term_id ); ?>" <?php checked( in_array( $cat->term_id, $filter_cats ) ); ?> /> <?php echo esc_html( $cat->name ); ?></label>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                    <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
-                        <strong>Features</strong>
-                        <?php if ( ! empty( $all_feats ) && ! is_wp_error( $all_feats ) ) : ?>
-                            <?php foreach ( $all_feats as $feat ) : ?>
-                                <label style="display:block;"><input type="checkbox" name="wpc_list_filter_feats[]" value="<?php echo esc_attr( $feat->term_id ); ?>" <?php checked( in_array( $feat->term_id, $filter_feats ) ); ?> /> <?php echo esc_html( $feat->name ); ?></label>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                <p class="description" style="margin-bottom: 10px;">Select terms to show as filter buttons above the list.</p>
+                
+                <!-- ITEM Filters -->
+                <div id="wpc-item-filters" style="display: <?php echo ($source_type === 'item' || $source_type === 'both') ? 'block' : 'none'; ?>;">
+                    <h4 style="margin: 5px 0; color: #666;">Comparison Item Filters</h4>
+                    <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+                        <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
+                            <strong>Item Categories</strong>
+                            <?php if ( ! empty( $all_cats ) && ! is_wp_error( $all_cats ) ) : ?>
+                                <?php foreach ( $all_cats as $cat ) : ?>
+                                    <label style="display:block;"><input type="checkbox" name="wpc_list_filter_cats[]" value="<?php echo esc_attr( $cat->term_id ); ?>" <?php checked( in_array( $cat->term_id, $filter_cats ) ); ?> /> <?php echo esc_html( $cat->name ); ?></label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
+                            <strong>Item Features (Tags)</strong>
+                            <?php if ( ! empty( $all_feats ) && ! is_wp_error( $all_feats ) ) : ?>
+                                <?php foreach ( $all_feats as $feat ) : ?>
+                                    <label style="display:block;"><input type="checkbox" name="wpc_list_filter_feats[]" value="<?php echo esc_attr( $feat->term_id ); ?>" <?php checked( in_array( $feat->term_id, $filter_feats ) ); ?> /> <?php echo esc_html( $feat->name ); ?></label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
+
+                <!-- TOOL Filters -->
+                <div id="wpc-tool-filters" style="display: <?php echo ($source_type === 'tool' || $source_type === 'both') ? 'block' : 'none'; ?>;">
+                    <h4 style="margin: 5px 0; color: #666;">Tool Filters</h4>
+                     <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
+                            <strong>Tool Categories</strong>
+                            <?php if ( ! empty( $all_tool_cats ) && ! is_wp_error( $all_tool_cats ) ) : ?>
+                                <?php foreach ( $all_tool_cats as $cat ) : ?>
+                                    <label style="display:block;"><input type="checkbox" name="wpc_list_filter_tool_cats[]" value="<?php echo esc_attr( $cat->term_id ); ?>" <?php checked( in_array( $cat->term_id, $filter_tool_cats ) ); ?> /> <?php echo esc_html( $cat->name ); ?></label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
+                            <strong>Tool Tags</strong>
+                            <?php if ( ! empty( $all_tool_tags ) && ! is_wp_error( $all_tool_tags ) ) : ?>
+                                <?php foreach ( $all_tool_tags as $tag ) : ?>
+                                    <label style="display:block;"><input type="checkbox" name="wpc_list_filter_tool_tags[]" value="<?php echo esc_attr( $tag->term_id ); ?>" <?php checked( in_array( $tag->term_id, $filter_tool_tags ) ); ?> /> <?php echo esc_html( $tag->name ); ?></label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                jQuery(document).ready(function($) {
+                    // Search Filter for Items Table
+                    $('#wpc-list-search').on('keyup', function() {
+                        var value = $(this).val().toLowerCase();
+                        $('#wpc-items-table tbody tr').filter(function() {
+                            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                        });
+                    });
+
+                    // Toggling Filter Sections based on Source Type
+                    $('#wpc_list_source_type').on('change', function() {
+                        var type = $(this).val();
+                        if (type === 'item') {
+                            $('#wpc-item-filters').show();
+                            $('#wpc-tool-filters').hide();
+                        } else if (type === 'tool') {
+                            $('#wpc-item-filters').hide();
+                            $('#wpc-tool-filters').show();
+                        } else {
+                            $('#wpc-item-filters').show();
+                            $('#wpc-tool-filters').show();
+                        }
+                    });
+                });
+                </script>
                 <div style="margin-top:10px; display:flex; gap:10px;">
                      <input type="text" name="wpc_list_cat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_cat_label', true) ); ?>" placeholder="Label: Categories" />
                      <input type="text" name="wpc_list_feat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_feat_label', true) ); ?>" placeholder="Label: Features" />
@@ -1180,6 +1268,46 @@ function wpc_save_list_meta( $post_id ) {
         update_post_meta( $post_id, '_wpc_list_button_text', sanitize_text_field( $_POST['wpc_list_button_text'] ) );
     } else {
         delete_post_meta( $post_id, '_wpc_list_button_text' );
+    }
+
+    // Save List Source Type
+    if ( isset( $_POST['wpc_list_source_type'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_source_type', sanitize_text_field( $_POST['wpc_list_source_type'] ) );
+    }
+
+    // Save Tool Filters
+    if ( isset( $_POST['wpc_list_filter_tool_cats'] ) ) {
+        $tool_cats = array_map( 'intval', $_POST['wpc_list_filter_tool_cats'] );
+        update_post_meta( $post_id, '_wpc_list_filter_tool_cats', $tool_cats );
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_filter_tool_cats' );
+    }
+
+    if ( isset( $_POST['wpc_list_filter_tool_tags'] ) ) {
+        $tool_tags = array_map( 'intval', $_POST['wpc_list_filter_tool_tags'] );
+        update_post_meta( $post_id, '_wpc_list_filter_tool_tags', $tool_tags );
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_filter_tool_tags' );
+    }
+
+    // Save List Source Type
+    if ( isset( $_POST['wpc_list_source_type'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_source_type', sanitize_text_field( $_POST['wpc_list_source_type'] ) );
+    }
+
+    // Save Tool Filters
+    if ( isset( $_POST['wpc_list_filter_tool_cats'] ) ) {
+        $tool_cats = array_map( 'intval', $_POST['wpc_list_filter_tool_cats'] );
+        update_post_meta( $post_id, '_wpc_list_filter_tool_cats', $tool_cats );
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_filter_tool_cats' );
+    }
+
+    if ( isset( $_POST['wpc_list_filter_tool_tags'] ) ) {
+        $tool_tags = array_map( 'intval', $_POST['wpc_list_filter_tool_tags'] );
+        update_post_meta( $post_id, '_wpc_list_filter_tool_tags', $tool_tags );
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_filter_tool_tags' );
     }
 
     // Save Filter Cats

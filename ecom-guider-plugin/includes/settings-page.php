@@ -40,6 +40,12 @@ function wpc_register_settings() {
     
     // Search Type Setting (Global)
     register_setting( 'wpc_settings_group', 'wpc_search_type' );
+    
+    // Admin Layout Setting
+    register_setting( 'wpc_settings_group', 'wpc_admin_layout_style' );
+    
+    // Module Toggles
+    register_setting( 'wpc_modules_settings', 'wpc_enable_tools_module' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );
@@ -597,6 +603,7 @@ function wpc_reset_settings() {
         'wpc_target_direct' => '_blank',
         'wpc_target_pricing' => '_blank',
         'wpc_default_list_style' => 'grid',
+        'wpc_star_rating_color' => '#fbbf24',
     );
 
     foreach ( $defaults as $key => $value ) {
@@ -856,6 +863,35 @@ function wpc_render_settings_page() {
             /* Loading Spinner */
             .wpc-spinner-icon { width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top-color: currentColor; border-radius: 50%; animation: wpcSpin 0.6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
             @keyframes wpcSpin { to { transform: rotate(360deg); } }
+
+            /* Responsive Tabs */
+            @media screen and (max-width: 782px) {
+                .wpc-tabs-nav {
+                    display: flex;
+                    flex-direction: column;
+                    border-bottom: 0 !important;
+                }
+                .wpc-tabs-nav .nav-tab {
+                    width: 100%;
+                    margin-bottom: 0;
+                    margin-left: 0;
+                    border-radius: 0;
+                    border: 1px solid #ccc;
+                    border-bottom: 0;
+                    background: #f1f1f1;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .wpc-tabs-nav .nav-tab:last-child {
+                    border-bottom: 1px solid #ccc;
+                }
+                .wpc-tabs-nav .nav-tab-active {
+                    border-bottom: 1px solid #ccc !important;
+                    background: #fff;
+                    font-weight: bold;
+                    color: #000;
+                }
+            }
         </style>
         
         <div id="wpc-premium-modal" class="wpc-modal-overlay">
@@ -970,6 +1006,9 @@ function wpc_render_settings_page() {
             <a href="#" class="nav-tab" data-tab="links">
                 <?php _e( 'Link Behavior', 'wp-comparison-builder' ); ?>
             </a>
+            <a href="#" class="nav-tab" data-tab="modules">
+                🔧 <?php _e( 'Modules', 'wp-comparison-builder' ); ?>
+            </a>
             <a href="#" class="nav-tab" data-tab="ai-settings" style="color: #7c3aed;">
                 &#x1F916; <?php _e( 'AI Settings', 'wp-comparison-builder' ); ?>
             </a>
@@ -1006,6 +1045,10 @@ function wpc_render_settings_page() {
         
         <div class="wpc-tab-content" id="wpc-tab-schema-seo" style="display: none;">
             <?php wpc_render_schema_seo_tab(); ?>
+        </div>
+        
+        <div class="wpc-tab-content" id="wpc-tab-modules" style="display: none;">
+            <?php wpc_render_modules_tab(); ?>
         </div>
         
         <div class="wpc-tab-content" id="wpc-tab-ai-settings" style="display: none;">
@@ -1204,6 +1247,20 @@ function wpc_render_general_tab() {
             </tr>
             <tr valign="top">
                 <th scope="row">
+                    <label for="wpc_admin_layout_style"><?php _e( 'Admin Interface Layout', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <select name="wpc_admin_layout_style" id="wpc_admin_layout_style">
+                        <option value="topbar" <?php selected( get_option('wpc_admin_layout_style', 'topbar'), 'topbar' ); ?>><?php _e('Horizontal Tabs (Topbar)', 'wp-comparison-builder'); ?></option>
+                        <option value="sidebar" <?php selected( get_option('wpc_admin_layout_style'), 'sidebar' ); ?>><?php _e('Vertical Tabs (Sidebar)', 'wp-comparison-builder'); ?></option>
+                    </select>
+                    <p class="description">
+                        <?php _e( 'Choose the layout for the item editor tabs. Vertical Layout places tabs on the left side.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">
                     <label for="wpc_default_list_style"><?php _e( 'Default List Style', 'wp-comparison-builder' ); ?></label>
                 </th>
                 <td>
@@ -1281,6 +1338,25 @@ function wpc_render_general_tab() {
                 </td>
             </tr>
             
+            <!-- Star Rating Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_star_rating_color"><?php _e( 'Star Rating Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <input 
+                        type="color" 
+                        id="wpc_star_rating_color" 
+                        name="wpc_star_rating_color" 
+                        value="<?php echo esc_attr( get_option( 'wpc_star_rating_color', '#fbbf24' ) ); ?>"
+                        style="width: 100px; height: 40px; cursor: pointer;"
+                    />
+                    <p class="description">
+                        Choose the fill color for star ratings. Default: <code>#fbbf24</code> (amber)
+                    </p>
+                </td>
+            </tr>
+
             <!-- Card Border Color -->
             <tr valign="top">
                 <th scope="row">
