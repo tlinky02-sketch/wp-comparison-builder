@@ -168,6 +168,18 @@ function wpc_get_items() {
                 $description = get_post_meta( $id, '_wpc_short_description', true ) ?: get_the_excerpt();
             }
 
+            // Primary Categories (Convert IDs to Names)
+            $primary_cat_ids = get_post_meta( $id, '_wpc_primary_cats', true );
+            $primary_category_names = array();
+            if ( ! empty( $primary_cat_ids ) && is_array( $primary_cat_ids ) ) {
+                foreach ( $primary_cat_ids as $p_id ) {
+                    $term = get_term( $p_id );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $primary_category_names[] = $term->name;
+                    }
+                }
+            }
+
             // Pros/Cons (Tools don't use these typically, but we can support if added later)
             $pros_raw = get_post_meta( $id, '_wpc_pros', true );
             $cons_raw = get_post_meta( $id, '_wpc_cons', true );
@@ -180,6 +192,7 @@ function wpc_get_items() {
                 'logo'     => $logo_url,
                 'rating'   => (float) $rating,
                 'category' => $category_names,
+                'primary_categories' => $primary_category_names,
                 'price'    => $price,
                 'period'   => $period,
                 'features' => $feature_map,
