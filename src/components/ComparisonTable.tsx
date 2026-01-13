@@ -160,26 +160,29 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                             <Tag className="w-3 h-3" /> {item.couponLabel || getText('getCoupon', 'Code')}: {item.coupon_code}
                           </button>
                         )}
-                        <a
-                          href={item.details_link || '#'}
-                          target={target}
-                          className="inline-flex items-center justify-center w-full text-white px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
-                          rel="noreferrer"
-                          style={{
-                            backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
-                          }}
-                          onMouseEnter={(e) => {
-                            const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
-                            if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                            else e.currentTarget.style.filter = 'brightness(90%)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
-                            e.currentTarget.style.filter = '';
-                          }}
-                        >
-                          {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" />
-                        </a>
+                        {/* Footer / Button Visibility Check */}
+                        {(item.design_overrides?.show_footer_table !== false) && (
+                          <a
+                            href={item.details_link || '#'}
+                            target={target}
+                            className="inline-flex items-center justify-center w-full text-white px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
+                            rel="noreferrer"
+                            style={{
+                              backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+                            }}
+                            onMouseEnter={(e) => {
+                              const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
+                              if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                              else e.currentTarget.style.filter = 'brightness(90%)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
+                              e.currentTarget.style.filter = '';
+                            }}
+                          >
+                            {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" />
+                          </a>
+                        )}
                         {!config?.hideRemoveButton && (
                           <button
                             onClick={() => onRemove(item.id)}
@@ -368,26 +371,28 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
               {items.map((item) => (
                 <div key={item.id} className="p-2 text-center border-r border-border last:border-r-0">
-                  <a
-                    href={item.details_link || '#'}
-                    target="_blank"
-                    className="flex w-full items-center justify-center gap-1 text-white transition-all py-1.5 rounded-md font-bold text-[10px] shadow-sm"
-                    rel="noreferrer"
-                    style={{
-                      backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
-                    }}
-                    onMouseEnter={(e) => {
-                      const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
-                      if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                      else e.currentTarget.style.filter = 'brightness(90%)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
-                      e.currentTarget.style.filter = '';
-                    }}
-                  >
-                    {item.button_text || getText('visitSite', "Visit")} <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {(item.design_overrides?.show_footer_table !== false) && (
+                    <a
+                      href={item.details_link || '#'}
+                      target="_blank"
+                      className="flex w-full items-center justify-center gap-1 text-white transition-all py-1.5 rounded-md font-bold text-[10px] shadow-sm"
+                      rel="noreferrer"
+                      style={{
+                        backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+                      }}
+                      onMouseEnter={(e) => {
+                        const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
+                        if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                        else e.currentTarget.style.filter = 'brightness(90%)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
+                        e.currentTarget.style.filter = '';
+                      }}
+                    >
+                      {item.button_text || getText('visitSite', "Visit")} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>

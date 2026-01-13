@@ -218,19 +218,29 @@ function wpc_render_meta_box( $post ) {
                 </div>
                 <?php if ( $ai_configured ) : ?>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="wpc-ai-product-name" value="<?php echo esc_attr( $post->post_title ); ?>" placeholder="Enter product/service name" style="padding: 8px 12px; border-radius: 6px; border: none; min-width: 200px; color: #1e293b;" />
-                    <select id="wpc-ai-item-profile" style="height: 34px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white;">
-                        <option value="" style="color:#000;"><?php _e( 'Default Profile', 'wp-comparison-builder' ); ?></option>
-                        <?php
-                        $profiles = WPC_AI_Handler::get_profiles();
-                        foreach ( $profiles as $prof ) :
-                        ?>
-                        <option value="<?php echo esc_attr( $prof['id'] ); ?>" style="color:#000;">
-                            <?php echo esc_html( $prof['name'] ); ?> (<?php echo ucfirst( $prof['provider'] ); ?>)
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <button type="button" id="wpc-ai-generate-all" class="button" style="background: white; color: #6366f1; border: none; font-weight: 600; padding: 8px 16px;">
+                    <input type="text" id="wpc-ai-product-name" value="<?php echo esc_attr( $post->post_title ); ?>" placeholder="Enter the full product/service name (e.g. HostGator)" style="height: 36px; padding: 0 12px; border-radius: 6px; border: none; min-width: 250px; color: #1e293b; line-height: 20px;" />
+                    
+                    <div style="position: relative;">
+                        <span class="dashicons dashicons-arrow-down-alt2" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; color: white; opacity: 0.8; font-size: 14px;"></span>
+                        <select id="wpc-ai-item-profile" style="height: 36px; padding: 0 28px 0 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; appearance: none; -webkit-appearance: none; cursor: pointer; min-width: 150px;">
+                            <option value="" style="color:#000;"><?php _e( 'Select Profile', 'wp-comparison-builder' ); ?></option>
+                            <?php
+                            $profiles = WPC_AI_Handler::get_profiles();
+                            foreach ( $profiles as $prof ) :
+                            ?>
+                            <option value="<?php echo esc_attr( $prof['id'] ); ?>" style="color:#000;">
+                                <?php echo esc_html( $prof['name'] ); ?> (<?php echo ucfirst( $prof['provider'] ); ?>)
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <label style="height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); font-size: 12px; display: flex; align-items: center; gap: 6px; color: white; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="wpc-ai-gen-taxonomies" checked style="margin: 0;" />
+                        Generate Tags and Categories
+                    </label>
+
+                    <button type="button" id="wpc-ai-generate-all" class="button" style="height: 36px; background: white; color: #6366f1; border: none; font-weight: 600; padding: 0 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 5px;">
                         &#x2728; Generate All
                     </button>
                 </div>
@@ -257,8 +267,22 @@ function wpc_render_meta_box( $post ) {
             .wpc-ai-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
             .wpc-ai-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
             .wpc-ai-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-            .wpc-ai-btn .spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: wpc-ai-spin 0.6s linear infinite; }
-            @keyframes wpc-ai-spin { to { transform: rotate(360deg); } }
+            
+            .wpc-spinner { 
+                width: 14px; 
+                height: 14px; 
+                border: 2px solid rgba(99,102,241,0.3); 
+                border-top-color: #6366f1; 
+                border-radius: 50%; 
+                animation: wpc-ai-spin 0.8s linear infinite; 
+                display: inline-block; 
+                vertical-align: middle;
+            }
+            @keyframes wpc-ai-spin { 
+                0% { transform: rotate(0deg); } 
+                100% { transform: rotate(360deg); } 
+            }
+            
             .wpc-ai-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
             .wpc-ai-section-header h3 { margin: 0; }
 
@@ -296,6 +320,8 @@ function wpc_render_meta_box( $post ) {
                 background: #fff;
                 color: #6366f1;
                 border-bottom: 1px solid #e2e8f0; /* Ensure border is uniform */
+                border-right: 0;
+                border-radius: 0;
             }
             .wpc-admin-container.wpc-layout-sidebar .wpc-tab-content {
                 flex-grow: 1;
@@ -530,7 +556,10 @@ function wpc_render_meta_box( $post ) {
             <div class="wpc-row">
                 <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Logo (External URL)', 'wp-comparison-builder' ); ?></label>
-                    <input type="url" name="wpc_external_logo_url" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_external_logo_url', true ) ); ?>" class="wpc-input" placeholder="https://example.com/logo.png" />
+                    <div style="display: flex; gap: 10px;">
+                        <input type="url" id="wpc_external_logo_url" name="wpc_external_logo_url" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_external_logo_url', true ) ); ?>" class="wpc-input" placeholder="https://example.com/logo.png" />
+                        <button type="button" class="button" id="wpc_upload_logo_url"><?php _e( 'Upload', 'wp-comparison-builder' ); ?></button>
+                    </div>
                     <p class="description"><?php _e( 'Or use the standard "Featured Image" box on the right.', 'wp-comparison-builder' ); ?></p>
                 </div>
                 <div class="wpc-col">
@@ -539,7 +568,7 @@ function wpc_render_meta_box( $post ) {
                         <input type="text" id="wpc_dashboard_image" name="wpc_dashboard_image" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_dashboard_image', true ) ); ?>" class="wpc-input" placeholder="https://..." />
                         <button type="button" class="button" id="wpc_upload_dashboard_image"><?php _e( 'Upload', 'wp-comparison-builder' ); ?></button>
                     </div>
-                    <p class="description">Used in hero sections and detailed views.</p>
+                    <p class="description">Used in hero sections. <strong>Note:</strong> If a "Featured Image" is set on the right, it will override this field.</p>
                 </div>
             </div>
 
@@ -559,9 +588,9 @@ function wpc_render_meta_box( $post ) {
             <script>
             jQuery(document).ready(function($){
                 // Media Uploader
-                var mediaUploader;
                 $('#wpc_upload_dashboard_image').click(function(e) {
                     e.preventDefault();
+                    var button = $(this);
                     if (mediaUploader) {
                         mediaUploader.open();
                         return;
@@ -575,9 +604,65 @@ function wpc_render_meta_box( $post ) {
                     });
                     mediaUploader.on('select', function() {
                         var attachment = mediaUploader.state().get('selection').first().toJSON();
-                        $('#wpc_dashboard_image').val(attachment.url);
+                        // Determine which button was clicked
+                        if (currentUploadInput) {
+                            $(currentUploadInput).val(attachment.url);
+                        } else {
+                            // default fallback (original logic)
+                            $('#wpc_dashboard_image').val(attachment.url);
+                        }
                     });
                     mediaUploader.open();
+                });
+                
+                // Allow dynamic targetting
+                var currentUploadInput = null;
+                
+                $('#wpc_upload_dashboard_image').click(function(e) { 
+                    currentUploadInput = '#wpc_dashboard_image'; 
+                });
+                
+                $('#wpc_upload_logo_url').click(function(e) {
+                    e.preventDefault();
+                    currentUploadInput = '#wpc_external_logo_url';
+                    if (mediaUploader) {
+                        mediaUploader.open();
+                        return;
+                    }
+                    // Init logic duplicated or shared? Shared above but need to careful about click handler binding.
+                    // Better approach:
+                    // Separate init function
+                });
+
+                // REWRITING UPLOADER LOGIC TO BE GENERIC
+                var wpcMediaUploader;
+                function wpcInitUploader(targetSelector, title) {
+                     if (wpcMediaUploader) {
+                        wpcMediaUploader.targetSelector = targetSelector; // custom property
+                        wpcMediaUploader.open();
+                        return;
+                    }
+                    wpcMediaUploader = wp.media.frames.file_frame = wp.media({
+                        title: title || 'Choose Image',
+                        button: { text: 'Choose Image' },
+                        multiple: false
+                    });
+                    wpcMediaUploader.on('select', function() {
+                        var attachment = wpcMediaUploader.state().get('selection').first().toJSON();
+                        $(wpcMediaUploader.targetSelector).val(attachment.url);
+                    });
+                    wpcMediaUploader.targetSelector = targetSelector;
+                    wpcMediaUploader.open();
+                }
+                
+                $('#wpc_upload_dashboard_image').off('click').click(function(e){
+                    e.preventDefault();
+                    wpcInitUploader('#wpc_dashboard_image', 'Choose Dashboard Image');
+                });
+                
+                $('#wpc_upload_logo_url').off('click').click(function(e){
+                     e.preventDefault();
+                     wpcInitUploader('#wpc_external_logo_url', 'Choose Logo');
                 });
             });
             </script>
@@ -1063,7 +1148,7 @@ function wpc_render_meta_box( $post ) {
                         <?php if ( ! empty( $all_features ) && ! is_wp_error( $all_features ) ) : ?>
                             <?php foreach ( $all_features as $feature ) : ?>
                                 <label style="display:block;">
-                                    <input type="checkbox" name="wpc_features[]" value="<?php echo esc_attr( $feature->term_id ); ?>" <?php checked( in_array( $feature->term_id, $current_features ) ); ?> />
+                                    <input type="checkbox" name="wpc_features[]" value="<?php echo esc_attr( $feature->term_id ); ?>" <?php checked( in_array( $feature->term_id, $current_features ) ); ?> onchange="wpcSyncPrimaryFeatures(this)" />
                                     <?php echo esc_html( $feature->name ); ?>
                                 </label>
                             <?php endforeach; ?>
@@ -1074,6 +1159,29 @@ function wpc_render_meta_box( $post ) {
                     <div class="wpc-add-new-wrap">
                         <input type="text" id="new-wpc-feature" placeholder="New Tag Name" />
                         <button type="button" class="button" onclick="wpcAddTerm('comparison_feature')">Add</button>
+                    </div>
+
+                    <!-- Primary Display Tags (Max 3) -->
+                    <div style="margin-top: 15px;">
+                        <label class="wpc-label"><?php _e( 'Primary Display Tags (Max 3)', 'wp-comparison-builder' ); ?></label>
+                        <p class="description" style="margin-bottom:5px;">Select up to 3 tags to be shown by default on the card (e.g. "Best Value").</p>
+                        <?php 
+                        $primary_features = get_post_meta( $post->ID, '_wpc_primary_features', true ) ?: [];
+                        ?>
+                        <div class="wpc-checkbox-list" id="wpc-primary-feature-list" style="height: 100px;">
+                             <?php if ( ! empty( $all_features ) && ! is_wp_error( $all_features ) ) : ?>
+                                <?php foreach ( $all_features as $feature ) : ?>
+                                    <?php 
+                                    $is_selected = in_array( $feature->term_id, $current_features );
+                                    $style = $is_selected ? 'display:block;' : 'display:none;';
+                                    ?>
+                                    <label style="<?php echo $style; ?>" data-term-id="<?php echo esc_attr( $feature->term_id ); ?>" class="wpc-primary-feature-option">
+                                        <input type="checkbox" name="wpc_primary_features[]" value="<?php echo esc_attr( $feature->term_id ); ?>" <?php checked( in_array( $feature->term_id, $primary_features ) ); ?> />
+                                        <?php echo esc_html( $feature->name ); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2348,7 +2456,9 @@ function wpc_render_meta_box( $post ) {
                                  var primaryHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-option"><input type="checkbox" name="wpc_primary_cats[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
                                  jQuery('#wpc-primary-cat-list').append(primaryHtml);
                             } else {
-                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked /> ' + term.name + '</label>';
+                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryFeatures(this)" /> ' + term.name + '</label>';
+                                 var primaryTagHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-feature-option"><input type="checkbox" name="wpc_primary_features[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
+                                 jQuery('#wpc-primary-feature-list').append(primaryTagHtml);
                             }
                             jQuery('#' + listId).append(html);
                             resolve(term);
@@ -2358,6 +2468,31 @@ function wpc_render_meta_box( $post ) {
                     });
                 });
             }
+
+            // Sync Primary Features visibility
+            function wpcSyncPrimaryFeatures(checkbox) {
+                var termId = checkbox.value;
+                var list = document.getElementById('wpc-primary-feature-list');
+                var option = list.querySelector('.wpc-primary-feature-option[data-term-id="' + termId + '"]');
+                
+                if (checkbox.checked) {
+                    if (option) option.style.display = 'block';
+                } else {
+                    if (option) {
+                        option.style.display = 'none';
+                        option.querySelector('input').checked = false; // Uncheck if removed from main list
+                    }
+                }
+            }
+
+            // Limit Primary Features to 3
+            jQuery(document).on('change', 'input[name="wpc_primary_features[]"]', function() {
+                var checked = jQuery('input[name="wpc_primary_features[]"]:checked');
+                if (checked.length > 3) {
+                    this.checked = false;
+                    alert('You can only select up to 3 primary tags.');
+                }
+            });
             </script>
         </div>
 
@@ -2552,7 +2687,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     "button_text": "Visit Website"
   },
   "visuals": {
-    "logo": "https://logo.clearbit.com/{name}.com",
+    "logo": "",
     "dashboard_image": "",
     "badge_text": "Editor\'s Choice",
     "badge_color": "#10b981",
@@ -2653,15 +2788,24 @@ Be accurate and specific to the actual product/service. Use proper JSON quoting.
                 var customContext = document.getElementById('wpc-ai-custom-context');
                 var contextText = customContext ? customContext.value.trim() : '';
                 
+                // Check Gen Tags checkbox
+                var genTaxCheckbox = document.getElementById('wpc-ai-gen-taxonomies');
+                var shouldGenTax = genTaxCheckbox ? genTaxCheckbox.checked : true;
+                
                 if (!productName) {
                     wpcShowAIToast('Please enter a product/service name', true);
                     return;
                 }
                 
-                generateAllBtn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border:2px solid rgba(99,102,241,0.3);border-top-color:#6366f1;border-radius:50%;animation:wpc-ai-spin 0.6s linear infinite;display:inline-block;"></span> Generating...';
+                generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating...';
                 generateAllBtn.disabled = true;
                 
                 var prompt = aiPrompts.all.replace('{name}', productName);
+                
+                // Modify prompt if tags are disabled
+                if (!shouldGenTax) {
+                     prompt += '\n\nIMPORTANT: Do NOT generate "categories" or "tags". Return empty arrays for them: "categories": [], "tags": [].';
+                }
                 
                 // Add custom context if provided
                 if (contextText) {
@@ -3132,6 +3276,31 @@ function wpc_save_meta_box( $post_id ) {
         delete_post_meta( $post_id, '_wpc_show_coupon' );
     }
 
+    // Save Footer Visibility
+    if ( isset( $_POST['wpc_show_footer_table'] ) ) {
+        update_post_meta( $post_id, '_wpc_show_footer_table', '1' );
+    } else {
+        update_post_meta( $post_id, '_wpc_show_footer_table', '0' ); // Save 0 to explicitly hide
+    }
+
+    if ( isset( $_POST['wpc_show_footer_popup'] ) ) {
+        update_post_meta( $post_id, '_wpc_show_footer_popup', '1' );
+    } else {
+        update_post_meta( $post_id, '_wpc_show_footer_popup', '0' ); // Save 0 to explicitly hide
+    }
+
+    if ( isset( $_POST['wpc_footer_button_text'] ) ) {
+        update_post_meta( $post_id, '_wpc_footer_button_text', sanitize_text_field( $_POST['wpc_footer_button_text'] ) );
+    }
+
+    // Save Primary Features (Tags)
+    if ( isset( $_POST['wpc_primary_features'] ) ) {
+        $primary = array_map( 'sanitize_text_field', $_POST['wpc_primary_features'] );
+        update_post_meta( $post_id, '_wpc_primary_features', $primary );
+    } else {
+        delete_post_meta( $post_id, '_wpc_primary_features' );
+    }
+
     // Save Compare Alternatives (Competitors)
     if ( isset( $_POST['wpc_competitors'] ) ) {
         $competitors = array_map( 'intval', $_POST['wpc_competitors'] );
@@ -3235,10 +3404,17 @@ function wpc_save_meta_box( $post_id ) {
     // Save Primary Categories
     if ( isset( $_POST['wpc_primary_cats'] ) ) {
         $primary_ids = array_map( 'intval', $_POST['wpc_primary_cats'] );
-        // Limit to 2? No, let's just save input and limit on frontend if needed, but UI says Max 2.
         update_post_meta( $post_id, '_wpc_primary_cats', $primary_ids );
     } else {
         delete_post_meta( $post_id, '_wpc_primary_cats' );
+    }
+
+    // Save Primary Features (Tags)
+    if ( isset( $_POST['wpc_primary_features'] ) ) {
+        $primary_ids = array_map( 'intval', $_POST['wpc_primary_features'] );
+        update_post_meta( $post_id, '_wpc_primary_features', $primary_ids );
+    } else {
+        delete_post_meta( $post_id, '_wpc_primary_features' );
     }
 
     // Save Plan Features
@@ -3480,35 +3656,16 @@ function wpc_save_meta_box( $post_id ) {
             ),
         );
         
+
+
         // Write to custom table
         $result = $db->update_item($post_id, $table_data);
-        
-        // Store result for admin notice
-        set_transient('wpc_last_save_debug_' . $post_id, array(
-            'hero_subtitle' => $table_data['hero_subtitle'],
-            'analysis_label' => $table_data['analysis_label'],
-            'result' => $result ? 'SUCCESS' : 'FAILED'
-        ), 60);
     }
 }
 add_action( 'save_post', 'wpc_save_meta_box' );
 
 // Admin Notice to show save debug info
-add_action('admin_notices', function() {
-    global $post;
-    if ($post && $post->post_type === 'comparison_item') {
-        $debug = get_transient('wpc_last_save_debug_' . $post->ID);
-        if ($debug) {
-            delete_transient('wpc_last_save_debug_' . $post->ID);
-            $class = $debug['result'] === 'SUCCESS' ? 'notice-success' : 'notice-error';
-            echo '<div class="notice ' . $class . ' is-dismissible">';
-            echo '<p><strong>Custom Table Save:</strong> ' . $debug['result'] . '</p>';
-            echo '<p>Hero Subtitle: "' . esc_html($debug['hero_subtitle']) . '"</p>';
-            echo '<p>Analysis Label: "' . esc_html($debug['analysis_label']) . '"</p>';
-            echo '</div>';
-        }
-    }
-});
+
 
 /**
  * Custom Admin Columns for Comparison Items
@@ -3595,7 +3752,6 @@ function wpc_dashboard_widget_function() {
         'meta_key' => '_wpc_clicks',
         'orderby' => 'meta_value_num',
         'order' => 'DESC',
-        'post_status' => 'publish'
     );
     $query = new WP_Query( $args );
 
@@ -3633,3 +3789,7 @@ function wpc_change_excerpt_label( $translation, $original, $domain ) {
     return $translation;
 }
 add_filter( 'gettext', 'wpc_change_excerpt_label', 10, 3 );
+
+
+
+

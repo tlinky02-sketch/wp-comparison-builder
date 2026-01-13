@@ -27,19 +27,14 @@ class WPC_Tools_Database {
         $sql = "CREATE TABLE {$this->table_name} (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             post_id bigint(20) NOT NULL,
-            
-            badge_text varchar(255),
+            badge_text varchar(255) DEFAULT '' NOT NULL,
             link text,
-            button_text varchar(255),
+            button_text varchar(255) DEFAULT '' NOT NULL,
             short_description text,
-            rating float(2,1) DEFAULT 0.0,
-            
-            -- JSON Arrays
+            rating float(2,1) DEFAULT '0.0' NOT NULL,
             features longtext,
             pricing_plans longtext,
-            
-            clicks int(10) UNSIGNED DEFAULT 0,
-            
+            clicks int(10) UNSIGNED DEFAULT 0 NOT NULL,
             PRIMARY KEY  (id),
             KEY post_id (post_id)
         ) $charset_collate;";

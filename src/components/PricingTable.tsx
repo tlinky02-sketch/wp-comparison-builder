@@ -140,16 +140,22 @@ const PricingTable = ({
             }
         }
 
-        // 2. Legacy Design Overrides (Backward Compatibility)
-        if (useOverrides) {
-            if (displayContext === 'popup') {
-                const val = overrides.show_footer_popup ?? overrides.show_footer;
-                if (val !== undefined && val !== '') return val !== false && val !== '0';
-            } else {
-                if (overrides.show_footer_table !== undefined && overrides.show_footer_table !== '') {
-                    return overrides.show_footer_table !== false && overrides.show_footer_table !== '0';
-                }
+        // 2. footer settings from design_overrides (Now Independent of enabled flag)
+        if (displayContext === 'popup') {
+            const val = overrides.show_footer_popup ?? overrides.show_footer;
+            // distinct check for undefined/null to allow fallback
+            if (val !== undefined && val !== null && val !== '') {
+                return val !== false && val !== '0';
             }
+        } else {
+            if (overrides.show_footer_table !== undefined && overrides.show_footer_table !== null && overrides.show_footer_table !== '') {
+                return overrides.show_footer_table !== false && overrides.show_footer_table !== '0';
+            }
+        }
+
+        // 3. Legacy / Enabled check (Keep for safety if needed, but above covers decoupled API)
+        if (useOverrides) {
+            // Logic moved above actually covers this too, since useOverrides access same object.
         }
 
         // 3. Global Setting from WP Options

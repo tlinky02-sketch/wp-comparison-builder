@@ -163,13 +163,16 @@ function wpc_get_items() {
             }
 
             // Image
-            // Logic: Check overridden URL first (DB or Meta), then Feature Image
+            // Logic: Check overridden URL first (DB or Meta). NO FALLBACK to Featured Image for Logo anymore (per user request).
             $custom_logo = $get_val('logo_url', '_wpc_external_logo_url', '_ecommerce_external_logo_url');
-            if ( $custom_logo ) {
-                $logo_url = $custom_logo;
-            } else {
-                $logo_url = get_the_post_thumbnail_url( $id, 'full' ) ?: '';
-            }
+            $logo_url = $custom_logo ?: '';
+
+            // Dashboard / Hero Image
+            // Logic: Featured Image (Priority) > Dashboard Image Field (Fallback)
+            $featured_img = get_the_post_thumbnail_url( $id, 'full' );
+            $dashboard_field_val = $get_val('dashboard_image', '_wpc_dashboard_image');
+            
+            $dashboard_img = $featured_img ?: $dashboard_field_val;
 
             // Data Mapping
             // Data Mapping
@@ -260,6 +263,17 @@ function wpc_get_items() {
                     }
                 }
             }
+            $primary_feat_ids = get_post_meta( $id, '_wpc_primary_features', true );
+            
+            $primary_feature_names = array();
+            if ( ! empty( $primary_feat_ids ) && is_array( $primary_feat_ids ) ) {
+                foreach ( $primary_feat_ids as $f_id ) {
+                    $term = get_term( (int) $f_id, 'comparison_feature' );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $primary_feature_names[] = $term->name;
+                    }
+                }
+            }
 
             // Pros/Cons
             $pros = ($row && !empty($row->pros)) ? $row->pros : (get_post_meta( $id, '_wpc_pros', true ) ? explode( "\n", get_post_meta( $id, '_wpc_pros', true ) ) : array());
@@ -278,12 +292,13 @@ function wpc_get_items() {
             $items[] = array(
                 'id'       => (string) $id,
                 'post_type'   => $post_type, 
-                'debug_terms' => $debug_all_terms, // DEBUG
+
                 'name'     => $get_val('public_name', '_wpc_public_name') ?: get_the_title(),
                 'logo'     => $logo_url,
                 'rating'   => (float) $rating,
                 'category' => $category_names,
                 'primary_categories' => $primary_category_names,
+                'primary_features' => $primary_feature_names,
                 'price'    => $price,
                 'period'   => $period,
                 'features' => $feature_map,
@@ -361,7 +376,7 @@ function wpc_get_items() {
                 'button_text' => $button_text, 
                 'hero_subtitle' => $get_val('hero_subtitle', '_wpc_hero_subtitle'),
                 'analysis_label' => $get_val('analysis_label', '_wpc_analysis_label'),
-                'dashboard_image' => $get_val('dashboard_image', '_wpc_dashboard_image'),
+                'dashboard_image' => $dashboard_img,
                 'footer_button_text' => $get_val('footer_button_text', '_wpc_footer_button_text'),
                 'table_btn_pos' => $get_val('table_btn_pos', '_wpc_table_btn_pos'),
                 'popup_btn_pos' => $get_val('popup_btn_pos', '_wpc_popup_btn_pos'),
@@ -377,21 +392,25 @@ function wpc_get_items() {
                          return $row->design_overrides;
                     }
                     $enabled = get_post_meta( $id, '_wpc_enable_design_overrides', true );
+                    
+                    $out = [
+                        'enabled' => ($enabled === '1'),
+                        // Footer settings (Independent of Design Overrides toggle)
+                        'show_footer_popup' => get_post_meta( $id, '_wpc_show_footer_popup', true ) !== '0',
+                        'show_footer_table' => get_post_meta( $id, '_wpc_show_footer_table', true ) !== '0',
+                        'show_footer' => get_post_meta( $id, '_wpc_show_footer_button', true ) !== '0',
+                        'footer_text' => get_post_meta( $id, '_wpc_footer_button_text', true ),
+                    ];
+
                     if ($enabled === '1') {
-                        return [
-                            'enabled' => true,
-                            'primary' => get_post_meta( $id, '_wpc_primary_color', true ),
-                            'accent' => get_post_meta( $id, '_wpc_accent_color', true ),
-                            'border' => get_post_meta( $id, '_wpc_border_color', true ),
-                            'coupon_bg' => get_post_meta( $id, '_wpc_color_coupon_bg', true ),
-                            'coupon_text' => get_post_meta( $id, '_wpc_color_coupon_text', true ),
-                            'show_footer_popup' => get_post_meta( $id, '_wpc_show_footer_popup', true ) !== '0',
-                            'show_footer_table' => get_post_meta( $id, '_wpc_show_footer_table', true ) !== '0',
-                            'show_footer' => get_post_meta( $id, '_wpc_show_footer_button', true ) !== '0',
-                            'footer_text' => get_post_meta( $id, '_wpc_footer_button_text', true ),
-                        ];
+                        $out['primary'] = get_post_meta( $id, '_wpc_primary_color', true );
+                        $out['accent'] = get_post_meta( $id, '_wpc_accent_color', true );
+                        $out['border'] = get_post_meta( $id, '_wpc_border_color', true );
+                        $out['coupon_bg'] = get_post_meta( $id, '_wpc_color_coupon_bg', true );
+                        $out['coupon_text'] = get_post_meta( $id, '_wpc_color_coupon_text', true );
                     }
-                    return ['enabled' => false];
+                    
+                    return $out;
                 })(),
                 
                 'content' => apply_filters( 'the_content', get_the_content() )

@@ -99,6 +99,7 @@ function wpc_register_cpt() {
     ));
 
     // 5. Review Pages CPT (for custom editorial landing pages)
+    
     register_post_type( 'comparison_review', array(
         'labels' => array(
             'name'                  => __( 'Review Pages', 'wp-comparison-builder' ),

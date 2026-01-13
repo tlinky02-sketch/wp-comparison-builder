@@ -8,8 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 add_action( 'init', 'wpc_register_tool_cpt' );
 function wpc_register_tool_cpt() {
-    // Always register CPT/Taxonomies to ensure data integrity even if module is hidden in UI
-    // if ( ! get_option( 'wpc_enable_tools_module', false ) ) return; 
+    // Check module status
+    $module_enabled = get_option( 'wpc_enable_tools_module', false );
+    $show_in_menu = $module_enabled ? 'edit.php?post_type=comparison_item' : false;
 
     register_post_type( 'comparison_tool', array(
         'labels' => array(
@@ -23,7 +24,7 @@ function wpc_register_tool_cpt() {
         'public' => true,
         'publicly_queryable' => false, // Hide permalink
         'has_archive' => false,
-        'show_in_menu' => 'edit.php?post_type=comparison_item',
+        'show_in_menu' => $show_in_menu,
         'supports' => array( 'title', 'editor', 'thumbnail' ),
         'menu_icon' => 'dashicons-admin-tools',
     ));

@@ -24,6 +24,7 @@ export interface ComparisonItem {
     rating: number;
     category: string[];
     primary_categories?: string[];
+    primary_features?: string[];
     price: string;
     period: string;
     features: {
@@ -444,40 +445,62 @@ const PlatformCard = ({
 
             {/* Features Preview */}
             <ul className="space-y-2 mb-6 flex-1">
-                {item.raw_features && item.raw_features.length > 0 ? (
-                    item.raw_features.slice(0, 3).map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-foreground/80">
-                            <Check className="w-4 h-4 text-primary shrink-0"
-                                style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
-                            />
-                            <span className="truncate">{feature}</span>
-                        </li>
-                    ))
-                ) : (
-                    <>
-                        {item.features.products && (
-                            <li className="flex items-center gap-2 text-sm text-foreground/80">
-                                <Tag className="w-4 h-4 text-primary shrink-0"
-                                    style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
-                                <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
-                            </li>
-                        )}
-                        {item.features.fees && (
-                            <li className="flex items-center gap-2 text-sm text-foreground/80">
+                {(() => {
+                    const limit = 3;
+                    let toShow: string[] = [];
+
+                    // 1. Primary Features (Prioritized)
+                    if (item.primary_features && item.primary_features.length > 0) {
+                        toShow.push(...item.primary_features.slice(0, limit));
+                    }
+
+                    // 2. Regular Features (Fill remaining slots)
+                    if (toShow.length < limit && item.raw_features && item.raw_features.length > 0) {
+                        item.raw_features.forEach(f => {
+                            if (toShow.length < limit && !toShow.includes(f)) {
+                                toShow.push(f);
+                            }
+                        });
+                    }
+
+                    if (toShow.length > 0) {
+                        return toShow.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-foreground/80">
                                 <Check className="w-4 h-4 text-primary shrink-0"
-                                    style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
-                                <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
+                                    style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
+                                />
+                                <span className="truncate">{feature}</span>
                             </li>
-                        )}
-                        {item.features.support && (
-                            <li className="flex items-center gap-2 text-sm text-foreground/80">
-                                <Check className="w-4 h-4 text-primary shrink-0"
-                                    style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
-                                <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>
-                            </li>
-                        )}
-                    </>
-                )}
+                        ));
+                    }
+
+                    // 3. Fallback to Legacy/Specific Features (if no list features found)
+                    return (
+                        <>
+                            {item.features.products && (
+                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                    <Tag className="w-4 h-4 text-primary shrink-0"
+                                        style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
+                                    <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
+                                </li>
+                            )}
+                            {item.features.fees && (
+                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                    <Check className="w-4 h-4 text-primary shrink-0"
+                                        style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
+                                    <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
+                                </li>
+                            )}
+                            {item.features.support && (
+                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                    <Check className="w-4 h-4 text-primary shrink-0"
+                                        style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
+                                    <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>
+                                </li>
+                            )}
+                        </>
+                    );
+                })()}
             </ul>
 
             {/* Footer Actions */}
@@ -501,7 +524,7 @@ const PlatformCard = ({
                     {buttonText || (viewAction === 'link' ? (labels?.visitSite || "Visit Site") : (labels?.viewDetails || "View Details"))}
                 </Button>
             </div>
-        </div>
+        </div >
     );
 };
 
