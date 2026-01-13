@@ -17,19 +17,18 @@ function wpc_pros_cons_shortcode( $atts ) {
 
     $item_id = $attributes['id'];
 
-    // 1. Fetch Data
-    if ( ! function_exists( 'wpc_get_items' ) ) { } 
-    $data = wpc_get_items();
-    $items = $data['items'];
-    
-    // Find the item
-    $found_items = array_values(array_filter($items, function($i) use ($item_id) {
-        return strval($i['id']) === strval($item_id);
-    }));
+    // 1. Fetch Data (Optimized)
+    if ( ! function_exists( 'wpc_fetch_items_data' ) ) {
+        require_once plugin_dir_path( __FILE__ ) . 'api-endpoints.php';
+    }
 
-    if (empty($found_items)) return "<!-- WPC Pros/Cons: Item ID {$item_id} not found -->";
+    $data = wpc_fetch_items_data( array( $item_id ) );
     
-    $item = $found_items[0];
+    if ( empty( $data['items'] ) ) {
+        return "<!-- WPC Pros/Cons: Item ID {$item_id} not found -->";
+    }
+    
+    $item = $data['items'][0];
 
     // 2. Generate unique ID
     $unique_id = 'wpc-proscons-' . $item_id . '-' . mt_rand(1000, 9999);
@@ -57,9 +56,39 @@ function wpc_pros_cons_shortcode( $atts ) {
     ob_start();
     ?>
     <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>">
-        <!-- Skeleton / Loading State -->
-        <div class="w-full h-64 bg-muted/10 animate-pulse rounded-xl border border-border flex items-center justify-center">
-            <span class="text-muted-foreground"><?php echo esc_html( get_option( 'wpc_text_loading_proscons', 'Loading Pros & Cons...' ) ); ?></span>
+        <!-- SSR Lite Preview -->
+        <div class="wpc-ssr-preview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <!-- Pros -->
+            <div style="background: <?php echo esc_attr($widget_config['prosBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.05);">
+                <h3 style="color: <?php echo esc_attr($widget_config['prosText']); ?>; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span><?php echo esc_html($widget_config['prosIcon']); ?></span>
+                    <?php echo esc_html($widget_config['prosLabel']); ?>
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <?php if (!empty($item['pros']) && is_array($item['pros'])) : foreach($item['pros'] as $pro) : ?>
+                        <li style="display: flex; gap: 0.5rem; align-items: start; color: #374151;">
+                            <span style="color: <?php echo esc_attr($widget_config['prosText']); ?>;">✓</span>
+                            <span><?php echo esc_html($pro); ?></span>
+                        </li>
+                    <?php endforeach; endif; ?>
+                </ul>
+            </div>
+            
+            <!-- Cons -->
+            <div style="background: <?php echo esc_attr($widget_config['consBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.05);">
+                <h3 style="color: <?php echo esc_attr($widget_config['consText']); ?>; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span><?php echo esc_html($widget_config['consIcon']); ?></span>
+                    <?php echo esc_html($widget_config['consLabel']); ?>
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <?php if (!empty($item['cons']) && is_array($item['cons'])) : foreach($item['cons'] as $con) : ?>
+                        <li style="display: flex; gap: 0.5rem; align-items: start; color: #374151;">
+                            <span style="color: <?php echo esc_attr($widget_config['consText']); ?>;">✗</span>
+                            <span><?php echo esc_html($con); ?></span>
+                        </li>
+                    <?php endforeach; endif; ?>
+                </ul>
+            </div>
         </div>
     </div>
     <?php

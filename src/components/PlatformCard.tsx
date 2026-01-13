@@ -61,6 +61,7 @@ export interface ComparisonItem {
     analysis_label?: string; // New field for Hero
     table_btn_pos?: string;
     popup_btn_pos?: string;
+    show_hero_logo?: boolean; // New field for Hero
     product_details?: {
         category?: string;
         brand?: string;

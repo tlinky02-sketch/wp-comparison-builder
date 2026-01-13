@@ -866,6 +866,7 @@ function wpc_ajax_ai_create_item() {
     }
     
     $title = sanitize_text_field( $_POST['title'] ?? '' );
+    $public_name = sanitize_text_field( $_POST['public_name'] ?? '' );
     $description = sanitize_textarea_field( $_POST['description'] ?? '' );
     $rating = floatval( $_POST['rating'] ?? 4.5 );
     $price = sanitize_text_field( $_POST['price'] ?? '' );
@@ -873,6 +874,7 @@ function wpc_ajax_ai_create_item() {
     $pros = json_decode( stripslashes( $_POST['pros'] ?? '[]' ), true );
     $cons = json_decode( stripslashes( $_POST['cons'] ?? '[]' ), true );
     $pricing_plans = json_decode( stripslashes( $_POST['pricing_plans'] ?? '[]' ), true );
+    $best_use_cases = json_decode( stripslashes( $_POST['best_use_cases'] ?? '[]' ), true );
     
     if ( empty( $title ) ) {
         wp_send_json_error( 'Title is required' );
@@ -891,6 +893,9 @@ function wpc_ajax_ai_create_item() {
     }
     
     // Save meta
+    if ( ! empty( $public_name ) ) {
+        update_post_meta( $post_id, '_wpc_public_name', $public_name );
+    }
     update_post_meta( $post_id, '_wpc_short_description', $description );
     update_post_meta( $post_id, '_wpc_rating', $rating );
     update_post_meta( $post_id, '_wpc_price', $price );
@@ -902,9 +907,96 @@ function wpc_ajax_ai_create_item() {
         update_post_meta( $post_id, '_wpc_pricing_plans', $pricing_plans );
     }
     
+    // Save Best Use Cases as array of objects for _wpc_use_cases
+    // Structure: [{ name, desc, icon, image }]
+    if ( ! empty( $best_use_cases ) && is_array( $best_use_cases ) ) {
+        $formatted_cases = [];
+        foreach ( $best_use_cases as $case ) {
+            if ( is_array( $case ) ) {
+                // Already object format from AI
+                $formatted_cases[] = [
+                    'name'  => sanitize_text_field( $case['name'] ?? '' ),
+                    'desc'  => sanitize_textarea_field( $case['desc'] ?? '' ),
+                    'icon'  => sanitize_text_field( $case['icon'] ?? '' ),
+                    'image' => esc_url_raw( $case['image'] ?? '' ),
+                ];
+            } elseif ( is_string( $case ) ) {
+                // Simple string fallback
+                $formatted_cases[] = [
+                    'name'  => sanitize_text_field( $case ),
+                    'desc'  => '',
+                    'icon'  => '',
+                    'image' => '',
+                ];
+            }
+        }
+        update_post_meta( $post_id, '_wpc_use_cases', $formatted_cases );
+    }
+    
     wp_send_json_success( [
         'post_id' => $post_id,
         'edit_url' => get_edit_post_link( $post_id, 'raw' )
     ] );
 }
 
+
+add_action( 'wp_ajax_wpc_ai_create_tool', 'wpc_ajax_ai_create_tool' );
+function wpc_ajax_ai_create_tool() {
+    check_ajax_referer( 'wpc_ai_nonce', 'nonce' );
+    
+    if ( ! current_user_can( 'edit_posts' ) ) {
+        wp_send_json_error( 'Permission denied' );
+    }
+    
+    $title = sanitize_text_field( $_POST['title'] ?? '' );
+    $description = sanitize_textarea_field( $_POST['description'] ?? '' );
+    $badge = sanitize_text_field( $_POST['badge'] ?? '' );
+    $rating = floatval( $_POST['rating'] ?? 0 );
+    $link = esc_url_raw( $_POST['link'] ?? '' );
+    
+    // Optional: Price (not standard field but useful to save)
+    $price = sanitize_text_field( $_POST['price'] ?? '' );
+    
+    if ( empty( $title ) ) {
+        wp_send_json_error( 'Title is required' );
+    }
+    
+    // Create post
+    $post_id = wp_insert_post( [
+        'post_title'  => $title,
+        'post_type'   => 'comparison_tool',
+        'post_status' => 'draft',
+        'post_content' => ''
+    ] );
+    
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( $post_id->get_error_message() );
+    }
+    
+    // Save meta keys (aligned with tools-cpt.php)
+    update_post_meta( $post_id, '_wpc_tool_short_description', $description );
+    update_post_meta( $post_id, '_tool_badge', $badge );
+    update_post_meta( $post_id, '_wpc_tool_rating', $rating );
+    update_post_meta( $post_id, '_tool_link', $link );
+    
+    if ( ! empty( $price ) ) {
+        update_post_meta( $post_id, '_wpc_tool_price', $price );
+    }
+    
+    // Try to update custom table if class exists
+    if ( class_exists('WPC_Tools_Database') ) {
+        $db = new WPC_Tools_Database();
+        $db->create_table(); // Ensure exists
+        $db->update_tool( $post_id, [
+            'badge_text'        => $badge,
+            'link'              => $link,
+            'short_description' => $description,
+            'rating'            => $rating
+        ] );
+    }
+    
+    wp_send_json_success( [
+        'post_id' => $post_id,
+        'edit_url' => get_edit_post_link( $post_id, 'raw' )
+    ] );
+}

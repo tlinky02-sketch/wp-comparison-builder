@@ -33,16 +33,18 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
 
                 {/* Left Column: Content */}
                 <div>
-                    {/* Logo & Name */}
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-sm border border-border/50 flex items-center justify-center overflow-hidden">
-                            {item.logo ? (
-                                <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
-                            ) : (
-                                <div className="w-8 h-8 bg-primary/20 rounded-full" />
-                            )}
+                    {/* Logo & Name - Hide if show_hero_logo is false (default true) */}
+                    {(item.show_hero_logo !== false) && (
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-sm border border-border/50 flex items-center justify-center overflow-hidden">
+                                {item.logo ? (
+                                    <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
+                                ) : (
+                                    <div className="w-8 h-8 bg-primary/20 rounded-full" />
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
                         {item.name}

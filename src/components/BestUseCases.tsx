@@ -10,6 +10,7 @@ interface UseCaseItem {
     desc: string;
     icon: string;
     image: string;
+    icon_color?: string;
 }
 
 interface BestUseCasesProps {
@@ -21,8 +22,8 @@ interface BestUseCasesProps {
 }
 
 const BestUseCases: React.FC<BestUseCasesProps> = ({ items, config, title }) => {
-    // Determine grid columns
-    const cols = config?.columns || 3;
+    // Determine grid columns (default 4)
+    const cols = config?.columns || 4;
 
     // Grid class map for Tailwind (since we can't interpolate partial class names safely with PurgeCSS sometimes, but full names are better)
     // Actually, responsive grid is requested.
@@ -30,11 +31,14 @@ const BestUseCases: React.FC<BestUseCasesProps> = ({ items, config, title }) => 
 
     const getGridCols = (c: number) => {
         if (c === 2) return "md:grid-cols-2";
-        if (c === 4) return "md:grid-cols-2 lg:grid-cols-4";
+        if (c === 4) return "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
         return "md:grid-cols-2 lg:grid-cols-3"; // Default 3
     };
 
     const gridClass = getGridCols(cols);
+
+    // Get global icon color: custom usecase color > primary color
+    const globalIconColor = (window as any).wpcSettings?.colors?.usecaseIcon;
 
     return (
         <div className="wpc-use-cases w-full">
@@ -51,12 +55,15 @@ const BestUseCases: React.FC<BestUseCasesProps> = ({ items, config, title }) => 
                         }}
                     >
                         {/* Icon or Image */}
-                        <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary">
+                        <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
                             {item.image ? (
                                 <img src={item.image} alt={item.name} className="w-10 h-10 object-contain" />
                             ) : (
                                 item.icon ? (
-                                    <i className={`${item.icon} text-2xl`} style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}></i>
+                                    <i
+                                        className={`${item.icon} text-2xl`}
+                                        style={{ color: item.icon_color || globalIconColor || `hsl(var(--primary))` }}
+                                    ></i>
                                 ) : (
                                     // Fallback icon
                                     <span className="text-2xl">✨</span>

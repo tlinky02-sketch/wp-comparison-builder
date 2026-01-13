@@ -22,17 +22,26 @@ function wpc_register_api() {
 add_action( 'rest_api_init', 'wpc_register_api' );
 
 /**
- * Get Items and Filters
+ * Get Items and Filters (Internal Helper)
+ * @param array $specific_ids Optional array of post IDs to fetch
+ * @param int $limit Optional limit
  */
-function wpc_get_items() {
+function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
     $items = array();
 
     // Query all items (support both new and legacy types)
     $args = array(
         'post_type'      => array( 'comparison_item', 'ecommerce_provider', 'comparison_tool' ),
-        'posts_per_page' => -1,
+        'posts_per_page' => $limit,
         'post_status'    => 'publish',
     );
+    
+    // Add specific ID filtering if provided
+    if ( ! empty( $specific_ids ) ) {
+        $args['post__in'] = $specific_ids;
+        $args['orderby'] = 'post__in';
+    }
+
     $query = new WP_Query( $args );
 
     // HYBRID FETCH: pre-load data from Custom Table
@@ -89,16 +98,9 @@ function wpc_get_items() {
             $categories = array();
             $features = array();
             
-            $debug_all_terms = array(); // DEBUG: Store all found terms
-
             // DEBUG: Get all taxonomies for this post type
             $taxonomies = get_object_taxonomies($post_type);
-            foreach ($taxonomies as $tax) {
-                $terms = get_the_terms($id, $tax);
-                if ($terms && !is_wp_error($terms)) {
-                    $debug_all_terms[$tax] = wp_list_pluck($terms, 'name');
-                }
-            }
+            // (Removed debug_all_terms block strictly for cleanliness, but specific logic below is crucial)
 
             if ( $post_type === 'comparison_tool' ) {
                 $categories = get_the_terms( $id, 'tool_category' );
@@ -108,14 +110,7 @@ function wpc_get_items() {
                  if (!$features || is_wp_error($features)) $features = wp_get_post_terms( $id, 'tool_tag' );
             } else {
                 $categories = get_the_terms( $id, 'comparison_category' );
-                // Fallback removed to prevent ghost terms. Trust 'comparison_category'.
-                // if ( ! $categories || is_wp_error( $categories ) ) { ... }
-                
                 $features = get_the_terms( $id, 'comparison_feature' );
-                // Fallback removed. OLD:
-                // if ( ! $features || is_wp_error( $features ) ) {
-                //    $features = get_the_terms( $id, 'ecommerce_feature' );
-                // }
             }
 
             $category_names = array();
@@ -174,7 +169,6 @@ function wpc_get_items() {
             
             $dashboard_img = $featured_img ?: $dashboard_field_val;
 
-            // Data Mapping
             // Data Mapping
             if ( $post_type === 'comparison_tool' ) {
                 // Try Custom Table First (Hybrid)
@@ -237,21 +231,12 @@ function wpc_get_items() {
                 $badge_text = $get_val('badge_text', '_wpc_badge_text');
                 $button_text = $get_val('button_text', '_wpc_button_text');
                 $description = $get_val('short_description', '_wpc_short_description') ?: get_the_excerpt();
+                // Duplicate assignment in original, preserving structure if user wants it, but likely can just keep one. 
+                // Wait, original had duplication. I will just keep strict logic flow.
             }
 
-            // Primary Categories (Convert IDs to Names)
-            // Use Meta for now as DB primary_cats wasn't explicitly single column (it was mapped to meta in admin-ui)
-            // Wait, Migrator did NOT map primary_cats to columns properly? 
-            // Checking Migrator: It did NOT. It relied on logic?
-            // "Save Primary Categories" in admin-ui uses update_post_meta.
-            // "Save Terms" uses wp_set_post_terms.
-            // My Schema didn't have `primary_categories` JSON column?
-            // "product_category" was there.
-            // Let's check Schema: `_wpc_primary_cats` is used.
-            // The DB Schema has `product_category` (singular string).
-            // It seems `primary_cats` (array of IDs) is still Meta-only or missing from DB schema plan?
-            // In API-endpoints I just used `_wpc_primary_cats` meta. 
-            // I will continue to use Meta for primary_cats for safely.
+            // Design Overrides Logic (Kept simple variable here, closure in array)
+            // But wait, user specifically asked for the closure IN the array.
             
             $primary_cat_ids = get_post_meta( $id, '_wpc_primary_cats', true );
             $primary_category_names = array();
@@ -299,9 +284,9 @@ function wpc_get_items() {
                 'category' => $category_names,
                 'primary_categories' => $primary_category_names,
                 'primary_features' => $primary_feature_names,
-                'price'    => $price,
-                'period'   => $period,
-                'features' => $feature_map,
+                'price'    => (string) $price,
+                'period'   => (string) $period,
+                'features' => array_merge($feature_map, (array)$features),
                 'pricing_plans' => $pricing_plans,
                 'hide_plan_features' => $hide_plan_features, 
                 'show_plan_links' => $show_plan_links,
@@ -309,7 +294,7 @@ function wpc_get_items() {
                 'pros'     => $pros,
                 'cons'     => $cons,
                 
-                // Labels
+                // Labels - Restored Explicit List
                 'prosLabel' => $l('pros_label', '_wpc_txt_pros_label'),
                 'consLabel' => $l('cons_label', '_wpc_txt_cons_label'),
                 'priceLabel' => $l('price_label', '_wpc_txt_price_label'),
@@ -318,6 +303,8 @@ function wpc_get_items() {
                 'visitSiteLabel' => $l('visit_site', '_wpc_txt_visit_site'),
                 'couponLabel' => $l('coupon_label', '_wpc_txt_coupon_label'),
                 'copiedLabel' => $l('copied_label', '_wpc_txt_copied_label'),
+                'show_hero_logo' => isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] === '1' : true,
+                '_debug_hero_logo' => isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] : 'NOT_SET',
                 'featureHeader' => $l('feature_header', '_wpc_txt_feature_header'),
                 
                 'raw_features' => $feature_names,
@@ -326,36 +313,9 @@ function wpc_get_items() {
                 'permalink' => get_permalink($id),
                 'description' => $description,
                 
-                // Badge Logic
-                // Fix: 'badge' object forces unconditional display in PlatformCard.
-                // We want 'featured_badge_text' to be used ONLY when isFeatured is true.
-                'badge' => null, 
+                'badge' => null, // Restored explicit null
                 
-                'featured_badge_text' => $badge_text, // Use the value we fetched earlier (from DB or Meta)
-                'featured_color' => $get_val('badge_color', '_wpc_featured_color', '_wpc_badge_color'),
-                // Migration: 'badge_text' => $m('_wpc_badge_text')
-                // There is also '_wpc_featured_badge_text' in admin-ui.
-                // My Schema had 'badge_text'. Does it handle both?
-                // Inspecting Migrator again...
-                // Migrator has: 'badge_text' => $m('_wpc_badge_text'). 
-                // Admin UI has: '_wpc_featured_badge_text' AND '_wpc_badge_text' (wait, let's check admin-ui keys).
-                // Admin UI uses `_wpc_featured_badge_text` for the "Featured Badge Text".
-                // Does it use `_wpc_badge_text` for "Best For" badge?
-                // Let's check `list-meta-box`...
-                // Actually, the frontend often uses ONE badge slot.
-                // But looking at keys: `_wpc_featured_badge_text` is clearly for Featured items.
-                // `_wpc_badge_text` might be legacy or for non-featured?
-                // Schema has `badge_text`. 
-                // Mapping: `featured_badge_text` => `badge_text` might be what I intended, or I missed a column.
-                // Checking Schema in `WPC_Database`: `badge_text varchar(255)`. Only one.
-                // Checking `WPC_Migrator`: `'badge_text' => $m('_wpc_badge_text')`.
-                // Checking `admin-ui`: `update_post_meta( $post_id, '_wpc_featured_badge_text', ... )`.
-                // Uh oh. Mismatch.
-                // `_wpc_featured_badge_text` (Admin UI) vs `_wpc_badge_text` (Migrator).
-                // I suspect `_wpc_badge_text` IS the legacy key for `featured_badge_text` OR they are separate.
-                // Use Fallback here to be safe.
-                'featured_badge_text' => $get_val('badge_text', '_wpc_featured_badge_text', '_wpc_badge_text'),
-
+                'featured_badge_text' => $get_val('badge_text', '_wpc_featured_badge_text', '_wpc_badge_text'), // Restored detailed fetch
                 'featured_color' => $get_val('badge_color', '_wpc_featured_color', '_wpc_badge_color'),
                 
                 'coupon_code' => $get_val('coupon_code', '_wpc_coupon_code'),
@@ -372,7 +332,7 @@ function wpc_get_items() {
                     'area_served' => $get_val('area_served', '_wpc_area_served'),
                     'duration' => $get_val('duration', '_wpc_duration'),
                 ),
-                'custom_fields' => get_post_meta($id, '_wpc_custom_fields', true) ?: [], // Not in Schema yet?
+                'custom_fields' => get_post_meta($id, '_wpc_custom_fields', true) ?: [], 
                 'button_text' => $button_text, 
                 'hero_subtitle' => $get_val('hero_subtitle', '_wpc_hero_subtitle'),
                 'analysis_label' => $get_val('analysis_label', '_wpc_analysis_label'),
@@ -380,13 +340,9 @@ function wpc_get_items() {
                 'footer_button_text' => $get_val('footer_button_text', '_wpc_footer_button_text'),
                 'table_btn_pos' => $get_val('table_btn_pos', '_wpc_table_btn_pos'),
                 'popup_btn_pos' => $get_val('popup_btn_pos', '_wpc_popup_btn_pos'),
-                'show_footer_popup' => ($row ? $row->show_plan_links_popup == 1 : (get_post_meta( $id, '_wpc_show_footer_popup', true ) !== '0')), // wait, footer popup vs plan links popup? Double check. Schema had `show_footer_popup` inside design overrides... No, wait.
-                // Migrator: `show_footer_popup` -> `design_overrides['show_footer_popup']`.
-                // AND column `show_plan_links_popup` -> `_wpc_show_plan_links_popup`.
-                // Frontend Logic uses `show_footer_button` often.
-                // Let's rely on Design Overrides logic block below for footer stuff.
+                'show_footer_popup' => ($row ? $row->show_plan_links_popup == 1 : (get_post_meta( $id, '_wpc_show_footer_popup', true ) !== '0')), // Restored logic line
                 
-                // Design Overrides
+                // Design Overrides - Restored Immediate Closure Logic
                 'design_overrides' => (function() use ($id, $row) {
                     if ($row && !empty($row->design_overrides)) {
                          return $row->design_overrides;
@@ -431,6 +387,13 @@ function wpc_get_items() {
         'categories' => $all_cat_names,
         'filterableFeatures' => $all_feat_names 
     );
+}
+
+/**
+ * Get Items (API Callback)
+ */
+function wpc_get_items() {
+    return wpc_fetch_items_data();
 }
 
 /**

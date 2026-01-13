@@ -30,6 +30,7 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_card_border_color' );
     register_setting( 'wpc_settings_group', 'wpc_pricing_banner_color' );
     register_setting( 'wpc_settings_group', 'wpc_button_hover_color' );
+    register_setting( 'wpc_settings_group', 'wpc_usecase_icon_color' );
     
     // Show Plan Buttons Setting
     register_setting( 'wpc_settings_group', 'wpc_show_plan_buttons' );
@@ -172,7 +173,7 @@ function wpc_handle_export_data() {
     // Get selected export types (default to all)
     $export_types = isset( $_POST['export_types'] ) ? json_decode( stripslashes( $_POST['export_types'] ), true ) : array();
     if ( empty( $export_types ) ) {
-        $export_types = array( 'items', 'categories', 'features', 'lists', 'settings' );
+        $export_types = array( 'items', 'categories', 'features', 'lists', 'settings', 'tools', 'tool_categories', 'tool_tags' );
     }
     $should_export = array_flip( $export_types );
 
@@ -183,6 +184,7 @@ function wpc_handle_export_data() {
         'categories' => array(),
         'features' => array(),
         'comparison_items' => array(),
+        'comparison_tools' => array(),
         'custom_lists' => array(),
         'settings' => array(),
     );
@@ -207,6 +209,34 @@ function wpc_handle_export_data() {
         if ( ! is_wp_error( $feat_terms ) ) {
             foreach ( $feat_terms as $term ) {
                 $export_data['features'][] = array(
+                    'name' => $term->name,
+                    'slug' => $term->slug,
+                    'description' => $term->description,
+                );
+            }
+        }
+    }
+
+    // Export Tool Categories
+    if ( isset( $should_export['tool_categories'] ) ) {
+        $tcat_terms = get_terms( array( 'taxonomy' => 'tool_category', 'hide_empty' => false ) );
+        if ( ! is_wp_error( $tcat_terms ) ) {
+            foreach ( $tcat_terms as $term ) {
+                $export_data['tool_categories'][] = array(
+                    'name' => $term->name,
+                    'slug' => $term->slug,
+                    'description' => $term->description,
+                );
+            }
+        }
+    }
+
+    // Export Tool Tags
+    if ( isset( $should_export['tool_tags'] ) ) {
+        $ttag_terms = get_terms( array( 'taxonomy' => 'tool_tag', 'hide_empty' => false ) );
+        if ( ! is_wp_error( $ttag_terms ) ) {
+            foreach ( $ttag_terms as $term ) {
+                $export_data['tool_tags'][] = array(
                     'name' => $term->name,
                     'slug' => $term->slug,
                     'description' => $term->description,
@@ -280,22 +310,34 @@ function wpc_handle_export_data() {
     // Export Settings
     if ( isset( $should_export['settings'] ) ) {
         $settings_to_export = array(
-            'wpc_primary_color',
-            'wpc_accent_color',
-            'wpc_secondary_color',
-            'wpc_card_border_color',
-            'wpc_pricing_banner_color',
-            'wpc_button_hover_color',
-            'wpc_show_plan_buttons',
-            'wpc_show_footer_button_global',
-            'wpc_filter_style',
-            'wpc_pt_header_bg',
-            'wpc_pt_header_text',
-            'wpc_pt_btn_bg',
-            'wpc_pt_btn_text',
-            'wpc_pt_btn_pos_table',
-            'wpc_pt_btn_pos_popup',
-            'wpc_schema_settings',
+            'wpc_primary_color', 'wpc_accent_color', 'wpc_secondary_color', 'wpc_card_border_color', 
+            'wpc_pricing_banner_color', 'wpc_button_hover_color', 'wpc_show_plan_buttons', 
+            'wpc_show_footer_button_global', 'wpc_filter_style', 'wpc_search_type', 'wpc_admin_layout_style',
+            'wpc_target_details', 'wpc_target_direct', 'wpc_target_pricing',
+            'wpc_pt_header_bg', 'wpc_pt_header_text', 'wpc_pt_btn_bg', 'wpc_pt_btn_text', 
+            'wpc_pt_btn_pos_table', 'wpc_pt_btn_pos_popup', 'wpc_schema_settings', 'wpc_enable_tools_module',
+            'wpc_default_list_style',
+            // Text Labels
+            'wpc_text_view_details', 'wpc_text_compare_alternatives', 'wpc_text_compare_now', 
+            'wpc_text_reviews', 'wpc_text_back_to_reviews', 'wpc_text_filters', 'wpc_text_search_placeholder',
+            'wpc_text_category', 'wpc_text_features', 'wpc_text_items_count', 'wpc_text_selected',
+            'wpc_text_clear_all', 'wpc_text_visit', 'wpc_text_about', 'wpc_text_sort_default',
+            'wpc_text_feat_header', 'wpc_text_feat_prod', 'wpc_text_feat_fees', 'wpc_text_feat_channels',
+            'wpc_text_feat_ssl', 'wpc_text_feat_supp', 'wpc_text_pros', 'wpc_text_cons',
+            'wpc_text_price', 'wpc_text_rating', 'wpc_text_mo_suffix', 'wpc_text_no_compare',
+            'wpc_text_remove', 'wpc_text_logo', 'wpc_text_analysis', 'wpc_text_start_price',
+            'wpc_text_dash_prev', 'wpc_text_reset_filt', 'wpc_text_select_fmt', 'wpc_text_clear',
+            'wpc_text_sel_prov', 'wpc_text_no_item', 'wpc_text_more', 'wpc_text_show_all',
+            'wpc_text_reveal_more', 'wpc_text_no_logo', 'wpc_text_visit_site', 'wpc_text_copied',
+            'wpc_text_coupon_label', 'wpc_text_preview', 'wpc_text_select_plan', 'wpc_text_pricing_header',
+            'wpc_text_pricing_sub', 'wpc_text_table_price', 'wpc_text_table_features', 'wpc_text_close',
+            'wpc_text_no_plans',
+            // Colors
+            'wpc_color_pros_bg', 'wpc_color_pros_text', 'wpc_color_cons_bg', 'wpc_color_cons_text',
+            'wpc_color_coupon_bg', 'wpc_color_coupon_text', 'wpc_color_coupon_hover', 'wpc_color_copied',
+            // Features
+            'wpc_ft_display_mode', 'wpc_ft_header_label', 'wpc_ft_header_bg', 'wpc_ft_check_color',
+            'wpc_ft_x_color', 'wpc_ft_alt_row_bg'
         );
 
         foreach ( $settings_to_export as $setting ) {
@@ -500,6 +542,81 @@ function wpc_handle_import_data() {
         }
     }
 
+    // Import Comparison Tools (only if allowed)
+    $import_tools = isset( $_POST['import_tools'] ) && $_POST['import_tools'] === 'true';
+    if ( $import_tools && ! empty( $data['comparison_tools'] ) ) {
+        foreach ( $data['comparison_tools'] as $tool_data ) {
+            $existing = get_page_by_path( $tool_data['post_name'], OBJECT, 'comparison_tool' );
+            
+            if ( $existing && $overwrite ) {
+                wp_update_post( array(
+                    'ID' => $existing->ID,
+                    'post_title' => $tool_data['post_title'],
+                    'post_content' => $tool_data['post_content'] ?? '',
+                    'post_status' => $tool_data['post_status'],
+                ));
+                $post_id = $existing->ID;
+                $results['tools_updated'] = ($results['tools_updated'] ?? 0) + 1;
+            } elseif ( ! $existing ) {
+                $post_id = wp_insert_post( array(
+                    'post_type' => 'comparison_tool',
+                    'post_title' => $tool_data['post_title'],
+                    'post_name' => $tool_data['post_name'],
+                    'post_content' => $tool_data['post_content'] ?? '',
+                    'post_status' => $tool_data['post_status'],
+                ));
+                $results['tools_created'] = ($results['tools_created'] ?? 0) + 1;
+            } else {
+                continue;
+            }
+
+            if ( $post_id && ! is_wp_error( $post_id ) ) {
+                // Import meta
+                if ( ! empty( $tool_data['meta'] ) ) {
+                    foreach ( $tool_data['meta'] as $key => $value ) {
+                        update_post_meta( $post_id, $key, $value );
+                    }
+                }
+
+                // Import taxonomies
+                if ( ! empty( $tool_data['tool_categories'] ) ) {
+                    wp_set_object_terms( $post_id, $tool_data['tool_categories'], 'tool_category' );
+                }
+                if ( ! empty( $tool_data['tool_tags'] ) ) {
+                    wp_set_object_terms( $post_id, $tool_data['tool_tags'], 'tool_tag' );
+                }
+            }
+        }
+    }
+
+    // Import Tool Categories
+    $import_tool_categories = isset( $_POST['import_tool_categories'] ) && $_POST['import_tool_categories'] === 'true';
+    if ( $import_tool_categories && ! empty( $data['tool_categories'] ) ) {
+        foreach ( $data['tool_categories'] as $cat ) {
+            if ( ! term_exists( $cat['slug'], 'tool_category' ) ) {
+                wp_insert_term( $cat['name'], 'tool_category', array(
+                    'slug' => $cat['slug'],
+                    'description' => $cat['description'] ?? '',
+                ));
+                $results['tool_categories_created'] = ( $results['tool_categories_created'] ?? 0 ) + 1;
+            }
+        }
+    }
+
+    // Import Tool Tags
+    $import_tool_tags = isset( $_POST['import_tool_tags'] ) && $_POST['import_tool_tags'] === 'true';
+    if ( $import_tool_tags && ! empty( $data['tool_tags'] ) ) {
+        foreach ( $data['tool_tags'] as $tag ) {
+            if ( ! term_exists( $tag['slug'], 'tool_tag' ) ) {
+                wp_insert_term( $tag['name'], 'tool_tag', array(
+                    'slug' => $tag['slug'],
+                    'description' => $tag['description'] ?? '',
+                ));
+                $results['tool_tags_created'] = ( $results['tool_tags_created'] ?? 0 ) + 1;
+            }
+        }
+    }
+
     wp_send_json_success( $results );
 }
 
@@ -567,6 +684,26 @@ function wpc_detect_conflicts() {
         }
     }
 
+    // Check tools
+    if ( ! empty( $data['comparison_tools'] ) ) {
+        foreach ( $data['comparison_tools'] as $tool_data ) {
+            $existing = get_page_by_path( $tool_data['post_name'], OBJECT, 'comparison_tool' );
+            if ( $existing ) {
+                $conflicts[] = array(
+                    'type' => 'tool',
+                    'slug' => $tool_data['post_name'],
+                    'title' => $tool_data['post_title'],
+                );
+            } else {
+                $new_items[] = array(
+                    'type' => 'tool',
+                    'slug' => $tool_data['post_name'],
+                    'title' => $tool_data['post_title'],
+                );
+            }
+        }
+    }
+
     wp_send_json_success( array(
         'conflicts' => $conflicts,
         'new_items' => $new_items,
@@ -575,6 +712,9 @@ function wpc_detect_conflicts() {
             'features_count' => count( $data['features'] ?? array() ),
             'items_count' => count( $data['comparison_items'] ?? array() ),
             'lists_count' => count( $data['custom_lists'] ?? array() ),
+            'tools_count' => count( $data['comparison_tools'] ?? array() ),
+            'tool_cats_count' => count( $data['tool_categories'] ?? array() ),
+            'tool_tags_count' => count( $data['tool_tags'] ?? array() ),
         ),
     ));
 }
@@ -720,6 +860,7 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_text' => '#92400e',
             'wpc_color_coupon_hover' => '#fde68a',
             'wpc_color_copied' => '#10b981',
+            'wpc_usecase_icon_color' => '#6366f1',
         ),
         'emerald' => array(
             'wpc_primary_color' => '#10b981',
@@ -743,6 +884,7 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_text' => '#c2410c',
             'wpc_color_coupon_hover' => '#fed7aa',
             'wpc_color_copied' => '#059669',
+            'wpc_usecase_icon_color' => '#10b981',
         ),
         'sunset' => array(
             'wpc_primary_color' => '#f97316',
@@ -766,6 +908,7 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_text' => '#991b1b',
             'wpc_color_coupon_hover' => '#fecaca',
             'wpc_color_copied' => '#ea580c',
+            'wpc_usecase_icon_color' => '#f97316',
         ),
         'ocean' => array(
             'wpc_primary_color' => '#0ea5e9',
@@ -789,6 +932,7 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_text' => '#3730a3',
             'wpc_color_coupon_hover' => '#c7d2fe',
             'wpc_color_copied' => '#0ea5e9',
+            'wpc_usecase_icon_color' => '#0ea5e9',
         ),
         'minimal' => array(
             'wpc_primary_color' => '#0f172a',
@@ -812,6 +956,7 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_text' => '#0f172a',
             'wpc_color_coupon_hover' => '#e2e8f0',
             'wpc_color_copied' => '#0f172a',
+            'wpc_usecase_icon_color' => '#0f172a',
         ),
     );
 }
@@ -1513,6 +1658,36 @@ function wpc_render_general_tab() {
                 </td>
             </tr>
 
+            <!-- Use Case Icon Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_usecase_icon_color"><?php _e( 'Use Case Icon Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_usecase_icon_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_usecase_icon_color', '#6366f1' ) ); ?>"
+                            onchange="document.getElementById('wpc_usecase_icon_color').value = this.value"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_usecase_icon_color" 
+                            name="wpc_usecase_icon_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_usecase_icon_color', '#6366f1' ) ); ?>"
+                            placeholder="#6366f1"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_usecase_icon_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description">
+                        Color for FontAwesome icons in Best Use Cases section. Default: <code>#6366f1</code> (indigo)
+                    </p>
+                </td>
+            </tr>
+
             <!-- Show Plan Selection Buttons -->
             <tr valign="top">
                 <th scope="row">
@@ -1825,6 +2000,15 @@ function wpc_render_import_export_tab() {
                     <label style="display: flex; align-items: center; gap: 5px;">
                         <input type="checkbox" class="wpc-export-opt" data-type="settings" checked /> Settings
                     </label>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" class="wpc-export-opt" data-type="tools" checked /> Comparison Tools
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" class="wpc-export-opt" data-type="tool_categories" checked /> Tool Categories
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" class="wpc-export-opt" data-type="tool_tags" checked /> Tool Tags
+                    </label>
                 </div>
             </div>
             
@@ -1861,6 +2045,15 @@ function wpc_render_import_export_tab() {
                 <label style="display: block; margin-bottom: 5px;">
                     <input type="checkbox" id="wpc-import-settings" /> Settings (Colors, Layout, etc.)
                 </label>
+                <label style="display: block; margin-bottom: 5px;">
+                    <input type="checkbox" id="wpc-import-tools" checked /> Comparison Tools
+                </label>
+                <label style="display: block; margin-bottom: 5px;">
+                    <input type="checkbox" id="wpc-import-tool-categories" checked /> Tool Categories
+                </label>
+                <label style="display: block; margin-bottom: 5px;">
+                    <input type="checkbox" id="wpc-import-tool-tags" checked /> Tool Tags
+                </label>
             </div>
             
             <button type="button" id="wpc-import-btn" class="button button-primary" disabled>
@@ -1896,6 +2089,56 @@ function wpc_render_import_export_tab() {
             
             <?php wp_nonce_field( 'wpc_ai_nonce', 'wpc_ai_bulk_nonce' ); ?>
             
+            <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">
+                <!-- Type Selection -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #4b5563;"><?php _e( 'What to Generate:', 'wp-comparison-builder' ); ?></label>
+                    <label style="margin-right: 20px; display: inline-flex; align-items: center;">
+                        <input type="radio" name="wpc_ai_gen_type" value="item" checked /> 
+                        <span style="margin-left: 5px;">Comparison Item</span>
+                    </label>
+                    <label style="display: inline-flex; align-items: center;">
+                        <input type="radio" name="wpc_ai_gen_type" value="tool" /> 
+                        <span style="margin-left: 5px;">Comparison Tool</span>
+                    </label>
+                </div>
+
+                <!-- Selective Sections (Collapsible or visible) -->
+                <div id="wpc-ai-sections-wrapper" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #4b5563;"><?php _e( 'Include Sections:', 'wp-comparison-builder' ); ?></label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="pros_cons" checked /> 
+                            <span style="margin-left: 5px;">Pros & Cons</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="pricing" checked /> 
+                            <span style="margin-left: 5px;">Pricing Plans</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="features" checked /> 
+                            <span style="margin-left: 5px;">Key Features</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="ratings" checked /> 
+                            <span style="margin-left: 5px;">Ratings & Specs</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="best_use_cases" checked /> 
+                            <span style="margin-left: 5px;">Best Use Cases</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Context Input -->
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #4b5563;">
+                        <?php _e( 'Context / Specific Instructions (Optional):', 'wp-comparison-builder' ); ?>
+                    </label>
+                    <textarea id="wpc-ai-context" rows="2" style="width: 100%; border-color: #d1d5db;" placeholder="e.g. Focus on budget-friendly features, or mention specific integration capabilities..."></textarea>
+                </div>
+            </div>
+            
             <div style="margin-bottom: 15px;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">
                     <?php _e( 'Products/Services to Generate:', 'wp-comparison-builder' ); ?>
@@ -1910,11 +2153,14 @@ Wix eCommerce"></textarea>
             
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 <select id="wpc-ai-bulk-provider" style="height: 30px; margin-right: 5px; border-color: #8b5cf6;">
-                    <option value=""><?php _e( 'Default Provider', 'wp-comparison-builder' ); ?></option>
-                    <option value="openai">OpenAI</option>
-                    <option value="gemini">Gemini</option>
-                    <option value="claude">Claude</option>
-                    <option value="custom">Custom</option>
+                    <option value=""><?php _e( 'Default Profile', 'wp-comparison-builder' ); ?></option>
+                    <?php
+                    $profiles = WPC_AI_Handler::get_profiles();
+                    foreach ( $profiles as $profile ) :
+                        $is_default = ! empty( $profile['is_default'] ) ? ' ★' : '';
+                    ?>
+                    <option value="<?php echo esc_attr( $profile['id'] ); ?>"><?php echo esc_html( $profile['name'] . ' (' . ucfirst( $profile['provider'] ) . ')' . $is_default ); ?></option>
+                    <?php endforeach; ?>
                 </select>
                 <button type="button" id="wpc-ai-bulk-generate" class="button button-primary" style="background: #6d28d9; border-color: #6d28d9;">
                     &#x2728; <?php _e( 'Generate All Items', 'wp-comparison-builder' ); ?>
@@ -2124,164 +2370,137 @@ Wix eCommerce"></textarea>
             pendingJsonData = null;
         });
         
-        // Modal Confirm Import
-        document.getElementById('wpc-modal-confirm').addEventListener('click', function() {
-            const statusEl = document.getElementById('wpc-import-status');
-            const modal = document.getElementById('wpc-conflict-modal');
+        // Modal Confirm Import (Batched)
+        document.getElementById('wpc-modal-confirm').addEventListener('click', async function() {
+            var statusEl = document.getElementById('wpc-import-status');
+            var modal = document.getElementById('wpc-conflict-modal');
+            var btn = this;
             
             // Collect which to override
-            const overrideSlugs = [];
+            var overrideSlugs = [];
             document.querySelectorAll('.wpc-conflict-cb:checked').forEach(cb => {
                 overrideSlugs.push(cb.dataset.slug);
             });
             
-            const formData = new FormData();
-            formData.append('action', 'wpc_import_data');
-            formData.append('nonce', nonce);
-            formData.append('json_data', pendingJsonData);
-            formData.append('overwrite', overrideSlugs.length > 0 ? 'true' : 'false');
-            formData.append('override_slugs', JSON.stringify(overrideSlugs));
-            formData.append('import_items', document.getElementById('wpc-import-items').checked ? 'true' : 'false');
-            formData.append('import_lists', document.getElementById('wpc-import-lists').checked ? 'true' : 'false');
-            formData.append('import_settings', document.getElementById('wpc-import-settings').checked ? 'true' : 'false');
-            formData.append('import_categories', document.getElementById('wpc-import-categories').checked ? 'true' : 'false');
-            formData.append('import_features', document.getElementById('wpc-import-features').checked ? 'true' : 'false');
+            // Prepare Data
+            try {
+                var fullData = JSON.parse(pendingJsonData);
+            } catch(e) {
+                statusEl.textContent = 'JSON Parse Error';
+                return;
+            }
             
             modal.style.display = 'none';
-            statusEl.textContent = 'Importing...';
+            statusEl.innerHTML = '<span class="wpc-spinner"></span> Starting Import...';
+            btn.disabled = true;
+
+            // 1. Separate items for batching
+            var items = fullData.comparison_items || [];
+            var tools = fullData.comparison_tools || [];
+            var totalItems = items.length + tools.length;
             
-            fetch(ajaxurl, { method: 'POST', body: formData })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        const r = data.data;
-                        let msg = '\u2713 Import complete!<br>';
-                        if (r.items_created || r.items_updated) msg += `Items: ${r.items_created || 0} created, ${r.items_updated || 0} updated<br>`;
-                        if (r.lists_created || r.lists_updated) msg += `Lists: ${r.lists_created || 0} created, ${r.lists_updated || 0} updated<br>`;
-                        if (r.categories_created) msg += `Categories: ${r.categories_created} created<br>`;
-                        if (r.features_created) msg += `Features: ${r.features_created} created<br>`;
-                        if (r.settings_updated) msg += `Settings: ${r.settings_updated} updated`;
-                        statusEl.innerHTML = msg;
-                    } else {
-                        statusEl.textContent = '\u2717 Error: ' + data.data;
-                    }
-                    pendingJsonData = null;
-                })
-                .catch(e => { statusEl.textContent = '\u2717 Import failed'; });
-        });
-        
-        // Sample JSON
-        document.getElementById('wpc-sample-btn').addEventListener('click', function() {
-            const sample = {
-                "version": "1.0",
-                "categories": [
-                    { "name": "Web Hosting", "slug": "web-hosting", "description": "General web hosting services" },
-                    { "name": "E-commerce", "slug": "ecommerce", "description": "E-commerce platforms" }
-                ],
-                "features": [
-                    { "name": "Free SSL", "slug": "free-ssl", "description": "" },
-                    { "name": "24/7 Support", "slug": "247-support", "description": "" },
-                    { "name": "Free Domain", "slug": "free-domain", "description": "" }
-                ],
-                "comparison_items": [
-                    {
-                        "post_title": "Sample Platform",
-                        "post_name": "sample-platform",
-                        "post_status": "publish",
-                        "post_content": "",
-                        "meta": {
-                            "_wpc_website_url": "https://example.com",
-                            "_wpc_short_description": "A sample platform showing all available fields",
-                            "_wpc_rating": "4.5",
-                            "_wpc_price": "$29",
-                            "_wpc_price_period": "/mo",
-                            "_wpc_external_logo_url": "",
-                            "_wpc_details_link": "https://example.com/review",
-                            "_wpc_direct_link": "https://example.com/go",
-                            "_wpc_button_text": "Visit Website",
-                            "_wpc_featured_badge_text": "Editor's Pick",
-                            "_wpc_featured_badge_color": "#6366f1",
-                            "_wpc_coupon_code": "SAVE20",
-                            "_wpc_coupon_label": "Get 20% Off",
-                            "_wpc_show_coupon": "1",
-                            "_wpc_pros": "Pro item 1\nPro item 2\nPro item 3",
-                            "_wpc_cons": "Con item 1\nCon item 2",
-                            "_wpc_pricing_plans": [
-                                {
-                                    "name": "Basic",
-                                    "price": "$9.99",
-                                    "period": "/mo",
-                                    "features": "Feature 1\nFeature 2\nFeature 3",
-                                    "link": "https://example.com/basic",
-                                    "button_text": "Get Started",
-                                    "show_popup": "1",
-                                    "show_table": "1",
-                                    "show_banner": "0",
-                                    "banner_text": "",
-                                    "banner_color": "#10b981"
-                                },
-                                {
-                                    "name": "Professional",
-                                    "price": "$29.99",
-                                    "period": "/mo",
-                                    "features": "All Basic features\nPriority Support\nAdvanced Analytics",
-                                    "link": "https://example.com/pro",
-                                    "button_text": "Choose Pro",
-                                    "show_popup": "1",
-                                    "show_table": "1",
-                                    "show_banner": "1",
-                                    "banner_text": "MOST POPULAR",
-                                    "banner_color": "#10b981"
-                                },
-                                {
-                                    "name": "Enterprise",
-                                    "price": "$99.99",
-                                    "period": "/mo",
-                                    "features": "All Pro features\nDedicated Support\nCustom Solutions",
-                                    "link": "https://example.com/enterprise",
-                                    "button_text": "Contact Sales",
-                                    "show_popup": "1",
-                                    "show_table": "1",
-                                    "show_banner": "1",
-                                    "banner_text": "BEST VALUE",
-                                    "banner_color": "#f59e0b"
-                                }
-                            ]
-                        },
-                        "categories": ["web-hosting", "ecommerce"],
-                        "features": ["free-ssl", "247-support", "free-domain"]
-                    }
-                ],
-                "custom_lists": [
-                    {
-                        "post_title": "Sample Custom List",
-                        "post_name": "sample-custom-list",
-                        "post_status": "publish",
-                        "meta": {
-                            "_wpc_list_items": [],
-                            "_wpc_enable_comparison": "1",
-                            "_wpc_show_filters": "1",
-                            "_wpc_initial_visible_count": "6",
-                            "_wpc_filter_layout": "top"
-                        }
-                    }
-                ],
-                "settings": {
-                    "wpc_primary_color": "#6366f1",
-                    "wpc_accent_color": "#0d9488",
-                    "wpc_secondary_color": "#1e293b",
-                    "wpc_card_border_color": "#e2e8f0",
-                    "wpc_pricing_banner_color": "#10b981"
+            // Remove items/tools from "meta batch" to keep it light
+            var metaBatchData = Object.assign({}, fullData);
+            delete metaBatchData.comparison_items;
+            delete metaBatchData.comparison_tools;
+            
+            // Helper to send data
+            async function sendBatch(name, dataChunk) {
+                var formData = new FormData();
+                formData.append('action', 'wpc_import_data');
+                formData.append('nonce', nonce);
+                formData.append('json_data', JSON.stringify(dataChunk));
+                formData.append('overwrite', overrideSlugs.length > 0 ? 'true' : 'false'); // Simplified global override check for now
+                formData.append('override_slugs', JSON.stringify(overrideSlugs));
+                
+                // Pass flags
+                formData.append('import_items', document.getElementById('wpc-import-items').checked ? 'true' : 'false');
+                formData.append('import_lists', document.getElementById('wpc-import-lists').checked ? 'true' : 'false');
+                formData.append('import_settings', document.getElementById('wpc-import-settings').checked ? 'true' : 'false');
+                formData.append('import_categories', document.getElementById('wpc-import-categories').checked ? 'true' : 'false');
+                formData.append('import_features', document.getElementById('wpc-import-features').checked ? 'true' : 'false');
+                formData.append('import_tools', document.getElementById('wpc-import-tools').checked ? 'true' : 'false');
+                formData.append('import_tool_categories', document.getElementById('wpc-import-tool-categories').checked ? 'true' : 'false');
+                formData.append('import_tool_tags', document.getElementById('wpc-import-tool-tags').checked ? 'true' : 'false');
+                
+                var res = await fetch(ajaxurl, { method: 'POST', body: formData });
+                return res.json();
+            }
+
+            // 2. Send Meta Batch (Categories, Features, Settings, Lists)
+            try {
+                statusEl.innerHTML = '<span class="wpc-spinner"></span> Importing settings & categories...';
+                await sendBatch('Meta Data', metaBatchData);
+            } catch(e) {
+                statusEl.textContent = 'Msg: Meta Import Failed';
+                btn.disabled = false;
+                return;
+            }
+
+            // 3. Process Items Sequentially
+            if (totalItems > 0 && (document.getElementById('wpc-import-items').checked || document.getElementById('wpc-import-tools').checked)) {
+                var completed = 0;
+                var successCount = 0;
+                
+                // Add Progress Bar if not exists
+                if (!document.getElementById('wpc-import-progress-bar')) {
+                    var pDiv = document.createElement('div');
+                    pDiv.id = 'wpc-import-progress-wrapper';
+                    pDiv.style.marginTop = '10px';
+                    pDiv.style.background = '#e5e7eb';
+                    pDiv.style.height = '6px';
+                    pDiv.style.borderRadius = '3px';
+                    pDiv.style.overflow = 'hidden';
+                    pDiv.innerHTML = '<div id="wpc-import-progress-bar" style="height:100%; width:0%; background:#16a34a; transition:width 0.2s;"></div>';
+                    statusEl.parentNode.appendChild(pDiv);
                 }
-            };
-            
-            const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'wpc-sample-import.json';
-            a.click();
-            URL.revokeObjectURL(url);
+                var bar = document.getElementById('wpc-import-progress-bar');
+                
+                // --- Import Items ---
+                if (document.getElementById('wpc-import-items').checked) {
+                    for (var i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        statusEl.innerHTML = '✓ ' + (i+1) + ' Item - ' + (item.post_title || 'Item') + ' Imported';
+                        // Keep a running log if needed or just current status
+                        // statusEl.innerHTML = 'Importing Item: ' + (item.post_title || 'Item') + ' (' + (completed+1) + '/' + totalItems + ')';
+                        bar.style.width = ((completed / totalItems) * 100) + '%';
+                        
+                        try {
+                            var payload = { version: "1.0", comparison_items: [item] };
+                            await sendBatch('Item ' + i, payload);
+                            successCount++;
+                        } catch(e) { console.error(e); }
+                        completed++;
+                    }
+                }
+                
+                // --- Import Tools ---
+                if (document.getElementById('wpc-import-tools').checked) {
+                    for (var i = 0; i < tools.length; i++) {
+                        var tool = tools[i];
+                        statusEl.innerHTML = '! ' + (i+1) + ' Tool - ' + (tool.post_title || 'Tool') + ' Imported';
+                         bar.style.width = ((completed / totalItems) * 100) + '%';
+                        
+                        try {
+                            var payload = { version: "1.0", comparison_tools: [tool] };
+                            await sendBatch('Tool ' + i, payload);
+                            successCount++;
+                        } catch(e) { console.error(e); }
+                        completed++;
+                    }
+                }
+                
+                bar.style.width = '100%';
+                statusEl.innerHTML = '<span style="color:#16a34a;">\u2713 Complete! ' + successCount + ' items processed.</span>';
+                setTimeout(function(){ 
+                    if(document.getElementById('wpc-import-progress-wrapper')) document.getElementById('wpc-import-progress-wrapper').remove(); 
+                }, 3000);
+            } else {
+                statusEl.innerHTML = '<span style="color:#16a34a;">\u2713 Import complete!</span>';
+            }
+
+            pendingJsonData = null;
+            btn.disabled = false;
         });
         
         // ========================================
@@ -2293,10 +2512,24 @@ Wix eCommerce"></textarea>
             var bulkNonce = document.getElementById('wpc_ai_bulk_nonce');
             if (!bulkBtn || !bulkNonce) return;
             
+            var isProcessing = false;
+            
             bulkBtn.addEventListener('click', async function() {
+                if (isProcessing) {
+                    // Stop Logic
+                    window.wpcBulkStop = true;
+                    bulkBtn.textContent = 'Stopping...';
+                    return;
+                }
+                
                 var textarea = document.getElementById('wpc-ai-bulk-products');
                 var provider = document.getElementById('wpc-ai-bulk-provider').value;
                 var products = textarea.value.trim().split('\n').filter(p => p.trim());
+                
+                // Get new options
+                var type = document.querySelector('input[name="wpc_ai_gen_type"]:checked').value;
+                var context = document.getElementById('wpc-ai-context').value.trim();
+                var sections = Array.from(document.querySelectorAll('.wpc-ai-section-opt:checked')).map(cb => cb.value);
                 
                 if (products.length === 0) {
                     wpcAdmin.toast('Please enter at least one product/service name', 'error');
@@ -2310,8 +2543,13 @@ Wix eCommerce"></textarea>
                 var barEl = document.getElementById('wpc-ai-bulk-bar');
                 var logEl = document.getElementById('wpc-ai-bulk-log');
                 
-                bulkBtn.disabled = true;
-                bulkBtn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Processing...';
+                // Reset State
+                isProcessing = true;
+                window.wpcBulkStop = false;
+                bulkBtn.innerHTML = '✕ Stop Generation';
+                bulkBtn.style.background = '#dc2626';
+                bulkBtn.style.borderColor = '#dc2626';
+                bulkBtn.style.color = '#fff';
                 progressEl.style.display = 'block';
                 logEl.innerHTML = '';
                 
@@ -2319,20 +2557,51 @@ Wix eCommerce"></textarea>
                 var success = 0;
                 var failed = 0;
                 
+                // Helper for delays
+                const sleep = ms => new Promise(r => setTimeout(r, ms));
+                
                 for (var i = 0; i < products.length; i++) {
+                    if (window.wpcBulkStop) {
+                        logEl.innerHTML += '<div style="color:#d97706; font-weight:bold;">Example: Stopped by user.</div>';
+                        break;
+                    }
+                
                     var name = products[i].trim();
-                    currentEl.textContent = 'Generating: ' + name + '...';
+                    currentEl.textContent = 'Generating (' + (type === 'tool' ? 'Tool' : 'Item') + '): ' + name + '...';
                     countEl.textContent = (i + 1) + ' / ' + products.length;
                     barEl.style.width = ((i + 1) / products.length * 100) + '%';
                     
                     try {
-                        var result = await wpcBulkGenerateItem(name, bulkNonce.value, provider);
+                        // Rate Limit Delay Protection (2s base delay)
+                        if (i > 0) await sleep(2000); 
+                        
+                        var result = await wpcBulkGenerateItem(name, bulkNonce.value, provider, type, context, sections);
+                        
                         if (result.success) {
                             success++;
                             logEl.innerHTML += '<div style="color:#16a34a;">✓ ' + name + ' - Created!</div>';
                         } else {
-                            failed++;
-                            logEl.innerHTML += '<div style="color:#dc2626;">✗ ' + name + ' - ' + result.error + '</div>';
+                            // Smart Retry on 429
+                            if (result.error && result.error.includes('429')) {
+                                currentEl.textContent = 'Rate Limit Hit (429). Pausing 30s...';
+                                logEl.innerHTML += '<div style="color:#d97706;">⚠ Rate limit hit for ' + name + '. Waiting 30s...</div>';
+                                await sleep(30000); // 30s cool-down
+                                
+                                // Retry Once
+                                currentEl.textContent = 'Retrying: ' + name + '...';
+                                result = await wpcBulkGenerateItem(name, bulkNonce.value, provider, type, context, sections);
+                                
+                                if (result.success) {
+                                    success++;
+                                    logEl.innerHTML += '<div style="color:#16a34a;">✓ ' + name + ' - Created (on retry)!</div>';
+                                } else {
+                                    failed++;
+                                    logEl.innerHTML += '<div style="color:#dc2626;">✗ ' + name + ' - ' + (result.error || 'Failed') + '</div>';
+                                }
+                            } else {
+                                failed++;
+                                logEl.innerHTML += '<div style="color:#dc2626;">✗ ' + name + ' - ' + (result.error || 'Failed') + '</div>';
+                            }
                         }
                     } catch (e) {
                         failed++;
@@ -2344,30 +2613,66 @@ Wix eCommerce"></textarea>
                 }
                 
                 currentEl.textContent = 'Complete! ' + success + ' created, ' + failed + ' failed.';
+                
+                // Reset UI
+                isProcessing = false;
+                window.wpcBulkStop = false;
                 bulkBtn.disabled = false;
                 bulkBtn.innerHTML = '&#x2728; Generate All Items';
+                bulkBtn.style.background = '#6d28d9';
+                bulkBtn.style.borderColor = '#6d28d9';
+                bulkBtn.style.color = '#fff';
+                
                 statusEl.innerHTML = success > 0 ? '<span style="color:#16a34a;">✓ ' + success + ' items created!</span>' : '';
             });
             
-            async function wpcBulkGenerateItem(name, nonce, provider) {
-                var prompt = `Generate comparison data for "${name}".
-Return JSON: {
+            async function wpcBulkGenerateItem(name, nonce, provider, type, context, sections) {
+                var prompt = '';
+                
+                if (type === 'tool') {
+                    prompt = `Generate data for a recommended tool/app named "${name}".
+${context ? 'Context/Instructions: ' + context + '\n' : ''}
+Return ONLY valid JSON with this structure:
+{
+  "title": "Tool Name",
+  "description": "One sentence description (max 120 chars)",
+  "badge": "Category/Label badge (e.g. 'Best for SEO')",
+  "price": "Free / $XX/mo",
+  "rating": "4.8",
+  "link": "https://example.com"
+}`;
+                } else {
+                    // Item Generation
+                    prompt = `Generate comparison data for "${name}".
+${context ? 'Context/Instructions: ' + context + '\n' : ''}
+Return ONLY valid JSON with this structure:
+{
   "title": "Product Name",
-  "description": "2-3 sentence description",
+  "public_name": "Display Name for Frontend",
+  "description": "2-3 sentence short description",
   "rating": 4.5,
   "price": "$29",
-  "period": "/mo",
-  "pros": ["Pro 1", "Pro 2", "Pro 3"],
-  "cons": ["Con 1", "Con 2"],
-  "pricing_plans": [{"name": "Basic", "price": "$9", "period": "/mo", "features": "Feature 1\\nFeature 2", "button_text": "Get Started"}]
-}`;
+  "period": "/mo"`;
+  
+                    if (sections.includes('pros_cons')) {
+                        prompt += `,\n  "pros": ["Pro 1", "Pro 2", "Pro 3"],\n  "cons": ["Con 1", "Con 2"]`;
+                    }
+                    if (sections.includes('pricing')) {
+                        prompt += `,\n  "pricing_plans": [{"name": "Basic", "price": "$9", "period": "/mo", "features": "Feature 1\\nFeature 2", "button_text": "Get Started"}]`;
+                    }
+                    if (sections.includes('best_use_cases')) {
+                        prompt += `,\n  "best_use_cases": [{"name": "Best for Beginners", "desc": "Easy setup and intuitive interface", "icon": "fa-solid fa-rocket"}, {"name": "Great for Small Business", "desc": "Affordable plans with essential features", "icon": "fa-solid fa-briefcase"}, {"name": "Ideal for Bloggers", "desc": "Content-focused tools and SEO features", "icon": "fa-solid fa-pen-nib"}, {"name": "Perfect for E-commerce", "desc": "Shopping cart and payment integrations", "icon": "fa-solid fa-shopping-cart"}]`;
+                    }
+                    
+                    prompt += `\n}`;
+                }
                 
                 // First, generate content with AI
                 var response = await jQuery.post(ajaxurl, {
                     action: 'wpc_ai_generate',
                     nonce: nonce,
                     prompt: prompt,
-                    provider: provider
+                    profile_id: provider // Now uses profile_id (passed from dropdown which contains profile IDs)
                 });
                 
                 if (!response.success) {
@@ -2376,21 +2681,35 @@ Return JSON: {
                 
                 var data = response.data;
                 
-                // Create the comparison item
-                var createResponse = await jQuery.post(ajaxurl, {
-                    action: 'wpc_ai_create_item',
-                    nonce: nonce,
-                    title: data.title || name,
-                    description: data.description || '',
-                    rating: data.rating || 4.5,
-                    price: data.price || '',
-                    period: data.period || '/mo',
-                    pros: JSON.stringify(data.pros || []),
-                    cons: JSON.stringify(data.cons || []),
-                    pricing_plans: JSON.stringify(data.pricing_plans || [])
-                });
-                
-                return createResponse;
+                if (type === 'tool') {
+                    // Create Tool
+                    return await jQuery.post(ajaxurl, {
+                        action: 'wpc_ai_create_tool',
+                        nonce: nonce,
+                        title: data.title || name,
+                        description: data.description || '',
+                        badge: data.badge || '',
+                        price: data.price || '',
+                        rating: data.rating || '',
+                        link: data.link || ''
+                    });
+                } else {
+                    // Create Item
+                    return await jQuery.post(ajaxurl, {
+                        action: 'wpc_ai_create_item',
+                        nonce: nonce,
+                        title: data.title || name,
+                        public_name: data.public_name || data.title || name,
+                        description: data.description || '',
+                        rating: data.rating || 4.5,
+                        price: data.price || '',
+                        period: data.period || '/mo',
+                        pros: JSON.stringify(data.pros || []),
+                        cons: JSON.stringify(data.cons || []),
+                        pricing_plans: JSON.stringify(data.pricing_plans || []),
+                        best_use_cases: JSON.stringify(data.best_use_cases || [])
+                    });
+                }
             }
         })();
         <?php endif; ?>
@@ -2425,90 +2744,101 @@ function wpc_render_json_schema_tab() {
         <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
             <h3 style="margin-top: 0; color: #2e7d32;"><?php _e( 'Complete Import Example', 'wp-comparison-builder' ); ?></h3>
             <p>Copy this JSON to import multiple categories, features, and items at once:</p>
+            <div style="margin-bottom: 5px;">
+                <button type="button" id="wpc-show-items-example" class="button button-primary" style="margin-right:5px;">Show Standard Example</button>
+                <button type="button" id="wpc-show-tools-example" class="button">Show Tools Example</button>
+            </div>
             <textarea id="wpc-complete-json" readonly style="width: 100%; height: 400px; font-family: monospace; font-size: 12px;">{
-  "version": "1.0",
+  "version": "1.1",
   "categories": [
-    { "name": "All-in-One Platform", "slug": "all-in-one-platform", "description": "Complete ecommerce solutions" },
-    { "name": "Open Source", "slug": "open-source", "description": "Free and open-source platforms" },
-    { "name": "Enterprise", "slug": "enterprise", "description": "Solutions for large businesses" },
-    { "name": "WordPress Plugin", "slug": "wordpress-plugin", "description": "WooCommerce and other WP solutions" }
+    { "name": "Category A", "slug": "category-a", "description": "Description for Category A" },
+    { "name": "Category B", "slug": "category-b", "description": "Description for Category B" }
   ],
   "features": [
-    { "name": "24/7 Support", "slug": "247-support", "description": "" },
-    { "name": "Free SSL", "slug": "free-ssl", "description": "" },
-    { "name": "Multi-Currency", "slug": "multi-currency", "description": "" },
-    { "name": "Abandoned Cart", "slug": "abandoned-cart", "description": "" },
-    { "name": "SEO Tools", "slug": "seo-tools", "description": "" },
-    { "name": "Dropshipping", "slug": "dropshipping", "description": "" }
+    { "name": "Feature 1", "slug": "feature-1", "description": "Details about Feature 1" },
+    { "name": "Feature 2", "slug": "feature-2", "description": "Details about Feature 2" }
+  ],
+  "tool_categories": [
+    { "name": "Tool Category A", "slug": "tool-cat-a", "description": "Description for Tool Cat A" },
+    { "name": "Tool Category B", "slug": "tool-cat-b", "description": "" }
+  ],
+  "tool_tags": [
+    { "name": "Tag A", "slug": "tag-a", "description": "" },
+    { "name": "Tag B", "slug": "tag-b", "description": "" }
   ],
   "comparison_items": [
     {
-      "post_title": "Shopify",
-      "post_name": "shopify",
+      "post_title": "Example Product 1",
+      "post_name": "example-product-1",
       "post_status": "publish",
       "meta": {
-        "_wpc_website_url": "https://shopify.com",
-        "_wpc_short_description": "Leading ecommerce platform for online stores",
+        "_wpc_website_url": "https://example.com",
+        "_wpc_short_description": "A brief description of this product.",
         "_wpc_rating": "4.8",
         "_wpc_price": "$29",
         "_wpc_price_period": "/mo",
-        "_wpc_featured_badge_text": "Top Choice",
+        "_wpc_featured_badge_text": "Top Pick",
         "_wpc_featured_badge_color": "#96bf48",
-        "_wpc_coupon_code": "SAVE10",
-        "_wpc_coupon_label": "Get 10% Off",
-        "_wpc_pros": ["Easy to use", "Great themes", "24/7 support"],
-        "_wpc_cons": ["Transaction fees", "Limited customization"],
+        "_wpc_product_category": "Service",
+        "_wpc_brand": "Brand Name",
+        "_wpc_hero_subtitle": "Subtitle text here",
+        "_wpc_analysis_label": "Verdict",
+        "_wpc_primary_features": ["303", "304"], 
+        "_wpc_pros": ["Pro point 1", "Pro point 2"],
+        "_wpc_cons": ["Con point 1"],
         "_wpc_pricing_plans": [
-          {"name": "Basic", "price": "$29", "period": "/mo", "features": ["Online store", "Unlimited products", "24/7 support"], "cta_text": "Start Free Trial", "cta_url": "https://shopify.com/basic"},
-          {"name": "Shopify", "price": "$79", "period": "/mo", "features": ["Everything in Basic", "5 staff accounts", "Professional reports"], "cta_text": "Start Free Trial", "cta_url": "https://shopify.com/standard", "is_popular": true},
-          {"name": "Advanced", "price": "$299", "period": "/mo", "features": ["Everything in Shopify", "15 staff accounts", "Advanced reports"], "cta_text": "Start Free Trial", "cta_url": "https://shopify.com/advanced"}
+          {"name": "Basic", "price": "$29", "period": "/mo", "features": ["Feature A", "Feature B"], "link": "https://example.com/basic", "button_text": "View Plan"}
+        ],
+        "_wpc_design_overrides": { "primary": "#96bf48", "accent": "#333333" }
+      },
+      "categories": ["category-a"],
+      "features": ["feature-1", "feature-2"]
+    }
+  ],
+  "comparison_tools": [
+    {
+      "post_title": "Example Tool 1",
+      "post_name": "example-tool-1",
+      "post_status": "publish",
+      "meta": {
+        "_tool_badge": "Recommended",
+        "_tool_link": "https://example-tool.com",
+        "_tool_button_text": "Try Free",
+        "_wpc_tool_short_description": "Useful tool description.",
+        "_wpc_tool_rating": "4.8",
+        "_wpc_tool_features": "Feature X\nFeature Y\nFeature Z",
+        "_wpc_tool_pricing_plans": [
+            { "name": "Pro", "price": "$129", "period": "/mo", "features": ["Limit 1", "Limit 2"] }
         ]
       },
-      "categories": ["all-in-one-platform"],
-      "features": ["247-support", "free-ssl", "abandoned-cart"]
-    },
+      "tool_categories": ["tool-cat-a"],
+      "tool_tags": ["tag-a"]
+    }
+  ],
+  "custom_lists": [
     {
-      "post_title": "WooCommerce",
-      "post_name": "woocommerce",
+      "post_title": "My Best List",
+      "post_name": "my-best-list",
       "post_status": "publish",
       "meta": {
-        "_wpc_website_url": "https://woocommerce.com",
-        "_wpc_short_description": "The most customizable ecommerce platform",
-        "_wpc_rating": "4.6",
-        "_wpc_price": "Free",
-        "_wpc_price_period": "",
-        "_wpc_featured_badge_text": "",
-        "_wpc_pros": ["Free to use", "Highly customizable", "Large community"],
-        "_wpc_cons": ["Requires hosting", "Steeper learning curve"]
-      },
-      "categories": ["open-source", "wordpress-plugin"],
-      "features": ["multi-currency", "seo-tools", "dropshipping"]
-    },
-    {
-      "post_title": "BigCommerce",
-      "post_name": "bigcommerce",
-      "post_status": "publish",
-      "meta": {
-        "_wpc_website_url": "https://bigcommerce.com",
-        "_wpc_short_description": "Enterprise-grade ecommerce for growth",
-        "_wpc_rating": "4.5",
-        "_wpc_price": "$29",
-        "_wpc_price_period": "/mo",
-        "_wpc_coupon_code": "BC15OFF",
-        "_wpc_coupon_label": "15% Discount"
-      },
-      "categories": ["all-in-one-platform", "enterprise"],
-      "features": ["247-support", "multi-currency", "seo-tools"]
+        "_wpc_list_enable_comparison": "1",
+        "_wpc_list_show_filters": "1",
+        "_wpc_list_initial_visible_count": "6",
+        "_wpc_list_filter_layout": "sidebar",
+        "_wpc_list_items": [] 
+      }
     }
   ],
   "settings": {
     "wpc_primary_color": "#6366f1",
     "wpc_accent_color": "#0d9488",
-    "wpc_secondary_color": "#1e293b"
+    "wpc_secondary_color": "#1e293b",
+    "wpc_enable_tools_module": "1",
+    "wpc_text_view_details": "View Details"
   }
 }</textarea>
-            <button type="button" class="button" onclick="navigator.clipboard.writeText(document.getElementById('wpc-complete-json').value); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy JSON', 2000);" style="margin-top: 10px;">Copy JSON</button>
-            <button type="button" class="button button-primary" onclick="var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([document.getElementById('wpc-complete-json').value],{type:'application/json'}));a.download='wpc-complete-import.json';a.click();" style="margin-top: 10px; margin-left: 5px;">Download as File</button>
+            <button type="button" id="wpc-copy-json-btn" class="button" style="margin-top: 10px;">Copy JSON</button>
+            <button type="button" id="wpc-download-json-btn" class="button button-primary" style="margin-top: 10px; margin-left: 5px;">Download as File</button>
         </div>
         
         <div style="background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 20px; margin-bottom: 20px;">
@@ -2581,14 +2911,41 @@ function wpc_render_json_schema_tab() {
                     <tr><td><code>_wpc_coupon_code</code></td><td>Coupon/promo code</td><td>string</td></tr>
                     <tr><td><code>_wpc_coupon_label</code></td><td>Coupon display label</td><td>string</td></tr>
                     <tr><td><code>_wpc_show_coupon</code></td><td>Show coupon ("1" or "0")</td><td>string</td></tr>
+                    <tr><td><code>_wpc_primary_features</code></td><td>Best Use Cases (IDs of features) for "Best For X" lists</td><td>array</td></tr>
+                    <tr><td><code>_wpc_product_category</code></td><td>Product Category (Service, Hosting, etc.)</td><td>string</td></tr>
+                    <tr><td><code>_wpc_brand</code></td><td>Brand Name (for Schema)</td><td>string</td></tr>
+                    <tr><td><code>_wpc_hero_subtitle</code></td><td>Hero Section Subtitle</td><td>string</td></tr>
+                    <tr><td><code>_wpc_analysis_label</code></td><td>Analysis/Verdict Label</td><td>string</td></tr>
+                    
+                    <!-- Advanced Fields -->
                     <tr style="background:#f0fdf4;"><td><code>_wpc_custom_fields</code></td><td>Custom key-value fields [{name, value}]</td><td>array</td></tr>
                     <tr style="background:#f0fdf4;"><td><code>_wpc_plan_features</code></td><td>Plan comparison features [{name, values:[]}]</td><td>array</td></tr>
                     <tr style="background:#f0fdf4;"><td><code>_wpc_competitors</code></td><td>Default competitor names/IDs</td><td>array</td></tr>
-                    <tr style="background:#f0fdf4;"><td><code>_wpc_text_overrides</code></td><td>Per-item text labels {pros_label, cons_label, ...}</td><td>object</td></tr>
-                    <tr style="background:#f0fdf4;"><td><code>_wpc_color_overrides</code></td><td>Per-item colors {primary, accent, border}</td><td>object</td></tr>
+                    <tr style="background:#f0fdf4;"><td><code>_wpc_text_labels</code></td><td>Per-item text labels {pros_label, cons_label, ...}</td><td>object</td></tr>
+                    <tr style="background:#f0fdf4;"><td><code>_wpc_design_overrides</code></td><td>Per-item colors {primary, accent, border}</td><td>object</td></tr>
+                    
+                    <!-- Schema Fields -->
                     <tr style="background:#eff6ff;"><td><code>_wpc_schema_type</code></td><td>Schema.org type (SoftwareApplication, etc.)</td><td>string</td></tr>
                     <tr style="background:#eff6ff;"><td><code>_wpc_schema_brand</code></td><td>Schema brand name</td><td>string</td></tr>
                     <tr style="background:#eff6ff;"><td><code>_wpc_schema_sku</code></td><td>Schema SKU identifier</td><td>string</td></tr>
+
+                    <!-- Comparison Tools -->
+                    <tr><td colspan="3" style="background:#f8fafc;"><strong>Comparison Tools</strong></td></tr>
+                    <tr><td><code>_tool_badge</code></td><td>Tool Badge Text</td><td>string</td></tr>
+                    <tr><td><code>_tool_link</code></td><td>Tool Affiliate/Direct Link</td><td>string</td></tr>
+                    <tr><td><code>_tool_button_text</code></td><td>Tool Button Text</td><td>string</td></tr>
+                    <tr><td><code>_wpc_tool_short_description</code></td><td>Tool Short Description</td><td>string</td></tr>
+                    <tr><td><code>_wpc_tool_rating</code></td><td>Tool Rating (0-5)</td><td>number</td></tr>
+                    <tr><td><code>_wpc_tool_features</code></td><td>Tool Features (newline separated)</td><td>string</td></tr>
+                    <tr><td><code>_wpc_tool_pricing_plans</code></td><td>Tool Pricing Plans Array</td><td>array</td></tr>
+
+                    <!-- Custom Lists -->
+                    <tr><td colspan="3" style="background:#f8fafc;"><strong>Custom Lists</strong></td></tr>
+                    <tr><td><code>_wpc_list_enable_comparison</code></td><td>Enable Comparison Checkbox ("1" or "0")</td><td>string</td></tr>
+                    <tr><td><code>_wpc_list_show_filters</code></td><td>Show Filters ("1" or "0")</td><td>string</td></tr>
+                    <tr><td><code>_wpc_list_filter_layout</code></td><td>Filter Layout ("top" or "sidebar")</td><td>string</td></tr>
+                    <tr><td><code>_wpc_list_initial_visible_count</code></td><td>Initial Visible Count</td><td>number</td></tr>
+                    <tr><td><code>_wpc_list_items</code></td><td>Manual List Items IDs (if source is manual)</td><td>array</td></tr>
                 </tbody>
             </table>
             <p class="description" style="margin-top: 10px;">
@@ -2597,6 +2954,152 @@ function wpc_render_json_schema_tab() {
             </p>
         </div>
     </div>
+    
+    <script>
+    (function() {
+        // Sample Data Objects
+        var sampleItemData = {
+          "version": "1.1",
+          "categories": [
+            { "name": "Category A", "slug": "category-a", "description": "Description for Category A" },
+            { "name": "Category B", "slug": "category-b", "description": "Description for Category B" }
+          ],
+          "features": [
+            { "name": "Feature 1", "slug": "feature-1", "description": "Details about Feature 1" },
+            { "name": "Feature 2", "slug": "feature-2", "description": "Details about Feature 2" }
+          ],
+          "comparison_items": [
+            {
+              "post_title": "Example Product 1",
+              "post_name": "example-product-1",
+              "post_status": "publish",
+              "meta": {
+                "_wpc_website_url": "https://example.com",
+                "_wpc_short_description": "A brief description of this product.",
+                "_wpc_rating": "4.8",
+                "_wpc_price": "$29",
+                "_wpc_price_period": "/mo",
+                "_wpc_featured_badge_text": "Top Pick",
+                "_wpc_featured_badge_color": "#96bf48",
+                "_wpc_pros": ["Pro point 1", "Pro point 2"],
+                "_wpc_cons": ["Con point 1"],
+                "_wpc_pricing_plans": [
+                  {"name": "Basic", "price": "$29", "period": "/mo", "features": ["Feature A", "Feature B"], "link": "https://example.com/basic", "button_text": "View Plan"}
+                ]
+              },
+              "categories": ["category-a"],
+              "features": ["feature-1", "feature-2"]
+            }
+          ],
+          "custom_lists": [
+            {
+              "post_title": "My Best List",
+              "post_name": "my-best-list",
+              "post_status": "publish",
+              "meta": {
+                "_wpc_list_enable_comparison": "1",
+                "_wpc_list_show_filters": "1",
+                "_wpc_list_initial_visible_count": "6",
+                "_wpc_list_filter_layout": "sidebar",
+                "_wpc_list_items": [] 
+              }
+            }
+          ],
+          "settings": {
+            "wpc_primary_color": "#6366f1",
+            "wpc_accent_color": "#0d9488",
+            "wpc_secondary_color": "#1e293b",
+            "wpc_enable_tools_module": "1",
+            "wpc_text_view_details": "View Details"
+          }
+        };
+
+        var sampleToolData = {
+          "version": "1.1",
+          "tool_categories": [
+            { "name": "Tool Category A", "slug": "tool-cat-a", "description": "Description for Tool Cat A" },
+            { "name": "Tool Category B", "slug": "tool-cat-b", "description": "" }
+          ],
+          "tool_tags": [
+            { "name": "Tag A", "slug": "tag-a", "description": "" },
+            { "name": "Tag B", "slug": "tag-b", "description": "" }
+          ],
+          "comparison_tools": [
+            {
+              "post_title": "Example Tool 1",
+              "post_name": "example-tool-1",
+              "post_status": "publish",
+              "meta": {
+                "_tool_badge": "Recommended",
+                "_tool_link": "https://example-tool.com",
+                "_tool_button_text": "Try Free",
+                "_wpc_tool_short_description": "Useful tool description.",
+                "_wpc_tool_rating": "4.8",
+                "_wpc_tool_features": "Feature X\nFeature Y\nFeature Z",
+                "_wpc_tool_pricing_plans": [
+                    { "name": "Pro", "price": "$129", "period": "/mo", "features": ["Limit 1", "Limit 2"] }
+                ]
+              },
+              "tool_categories": ["tool-cat-a"],
+              "tool_tags": ["tag-a"]
+            }
+          ]
+        };
+        
+        var textarea = document.getElementById('wpc-complete-json');
+        var itemsBtn = document.getElementById('wpc-show-items-example');
+        var toolsBtn = document.getElementById('wpc-show-tools-example');
+        
+        if (itemsBtn && toolsBtn && textarea) {
+            itemsBtn.addEventListener('click', function() {
+                textarea.value = JSON.stringify(sampleItemData, null, 2);
+                itemsBtn.classList.add('button-primary');
+                toolsBtn.classList.remove('button-primary');
+            });
+            
+            toolsBtn.addEventListener('click', function() {
+                textarea.value = JSON.stringify(sampleToolData, null, 2);
+                toolsBtn.classList.add('button-primary');
+                itemsBtn.classList.remove('button-primary');
+            });
+        }
+        
+        // Copy JSON Button
+        var copyBtn = document.getElementById('wpc-copy-json-btn');
+        if (copyBtn && textarea) {
+            copyBtn.addEventListener('click', function() {
+                // Use execCommand fallback since navigator.clipboard often fails in WP admin
+                textarea.select();
+                textarea.setSelectionRange(0, 99999); // For mobile
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(function() { copyBtn.textContent = 'Copy JSON'; }, 2000);
+                } catch(e) {
+                    copyBtn.textContent = 'Failed!';
+                    setTimeout(function() { copyBtn.textContent = 'Copy JSON'; }, 2000);
+                }
+                window.getSelection().removeAllRanges();
+            });
+        }
+        
+        // Download JSON Button
+        var downloadBtn = document.getElementById('wpc-download-json-btn');
+        if (downloadBtn && textarea) {
+            downloadBtn.addEventListener('click', function() {
+                var blob = new Blob([textarea.value], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'wpc-complete-import.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+    })();
+    </script>
     <?php
 }
 

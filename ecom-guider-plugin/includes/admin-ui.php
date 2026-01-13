@@ -584,6 +584,22 @@ function wpc_render_meta_box( $post ) {
                     <p class="description">Appears next to the star rating. Leave empty to hide.</p>
                 </div>
             </div>
+            
+            <div class="wpc-row">
+                <div class="wpc-col">
+                     <?php 
+                     $design_overrides = get_post_meta( $post->ID, '_wpc_design_overrides', true );
+                     if (!is_array($design_overrides)) $design_overrides = array();
+                     // Default to true/checked if not set (legacy behavior)
+                     $show_hero_logo = isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] : '1'; 
+                     ?>
+                    <label style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="wpc_show_hero_logo" value="1" <?php checked($show_hero_logo, '1'); ?> />
+                        <?php _e( 'Show Logo in Hero Section', 'wp-comparison-builder' ); ?>
+                    </label>
+                    <p class="description">If unchecked, the logo (icon) will be hidden in the hero banner.</p>
+                </div>
+            </div>
 
             <script>
             jQuery(document).ready(function($){
@@ -1798,6 +1814,18 @@ function wpc_render_meta_box( $post ) {
                              <label class="wpc-label">Description</label>
                              <textarea name="wpc_use_cases[<?php echo $index; ?>][desc]" class="wpc-input" style="height: 60px;"><?php echo $desc; ?></textarea>
                         </div>
+                        <div class="wpc-col">
+                            <label class="wpc-label">Icon Color (Optional)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input 
+                                    type="color" 
+                                    name="wpc_use_cases[<?php echo $index; ?>][icon_color]"
+                                    value="<?php echo esc_attr( isset($case['icon_color']) ? $case['icon_color'] : '' ); ?>"
+                                    style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                                />
+                                <small style="color: #666;">Leave empty to use global</small>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="wpc-row" style="margin-bottom: 0;">
@@ -1840,6 +1868,18 @@ function wpc_render_meta_box( $post ) {
                         <div class="wpc-col">
                              <label class="wpc-label">Description</label>
                              <textarea name="wpc_use_cases[${index}][desc]" class="wpc-input" style="height: 60px;"></textarea>
+                        </div>
+                        <div class="wpc-col">
+                            <label class="wpc-label">Icon Color (Optional)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input 
+                                    type="color" 
+                                    name="wpc_use_cases[${index}][icon_color]"
+                                    value=""
+                                    style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                                />
+                                <small style="color: #666;">Leave empty to use global</small>
+                            </div>
                         </div>
                     </div>
 
@@ -3345,6 +3385,7 @@ function wpc_save_meta_box( $post_id ) {
                     'desc'  => sanitize_textarea_field( $uc['desc'] ),
                     'icon'  => sanitize_text_field( $uc['icon'] ),
                     'image' => esc_url_raw( $uc['image'] ),
+                    'icon_color' => sanitize_hex_color( $uc['icon_color'] ?? '' ),
                 );
             }
         }
@@ -3621,6 +3662,7 @@ function wpc_save_meta_box( $post_id ) {
                 'coupon_text' => isset($_POST['wpc_color_coupon_text']) ? sanitize_hex_color($_POST['wpc_color_coupon_text']) : '',
                 'show_footer_popup' => isset($_POST['wpc_show_footer_popup']) ? '1' : '0',
                 'show_footer_table' => isset($_POST['wpc_show_footer_table']) ? '1' : '0',
+                'show_hero_logo' => isset($_POST['wpc_show_hero_logo']) ? '1' : '0',
             ),
             
             // Pros/Cons Colors (JSON)
@@ -3657,6 +3699,18 @@ function wpc_save_meta_box( $post_id ) {
         );
         
 
+
+        // Save Design Overrides to Meta (JSON)
+        update_post_meta( $post_id, '_wpc_design_overrides', $table_data['design_overrides'] );
+        
+        // Save Pros/Cons Colors to Meta (JSON)
+        update_post_meta( $post_id, '_wpc_pros_cons_colors', $table_data['pros_cons_colors'] );
+        
+        // Save Feature Table Options to Meta (JSON)
+        update_post_meta( $post_id, '_wpc_feature_table_options', $table_data['feature_table_options'] );
+        
+        // Save Text Labels to Meta (JSON)
+        update_post_meta( $post_id, '_wpc_text_labels', $table_data['text_labels'] );
 
         // Write to custom table
         $result = $db->update_item($post_id, $table_data);

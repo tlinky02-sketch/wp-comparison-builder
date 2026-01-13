@@ -166,6 +166,7 @@ function wpc_register_scripts() {
             'couponHover' => get_option( 'wpc_color_coupon_hover', '#fde68a' ),
             'copied' => get_option( 'wpc_color_copied', '#10b981' ),
             'stars' => get_option( 'wpc_star_rating_color', '#fbbf24' ), // Star Color
+            'usecaseIcon' => get_option( 'wpc_usecase_icon_color', '#6366f1' ), // Use Case Icon Color
         ),
         'texts' => $text_labels, // <--- NEW TEXTS OBJECT
         'visuals' => array( // New object for PT visuals
@@ -199,6 +200,14 @@ function wpc_register_scripts() {
         WPC_PLUGIN_URL . 'dist/assets/wp-plugin.css',
         array(),
         WPC_VERSION
+    );
+    
+    // Register FontAwesome 6 for icons (Best Use Cases, etc.)
+    wp_register_style(
+        'fontawesome',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+        array(),
+        '6.5.1'
     );
     
     // Inject Custom CSS Variables using wp_add_inline_style (like working plugin)
@@ -278,6 +287,7 @@ function wpc_register_scripts() {
     if ( $has_shortcode ) {
         wp_enqueue_script( 'wpc-app' );
         wp_enqueue_style( 'wpc-styles' ); // Inline CSS will be automatically included
+        wp_enqueue_style( 'fontawesome' ); // FontAwesome for icons
     }
 }
 add_action( 'wp_enqueue_scripts', 'wpc_register_scripts' );
@@ -1253,22 +1263,18 @@ function wpc_pricing_table_shortcode( $atts ) {
 
     $item_id = $attributes['id'];
 
-    // 1. Fetch Data
-    // We need to fetch ALL items to find the specific one (current API structure)
-    // Optimization: In a real DB scenario, we'd fetch just one. Here we rely on the cached json helper.
-    if ( ! function_exists( 'wpc_get_items' ) ) { } 
-    $data = wpc_get_items();
-    $items = $data['items'];
-    
-    // Find the item
-    // Use array_values to re-index after filtering to get the first match cleanly
-    $found_items = array_values(array_filter($items, function($i) use ($item_id) {
-        return strval($i['id']) === strval($item_id);
-    }));
+    // 1. Fetch Data (Optimized)
+    if ( ! function_exists( 'wpc_fetch_items_data' ) ) {
+        require_once plugin_dir_path( __FILE__ ) . 'includes/api-endpoints.php';
+    }
 
-    if (empty($found_items)) return "<!-- WPC Pricing Table: Item ID {$item_id} not found -->";
+    $data = wpc_fetch_items_data( array( $item_id ) );
     
-    $item = $found_items[0];
+    if ( empty( $data['items'] ) ) {
+        return "<!-- WPC Pricing Table: Item ID {$item_id} not found -->";
+    }
+    
+    $item = $data['items'][0];
 
     // 2. Resolve Settings
     // Priority: Shortcode Attr > Post Meta > Default
@@ -1403,9 +1409,39 @@ function wpc_pricing_table_shortcode( $atts ) {
     ob_start();
     ?>
     <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>">
-        <!-- Skeleton / Loading State -->
-        <div class="w-full h-64 bg-muted/10 animate-pulse rounded-xl border border-border flex items-center justify-center">
-            <span class="text-muted-foreground"><?php echo esc_html( get_option( 'wpc_text_loading_pricing', 'Loading Pricing Table...' ) ); ?></span>
+        <!-- SSR Lite Preview: Basic HTML to hold space and show content immediately -->
+        <div class="wpc-ssr-preview" style="padding: 1.5rem; background: #fff; border-radius: 0.75rem; border: 1px solidhsl(var(--border) / 0.2);">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Header -->
+                <div style="display: flex; align-items: start; justify-content: space-between; gap: 1rem;">
+                    <div style="flex: 1;">
+                         <?php if (!empty($item['show_hero_logo'])) : ?>
+                             <div style="width: 64px; height: 64px; margin-bottom: 1rem; border: 1px solid #e5e7eb; border-radius: 12px; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                                <?php if (!empty($item['logo'])) : ?>
+                                    <img src="<?php echo esc_url($item['logo']); ?>" alt="<?php echo esc_attr($item['name']); ?>" style="width: 100%; height: 100%; object-fit: contain;">
+                                <?php endif; ?>
+                             </div>
+                         <?php endif; ?>
+                         <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem 0;"><?php echo esc_html($item['name']); ?></h2>
+                         <?php if (!empty($item['description'])) : ?>
+                             <p style="color: #6b7280; margin: 0; line-height: 1.5;"><?php echo wp_kses_post($item['description']); ?></p>
+                         <?php endif; ?>
+                    </div>
+                </div>
+                
+                <!-- Pricing Plans (Simplified) -->
+                 <?php if (!empty($item['pricing_plans']) && is_array($item['pricing_plans'])) : 
+                     $plan = $item['pricing_plans'][0]; 
+                 ?>
+                    <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;"><?php echo esc_html($plan['title'] ?? 'Standard'); ?></h3>
+                        <div style="display: flex; align-items: baseline; gap: 0.25rem;">
+                             <span style="font-size: 2rem; font-weight: 800;"><?php echo esc_html($plan['price'] ?? '0'); ?></span>
+                             <span style="color: #6b7280;"><?php echo esc_html($plan['period'] ?? '/mo'); ?></span>
+                        </div>
+                    </div>
+                 <?php endif; ?>
+            </div>
         </div>
     </div>
     <?php

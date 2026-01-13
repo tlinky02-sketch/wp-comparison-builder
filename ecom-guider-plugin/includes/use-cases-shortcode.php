@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function wpc_use_cases_shortcode( $atts ) {
     $atts = shortcode_atts( array(
         'id' => '',
-        'columns' => '3',
+        'columns' => '4',
         'title' => '',
     ), $atts, 'wpc_use_cases' );
 
@@ -31,6 +31,7 @@ function wpc_use_cases_shortcode( $atts ) {
     // Enqueue React app if not already
     wp_enqueue_script( 'wpc-app' );
     wp_enqueue_style( 'wpc-app' );
+    wp_enqueue_style( 'fontawesome' ); // FontAwesome for icons
 
     $data_props = htmlspecialchars( json_encode( array(
         'items' => $use_cases,
