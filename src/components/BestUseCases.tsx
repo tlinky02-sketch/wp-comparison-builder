@@ -22,20 +22,24 @@ interface BestUseCasesProps {
 }
 
 const BestUseCases: React.FC<BestUseCasesProps> = ({ items, config, title }) => {
-    // Determine grid columns (default 4)
-    const cols = config?.columns || 4;
+    // Determine grid columns dynamically based on item count, up to the config limit (default 4)
+    const maxCols = config?.columns || 4;
+    const count = items.length;
 
-    // Grid class map for Tailwind (since we can't interpolate partial class names safely with PurgeCSS sometimes, but full names are better)
-    // Actually, responsive grid is requested.
-    // Default: 1 col mobile, 2 col tablet, N col desktop.
+    // Responsive logic: 
+    // 1 item: grid-cols-1 (always centered/full)
+    // 2 items: sm:grid-cols-2
+    // 3 items: sm:grid-cols-2 md:grid-cols-3
+    // 4+ items: sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
 
-    const getGridCols = (c: number) => {
-        if (c === 2) return "md:grid-cols-2";
-        if (c === 4) return "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
-        return "md:grid-cols-2 lg:grid-cols-3"; // Default 3
-    };
-
-    const gridClass = getGridCols(cols);
+    let gridClass = "grid-cols-1";
+    if (count >= 4) {
+        gridClass += " sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+    } else if (count === 3) {
+        gridClass += " sm:grid-cols-2 md:grid-cols-3";
+    } else if (count === 2) {
+        gridClass += " sm:grid-cols-2";
+    }
 
     // Get global icon color: custom usecase color > primary color
     const globalIconColor = (window as any).wpcSettings?.colors?.usecaseIcon;

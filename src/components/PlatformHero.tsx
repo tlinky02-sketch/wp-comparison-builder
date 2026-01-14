@@ -34,7 +34,8 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
                 {/* Left Column: Content */}
                 <div>
                     {/* Logo & Name - Hide if show_hero_logo is false (default true) */}
-                    {(item.show_hero_logo !== false) && (
+                    {/* Logo & Name - Hide if show_hero_logo is false (default true) */}
+                    {(item.show_hero_logo !== false && (item.show_hero_logo as any) !== '0' && (item.show_hero_logo as any) !== 'false') && (
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-sm border border-border/50 flex items-center justify-center overflow-hidden">
                                 {item.logo ? (

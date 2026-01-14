@@ -236,7 +236,7 @@ function wpc_render_meta_box( $post ) {
                     </div>
 
                     <label style="height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); font-size: 12px; display: flex; align-items: center; gap: 6px; color: white; cursor: pointer; user-select: none;">
-                        <input type="checkbox" id="wpc-ai-gen-taxonomies" checked style="margin: 0;" />
+                        <input type="checkbox" id="wpc-ai-gen-taxonomies" style="margin: 0;" />
                         Generate Tags and Categories
                     </label>
 
@@ -588,10 +588,8 @@ function wpc_render_meta_box( $post ) {
             <div class="wpc-row">
                 <div class="wpc-col">
                      <?php 
-                     $design_overrides = get_post_meta( $post->ID, '_wpc_design_overrides', true );
-                     if (!is_array($design_overrides)) $design_overrides = array();
-                     // Default to true/checked if not set (legacy behavior)
-                     $show_hero_logo = isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] : '1'; 
+                     $show_hero_logo = get_post_meta( $post->ID, '_wpc_show_hero_logo', true );
+                     if ( $show_hero_logo === '' ) $show_hero_logo = '1'; // Default to true if not set
                      ?>
                     <label style="display:flex; align-items:center; gap:8px;">
                         <input type="checkbox" name="wpc_show_hero_logo" value="1" <?php checked($show_hero_logo, '1'); ?> />
@@ -1815,16 +1813,37 @@ function wpc_render_meta_box( $post ) {
                              <textarea name="wpc_use_cases[<?php echo $index; ?>][desc]" class="wpc-input" style="height: 60px;"><?php echo $desc; ?></textarea>
                         </div>
                         <div class="wpc-col">
-                            <label class="wpc-label">Icon Color (Optional)</label>
+                            <label class="wpc-label">Icon Color</label>
+                            <?php 
+                            $has_custom_color = isset($case['icon_color']) && !empty($case['icon_color']);
+                            $color_value = $has_custom_color ? esc_attr($case['icon_color']) : '#6366f1';
+                            ?>
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <input 
-                                    type="color" 
-                                    name="wpc_use_cases[<?php echo $index; ?>][icon_color]"
-                                    value="<?php echo esc_attr( isset($case['icon_color']) ? $case['icon_color'] : '' ); ?>"
-                                    style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
-                                />
-                                <small style="color: #666;">Leave empty to use global</small>
+                                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                    <input 
+                                        type="checkbox" 
+                                        class="wpc-uc-color-toggle"
+                                        <?php echo $has_custom_color ? 'checked' : ''; ?>
+                                        onchange="var col = this.closest('.wpc-col'); col.querySelector('.wpc-uc-color-picker').style.display = this.checked ? 'flex' : 'none'; col.querySelector('.wpc-uc-color-value').value = this.checked ? col.querySelector('input[type=color]').value : '';"
+                                    />
+                                    <span style="font-size: 13px;">Use custom color</span>
+                                </label>
+                                <div class="wpc-uc-color-picker" style="display: <?php echo $has_custom_color ? 'flex' : 'none'; ?>; gap: 5px; align-items: center;">
+                                    <input 
+                                        type="color" 
+                                        value="<?php echo $color_value; ?>"
+                                        onchange="this.nextElementSibling.value = this.value"
+                                        style="width: 40px; height: 30px; border: 1px solid #ddd; padding: 0; cursor: pointer;"
+                                    />
+                                    <input 
+                                        type="hidden" 
+                                        name="wpc_use_cases[<?php echo $index; ?>][icon_color]"
+                                        class="wpc-uc-color-value"
+                                        value="<?php echo $has_custom_color ? $color_value : ''; ?>"
+                                    />
+                                </div>
                             </div>
+                            <small style="color: #888; font-size: 11px; margin-top: 3px; display: block;">Unchecked = uses global primary color</small>
                         </div>
                     </div>
 
@@ -1870,16 +1889,32 @@ function wpc_render_meta_box( $post ) {
                              <textarea name="wpc_use_cases[${index}][desc]" class="wpc-input" style="height: 60px;"></textarea>
                         </div>
                         <div class="wpc-col">
-                            <label class="wpc-label">Icon Color (Optional)</label>
+                            <label class="wpc-label">Icon Color</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <input 
-                                    type="color" 
-                                    name="wpc_use_cases[${index}][icon_color]"
-                                    value=""
-                                    style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
-                                />
-                                <small style="color: #666;">Leave empty to use global</small>
+                                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                    <input 
+                                        type="checkbox" 
+                                        class="wpc-uc-color-toggle"
+                                        onchange="var col = this.closest('.wpc-col'); col.querySelector('.wpc-uc-color-picker').style.display = this.checked ? 'flex' : 'none'; col.querySelector('.wpc-uc-color-value').value = this.checked ? col.querySelector('input[type=color]').value : '';"
+                                    />
+                                    <span style="font-size: 13px;">Use custom color</span>
+                                </label>
+                                <div class="wpc-uc-color-picker" style="display: none; gap: 5px; align-items: center;">
+                                    <input 
+                                        type="color" 
+                                        value="#6366f1"
+                                        onchange="this.nextElementSibling.value = this.value"
+                                        style="width: 40px; height: 30px; border: 1px solid #ddd; padding: 0; cursor: pointer;"
+                                    />
+                                    <input 
+                                        type="hidden" 
+                                        name="wpc_use_cases[${index}][icon_color]"
+                                        class="wpc-uc-color-value"
+                                        value=""
+                                    />
+                                </div>
                             </div>
+                            <small style="color: #888; font-size: 11px; margin-top: 3px; display: block;">Unchecked = uses global primary color</small>
                         </div>
                     </div>
 
@@ -3306,6 +3341,13 @@ function wpc_save_meta_box( $post_id ) {
     }
     if ( isset( $_POST['wpc_hero_subtitle'] ) ) {
         update_post_meta( $post_id, '_wpc_hero_subtitle', sanitize_text_field( $_POST['wpc_hero_subtitle'] ) );
+    }
+
+    // Save Hero Logo Visibility
+    if ( isset( $_POST['wpc_show_hero_logo'] ) ) {
+        update_post_meta( $post_id, '_wpc_show_hero_logo', '1' );
+    } else {
+        update_post_meta( $post_id, '_wpc_show_hero_logo', '0' );
     }
     if ( isset( $_POST['wpc_analysis_label'] ) ) {
         update_post_meta( $post_id, '_wpc_analysis_label', sanitize_text_field( $_POST['wpc_analysis_label'] ) );

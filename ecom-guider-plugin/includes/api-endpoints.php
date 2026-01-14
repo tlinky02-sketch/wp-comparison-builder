@@ -303,8 +303,7 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 'visitSiteLabel' => $l('visit_site', '_wpc_txt_visit_site'),
                 'couponLabel' => $l('coupon_label', '_wpc_txt_coupon_label'),
                 'copiedLabel' => $l('copied_label', '_wpc_txt_copied_label'),
-                'show_hero_logo' => isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] === '1' : true,
-                '_debug_hero_logo' => isset($design_overrides['show_hero_logo']) ? $design_overrides['show_hero_logo'] : 'NOT_SET',
+                'show_hero_logo' => get_post_meta($id, '_wpc_show_hero_logo', true) !== '0',
                 'featureHeader' => $l('feature_header', '_wpc_txt_feature_header'),
                 
                 'raw_features' => $feature_names,
