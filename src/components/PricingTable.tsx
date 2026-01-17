@@ -1,3 +1,4 @@
+﻿import { useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,27 @@ const PricingTable = ({
     displayContext = 'inline', // Default likely inline if not specified
     config
 }: PricingTableProps) => {
-    const plans = item.pricing_plans || [];
+    // Billing Mode State
+    const itemAny = item as any; // Cast for new billing properties
+    const billingMode = config?.billingMode || itemAny.billing_mode || 'monthly_only';
+    const monthlyLabel = config?.monthlyLabel || itemAny.monthly_label || 'Pay monthly';
+    const yearlyLabel = config?.yearlyLabel || itemAny.yearly_label || 'Pay yearly (save 25%)*';
+    const defaultBilling = config?.defaultBilling || itemAny.default_billing || 'monthly';
+
+    const [selectedBilling, setSelectedBilling] = useState<'monthly' | 'yearly'>(defaultBilling as 'monthly' | 'yearly');
+
+    let plans = item.pricing_plans || [];
+
+    // Product Variants: Filter Plans by Category
+    // config.category is passed from main-wp.tsx (activeCategory) or shortcode settings
+    if (config?.category && item.variants?.enabled && item.variants?.plans_by_category) {
+        const allowedIndices = item.variants.plans_by_category[config.category];
+        if (allowedIndices && Array.isArray(allowedIndices)) {
+            // Filter plans based on indices (Need to convert stored strings to numbers if needed, but JS handles loose check usually. Best to be safe)
+            const indices = allowedIndices.map(Number);
+            plans = plans.filter((_, idx) => indices.includes(idx));
+        }
+    }
     const showFeatures = !item.hide_plan_features;
 
     // 1. Settings & Visibility Logic
@@ -203,6 +224,41 @@ const PricingTable = ({
                 </div>
             )}
 
+            {/* Billing Period Toggle */}
+            {billingMode === 'both' && (
+                <div className="flex justify-center mb-4">
+                    <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1">
+                        <button
+                            onClick={() => setSelectedBilling('monthly')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${selectedBilling === 'monthly'
+                                ? 'shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            style={selectedBilling === 'monthly' ? {
+                                backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
+                                color: 'white'
+                            } : {}}
+                        >
+                            {monthlyLabel}
+                        </button>
+                        <button
+                            onClick={() => setSelectedBilling('yearly')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${selectedBilling === 'yearly'
+                                ? 'shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            style={selectedBilling === 'yearly' ? {
+                                backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
+                                color: 'white'
+                            } : {}}
+                        >
+                            {yearlyLabel}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+
             {/* Main Unified Card Container */}
             <div
                 className="w-full border border-border rounded-xl bg-card overflow-hidden flex flex-col"
@@ -235,8 +291,20 @@ const PricingTable = ({
                             <tr className="bg-card">
                                 {plans.map((plan, idx) => (
                                     <td key={idx} className={`p-4 text-center align-top ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
-                                        <div className="text-2xl font-bold truncate" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>{plan.price}</div>
-                                        {plan.period && <div className="text-xs text-muted-foreground truncate">{plan.period}</div>}
+                                        <div className="text-2xl font-bold truncate" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>
+                                            {billingMode === 'yearly_only'
+                                                ? ((plan as any).yearly_price || plan.price)
+                                                : billingMode === 'both' && selectedBilling === 'yearly'
+                                                    ? ((plan as any).yearly_price || plan.price)
+                                                    : plan.price
+                                            }
+                                        </div>
+                                        {plan.period && <div className="text-xs text-muted-foreground truncate">
+                                            {billingMode === 'yearly_only' || (billingMode === 'both' && selectedBilling === 'yearly')
+                                                ? '/yr'
+                                                : plan.period
+                                            }
+                                        </div>}
                                     </td>
                                 ))}
                             </tr>
@@ -339,141 +407,103 @@ const PricingTable = ({
                     </table>
                 </div>
 
-                {/* Mobile Grid View */}
-                <div className="md:hidden w-full">
-                    {/* Sticky Header: Plan Names */}
-                    <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border shadow-sm" style={{ borderColor: 'var(--pt-border)' }}>
-                        <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)', backgroundColor: 'var(--pt-header-bg)' }}>
-                            {plans.map((plan, idx) => (
-                                <div key={idx} className="p-2 text-center relative group pt-5">
-                                    {/* Discount Banner */}
-                                    {plan.show_banner === '1' && plan.banner_text && (
-                                        <div
-                                            className="absolute top-0 right-0 text-[10px] font-bold px-1.5 py-0.5 rounded-bl-md text-white shadow-sm z-10 leading-none"
-                                            style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981' }}
-                                        >
-                                            {plan.banner_text}
-                                        </div>
-                                    )}
-                                    <h4 className="font-bold text-xs truncate leading-tight" style={{ color: 'var(--pt-header-text)' }}>{plan.name}</h4>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="divide-y divide-border" style={{ borderColor: 'var(--pt-border)' }}>
-                        {/* Price Row */}
-                        <div className="bg-muted/10">
-                            <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{(window as any).wpcSettings?.texts?.tablePrice || 'Price'}</div>
-                            <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
-                                {plans.map((plan, idx) => (
-                                    <div key={idx} className="p-2 text-center">
-                                        <span className="font-bold text-sm block truncate" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>{plan.price}</span>
-                                        {plan.period && <span className="text-[10px] text-muted-foreground block truncate">{plan.period}</span>}
+                {/* Mobile Card View - Each Plan as Individual Card */}
+                <div className="md:hidden w-full space-y-4 p-4">
+                    {plans.map((plan, idx) => (
+                        <div
+                            key={idx}
+                            className="border border-border rounded-xl overflow-hidden bg-card shadow-sm"
+                            style={{ borderColor: 'var(--pt-border)' }}
+                        >
+                            {/* Plan Header */}
+                            <div
+                                className="p-4 text-center relative"
+                                style={{ backgroundColor: 'var(--pt-header-bg)', color: 'var(--pt-header-text)' }}
+                            >
+                                {/* Discount Banner */}
+                                {plan.show_banner === '1' && plan.banner_text && (
+                                    <div
+                                        className="absolute top-0 right-0 text-xs font-bold px-2 py-1 rounded-bl-md text-white shadow-sm z-10"
+                                        style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981' }}
+                                    >
+                                        {plan.banner_text}
                                     </div>
-                                ))}
+                                )}
+                                <h3 className="text-xl font-bold">{plan.name}</h3>
                             </div>
+
+                            {/* Price */}
+                            <div className="p-6 text-center border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
+                                <div className="text-3xl font-bold" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>
+                                    {billingMode === 'yearly_only'
+                                        ? ((plan as any).yearly_price || plan.price)
+                                        : billingMode === 'both' && selectedBilling === 'yearly'
+                                            ? ((plan as any).yearly_price || plan.price)
+                                            : plan.price
+                                    }
+                                </div>
+                                {plan.period && <div className="text-sm text-muted-foreground mt-1">
+                                    {billingMode === 'yearly_only' || (billingMode === 'both' && selectedBilling === 'yearly')
+                                        ? '/yr'
+                                        : plan.period
+                                    }
+                                </div>}
+                            </div>
+                            {/* Features */}
+                            {plan.features && showFeatures && (
+                                <div className="p-4 border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
+                                    <ul className="space-y-2 text-sm">
+                                        {plan.features.split('\n').filter(f => f.trim()).map((feature, i) => (
+                                            <li key={i} className="flex items-start gap-2">
+                                                <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }} />
+                                                <span>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Button */}
+                            {shouldShowPlanButton(plan) && plan.link && (
+                                <div className="p-4">
+                                    <Button
+                                        className="w-full shadow-sm transition-all"
+                                        style={{
+                                            backgroundColor: useOverrides && overrides.primary ? overrides.primary : 'var(--pt-btn-bg)',
+                                            color: 'var(--pt-btn-text)',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
+                                                e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
+                                                e.currentTarget.style.filter = 'none';
+                                            } else {
+                                                e.currentTarget.style.filter = 'brightness(90%)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = useOverrides && overrides.primary ? overrides.primary : 'var(--pt-btn-bg)';
+                                            e.currentTarget.style.filter = 'brightness(100%)';
+                                        }}
+                                        onClick={() => {
+                                            const shouldOpenNewTab = settings?.openNewTab !== false;
+                                            window.open(plan.link, shouldOpenNewTab ? '_blank' : '_self');
+                                        }}
+                                    >
+                                        {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Coupon */}
+                            {item.show_coupon && plan.coupon && (
+                                <div className="px-4 pb-4">
+                                    <div className="flex items-center justify-between bg-secondary/20 p-3 rounded-lg">
+                                        <span className="text-sm font-medium">Coupon: <code className="font-mono font-bold">{plan.coupon}</code></span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-
-                        {/* Action Buttons (Top/After Price) */}
-                        {hasAnyButtons && buttonPosition === 'after_price' && (
-                            <div className="bg-muted/5">
-                                <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
-                                    {plans.map((plan, idx) => (
-                                        <div key={idx} className="p-2 text-center">
-                                            {shouldShowPlanButton(plan) && plan.link && (
-                                                <a
-                                                    href={plan.link}
-                                                    target={config?.targetPricing || settings?.target_pricing || '_blank'}
-                                                    className="flex w-full items-center justify-center gap-1 py-1.5 rounded-md font-bold text-[10px] shadow-sm transition-all"
-                                                    rel="noreferrer"
-                                                    style={{
-                                                        backgroundColor: 'var(--pt-btn-bg)',
-                                                        color: 'var(--pt-btn-text)',
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
-                                                            e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
-                                                            e.currentTarget.style.filter = 'none';
-                                                        } else {
-                                                            e.currentTarget.style.filter = 'brightness(90%)';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
-                                                        e.currentTarget.style.filter = 'brightness(100%)';
-                                                    }}
-                                                >
-                                                    {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
-                                                </a>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Features Row */}
-                        {showFeatures && (
-                            <div>
-                                <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{(window as any).wpcSettings?.texts?.tableFeatures || 'Features'}</div>
-                                <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
-                                    {plans.map((plan, idx) => (
-                                        <div key={idx} className="p-2 align-top text-xs">
-                                            <ul className="space-y-1">
-                                                {plan.features.split('\n').map((feature, i) => (
-                                                    feature.trim() && (
-                                                        <li key={i} className="flex items-start gap-1 text-[10px] leading-tight text-left break-words">
-                                                            <Check className="w-2.5 h-2.5 flex-shrink-0 mt-0.5" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }} />
-                                                            <span className="text-muted-foreground">{feature.trim()}</span>
-                                                        </li>
-                                                    )
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Action Buttons (Bottom) */}
-                        {hasAnyButtons && buttonPosition === 'bottom' && (
-                            <div className="bg-muted/5">
-                                <div className="grid divide-x divide-border" style={{ gridTemplateColumns: `repeat(${plans.length}, 1fr)`, borderColor: 'var(--pt-border)' }}>
-                                    {plans.map((plan, idx) => (
-                                        <div key={idx} className="p-2 text-center">
-                                            {shouldShowPlanButton(plan) && plan.link && (
-                                                <a
-                                                    href={plan.link}
-                                                    target={config?.targetPricing || settings?.target_pricing || '_blank'}
-                                                    className="flex w-full items-center justify-center gap-1 py-1.5 rounded-md font-bold text-[10px] shadow-sm transition-all"
-                                                    rel="noreferrer"
-                                                    style={{
-                                                        backgroundColor: 'var(--pt-btn-bg)',
-                                                        color: 'var(--pt-btn-text)',
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
-                                                            e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
-                                                            e.currentTarget.style.filter = 'none';
-                                                        } else {
-                                                            e.currentTarget.style.filter = 'brightness(90%)';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
-                                                        e.currentTarget.style.filter = 'brightness(100%)';
-                                                    }}
-                                                >
-                                                    {plan.button_text || 'Select'}
-                                                </a>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    ))}
                 </div>
 
                 {/* Footer Link Button */}
@@ -506,7 +536,7 @@ const PricingTable = ({
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { Check, Star, ShoppingCart, Tag } from "lucide-react";
+import StarRating from "./StarRating";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +12,7 @@ export interface PricingPlan {
     link: string;
     show_button?: string;
     button_text?: string;
+    hero_button_text?: string;
     show_banner?: string;
     banner_text?: string;
     banner_color?: string;
@@ -42,6 +44,7 @@ export interface ComparisonItem {
     raw_features?: string[];
     details_link?: string;
     button_text?: string;
+    hero_button_text?: string;
     permalink?: string;
     description?: string;
     dashboard_image?: string;
@@ -98,6 +101,14 @@ export interface ComparisonItem {
     couponLabel?: string;
     copiedLabel?: string;
     featureHeader?: string;
+    variants?: {
+        enabled: boolean;
+        plans_by_category?: { [key: string]: number[] };
+        features_by_category?: { [key: string]: string[] };
+        use_cases_by_category?: { [key: string]: number[] };
+        default_category?: string;
+        selector_style?: string;
+    };
 }
 
 interface PlatformCardProps {
@@ -304,10 +315,12 @@ const PlatformCard = ({
                 <div className="min-w-0">
                     <h3 className="font-display font-bold text-lg text-foreground leading-tight truncate">{item.name}</h3>
                     {showRating && (
-                        <div className="flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium text-muted-foreground">{item.rating}</span>
-                        </div>
+                        <StarRating
+                            rating={item.rating || 0}
+                            size={14}
+                            color={(window as any).wpcSettings?.colors?.primary || '#fbbf24'}
+                            showLabel={true}
+                        />
                     )}
                 </div>
             </div>

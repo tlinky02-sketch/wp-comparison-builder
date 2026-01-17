@@ -124,6 +124,9 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     const [viewMode, setViewMode] = useState<'list' | 'details'>('list');
     const [singleItemId, setSingleItemId] = useState<string | null>(null);
 
+    // Product Variants: Active Category Context
+    const [activeCategory, setActiveCategory] = useState<string | null>(config.category || null);
+
     const comparisonRef = useRef<HTMLDivElement>(null);
 
     const MAX_COMPARE = 4;
@@ -211,8 +214,12 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             if (config.enableComparison === false) return;
 
             // console.log('Compare event received:', event.detail);
-            const { providerIds, itemIds, autoShow } = event.detail;
+            const { providerIds, itemIds, autoShow, category } = event.detail;
             const ids = providerIds || itemIds || [];
+
+            if (category) {
+                setActiveCategory(category);
+            }
 
             if (ids.length > 0) {
                 setSelectedItems(ids.map(String));
@@ -261,6 +268,37 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     // Derived State (Filtering & Sorting)
     const filteredItems = useMemo(() => {
         let result = items;
+
+        // Product Variants: Resolve Context (Price/Period)
+        // Update item price/period to match the first plan in the active category
+        if (activeCategory) {
+            result = result.map(item => {
+                if (item.variants?.enabled && item.variants?.plans_by_category) {
+                    const allowed = item.variants.plans_by_category[activeCategory];
+                    if (allowed && Array.isArray(allowed) && allowed.length > 0 && item.pricing_plans) {
+                        const firstIndex = Number(allowed[0]);
+                        if (item.pricing_plans[firstIndex]) {
+                            // Override features if available for this category
+                            let resolvedFeatures = item.raw_features;
+                            if (item.variants?.features_by_category && item.variants.features_by_category[activeCategory]) {
+                                const catFeatures = item.variants.features_by_category[activeCategory];
+                                if (Array.isArray(catFeatures) && catFeatures.length > 0) {
+                                    resolvedFeatures = catFeatures;
+                                }
+                            }
+
+                            return {
+                                ...item,
+                                price: item.pricing_plans[firstIndex].price,
+                                period: item.pricing_plans[firstIndex].period,
+                                raw_features: resolvedFeatures
+                            };
+                        }
+                    }
+                }
+                return item;
+            });
+        }
 
         // Config is now hoisted
 
@@ -623,7 +661,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                     footerButtonText={config.footerButtonText}
                     showHeaders={false}
                     displayContext={config.displayContext || 'inline'}
-                    config={config}
+                    config={{ ...config, category: activeCategory }}
                 />
             </div>
         );
@@ -639,7 +677,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             <div className="wpc-comparison-wrapper">
                 <Toaster />
                 <div className="w-full">
-                    <ComparisonTable items={filteredItems} onRemove={() => { }} config={config} />
+                    <ComparisonTable items={filteredItems} onRemove={() => { }} config={{ ...config, category: activeCategory }} />
                 </div>
             </div>
         );
@@ -1036,7 +1074,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                 selectedItems.length > 0 && showComparison && (
                     <div ref={comparisonRef} className="mt-16 pt-8 border-t border-border w-full">
                         <h2 className="text-2xl font-bold mb-6 px-2">Detailed Comparison</h2>
-                        <ComparisonTable items={selectedItemObjects} onRemove={handleRemoveFromComparison} labels={config.labels} config={config} />
+                        <ComparisonTable items={selectedItemObjects} onRemove={handleRemoveFromComparison} labels={config.labels} config={{ ...config, category: activeCategory }} />
                     </div>
                 )
             }
@@ -1044,7 +1082,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             {/* Pricing Popup */}
             {
                 detailsItem && (
-                    <PricingPopup item={detailsItem} onClose={handleCloseDetails} showPlanButtons={config.showPlanButtons} config={config} />
+                    <PricingPopup item={detailsItem} onClose={handleCloseDetails} showPlanButtons={config.showPlanButtons} config={{ ...config, category: activeCategory }} />
                 )
             }
         </div >

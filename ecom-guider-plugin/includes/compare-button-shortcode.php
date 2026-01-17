@@ -25,9 +25,52 @@ function wpc_compare_button_shortcode( $atts ) {
         'text'        => 'Compare Alternatives',
         'competitors' => '', // comma-separated item IDs
         'mode'        => 'button', // button | table
+        'category'    => '', // Product Variants Module
     ), $atts );
     
+    // Category Context
+    $category_slug = ! empty( $attributes['category'] ) ? sanitize_text_field( $attributes['category'] ) : '';
+
     $item_id = intval( $attributes['id'] );
+    
+    if ( empty( $item_id ) ) {
+        return '<p style="color: red;">Error: Item ID is required for compare button shortcode.</p>';
+    }
+    
+    // ... (existing code for current_item, competitors determination) ...
+    // Note: I need to duplicate or carefully replace to preserve logic.
+    // Since I cannot use "..." in replacement, I used a smaller range for replace_file_content or I have to include the whole block.
+    // The range 23-28 is whereatts are defined.
+    // I will replace the start of function.
+    
+    // Wait, I can't just replace the start and then jump to the event.
+    // I will use multiple ReplaceFileContent calls or one large one IF I have the context.
+    
+    // Let's replace the top part first to add 'category' to atts.
+    
+    // And I'll need to modify the JS part later in the file.
+    
+    // Actually, I'll split this into two calls for safety.
+    // Call 1: Add category to attributes and variable.
+    // Call 2: Add category to JS event dispatch.
+    // Call 3: Add category to data-config.
+    
+    // THIS CALL IS FOR STEP 1 and 3 (Config).
+    
+    // Wait, the "ReplacementContent" must be exact.
+    // I'll restart the plan for replace file content to be chunks.
+
+    // Let's start with just updating the attributes and grabbing the variable.
+    // Lines 23-28.
+    
+    
+    // Skipping to actual tool call generation.
+    // I will do 3 separate changes.
+
+    // CHANGE 1: Attributes
+    // CHANGE 2: React Config
+    // CHANGE 3: JS Event
+
     
     if ( empty( $item_id ) ) {
         return '<p style="color: red;">Error: Item ID is required for compare button shortcode.</p>';
@@ -233,7 +276,8 @@ function wpc_compare_button_shortcode( $atts ) {
         "viewMode": "<?php echo $is_table_mode ? 'comparison-table' : 'default'; ?>",
         "hideRemoveButton": <?php echo ($is_table_mode && !empty($competitor_ids)) ? 'true' : 'false'; ?>,
         "showItemsInitially": <?php echo $is_table_mode ? 'true' : 'false'; ?>,
-        "compareButtonMode": <?php echo $is_table_mode ? 'false' : 'true'; ?>
+        "compareButtonMode": <?php echo $is_table_mode ? 'false' : 'true'; ?>,
+        "category": "<?php echo esc_js( $category_slug ); ?>"
     }' style="display: block; width: 100%; margin-top: 12px;"></div>
     
     <style>
@@ -300,13 +344,13 @@ function wpc_compare_button_shortcode( $atts ) {
 
             // Dispatch new event
             var event = new CustomEvent('wpcCompareSelect', {
-                detail: { providerIds: allIds, autoShow: false, source: 'external-button' }
+                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
             });
             window.dispatchEvent(event);
 
             // Legacy Event for compatibility
             var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-                detail: { providerIds: allIds, autoShow: false, source: 'external-button' }
+                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
             });
             window.dispatchEvent(legacyEvent);
         }
@@ -323,13 +367,13 @@ function wpc_compare_button_shortcode( $atts ) {
             var allIds = [String(primaryId)].concat(ids);
 
             var event = new CustomEvent('wpcCompareSelect', {
-                detail: { providerIds: allIds, autoShow: true, source: 'external-button' }
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
             });
             window.dispatchEvent(event);
 
             // Legacy Event
             var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-                detail: { providerIds: allIds, autoShow: true, source: 'external-button' }
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
             });
             window.dispatchEvent(legacyEvent);
         };

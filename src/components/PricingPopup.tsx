@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ComparisonItem } from "./PlatformCard";
 import PricingTable from "./PricingTable";
 
@@ -11,6 +11,9 @@ interface PricingPopupProps {
 }
 
 const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupProps) => {
+    // Product Variants: Local Category State (defaults to active context or item default)
+    const [localCategory, setLocalCategory] = useState<string | null>(config?.category || item.variants?.default_category || null);
+
     // Lock body scroll when popup is open
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -45,12 +48,57 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
                     <X className="w-6 h-6" />
                 </button>
 
+                {/* Product Variants: Category Selector */}
+                {item.variants?.enabled && item.variants.plans_by_category && Object.keys(item.variants.plans_by_category).length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                        <button
+                            onClick={() => setLocalCategory(null)}
+                            className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${!localCategory
+                                ? "text-white shadow-md scale-105"
+                                : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                                }`}
+                            style={!localCategory ? {
+                                backgroundColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
+                                borderColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
+                            } : {}}
+                        >
+                            {(window as any).wpcSettings?.texts?.allPlans || 'All Plans'}
+                        </button>
+                        {Object.keys(item.variants.plans_by_category).map((catSlug) => {
+                            // Try to match slug to a pretty name from item.category if possible, else prettify slug
+                            const prettyName = catSlug
+                                .split('-')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ');
+
+                            const isActive = localCategory === catSlug;
+
+                            return (
+                                <button
+                                    key={catSlug}
+                                    onClick={() => setLocalCategory(catSlug)}
+                                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${isActive
+                                        ? "text-white shadow-md scale-105"
+                                        : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                                        }`}
+                                    style={isActive ? {
+                                        backgroundColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
+                                        borderColor: (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1') && item.design_overrides?.primary ? item.design_overrides.primary : ((window as any).wpcSettings?.colors?.primary || '#6366f1'),
+                                    } : {}}
+                                >
+                                    {prettyName}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+
                 <PricingTable
                     item={item}
                     showPlanButtons={showPlanButtons}
                     showHeaders={true}
                     displayContext="popup"
-                    config={config}
+                    config={{ ...config, category: localCategory }}
                 />
             </div>
         </div>

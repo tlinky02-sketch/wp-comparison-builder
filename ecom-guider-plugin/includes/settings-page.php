@@ -39,6 +39,9 @@ function wpc_register_settings() {
     // Filter Style Setting
     register_setting( 'wpc_settings_group', 'wpc_filter_style' );
     
+    // Comparison Table Features
+    register_setting( 'wpc_settings_group', 'wpc_compare_features' );
+    
     // Search Type Setting (Global)
     register_setting( 'wpc_settings_group', 'wpc_search_type' );
     
@@ -47,6 +50,10 @@ function wpc_register_settings() {
     
     // Module Toggles
     register_setting( 'wpc_modules_settings', 'wpc_enable_tools_module' );
+    register_setting( 'wpc_modules_settings', 'wpc_enable_variants_module' );
+    register_setting( 'wpc_modules_settings', 'wpc_variants_selector_style' );
+    register_setting( 'wpc_modules_settings', 'wpc_variants_show_badge' );
+    register_setting( 'wpc_modules_settings', 'wpc_variants_remember_selection' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );
@@ -1792,6 +1799,87 @@ function wpc_render_general_tab() {
             document.getElementById('wpc_button_hover_color_picker').value = '#059669';
         }
         </script>
+        
+        <hr style="margin: 40px 0;">
+        
+        <h2><?php _e( 'Comparison Table Features', 'wp-comparison-builder' ); ?></h2>
+        <p><?php _e( 'Select which features should appear in the comparison table when users compare items.', 'wp-comparison-builder' ); ?></p>
+        
+        <?php
+        // Get saved feature settings
+        $compare_features = get_option( 'wpc_compare_features', array() );
+        
+        // Ensure it's an array
+        if (!is_array($compare_features)) {
+            $compare_features = array();
+        }
+        
+        // Built-in features (always available)
+        $builtin_features = array(
+            'price' => __('Price', 'wp-comparison-builder'),
+            'rating' => __('Rating', 'wp-comparison-builder'),
+            'pros' => __('Pros', 'wp-comparison-builder'),
+            'cons' => __('Cons', 'wp-comparison-builder'),
+        );
+        
+        // Get dynamic tags from taxonomy
+        $tag_terms = get_terms( array( 
+            'taxonomy' => 'comparison_feature', 
+            'hide_empty' => false 
+        ));
+        ?>
+        
+        <table class="form-table">
+            <tr valign="top">
+                <th scope="row"><?php _e( 'Built-in Features', 'wp-comparison-builder' ); ?></th>
+                <td>
+                    <fieldset style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                        <?php foreach ( $builtin_features as $key => $label ) : 
+                            $is_checked = !isset($compare_features[$key]) || $compare_features[$key] === '1';
+                        ?>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="wpc_compare_features[<?php echo esc_attr($key); ?>]" value="1" <?php checked( $is_checked ); ?> />
+                            <span><?php echo esc_html($label); ?></span>
+                        </label>
+                        <?php endforeach; ?>
+                    </fieldset>
+                    <p class="description" style="margin-top: 10px;">
+                        <?php _e( 'Price, Rating, Pros, and Cons are built-in features.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">
+                    <?php _e( 'Tag Features', 'wp-comparison-builder' ); ?>
+                    <p class="description" style="font-weight: normal; margin-top: 5px;">
+                        <a href="<?php echo admin_url('edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item'); ?>"><?php _e('Manage Tags →', 'wp-comparison-builder'); ?></a>
+                    </p>
+                </th>
+                <td>
+                    <?php if ( !empty($tag_terms) && !is_wp_error($tag_terms) ) : ?>
+                    <fieldset style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa;">
+                        <?php foreach ( $tag_terms as $term ) : 
+                            $term_key = 'tag_' . $term->term_id;
+                            $is_checked = !isset($compare_features[$term_key]) || $compare_features[$term_key] === '1';
+                        ?>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="wpc_compare_features[<?php echo esc_attr($term_key); ?>]" value="1" <?php checked( $is_checked ); ?> />
+                            <span><?php echo esc_html($term->name); ?></span>
+                        </label>
+                        <?php endforeach; ?>
+                    </fieldset>
+                    <?php else : ?>
+                    <p class="description">
+                        <?php _e( 'No tags found.', 'wp-comparison-builder' ); ?> 
+                        <a href="<?php echo admin_url('edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item'); ?>"><?php _e('Add tags →', 'wp-comparison-builder'); ?></a>
+                    </p>
+                    <?php endif; ?>
+                    <p class="description" style="margin-top: 15px;">
+                        <?php _e( 'Unchecked features will be hidden from the comparison table. This can be overridden per Custom List.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+        </table>
         
         <?php submit_button(); ?>
     </form>

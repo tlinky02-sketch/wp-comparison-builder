@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Star, ExternalLink, ArrowRight, X, Clock, Calendar, Check, Monitor, Shield, Zap } from "lucide-react";
@@ -75,13 +75,13 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
                     {/* Actions */}
                     <div className="flex flex-wrap gap-4">
                         <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-primary/20" onClick={handleVisit}>
-                            {((window as any).wpcSettings?.texts?.visit || 'Visit')} {item.name} <ExternalLink className="w-4 h-4 ml-2" />
+                            {item.hero_button_text || `${((window as any).wpcSettings?.texts?.visit || 'Visit')} ${item.name}`} <ExternalLink className="w-4 h-4 ml-2" />
                         </Button>
                     </div>
                 </div>
 
                 {/* Right Column: Dashboard Image (Optional) */}
-                <div className="relative mt-8 lg:mt-0 hidden lg:block">
+                <div className="relative mt-8 lg:mt-0">
                     <div className="rounded-xl overflow-hidden border border-border shadow-2xl bg-card rotate-1 hover:rotate-0 transition-transform duration-500">
                         <div className="bg-muted px-4 py-2 border-b border-border flex items-center gap-2">
                             <div className="flex gap-1.5">

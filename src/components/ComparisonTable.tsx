@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Check, X, Star, ExternalLink, ShoppingBag, Tag } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,11 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
       setTimeout(restoreOriginal, 2000);
     }
   };
+
+  // Mobile: Active item index for tab switching
+  const [activeItemIndex, setActiveItemIndex] = useState(0);
+  const activeItem = items[activeItemIndex] || items[0];
+
   if (items.length === 0) {
     return (
       <div className="bg-card rounded-2xl border border-border p-12 text-center">
@@ -68,18 +74,62 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     );
   }
 
-  // TODO: Make this dynamic based on backend settings
-  const features = [
+  // Dynamic features based on backend settings
+  const compareFeatures = config?.compareFeatures || (window as any).wpcSettings?.compareFeatures || {};
+  const compareTagTerms = config?.compareTagTerms || (window as any).wpcSettings?.compareTagTerms || [];
+
+  // Built-in features (price, rating)
+  const builtinFeatures = [
     { key: "price", label: getText('priceLabel', "Price") },
     { key: "rating", label: getText('ratingLabel', "Rating") },
-    { key: "products", label: getText('featureProducts', "Products") },
-    { key: "fees", label: getText('featureFees', "Transaction Fees") },
-    { key: "channels", label: getText('featureChannels', "Sales Channels") },
-    { key: "ssl", label: getText('featureSsl', "Free SSL") },
-    { key: "support", label: getText('featureSupport', "Support") },
   ];
 
+  // Dynamic tag features from taxonomy
+  const tagFeatures = compareTagTerms.map((term: any) => ({
+    key: term.key, // e.g. "tag_123"
+    label: term.name,
+    slug: term.slug,
+  }));
+
+  // Combine all features
+  const allFeatures = [...builtinFeatures, ...tagFeatures];
+
+  // Filter features based on settings
+  const isConfigEmpty = Object.keys(compareFeatures).length === 0;
+
+  const features = allFeatures.filter(f => {
+    if (compareFeatures[f.key] === '1') return true;
+    // Default fallback for built-ins only if config is completely empty
+    if (isConfigEmpty && ['price', 'rating'].includes(f.key)) return true;
+    return false;
+  });
+
+  // Check if pros/cons should be shown
+  const showPros = compareFeatures.pros === '1' || isConfigEmpty;
+  const showCons = compareFeatures.cons === '1' || isConfigEmpty;
+
   const renderCell = (key: string, item: ComparisonItem) => {
+    // 1. Dynamic Tag Features
+    if (key.startsWith('tag_')) {
+      const term = compareTagTerms.find((t: any) => t.key === key);
+      if (!term) return <span className="text-muted-foreground/30">—</span>;
+
+      // Smart Legacy fallback: If tag name matches legacy field, show text value
+      const lowerName = term.name.toLowerCase();
+      const itemFeatures = item.features;
+
+      if (lowerName === 'products' && itemFeatures.products) return itemFeatures.products;
+      if ((lowerName === 'fees' || lowerName === 'transaction fees') && itemFeatures.fees) return itemFeatures.fees;
+      if ((lowerName === 'channels' || lowerName === 'sales channels') && itemFeatures.channels) return itemFeatures.channels;
+      if (lowerName === 'support' && itemFeatures.support) return itemFeatures.support;
+
+      // Boolean Tag Check
+      if (item.raw_features?.includes(term.name)) {
+        return <Check className="w-4 h-4 md:w-5 md:h-5 text-primary mx-auto" />;
+      }
+      return <span className="text-muted-foreground/30">—</span>;
+    }
+
     switch (key) {
       case "price":
         return <span className="font-bold text-primary">{item.price}</span>;
@@ -220,187 +270,194 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
               </tr>
             ))}
             {/* Pros */}
-            <tr className="transition-colors" style={{ backgroundColor: prosBg }}>
-              <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('prosLabel', "Pros")}</td>
-              {items.map((item) => (
-                <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
-                  <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                    style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
-                    {item.pros.slice(0, 3).map((pro, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
-                        <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
-                        <span className="min-w-0">{pro}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              ))}
-            </tr>
+            {showPros && (
+              <tr className="transition-colors" style={{ backgroundColor: prosBg }}>
+                <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('prosLabel', "Pros")}</td>
+                {items.map((item) => (
+                  <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
+                    <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
+                      style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
+                      {item.pros.slice(0, 3).map((pro, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
+                          <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
+                          <span className="min-w-0">{pro}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                ))}
+              </tr>
+            )}
             {/* Cons */}
-            <tr className="transition-colors" style={{ backgroundColor: consBg }}>
-              <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('consLabel', "Cons")}</td>
-              {items.map((item) => (
-                <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
-                  <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                    style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
-                    {item.cons.slice(0, 3).map((con, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
-                        <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
-                        <span className="min-w-0">{con}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              ))}
-            </tr>
+            {showCons && (
+              <tr className="transition-colors" style={{ backgroundColor: consBg }}>
+                <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('consLabel', "Cons")}</td>
+                {items.map((item) => (
+                  <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
+                    <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
+                      style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
+                      {item.cons.slice(0, 3).map((con, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
+                          <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
+                          <span className="min-w-0">{con}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                ))}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Mobile Side-by-Side View (Grid) */}
+      {/* Mobile: Tabbed Single-Item View */}
       <div className="md:hidden">
-        {/* Sticky Header: Item Names */}
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border shadow-sm">
-          <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-            {items.map((item) => (
-              <div key={item.id} className="p-1.5 text-center border-r border-border last:border-r-0 relative group flex flex-col items-center justify-center min-h-[60px]">
-                {!config?.hideRemoveButton && (
-                  <button
-                    onClick={() => onRemove(item.id)}
-                    className="absolute top-0.5 right-0.5 text-muted-foreground/50 hover:text-destructive p-1 bg-white/80 rounded-full z-10"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+        {/* Tab Bar: Logo + Name for each item */}
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
+          <div className="flex overflow-x-auto">
+            {items.map((item, idx) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveItemIndex(idx)}
+                className={cn(
+                  "flex-1 min-w-0 flex flex-col items-center gap-1 px-3 py-3 transition-all border-b-2",
+                  activeItemIndex === idx
+                    ? "border-primary bg-primary/5"
+                    : "border-transparent hover:bg-muted/50"
                 )}
-                <div className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-1 bg-white rounded p-0.5 border border-border/50 flex items-center justify-center overflow-hidden shrink-0">
+              >
+                <div className="w-8 h-8 rounded-lg bg-white p-1 border border-border/50 flex items-center justify-center overflow-hidden shrink-0">
                   {item.logo ? (
                     <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
                   ) : (
                     <ShoppingBag className="w-4 h-4 text-muted-foreground" />
                   )}
                 </div>
-                <h3 className="font-bold text-[10px] md:text-xs leading-none break-words w-full px-0.5 line-clamp-2">{item.name}</h3>
-              </div>
+                <span className={cn(
+                  "text-xs font-medium truncate max-w-full",
+                  activeItemIndex === idx ? "text-primary" : "text-muted-foreground"
+                )}>
+                  {item.name}
+                </span>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="divide-y divide-border">
-          {/* Price Row */}
-          <div className="bg-muted/10">
-            <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{getText('priceLabel', 'Price')}</div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-              {items.map((item) => (
-                <div key={item.id} className="p-2 text-center border-r border-border last:border-r-0">
-                  <span className="font-bold text-primary text-sm">{item.price}</span>
-                </div>
-              ))}
+        {/* Active Item Content */}
+        <div className="p-4 space-y-4">
+          {/* Header: Logo, Name, Rating, Price */}
+          <div className="flex items-start gap-4 pb-4 border-b border-border">
+            <div className="w-16 h-16 rounded-xl bg-white p-2 border border-border/50 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+              {activeItem.logo ? (
+                <img src={activeItem.logo} alt={activeItem.name} className="w-full h-full object-contain" />
+              ) : (
+                <ShoppingBag className="w-8 h-8 text-muted-foreground" />
+              )}
             </div>
-          </div>
-
-          {/* Rating Row */}
-          <div className="bg-muted/10">
-            <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase bg-muted/20">{getText('ratingLabel', 'Rating')}</div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-              {items.map((item) => (
-                <div key={item.id} className="p-2 text-center border-r border-border last:border-r-0 flex justify-center">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    <Star className="w-3 h-3 fill-current" />
-                    <span className="text-xs font-bold">{item.rating}</span>
-                  </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-lg mb-1">{activeItem.name}</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-1 text-amber-500">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span className="text-sm font-medium">{activeItem.rating}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Feature Rows */}
-          {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
-            <div key={feature.key}>
-              <div className="px-2 py-1 text-[10px] font-bold text-red-600/80 uppercase bg-red-50/50 border-y border-red-100/50">{feature.label}</div>
-              <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-                {items.map((item) => (
-                  <div key={item.id} className="p-2 text-center text-xs border-r border-border last:border-r-0 break-words">
-                    {renderCell(feature.key, item)}
-                  </div>
-                ))}
+                <span className="text-2xl font-bold text-primary">{activeItem.price}<span className="text-sm text-muted-foreground font-normal">{activeItem.moSuffix || getText('moSuffix', '/mo')}</span></span>
               </div>
+              {/* Coupon */}
+              {activeItem.coupon_code && (
+                <button
+                  className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 w-full justify-center"
+                  style={{
+                    backgroundColor: activeItem.design_overrides?.coupon_bg || couponBg,
+                    color: activeItem.design_overrides?.coupon_text || couponText,
+                    border: `1px solid ${couponText}40`
+                  }}
+                  onClick={(e) => { e.stopPropagation(); copyCoupon(activeItem.coupon_code || '', e.currentTarget); }}
+                >
+                  <Tag className="w-3 h-3" /> {getText('getCoupon', 'Code')}: {activeItem.coupon_code}
+                </button>
+              )}
             </div>
-          ))}
-
-          {/* Pros Row */}
-          <div>
-            <div className="px-2 py-1 text-[10px] font-bold text-green-700 uppercase bg-green-50/50">{getText('prosLabel', 'Pros')}</div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-              {items.map((item) => (
-                <div key={item.id} className="p-2 border-r border-border last:border-r-0 min-w-0">
-                  <ul className="space-y-1">
-                    {item.pros.slice(0, 3).map((pro, i) => (
-                      <li key={i} className="flex items-start gap-1 text-[10px] leading-tight text-left break-words">
-                        <Check className="w-2.5 h-2.5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <span className="whitespace-normal">{pro}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            {!config?.hideRemoveButton && (
+              <button
+                onClick={() => onRemove(activeItem.id)}
+                className="text-muted-foreground hover:text-destructive p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
-          {/* Cons Row */}
-          <div>
-            <div className="px-2 py-1 text-[10px] font-bold text-red-700 uppercase bg-red-50/50">{getText('consLabel', 'Cons')}</div>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-              {items.map((item) => (
-                <div key={item.id} className="p-2 border-r border-border last:border-r-0 min-w-0">
-                  <ul className="space-y-1">
-                    {item.cons.slice(0, 3).map((con, i) => (
-                      <li key={i} className="flex items-start gap-1 text-[10px] leading-tight text-left break-words">
-                        <X className="w-2.5 h-2.5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <span className="whitespace-normal">{con}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+          {/* Features */}
+          <div className="space-y-3">
+            {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
+              <div key={feature.key} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+                <span className="text-sm text-muted-foreground">{feature.label}</span>
+                <span className="text-sm font-medium">{renderCell(feature.key, activeItem)}</span>
+              </div>
+            ))}
           </div>
 
-          {/* CTA Row */}
-          <div className="bg-muted/5">
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-              {items.map((item) => (
-                <div key={item.id} className="p-2 text-center border-r border-border last:border-r-0">
-                  {(item.design_overrides?.show_footer_table !== false) && (
-                    <a
-                      href={item.details_link || '#'}
-                      target="_blank"
-                      className="flex w-full items-center justify-center gap-1 text-white transition-all py-1.5 rounded-md font-bold text-[10px] shadow-sm"
-                      rel="noreferrer"
-                      style={{
-                        backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
-                      }}
-                      onMouseEnter={(e) => {
-                        const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
-                        if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                        else e.currentTarget.style.filter = 'brightness(90%)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
-                        e.currentTarget.style.filter = '';
-                      }}
-                    >
-                      {item.button_text || getText('visitSite', "Visit")} <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
-              ))}
+          {/* Pros */}
+          {showPros && (
+            <div className="rounded-xl p-4" style={{ backgroundColor: prosBg }}>
+              <h4 className="font-bold text-sm mb-2" style={{ color: prosText }}>{getText('prosLabel', 'Pros')}</h4>
+              <ul className="space-y-2">
+                {activeItem.pros.slice(0, 4).map((pro, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
+                    <span>{pro}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          )}
+
+          {/* Cons */}
+          {showCons && (
+            <div className="rounded-xl p-4" style={{ backgroundColor: consBg }}>
+              <h4 className="font-bold text-sm mb-2" style={{ color: consText }}>{getText('consLabel', 'Cons')}</h4>
+              <ul className="space-y-2">
+                {activeItem.cons.slice(0, 4).map((con, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
+                    <span>{con}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* CTA Button */}
+          {(activeItem.design_overrides?.show_footer_table !== false) && (
+            <a
+              href={activeItem.details_link || '#'}
+              target={target}
+              className="flex w-full items-center justify-center gap-2 text-white transition-all py-3 rounded-xl font-bold text-sm shadow-lg"
+              rel="noreferrer"
+              style={{
+                backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+              }}
+              onMouseEnter={(e) => {
+                const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
+                if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                else e.currentTarget.style.filter = 'brightness(90%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
+                e.currentTarget.style.filter = '';
+              }}
+            >
+              {activeItem.button_text || getText('visitSite', "Visit Site")} <ExternalLink className="w-4 h-4" />
+            </a>
+          )}
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
 export default ComparisonTable;
+

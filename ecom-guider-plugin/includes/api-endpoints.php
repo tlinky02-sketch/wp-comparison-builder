@@ -230,6 +230,7 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
 
                 $badge_text = $get_val('badge_text', '_wpc_badge_text');
                 $button_text = $get_val('button_text', '_wpc_button_text');
+                $hero_button_text = get_post_meta($id, '_wpc_hero_button_text', true);
                 $description = $get_val('short_description', '_wpc_short_description') ?: get_the_excerpt();
                 // Duplicate assignment in original, preserving structure if user wants it, but likely can just keep one. 
                 // Wait, original had duplication. I will just keep strict logic flow.
@@ -288,9 +289,18 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 'period'   => (string) $period,
                 'features' => array_merge($feature_map, (array)$features),
                 'pricing_plans' => $pricing_plans,
+                'plan_features' => get_post_meta($id, '_wpc_plan_features', true) ?: [],
+                'use_cases' => get_post_meta($id, '_wpc_use_cases', true) ?: [],
                 'hide_plan_features' => $hide_plan_features, 
                 'show_plan_links' => $show_plan_links,
                 'show_coupon' => $show_coupon,
+                
+                // Billing Mode Settings
+                'billing_mode' => get_post_meta($id, '_wpc_billing_mode', true) ?: 'monthly_only',
+                'monthly_label' => get_post_meta($id, '_wpc_monthly_label', true) ?: 'Pay monthly',
+                'yearly_label' => get_post_meta($id, '_wpc_yearly_label', true) ?: 'Pay yearly (save 25%)*',
+                'default_billing' => get_post_meta($id, '_wpc_default_billing', true) ?: 'monthly',
+
                 'pros'     => $pros,
                 'cons'     => $cons,
                 
@@ -309,6 +319,8 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 'raw_features' => $feature_names,
                 'details_link' => $details_link,
                 'direct_link' => $direct_link,
+                'button_text' => $button_text,
+                'hero_button_text' => $hero_button_text,
                 'permalink' => get_permalink($id),
                 'description' => $description,
                 
@@ -368,7 +380,24 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                     return $out;
                 })(),
                 
-                'content' => apply_filters( 'the_content', get_the_content() )
+                'content' => apply_filters( 'the_content', get_the_content() ),
+                
+                // Product Variants Module Data
+                'variants' => (function() use ($id, $post_type) {
+                    if ($post_type !== 'comparison_item') return null;
+                    if (get_option('wpc_enable_variants_module') !== '1') return null;
+                    if (get_post_meta($id, '_wpc_variants_enabled', true) !== '1') return null;
+
+                    return [
+                        'enabled' => true,
+                        'default_category' => get_post_meta($id, '_wpc_default_category', true),
+                        'selector_style' => get_post_meta($id, '_wpc_category_selector_style', true) ?: 'default',
+                        'plans_by_category' => get_post_meta($id, '_wpc_plans_by_category', true) ?: [],
+                        'features_by_category' => get_post_meta($id, '_wpc_features_by_category', true) ?: [],
+                        'use_cases_by_category' => get_post_meta($id, '_wpc_use_cases_by_category', true) ?: [],
+                        'plan_features_by_category' => get_post_meta($id, '_wpc_plan_features_by_category', true) ?: [],
+                    ];
+                })()
             );
         }
         wp_reset_postdata();
@@ -428,3 +457,4 @@ function wpc_track_click( $request ) {
 
     return array( 'success' => true, 'clicks' => $new_clicks );
 }
+

@@ -4,7 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Register [wpc_tools] Shortcode
+ * Register [wpc_tools] Shortcode - Pure PHP SSR
+ * No React dependency - Fast initial load
  */
 add_shortcode( 'wpc_tools', 'wpc_tools_shortcode' );
 
@@ -14,6 +15,7 @@ function wpc_tools_shortcode( $atts ) {
         'ids'        => '',      // Manual tool IDs (comma-separated)
         'item_id'    => '',      // Item ID to pull collections from
         'style'      => 'grid',  // Display style: grid, list, detailed, compact
+        'columns'    => '3',     // Number of columns
     ), $atts );
 
     $tools = array();
@@ -70,22 +72,151 @@ function wpc_tools_shortcode( $atts ) {
         return '';
     }
 
-    // Get display style (default to grid)
-    $style = ! empty( $atts['style'] ) ? $atts['style'] : 'grid';
+    // Enqueue only styles (no React!)
+    wp_enqueue_style( 'wpc-styles' );
 
-    // Prepare config (EXACT format as comparison items)
-    $config = array(
-        'items' => $tools, // Changed from 'tools' to 'items'
-        'displayStyle' => $style, // grid, list, detailed, compact
-        'showCompare' => false,
-    );
+    // Get colors
+    $primary_color = get_option( 'wpc_primary_color', '#6366f1' );
+    $hover_color = get_option( 'wpc_button_hover_color', '' ) ?: '#4f46e5';
+    $star_color = get_option( 'wpc_star_color', '#fbbf24' );
+    $border_color = get_option( 'wpc_border_color', '#e2e8f0' );
 
-    // Render root div (use existing comparison root class instead of custom)
-    $props = esc_attr( wp_json_encode( $config ) );
-    return sprintf(
-        '<div class="wpc-comparison-root" data-props="%s"></div>',
-        $props
-    );
+    $columns = intval( $atts['columns'] );
+    $count = count( $tools );
+
+    ob_start();
+    ?>
+    <div class="wpc-tools-grid" style="width: 100%;">
+        <style>
+            .wpc-tools-grid-inner { 
+                display: grid; 
+                grid-template-columns: repeat(1, minmax(0, 1fr)); 
+                gap: 1.5rem; 
+            }
+            @media (min-width: 640px) {
+                .wpc-tools-grid-inner { grid-template-columns: repeat(<?php echo min($count, 2); ?>, minmax(0, 1fr)); }
+            }
+            @media (min-width: 768px) {
+                .wpc-tools-grid-inner { grid-template-columns: repeat(<?php echo min($count, $columns); ?>, minmax(0, 1fr)); }
+            }
+            .wpc-tool-card { transition: box-shadow 0.2s, transform 0.2s; }
+            .wpc-tool-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        </style>
+
+        <div class="wpc-tools-grid-inner">
+            <?php foreach ( $tools as $tool ) : 
+                $logo = esc_url( $tool['logo'] );
+                $name = esc_html( $tool['name'] );
+                $desc = esc_html( $tool['short_description'] );
+                $badge = esc_html( $tool['badge'] );
+                $rating = floatval( $tool['rating'] );
+                $link = esc_url( $tool['link'] );
+                $button_text = esc_html( $tool['button_text'] ?: 'View Details' );
+
+                // Star rating
+                $full_stars = floor( $rating );
+                $has_half = ( $rating - $full_stars ) >= 0.5;
+            ?>
+                <div class="wpc-tool-card" style="
+                    background: #fff;
+                    border-radius: 0.75rem;
+                    border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    padding: 1.5rem;
+                    display: flex;
+                    flex-direction: column;
+                ">
+                    <!-- Header -->
+                    <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+                        <?php if ( ! empty( $logo ) ) : ?>
+                        <div style="
+                            width: 3rem;
+                            height: 3rem;
+                            border-radius: 0.5rem;
+                            background: #f9fafb;
+                            border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                            padding: 0.375rem;
+                            flex-shrink: 0;
+                        ">
+                            <img src="<?php echo $logo; ?>" alt="<?php echo $name; ?>" style="width: 100%; height: 100%; object-fit: contain;" loading="lazy" />
+                        </div>
+                        <?php endif; ?>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <h3 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin: 0;"><?php echo $name; ?></h3>
+                                <?php if ( ! empty( $badge ) ) : ?>
+                                    <span style="
+                                        display: inline-block;
+                                        padding: 0.125rem 0.5rem;
+                                        background: <?php echo esc_attr( $primary_color ); ?>20;
+                                        color: <?php echo esc_attr( $primary_color ); ?>;
+                                        font-size: 0.75rem;
+                                        font-weight: 500;
+                                        border-radius: 9999px;
+                                    "><?php echo $badge; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <!-- Rating -->
+                            <div style="display: flex; align-items: center; gap: 0.25rem; margin-top: 0.25rem;">
+                                <?php for ( $i = 0; $i < $full_stars; $i++ ) : ?>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="<?php echo esc_attr( $star_color ); ?>" stroke="<?php echo esc_attr( $star_color ); ?>" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                <?php endfor; ?>
+                                <?php if ( $has_half ) : ?>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( $star_color ); ?>" stroke-width="1">
+                                        <defs><linearGradient id="half-tool"><stop offset="50%" stop-color="<?php echo esc_attr( $star_color ); ?>"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#half-tool)"></polygon>
+                                    </svg>
+                                <?php endif; ?>
+                                <span style="font-size: 0.75rem; color: #6b7280; margin-left: 0.25rem;"><?php echo number_format( $rating, 1 ); ?></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <?php if ( ! empty( $desc ) ) : ?>
+                    <p style="
+                        font-size: 0.875rem;
+                        color: #6b7280;
+                        line-height: 1.5;
+                        margin: 0 0 1rem 0;
+                        flex: 1;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    "><?php echo $desc; ?></p>
+                    <?php endif; ?>
+
+                    <!-- CTA (onclick to hide affiliate URL in status bar) -->
+                    <?php if ( ! empty( $link ) ) : ?>
+                    <button 
+                        type="button"
+                        onclick="window.open('<?php echo esc_js( $link ); ?>', '_blank');"
+                        style="
+                            display: block;
+                            width: 100%;
+                            text-align: center;
+                            padding: 0.625rem 1rem;
+                            background: <?php echo esc_attr( $primary_color ); ?>;
+                            color: #fff;
+                            font-weight: 500;
+                            font-size: 0.875rem;
+                            border-radius: 0.5rem;
+                            border: none;
+                            cursor: pointer;
+                            margin-top: auto;
+                            transition: background 0.2s;
+                        "
+                        onmouseover="this.style.background='<?php echo esc_attr( $hover_color ); ?>';"
+                        onmouseout="this.style.background='<?php echo esc_attr( $primary_color ); ?>';"
+                    ><?php echo $button_text; ?></button>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
 }
 
 /**

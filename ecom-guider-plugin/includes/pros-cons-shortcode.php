@@ -2,11 +2,10 @@
 /**
  * Shortcode: [wpc_pros_cons id="123"]
  * Displays the pros/cons table for a specific item inline.
- * Matches the design and behavior of the pricing table shortcode.
+ * Pure PHP SSR - No React dependency.
  */
 function wpc_pros_cons_shortcode( $atts ) {
-    // Ensure assets are loaded
-    wp_enqueue_script( 'wpc-app' );
+    // Enqueue only minimal styles (no React!)
     wp_enqueue_style( 'wpc-styles' );
 
     $attributes = shortcode_atts( array(

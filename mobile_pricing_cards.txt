@@ -1,0 +1,77 @@
+                {/* Mobile Card View - Each Plan as Individual Card */}
+                <div className="md:hidden w-full space-y-4 p-4">
+                    {plans.map((plan, idx) => (
+                        <div 
+                            key={idx} 
+                            className="border border-border rounded-xl overflow-hidden bg-card shadow-sm"
+                            style={{ borderColor: 'var(--pt-border)' }}
+                        >
+                            {/* Plan Header */}
+                            <div 
+                                className="p-4 text-center relative"
+                                style={{ backgroundColor: 'var(--pt-header-bg)', color: 'var(--pt-header-text)' }}
+                            >
+                                {/* Discount Banner */}
+                                {plan.show_banner === '1' && plan.banner_text && (
+                                    <div
+                                        className="absolute top-0 right-0 text-xs font-bold px-2 py-1 rounded-bl-md text-white shadow-sm z-10"
+                                        style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981' }}
+                                    >
+                                        {plan.banner_text}
+                                    </div>
+                                )}
+                                <h3 className="text-xl font-bold">{plan.name}</h3>
+                            </div>
+
+                            {/* Price */}
+                            <div className="p-6 text-center border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
+                                <div className="text-3xl font-bold" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>
+                                    {plan.price}
+                                </div>
+                                {plan.period && <div className="text-sm text-muted-foreground mt-1">{plan.period}</div>}
+                            </div>
+
+                            {/* Features  */}
+                            {plan.features && showFeatures && (
+                                <div className="p-4 border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
+                                    <ul className="space-y-2 text-sm">
+                                        {plan.features.split('\n').filter(f => f.trim()).map((feature, i) => (
+                                            <li key={i} className="flex items-start gap-2">
+                                                <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }} />
+                                                <span>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Button */}
+                            {shouldShowPlanButton(plan) && plan.link && (
+                                <div className="p-4">
+                                    <Button
+                                        className="w-full"
+                                        onClick={() => {
+                                            const shouldOpenNewTab = settings?.openNewTab !== false;
+                                            window.open(plan.link, shouldOpenNewTab ? '_blank' : '_self');
+                                        }}
+                                        style={{
+                                            backgroundColor: useOverrides && overrides.primary ? overrides.primary : 'var(--pt-btn-bg)',
+                                            color: 'var(--pt-btn-text)',
+                                        }}
+                                    >
+                                        {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Coupon */}
+                            {item.show_coupon && plan.coupon && (
+                                <div className="px-4 pb-4">
+                                    <div className="flex items-center justify-between bg-secondary/20 p-3 rounded-lg">
+                                        <span className="text-sm font-medium">Coupon: <code className="font-mono font-bold">{plan.coupon}</code></span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>

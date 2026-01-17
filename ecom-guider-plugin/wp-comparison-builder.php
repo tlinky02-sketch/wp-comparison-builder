@@ -33,7 +33,11 @@ require_once WPC_PLUGIN_DIR . 'includes/compare-button-shortcode.php';
 require_once WPC_PLUGIN_DIR . 'includes/feature-table-shortcode.php';
 require_once WPC_PLUGIN_DIR . 'includes/pros-cons-shortcode.php';
 require_once WPC_PLUGIN_DIR . 'includes/use-cases-shortcode.php'; // New Use Cases Feature
+require_once WPC_PLUGIN_DIR . 'includes/hero-shortcode.php'; // Hero Section SSR
 require_once WPC_PLUGIN_DIR . 'includes/tools-shortcode.php'; // Recommended Tools
+require_once WPC_PLUGIN_DIR . 'includes/ssr-card-renderer.php'; // SSR Card Template
+require_once WPC_PLUGIN_DIR . 'includes/list-shortcode-ssr.php'; // SSR List Shortcode
+require_once WPC_PLUGIN_DIR . 'includes/compare-shortcode-ssr.php'; // SSR Compare Shortcode
 require_once WPC_PLUGIN_DIR . 'includes/comparison-sets-db.php';
 require_once WPC_PLUGIN_DIR . 'includes/compare-alternatives-admin.php';
 
@@ -42,6 +46,8 @@ require_once WPC_PLUGIN_DIR . 'includes/migration.php';
 require_once WPC_PLUGIN_DIR . 'includes/ai-handler.php';
 require_once WPC_PLUGIN_DIR . 'includes/tools-cpt.php'; // Recommended Tools Module
 require_once WPC_PLUGIN_DIR . 'includes/settings-page-modules.php'; // Modules Settings Tab
+require_once WPC_PLUGIN_DIR . 'includes/variants-admin-ui.php'; // Product Variants Module
+require_once WPC_PLUGIN_DIR . 'includes/plan-features-tab.php'; // Plan Features Tab (Category-Aware)
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-database.php'; // Database Class
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-migrator.php'; // Migrator Class
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-tools-db.php'; // Tools Database Class
@@ -65,6 +71,32 @@ function wpc_install_db() {
             $tools_db->create_table();
         }
     }
+}
+
+/**
+ * Get comparison feature tag terms for frontend
+ */
+function wpc_get_compare_tag_terms() {
+    $terms = get_terms( array( 
+        'taxonomy' => 'comparison_feature', 
+        'hide_empty' => false 
+    ));
+    
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return array();
+    }
+    
+    $result = array();
+    foreach ( $terms as $term ) {
+        $result[] = array(
+            'id' => $term->term_id,
+            'key' => 'tag_' . $term->term_id,
+            'name' => $term->name,
+            'slug' => $term->slug,
+        );
+    }
+    
+    return $result;
 }
 
 /**
@@ -186,6 +218,8 @@ function wpc_register_scripts() {
         'target_details' => get_option( 'wpc_target_details', '_blank' ),
         'target_direct' => get_option( 'wpc_target_direct', '_blank' ),
         'target_pricing' => get_option( 'wpc_target_pricing', '_blank' ),
+        'compareFeatures' => get_option( 'wpc_compare_features', array() ),
+        'compareTagTerms' => wpc_get_compare_tag_terms(),
         'initialData' => $initial_data // <--- INJECTED HERE
     );
 
@@ -252,42 +286,38 @@ function wpc_register_scripts() {
     // Check for shortcode presence
     global $post;
     
-    // Check for custom shortcode tag setting if we decide to implement it, 
-    // for now we support wpc_compare, wpc_list, wpc_hero, wpc_compare_button 
-    // and their legacy equivalents.
+    // ========================================
+    // SSR SHORTCODES (NO REACT NEEDED):
+    // - wpc_compare, wpc_list, wpc_hero
+    // - wpc_pros_cons, wpc_use_cases
+    // - wpc_feature_table, wpc_tools
+    // ========================================
+    // REACT BUNDLE ONLY NEEDED FOR:
+    // - wpc_pricing_table (interactive pricing popup)
+    // - wpc_compare_button (comparison table popup)
+    // ========================================
     
-    $legacy_shortcodes = array(
-        'ecommerce_guider_compare',
-        'ecommerce_guider_list',
-        'ecommerce_guider_hero',
-        'ecommerce_compare_button'
-    );
-    
-    $new_shortcodes = array(
-        'wpc_compare',
-        'wpc_list',
-        'wpc_hero',
+    $react_shortcodes = array(
+        'wpc_pricing_table',
         'wpc_compare_button',
-        'wpc_pricing_table'
+        'ecommerce_compare_button' // Legacy
     );
     
-    $all_shortcodes = array_merge($new_shortcodes, $legacy_shortcodes);
-    
-    $has_shortcode = false;
+    $needs_react = false;
     if ( is_a( $post, 'WP_Post' ) ) {
-        foreach ( $all_shortcodes as $tag ) {
+        foreach ( $react_shortcodes as $tag ) {
             if ( has_shortcode( $post->post_content, $tag ) ) {
-                $has_shortcode = true;
+                $needs_react = true;
                 break;
             }
         }
     }
     
-    // ONLY enqueue on pages with shortcodes
-    if ( $has_shortcode ) {
+    // Only enqueue React bundle on pages that REALLY need it (pricing table popups)
+    if ( $needs_react ) {
         wp_enqueue_script( 'wpc-app' );
-        wp_enqueue_style( 'wpc-styles' ); // Inline CSS will be automatically included
-        wp_enqueue_style( 'fontawesome' ); // FontAwesome for icons
+        wp_enqueue_style( 'wpc-styles' );
+        wp_enqueue_style( 'fontawesome' );
     }
 }
 add_action( 'wp_enqueue_scripts', 'wpc_register_scripts' );
@@ -686,7 +716,11 @@ function wpc_list_shortcode( $atts ) {
     $attributes = shortcode_atts( array(
         'id' => '',
         'style' => '',
+        'category' => '', // Product Variants Module
     ), $atts );
+
+    // Category Context
+    $category_slug = ! empty( $attributes['category'] ) ? sanitize_text_field( $attributes['category'] ) : '';
 
     if ( empty( $attributes['id'] ) ) return '';
 
@@ -863,12 +897,27 @@ function wpc_list_shortcode( $atts ) {
     $items = $data['items'];
 
     // 2. Filter & Modify Data
-    // 2. Filter & Modify Data
     if ( ! empty( $specific_ids ) ) {
         $items = array_filter( $items, function($item) use ($specific_ids) {
             return in_array( $item['id'], $specific_ids );
         });
-        
+    }
+    
+    // Product Variants Module: Filter by Category
+    if ( ! empty( $category_slug ) ) {
+        $items = array_filter( $items, function($item) use ($category_slug) {
+            // If item has variants enabled, strict check category availability
+            if ( isset($item['variants']) && $item['variants']['enabled'] === true ) {
+                $plans_map = $item['variants']['plans_by_category'] ?? [];
+                if ( empty( $plans_map[ $category_slug ] ) ) {
+                    return false; // Exclude if no plans for this category
+                }
+            }
+            return true;
+        });
+    }
+
+    if ( ! empty( $specific_ids ) ) {
         // Sort items: Featured First, then by Saved Order
         // Prepare featured IDs for easy lookup
         $featured_ids_array = !empty($featured) ? (array)$featured : [];
@@ -1148,6 +1197,7 @@ function wpc_list_shortcode( $atts ) {
             'couponText'  => get_post_meta($post_id, '_wpc_list_color_coupon_text', true) ?: get_option('wpc_color_coupon_text', '#92400e'),
             'couponHover' => get_post_meta($post_id, '_wpc_list_color_coupon_hover', true) ?: get_option('wpc_color_coupon_hover', '#fde68a'),
             'copied'      => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
+            'category'    => $category_slug, // Product Variants Module
         ],
     );
     
@@ -1222,7 +1272,20 @@ function wpc_list_shortcode( $atts ) {
     <style><?php echo $css_rules; ?></style>
     <?php endif; ?>
 
-    <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>"></div>
+    <!-- Skeleton placeholder to prevent CLS while React loads -->
+    <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>" style="min-height: 600px;">
+        <div class="wpc-skeleton" style="padding: 1rem;">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1; height: 40px; background: #f3f4f6; border-radius: 8px;"></div>
+                <div style="width: 120px; height: 40px; background: #f3f4f6; border-radius: 8px;"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                <?php for ($i = 0; $i < 6; $i++) : ?>
+                <div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+                <?php endfor; ?>
+            </div>
+        </div>
+    </div>
     <?php
     $html = ob_get_clean();
     
@@ -1257,6 +1320,7 @@ function wpc_pricing_table_shortcode( $atts ) {
         'show_plan_buttons' => '', // '1'/'true' or '0'/'false'
         'show_footer_button' => '1',
         'footer_button_text' => '',
+        'category' => '', // Product Variants Module
     ), $atts );
 
     if ( empty( $attributes['id'] ) ) return ''; // ID is required
@@ -1388,6 +1452,15 @@ function wpc_pricing_table_shortcode( $atts ) {
     // or rely on the standard `ecommerce-guider-data` localization.
     
     // Pass specific display settings for this instance
+    // Category Context
+    $category_slug = !empty($attributes['category']) ? sanitize_text_field($attributes['category']) : '';
+
+    // Billing Mode Settings
+    $billing_mode = get_post_meta($item['id'], '_wpc_billing_mode', true) ?: 'monthly_only';
+    $monthly_label = get_post_meta($item['id'], '_wpc_monthly_label', true) ?: 'Pay monthly';
+    $yearly_label = get_post_meta($item['id'], '_wpc_yearly_label', true) ?: 'Pay yearly (save 25%)*';
+    $default_billing = get_post_meta($item['id'], '_wpc_default_billing', true) ?: 'monthly';
+
     $widget_config = [
         'viewMode' => 'pricing-table', // MATCHES main-wp.tsx check
         'item' => $item, // REQUIRED by main-wp.tsx to enter the block
@@ -1395,6 +1468,13 @@ function wpc_pricing_table_shortcode( $atts ) {
         'showFooterButton' => $show_footer_button,
         'footerButtonText' => $footer_button_text,
         'displayContext' => 'inline', // Tell React this is the Shortcode view (Table)
+        'category' => $category_slug, // Product Variants
+        
+        // Billing Mode Settings
+        'billingMode' => $billing_mode, // 'monthly_only', 'yearly_only', or 'both'
+        'monthlyLabel' => $monthly_label,
+        'yearlyLabel' => $yearly_label,
+        'defaultBilling' => $default_billing,
         
         // Per-item pricing configuration settings
         'hideFeatures' => get_post_meta($item['id'], '_wpc_hide_plan_features', true) === '1',
@@ -1408,7 +1488,7 @@ function wpc_pricing_table_shortcode( $atts ) {
 
     ob_start();
     ?>
-    <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>">
+    <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>" data-category="<?php echo esc_attr($category_slug); ?>">
         <!-- SSR Lite Preview: Basic HTML to hold space and show content immediately -->
         <div class="wpc-ssr-preview" style="padding: 1.5rem; background: #fff; border-radius: 0.75rem; border: 1px solidhsl(var(--border) / 0.2);">
             <div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -1453,34 +1533,7 @@ add_shortcode( 'wpc_pricing_table', 'wpc_pricing_table_shortcode' );
 require_once plugin_dir_path( __FILE__ ) . 'includes/pros-cons-shortcode.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/proscons-settings-tab.php';
 
-
-
-/**
- * Shortcode for Single Hero Section
- * Usage: [wpc_hero id="123"]
- */
-function wpc_hero_shortcode( $atts ) {
-    wp_enqueue_script( 'wpc-app' );
-    wp_enqueue_style( 'wpc-styles' );
-
-    $attributes = shortcode_atts( array(
-        'id' => '',
-    ), $atts );
-
-    if ( empty( $attributes['id'] ) ) return '';
-
-    // Pass config to React
-    $config = array(
-        'mode' => 'hero',
-        'itemId' => $attributes['id'], // Updated from providerId to itemId
-        // Provide legacy fallback just in case React needs it, though we refactored React to use itemId
-    );
-     $config_json = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
-
-    return '<div class="wpc-hero-root" data-config="' . $config_json . '"></div>';
-}
-add_shortcode( 'wpc_hero', 'wpc_hero_shortcode' );
-add_shortcode( 'ecommerce_guider_hero', 'wpc_hero_shortcode' ); // Legacy Support
+// Hero shortcode is now loaded from includes/hero-shortcode.php (SSR version)
 
 /**
  * Load custom template for single comparison_item
