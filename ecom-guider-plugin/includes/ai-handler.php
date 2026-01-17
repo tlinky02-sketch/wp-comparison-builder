@@ -876,6 +876,11 @@ function wpc_ajax_ai_create_item() {
     $pricing_plans = json_decode( stripslashes( $_POST['pricing_plans'] ?? '[]' ), true );
     $best_use_cases = json_decode( stripslashes( $_POST['best_use_cases'] ?? '[]' ), true );
     
+    // New Billing Fields
+    $billing_cycles = json_decode( stripslashes( $_POST['billing_cycles'] ?? '[]' ), true );
+    $default_cycle = sanitize_text_field( $_POST['default_cycle'] ?? 'monthly' );
+    $billing_display_style = sanitize_text_field( $_POST['billing_display_style'] ?? 'toggle' );
+    
     if ( empty( $title ) ) {
         wp_send_json_error( 'Title is required' );
     }
@@ -903,9 +908,17 @@ function wpc_ajax_ai_create_item() {
     update_post_meta( $post_id, '_wpc_pros', is_array( $pros ) ? implode( "\n", $pros ) : '' );
     update_post_meta( $post_id, '_wpc_cons', is_array( $cons ) ? implode( "\n", $cons ) : '' );
     
+    // Save Pricing Plans
     if ( ! empty( $pricing_plans ) ) {
         update_post_meta( $post_id, '_wpc_pricing_plans', $pricing_plans );
     }
+    
+    // Save Billing Cycles Configuration
+    if ( ! empty( $billing_cycles ) && is_array( $billing_cycles ) ) {
+        update_post_meta( $post_id, '_wpc_billing_cycles', $billing_cycles );
+    }
+    update_post_meta( $post_id, '_wpc_default_cycle', $default_cycle );
+    update_post_meta( $post_id, '_wpc_billing_display_style', $billing_display_style );
     
     // Save Best Use Cases as array of objects for _wpc_use_cases
     // Structure: [{ name, desc, icon, image }]
@@ -957,6 +970,9 @@ function wpc_ajax_ai_create_tool() {
     // Optional: Price (not standard field but useful to save)
     $price = sanitize_text_field( $_POST['price'] ?? '' );
     
+    // Pricing Plans (new billing structure)
+    $pricing_plans = json_decode( stripslashes( $_POST['pricing_plans'] ?? '[]' ), true );
+    
     if ( empty( $title ) ) {
         wp_send_json_error( 'Title is required' );
     }
@@ -981,6 +997,11 @@ function wpc_ajax_ai_create_tool() {
     
     if ( ! empty( $price ) ) {
         update_post_meta( $post_id, '_wpc_tool_price', $price );
+    }
+    
+    // Save Pricing Plans with new billing structure
+    if ( ! empty( $pricing_plans ) && is_array( $pricing_plans ) ) {
+        update_post_meta( $post_id, '_wpc_tool_pricing_plans', $pricing_plans );
     }
     
     // Try to update custom table if class exists

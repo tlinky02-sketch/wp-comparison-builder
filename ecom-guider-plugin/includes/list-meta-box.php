@@ -184,6 +184,7 @@ function wpc_render_list_meta_box( $post ) {
             <li><a href="#wpc-tab-layout">Layout & Style</a></li>
             <li><a href="#wpc-tab-text">Language & Labels</a></li>
             <li><a href="#wpc-tab-comparison">Comparison & Actions</a></li>
+            <li><a href="#wpc-tab-features">Features</a></li>
         </ul>
 
         <!-- TAB 1: GENERAL -->
@@ -1030,27 +1031,225 @@ function wpc_render_list_meta_box( $post ) {
                  </div>
             </div>
         </div>
-    </div>
+
+        <!-- TAB 4: FEATURES -->
+        <div id="wpc-tab-features" class="wpc-tab-content">
+            <div class="wpc-field-group">
+                <h3 style="margin-top:0;"><?php _e( 'Comparison Table Features & Hierarchy', 'wp-comparison-builder' ); ?></h3>
+                <p class="description"><?php _e( 'Customize the features and their order specifically for this list.', 'wp-comparison-builder' ); ?></p>
+                
+                <?php
+                $override_global = get_post_meta($post->ID, '_wpc_list_features_override', true) === '1';
+                $list_features = get_post_meta($post->ID, '_wpc_list_features', true);
+                
+                // Fetch Global if override is not set or list features empty? 
+                // Actually if override is OFF, the UI is hidden.
+                // If override is ON, we show what is saved in list_features.
+                // If list_features is empty, we show empty active list (user builds from scratch) OR we could pre-fill with global?
+                // Let's start with empty/saved state to avoid confusion. User explicitly adds features.
+                
+                if (!is_array($list_features)) $list_features = array();
+
+                // Define all available items
+                $all_items = array(
+                    'price' => array('label' => __('Price', 'wp-comparison-builder'), 'type' => 'builtin'),
+                    'rating' => array('label' => __('Rating', 'wp-comparison-builder'), 'type' => 'builtin'),
+                    'pros' => array('label' => __('Pros', 'wp-comparison-builder'), 'type' => 'builtin'),
+                    'cons' => array('label' => __('Cons', 'wp-comparison-builder'), 'type' => 'builtin'),
+                );
+                
+                $tag_terms = get_terms( array( 'taxonomy' => 'comparison_feature', 'hide_empty' => false ) );
+                if ( ! empty($tag_terms) && ! is_wp_error($tag_terms) ) {
+                    foreach ( $tag_terms as $term ) {
+                        $all_items['tag_' . $term->term_id] = array(
+                            'label' => $term->name,
+                            'type' => 'tag'
+                        );
+                    }
+                }
+                
+                // Active Keys
+                $active_keys = $list_features;
+                
+                // Available Keys
+                $available_keys = array_diff(array_keys($all_items), $active_keys);
+                ?>
+                
+                <div style="background: #fdfdfd; padding: 20px; border: 1px solid #e5e7eb; border-left: 4px solid #6366f1; border-radius: 4px; margin-bottom: 25px;">
+                    <label style="font-weight: bold; font-size: 15px; display: block;">
+                        <input type="checkbox" name="wpc_list_features_override" value="1" <?php checked( $override_global ); ?> />
+                        Enable Custom Feature Selection for this List
+                    </label>
+                    <p class="description" style="margin-left: 20px; margin-top: 5px;">
+                        Check this box to manually select which columns appear in this specific table. If unchecked, the Global Settings features will be used.
+                    </p>
+                    
+                    <!-- Icon Color Overrides -->
+                    <!-- Placing this here as it relates to feature visualization -->
+                    <div style="margin-top: 15px; margin-left: 20px; padding-top: 15px; border-top: 1px dashed #ddd;">
+                        <strong style="display:block; margin-bottom: 8px;">Override Icon Colors (Optional):</strong>
+                        <div style="display:flex; gap: 20px;">
+                            <div>
+                                <label style="display:block; font-size: 12px; margin-bottom: 3px;">Tick Color</label>
+                                <input type="color" name="wpc_list_color_tick" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_tick', true) ); ?>" style="height:30px; cursor:pointer;">
+                            </div>
+                            <div>
+                                <label style="display:block; font-size: 12px; margin-bottom: 3px;">Cross Color</label>
+                                <input type="color" name="wpc_list_color_cross" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_cross', true) ); ?>" style="height:30px; cursor:pointer;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="wpc-list-features-ui" style="<?php echo $override_global ? '' : 'display:none;'; ?>">
+                    
+                     <div class="wpc-dual-listbox-wrapper">
+                         <!-- Reusing CSS from global settings if available or inline here -->
+                         <style>
+                            .wpc-dual-listbox-wrapper { display: flex; gap: 20px; align-items: flex-start; margin-top: 20px; }
+                            .wpc-list-col { flex: 1; background: #fff; border: 1px solid #ccd0d4; border-radius: 4px; display: flex; flex-direction: column; }
+                            .wpc-list-header { background: #f9f9f9; padding: 10px; border-bottom: 1px solid #ccd0d4; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+                            .wpc-list-search { padding: 10px; border-bottom: 1px solid #eee; }
+                            .wpc-list-search input { width: 100%; }
+                            .wpc-sortable-list { list-style: none; margin: 0; padding: 0; height: 300px; overflow-y: auto; background: #fff; }
+                            .wpc-sortable-list li { 
+                                padding: 8px 12px; border-bottom: 1px solid #f0f0f1; cursor: grab; display: flex; justify-content: space-between; align-items: center; background: #fff;
+                                transition: background 0.1s;
+                            }
+                            .wpc-sortable-list li:hover { background: #f0f6fc; }
+                            .wpc-sortable-list li.ui-sortable-helper { box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #fff; cursor: grabbing; }
+                            .wpc-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #e5e7eb; color: #374151; margin-left: 8px; }
+                            .wpc-badge.builtin { background: #dbeafe; color: #1e40af; }
+                            .wpc-action-btn { cursor: pointer; color: #2271b1; font-weight: 500; font-size: 12px; }
+                            .wpc-empty-msg { padding: 20px; text-align: center; color: #646970; font-style: italic; display: none; }
+                            ul:empty + .wpc-empty-msg { display: block; }
+                        </style>
+
+                        <!-- Available Column -->
+                        <div class="wpc-list-col">
+                            <div class="wpc-list-header">
+                                <?php _e('Available Features', 'wp-comparison-builder'); ?>
+                                <button type="button" class="button button-small" id="wpc-list-add-all"><?php _e('Add All', 'wp-comparison-builder'); ?></button>
+                            </div>
+                            <div class="wpc-list-search">
+                                <input type="text" id="wpc-list-search-available" placeholder="<?php _e('Search tags...', 'wp-comparison-builder'); ?>">
+                            </div>
+                            <ul id="wpc-list-available-list" class="wpc-sortable-list">
+                                <?php foreach ($available_keys as $key) : 
+                                    if (!isset($all_items[$key])) continue;
+                                    $item = $all_items[$key];
+                                ?>
+                                <li data-key="<?php echo esc_attr($key); ?>">
+                                    <span class="wpc-item-label">
+                                        <?php echo esc_html($item['label']); ?>
+                                        <span class="wpc-badge <?php echo esc_attr($item['type']); ?>"><?php echo $item['type'] === 'builtin' ? 'Built-in' : 'Tag'; ?></span>
+                                    </span>
+                                    <span class="wpc-action-btn wpc-add-btn">Add &rarr;</span>
+                                </li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <div class="wpc-empty-msg"><?php _e('No features available', 'wp-comparison-builder'); ?></div>
+                        </div>
+
+                        <!-- Active Column -->
+                        <div class="wpc-list-col">
+                            <div class="wpc-list-header">
+                                <?php _e('Active Columns (Ordered)', 'wp-comparison-builder'); ?>
+                                <button type="button" class="button button-small" id="wpc-list-remove-all"><?php _e('Remove All', 'wp-comparison-builder'); ?></button>
+                            </div>
+                             <div class="wpc-list-search" style="visibility: hidden;">
+                                <input type="text" disabled>
+                            </div>
+                            <ul id="wpc-list-active-list" class="wpc-sortable-list">
+                                <?php foreach ($active_keys as $key) : 
+                                     if (!isset($all_items[$key])) continue;
+                                     $item = $all_items[$key];
+                                ?>
+                                <li data-key="<?php echo esc_attr($key); ?>">
+                                    <span class="wpc-item-label">
+                                        <?php echo esc_html($item['label']); ?>
+                                        <span class="wpc-badge <?php echo esc_attr($item['type']); ?>"><?php echo $item['type'] === 'builtin' ? 'Built-in' : 'Tag'; ?></span>
+                                    </span>
+                                    <span class="wpc-action-btn wpc-remove-btn">&larr; Remove</span>
+                                    <input type="hidden" name="wpc_list_features[]" value="<?php echo esc_attr($key); ?>">
+                                </li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <div class="wpc-empty-msg"><?php _e('Drag items here to active', 'wp-comparison-builder'); ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+            jQuery(document).ready(function($) {
+                 // Toggle Visibility
+                 $('input[name="wpc_list_features_override"]').change(function() {
+                     if($(this).is(':checked')) {
+                         $('#wpc-list-features-ui').slideDown();
+                     } else {
+                         $('#wpc-list-features-ui').slideUp();
+                     }
+                 });
+
+                 // Sortable
+                 $('#wpc-list-active-list').sortable({
+                    placeholder: "placeholder",
+                    axis: "y",
+                    containment: "parent",
+                    tolerance: "pointer"
+                 });
+                 
+                 // Reuse logic logic for Add/Remove but scoped to #wpc-list-features-ui
+                 var container = $('#wpc-list-features-ui');
+                 var availableList = $('#wpc-list-available-list');
+                 var activeList = $('#wpc-list-active-list');
+
+                 // Add Item
+                container.on('click', '.wpc-add-btn', function() {
+                    var li = $(this).closest('li');
+                    var key = li.data('key');
+                    li.find('.wpc-action-btn').removeClass('wpc-add-btn').addClass('wpc-remove-btn').html('&larr; Remove');
+                    li.append('<input type="hidden" name="wpc_list_features[]" value="'+key+'">');
+                    li.appendTo(activeList);
+                });
+
+                // Remove Item
+                container.on('click', '.wpc-remove-btn', function() {
+                    var li = $(this).closest('li');
+                    li.find('input[name="wpc_list_features[]"]').remove();
+                    li.find('.wpc-action-btn').removeClass('wpc-remove-btn').addClass('wpc-add-btn').html('Add &rarr;');
+                    li.appendTo(availableList);
+                });
+                
+                // Add All
+                $('#wpc-list-add-all').click(function() {
+                    availableList.find('li:visible .wpc-add-btn').click();
+                });
+                
+                // Remove All
+                $('#wpc-list-remove-all').click(function() {
+                    activeList.find('li .wpc-remove-btn').click();
+                });
+
+                // Search
+                $('#wpc-list-search-available').on('keyup', function() {
+                    var value = $(this).val().toLowerCase();
+                    availableList.find('li').filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+            </script>
+        </div>
+
     <script>
     jQuery(document).ready(function($) {
-        // Initialize Sortable
-        $('.wpc-sortable-list').sortable({
-            handle: '.drag-handle',
-            placeholder: 'ui-state-highlight',
-            axis: 'y',
-            start: function(e, ui) {
-                ui.placeholder.height(ui.item.height());
-                ui.placeholder.css('background-color', '#fff9c4');
-            }
-        });
-
         function toggleFeaturedInputs(checkbox) {
             var row = $(checkbox).closest('tr');
             var inputs = row.find('input[type="text"], input[type="color"]');
             var labels = row.find('small');
             
-            // Also highlight row if selected (using the main item checkbox really, but feature check might be related contextually? No, usually main check handles main opacity)
-            // Actually let's assume this handles the featured inputs based on FEATURED checkbox
             if ($(checkbox).is(':checked')) {
                 inputs.prop('disabled', false).css('opacity', '1');
                 labels.css('opacity', '1');
@@ -1247,6 +1446,14 @@ function wpc_save_list_meta( $post_id ) {
         }
     }
 
+    // Save Icon Color Overrides (Sanitize as hex)
+    if ( isset( $_POST['wpc_list_color_tick'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_color_tick', sanitize_hex_color( $_POST['wpc_list_color_tick'] ) );
+    }
+    if ( isset( $_POST['wpc_list_color_cross'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_color_cross', sanitize_hex_color( $_POST['wpc_list_color_cross'] ) );
+    }
+
     // Save Visibility Flags
     update_post_meta( $post_id, '_wpc_list_show_rating', isset($_POST['wpc_list_show_rating']) ? '1' : '0' );
     update_post_meta( $post_id, '_wpc_list_show_price', isset($_POST['wpc_list_show_price']) ? '1' : '0' );
@@ -1396,6 +1603,21 @@ function wpc_save_list_meta( $post_id ) {
         if ( isset( $_POST[$post_key] ) ) {
              update_post_meta( $post_id, $field, sanitize_text_field( $_POST[$post_key] ) );
         }
+    }
+
+    // Save Features Override
+    if ( isset( $_POST['wpc_list_features_override'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_features_override', '1' );
+        
+        // Save Features List
+        if ( isset( $_POST['wpc_list_features'] ) && is_array( $_POST['wpc_list_features'] ) ) {
+             $features = array_map( 'sanitize_text_field', $_POST['wpc_list_features'] );
+             update_post_meta( $post_id, '_wpc_list_features', $features );
+        } else {
+             update_post_meta( $post_id, '_wpc_list_features', array() );
+        }
+    } else {
+        update_post_meta( $post_id, '_wpc_list_features_override', '0' );
     }
 
     // Save Visbility Options (New)

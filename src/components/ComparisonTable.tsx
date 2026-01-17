@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Check, X, Star, ExternalLink, ShoppingBag, Tag } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,50 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   const prosText = colors.prosText || '#166534';
   const consBg = colors.consBg || '#fef2f2';
   const consText = colors.consText || '#991b1b';
+  const tickColor = colors.tick || '#10b981';
+  const crossColor = colors.cross || '#94a3b8';
+
+  // Billing Cycle Sync: Collect all unique billing cycles from items
+  const allCycles = React.useMemo(() => {
+    const cyclesMap = new Map<string, string>();
+    items.forEach(item => {
+      const cycles = (item as any).billing_cycles || [];
+      cycles.forEach((c: { slug: string, label: string }) => {
+        if (c.slug && !cyclesMap.has(c.slug)) {
+          cyclesMap.set(c.slug, c.label);
+        }
+      });
+    });
+    if (cyclesMap.size === 0) {
+      cyclesMap.set('monthly', 'Monthly');
+    }
+    return Array.from(cyclesMap.entries()).map(([slug, label]) => ({ slug, label }));
+  }, [items]);
+
+  const [selectedCycle, setSelectedCycle] = useState<string>(() => {
+    // Default to first item's default_cycle or 'monthly'
+    return (items[0] as any)?.default_cycle || 'monthly';
+  });
+
+  // Helper to get price for a specific cycle from item's plans
+  const getPriceForCycle = (item: ComparisonItem, cycle: string): { amount: string, period: string } => {
+    const emptyPriceText = (window as any).wpcSettings?.texts?.emptyPrice || 'Free';
+    const plans = (item as any).pricing_plans || [];
+
+    // Try to find price in any plan for this cycle
+    for (const plan of plans) {
+      if (plan.prices && plan.prices[cycle] && plan.prices[cycle].amount) {
+        return { amount: plan.prices[cycle].amount, period: plan.prices[cycle].period || '' };
+      }
+    }
+
+    // Fallback to item.price (the pre-computed default)
+    if (item.price && item.price !== '0') {
+      return { amount: item.price, period: item.moSuffix || getText('moSuffix', '/mo') };
+    }
+
+    return { amount: emptyPriceText, period: '' };
+  };
 
   const copyCoupon = (code: string, btn: HTMLButtonElement) => {
     const originalText = btn.innerHTML;
@@ -91,22 +135,43 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     slug: term.slug,
   }));
 
-  // Combine all features
-  const allFeatures = [...builtinFeatures, ...tagFeatures];
+  // 1. Construct the Mapping of Key -> Feature Definition
+  const featureDefinitions: Record<string, any> = {};
+  builtinFeatures.forEach(f => featureDefinitions[f.key] = f);
+  tagFeatures.forEach(f => featureDefinitions[f.key] = f);
 
-  // Filter features based on settings
-  const isConfigEmpty = Object.keys(compareFeatures).length === 0;
+  // 2. Determine Ordered List of Enabled Feature Keys
+  let enabledKeys: string[] = [];
+  let showPros = false;
+  let showCons = false;
 
-  const features = allFeatures.filter(f => {
-    if (compareFeatures[f.key] === '1') return true;
-    // Default fallback for built-ins only if config is completely empty
-    if (isConfigEmpty && ['price', 'rating'].includes(f.key)) return true;
-    return false;
-  });
+  if (Array.isArray(compareFeatures)) {
+    // NEW format: compareFeatures IS the ordered list of keys
+    enabledKeys = compareFeatures;
+    showPros = compareFeatures.includes('pros');
+    showCons = compareFeatures.includes('cons');
+  } else {
+    // OLD format: Object {'key': '1'}
+    // Use default order from allFeatures (Builtins then Tags)
+    const allFeatures = [...builtinFeatures, ...tagFeatures];
+    const isConfigEmpty = Object.keys(compareFeatures).length === 0;
 
-  // Check if pros/cons should be shown
-  const showPros = compareFeatures.pros === '1' || isConfigEmpty;
-  const showCons = compareFeatures.cons === '1' || isConfigEmpty;
+    enabledKeys = allFeatures
+      .filter(f => {
+        if (compareFeatures[f.key] === '1') return true;
+        if (isConfigEmpty && ['price', 'rating'].includes(f.key)) return true;
+        return false;
+      })
+      .map(f => f.key);
+
+    showPros = compareFeatures.pros === '1' || isConfigEmpty;
+    showCons = compareFeatures.cons === '1' || isConfigEmpty;
+  }
+
+  // 3. Construct Final Features Array (preserving order)
+  const features = enabledKeys
+    .filter(key => featureDefinitions[key]) // Remove invalid/deleted keys
+    .map(key => featureDefinitions[key]);
 
   const renderCell = (key: string, item: ComparisonItem) => {
     // 1. Dynamic Tag Features
@@ -124,15 +189,22 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
       if (lowerName === 'support' && itemFeatures.support) return itemFeatures.support;
 
       // Boolean Tag Check
-      if (item.raw_features?.includes(term.name)) {
-        return <Check className="w-4 h-4 md:w-5 md:h-5 text-primary mx-auto" />;
+      const raw = item.raw_features || [];
+      const hasTag =
+        raw.includes(term.name) ||
+        raw.includes(term.slug) ||
+        raw.some((f: string) => f.toLowerCase() === term.name.toLowerCase());
+
+      if (hasTag) {
+        return <Check className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: tickColor }} />;
       }
-      return <span className="text-muted-foreground/30">—</span>;
+      return <X className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: crossColor }} />;
     }
 
     switch (key) {
       case "price":
-        return <span className="font-bold text-primary">{item.price}</span>;
+        const priceInfo = getPriceForCycle(item, selectedCycle);
+        return <span className="font-bold text-primary">{priceInfo.amount}{priceInfo.period && <span className="text-xs text-muted-foreground font-normal ml-0.5">{priceInfo.period}</span>}</span>;
       case "rating":
         return (
           <div className="flex items-center gap-1 justify-center">
@@ -162,6 +234,27 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
 
   return (
     <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+      {/* Billing Cycle Toggle (only if multiple cycles available) */}
+      {allCycles.length > 1 && (
+        <div className="flex items-center justify-center gap-2 p-4 border-b border-border bg-muted/20">
+          <span className="text-sm text-muted-foreground mr-2">{getText('billingCycle', 'Billing:')}</span>
+          {allCycles.map((cycle) => (
+            <button
+              key={cycle.slug}
+              onClick={() => setSelectedCycle(cycle.slug)}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
+                selectedCycle === cycle.slug
+                  ? "bg-primary text-white border-primary shadow-sm"
+                  : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+              )}
+            >
+              {cycle.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Desktop Table View */}
       <div className="hidden md:block w-full pb-4">
         <table className="w-full relative table-fixed">
@@ -190,9 +283,14 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                           <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
                           <span className="font-medium text-xs md:text-base">{item.rating}</span>
                         </div>
-                        <div className="text-lg md:text-2xl font-bold text-primary mb-2 md:mb-4">
-                          {item.price}<span className="text-xs md:text-sm text-muted-foreground font-normal">{item.moSuffix || getText('moSuffix', "/mo")}</span>
-                        </div>
+                        {(() => {
+                          const priceInfo = getPriceForCycle(item, selectedCycle);
+                          return (
+                            <div className="text-lg md:text-2xl font-bold text-primary mb-2 md:mb-4">
+                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm text-muted-foreground font-normal">{priceInfo.period}</span>}
+                            </div>
+                          );
+                        })()}
 
                         {/* Coupon in Header if Main Item has one */}
                         {item.coupon_code && (
@@ -363,7 +461,10 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                   <Star className="w-4 h-4 fill-current" />
                   <span className="text-sm font-medium">{activeItem.rating}</span>
                 </div>
-                <span className="text-2xl font-bold text-primary">{activeItem.price}<span className="text-sm text-muted-foreground font-normal">{activeItem.moSuffix || getText('moSuffix', '/mo')}</span></span>
+                {(() => {
+                  const priceInfo = getPriceForCycle(activeItem, selectedCycle);
+                  return <span className="text-2xl font-bold text-primary">{priceInfo.amount}{priceInfo.period && <span className="text-sm text-muted-foreground font-normal">{priceInfo.period}</span>}</span>;
+                })()}
               </div>
               {/* Coupon */}
               {activeItem.coupon_code && (

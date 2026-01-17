@@ -143,7 +143,7 @@ const Compare = () => {
                 </div>
                 <Button
                   onClick={() => setShowComparison(true)}
-                  className="gap-2"
+                  className="gap-2 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none focus:ring-0 focus:shadow-none outline-none border-none shadow-none"
                   disabled={selectedProviders.length < 2}
                 >
                   Compare Now <ArrowDown className="w-4 h-4" />

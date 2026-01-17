@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -890,43 +890,53 @@ function wpc_render_meta_box( $post ) {
                 </div>
             </div>
 
-            <!-- Billing Period Settings -->
+            <!-- Billing Cycles Configuration -->
             <div class="wpc-row" style="margin-top: 15px;">
                 <div class="wpc-col">
-                    <?php 
-                    $billing_mode = get_post_meta( $post->ID, '_wpc_billing_mode', true ) ?: 'monthly_only';
-                    $monthly_label = get_post_meta( $post->ID, '_wpc_monthly_label', true ) ?: 'Pay monthly';
-                    $yearly_label = get_post_meta( $post->ID, '_wpc_yearly_label', true ) ?: 'Pay yearly (save 25%)*';
-                    $default_billing = get_post_meta( $post->ID, '_wpc_default_billing', true ) ?: 'monthly';
-                    ?>
-                    <label class="wpc-label"><?php _e( 'Billing Period Display', 'wp-comparison-builder' ); ?></label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
-                        <div>
-                            <strong style="display: block; margin-bottom: 8px;">Display Mode:</strong>
-                            <select name="wpc_billing_mode" id="wpc-billing-mode" style="min-width: 200px;" onchange="wpcToggleBillingSettings()">
-                                <option value="monthly_only" <?php selected( $billing_mode, 'monthly_only' ); ?>>Monthly Only</option>
-                                <option value="yearly_only" <?php selected( $billing_mode, 'yearly_only' ); ?>>Yearly Only</option>
-                                <option value="both" <?php selected( $billing_mode, 'both' ); ?>>Both (with Toggle)</option>
-                            </select>
+                    <label class="wpc-label"><?php _e( 'Billing Cycles Configuration', 'wp-comparison-builder' ); ?></label>
+                    <div style="padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <p style="margin-top: 0; font-size: 13px; color: #64748b;">
+                            Define the billing periods available for this item (e.g., Monthly, Yearly, Lifetime). 
+                            These will appear as options in your pricing plans.
+                        </p>
+
+                        <!-- Display Style -->
+                        <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+                            <label style="font-size: 13px; font-weight: 600; margin-right: 10px;">Billing Display Style:</label>
+                             <?php $billing_style = get_post_meta( $post->ID, '_wpc_billing_display_style', true ) ?: 'toggle'; ?>
+                             <select name="wpc_billing_display_style">
+                                <option value="toggle" <?php selected($billing_style, 'toggle'); ?>>Toggle Switch</option>
+                                <option value="tabs" <?php selected($billing_style, 'tabs'); ?>>Tabs</option>
+                                <option value="none" <?php selected($billing_style, 'none'); ?>>None (Show Default Only)</option>
+                             </select>
                         </div>
                         
-                        <div id="wpc-billing-labels" style="<?php echo $billing_mode !== 'both' ? 'display:none;' : ''; ?> flex: 1; display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div>
-                                <strong style="display: block; margin-bottom: 5px;">Monthly Label:</strong>
-                                <input type="text" name="wpc_monthly_label" value="<?php echo esc_attr( $monthly_label ); ?>" placeholder="Pay monthly" style="width: 180px;" />
+                        <div id="wpc-cycles-container">
+                            <?php 
+                            $cycles = get_post_meta( $post->ID, '_wpc_billing_cycles', true );
+                            if ( ! is_array( $cycles ) || empty( $cycles ) ) {
+                                // Default/Fallback: Monthly & Yearly
+                                $cycles = array(
+                                    array( 'slug' => 'monthly', 'label' => get_post_meta( $post->ID, '_wpc_monthly_label', true ) ?: 'Monthly' ),
+                                    array( 'slug' => 'yearly', 'label' => get_post_meta( $post->ID, '_wpc_yearly_label', true ) ?: 'Yearly' )
+                                );
+                            }
+                            
+                            foreach ( $cycles as $idx => $cycle ) : 
+                            ?>
+                            <div class="wpc-cycle-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                                <input type="text" name="wpc_cycles[<?php echo $idx; ?>][slug]" value="<?php echo esc_attr( $cycle['slug'] ); ?>" placeholder="Slug (e.g. monthly)" style="width: 120px; font-family: monospace;" required />
+                                <input type="text" name="wpc_cycles[<?php echo $idx; ?>][label]" value="<?php echo esc_attr( $cycle['label'] ); ?>" placeholder="Label (e.g. Pay Monthly)" style="flex: 1;" required />
+                                <label style="font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                    <input type="radio" name="wpc_default_cycle" value="<?php echo esc_attr( $cycle['slug'] ); ?>" <?php checked( get_post_meta( $post->ID, '_wpc_default_cycle', true ), $cycle['slug'] ); ?> />
+                                    Default
+                                </label>
+                                <button type="button" class="button wpc-remove-cycle" onclick="this.closest('.wpc-cycle-row').remove(); wpcRefreshPlanInputs();">×</button>
                             </div>
-                            <div>
-                                <strong style="display: block; margin-bottom: 5px;">Yearly Label:</strong>
-                                <input type="text" name="wpc_yearly_label" value="<?php echo esc_attr( $yearly_label ); ?>" placeholder="Pay yearly (save 25%)*" style="width: 200px;" />
-                            </div>
-                            <div>
-                                <strong style="display: block; margin-bottom: 5px;">Default:</strong>
-                                <select name="wpc_default_billing">
-                                    <option value="monthly" <?php selected( $default_billing, 'monthly' ); ?>>Monthly</option>
-                                    <option value="yearly" <?php selected( $default_billing, 'yearly' ); ?>>Yearly</option>
-                                </select>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
+                        
+                        <button type="button" class="button button-secondary" onclick="wpcAddCycle()">+ Add Billing Cycle</button>
                     </div>
                 </div>
             </div>
@@ -971,9 +981,30 @@ function wpc_render_meta_box( $post ) {
                             <div class="wpc-plan-row" style="background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 4px;">
                                 <div style="display: flex; gap: 10px; margin-bottom: 5px; flex-wrap: wrap;">
                                     <input type="text" name="wpc_plans[<?php echo $index; ?>][name]" value="<?php echo esc_attr( isset($plan['name']) ? $plan['name'] : '' ); ?>" placeholder="Plan Name (e.g. Basic)" style="flex: 2; min-width: 150px;" />
-                                    <input type="text" name="wpc_plans[<?php echo $index; ?>][price]" value="<?php echo esc_attr( isset($plan['price']) ? $plan['price'] : '' ); ?>" placeholder="Monthly Price ($29)" style="flex: 1; min-width: 100px;" class="wpc-monthly-price-field" />
-                                    <input type="text" name="wpc_plans[<?php echo $index; ?>][yearly_price]" value="<?php echo esc_attr( isset($plan['yearly_price']) ? $plan['yearly_price'] : '' ); ?>" placeholder="Yearly Price ($290)" style="flex: 1; min-width: 100px;" class="wpc-yearly-price-field" />
-                                    <input type="text" name="wpc_plans[<?php echo $index; ?>][period]" value="<?php echo esc_attr( isset($plan['period']) ? $plan['period'] : '' ); ?>" placeholder="/mo" style="flex: 0.5; min-width: 60px;" />
+                                    <div class="wpc-plan-prices" style="display: flex; gap: 10px; flex: 3; flex-wrap: wrap;">
+                                        <?php 
+                                        // Render inputs for each cycle
+                                        // Legacy fallback: map old 'price'/'yearly_price' to 'monthly'/'yearly' if prices array is missing
+                                        $plan_prices = isset($plan['prices']) ? $plan['prices'] : array();
+                                        if ( empty($plan_prices) ) {
+                                            if ( isset($plan['price']) ) $plan_prices['monthly'] = array( 'amount' => $plan['price'], 'period' => isset($plan['period']) ? $plan['period'] : '/mo' );
+                                            if ( isset($plan['yearly_price']) ) $plan_prices['yearly'] = array( 'amount' => $plan['yearly_price'], 'period' => isset($plan['yearly_period']) ? $plan['yearly_period'] : '/yr' );
+                                        }
+
+                                        foreach ( $cycles as $cycle ) {
+                                            $slug = $cycle['slug'];
+                                            $lbl = $cycle['label'];
+                                            $val = isset($plan_prices[$slug]['amount']) ? $plan_prices[$slug]['amount'] : '';
+                                            $per = isset($plan_prices[$slug]['period']) ? $plan_prices[$slug]['period'] : '';
+                                            ?>
+                                             <div class="wpc-price-group" data-slug="<?php echo esc_attr($slug); ?>" style="display: flex; gap: 2px; flex: 1 0 160px; min-width: 160px;">
+                                                <input type="text" name="wpc_plans[<?php echo $index; ?>][prices][<?php echo esc_attr($slug); ?>][amount]" value="<?php echo esc_attr( $val ); ?>" placeholder="<?php echo esc_attr( $lbl ); ?> Price" style="flex: 2; min-width: 60px;" />
+                                                <input type="text" name="wpc_plans[<?php echo $index; ?>][prices][<?php echo esc_attr($slug); ?>][period]" value="<?php echo esc_attr( $per ); ?>" placeholder="/suffix" style="width: 55px; flex: 0 0 55px;" />
+                                            </div>
+                                            <?php
+                                        }
+                                        ?>
+                                    </div>
                                 </div>
                                 <div style="margin-bottom: 5px;">
                                      <input type="text" name="wpc_plans[<?php echo $index; ?>][coupon]" value="<?php echo esc_attr( isset($plan['coupon']) ? $plan['coupon'] : '' ); ?>" placeholder="Coupon Code (e.g. SAVE20)" style="width: 100%;" />
@@ -1999,8 +2030,28 @@ function wpc_render_meta_box( $post ) {
 
                         const find = (sel) => row.querySelector(sel);
                         if (find('input[name*="[name]"]')) find('input[name*="[name]"]').value = plan.name || '';
-                        if (find('input[name*="[price]"]')) find('input[name*="[price]"]').value = plan.price || '';
-                        if (find('input[name*="[period]"]')) find('input[name*="[period]"]').value = plan.period || '';
+
+                        // Handle Dynamic Price Inputs
+                        const priceGenericInputs = row.querySelectorAll('.wpc-price-group');
+                        priceGenericInputs.forEach(group => {
+                            const slug = group.getAttribute('data-slug');
+                            const amtInput = group.querySelector('input[name*="[amount]"]');
+                            const prdInput = group.querySelector('input[name*="[period]"]');
+                            
+                            if (slug === 'monthly') {
+                                if (amtInput) amtInput.value = plan.price || (plan.prices && plan.prices.monthly && plan.prices.monthly.amount) || '';
+                                if (prdInput) prdInput.value = plan.period || (plan.prices && plan.prices.monthly && plan.prices.monthly.period) || '/mo';
+                            } else if (slug === 'yearly') {
+                                if (amtInput) amtInput.value = plan.yearly_price || (plan.prices && plan.prices.yearly && plan.prices.yearly.amount) || '';
+                                if (prdInput) prdInput.value = plan.yearly_period || (plan.prices && plan.prices.yearly && plan.prices.yearly.period) || '/yr';
+                            } else {
+                                // Fallback for custom slugs if AI provides them in the new 'prices' object structure
+                                if (plan.prices && plan.prices[slug]) {
+                                     if (amtInput) amtInput.value = plan.prices[slug].amount || '';
+                                     if (prdInput) prdInput.value = plan.prices[slug].period || '';
+                                }
+                            }
+                        });
                         if (find('input[name*="[coupon]"]')) find('input[name*="[coupon]"]').value = plan.coupon || '';
                         
                         if (plan.show_banner) {
@@ -2409,26 +2460,105 @@ function wpc_render_meta_box( $post ) {
     });
 
     // Toggle billing settings visibility
-    function wpcToggleBillingSettings() {
-        var mode = document.getElementById('wpc-billing-mode').value;
-        var labelsDiv = document.getElementById('wpc-billing-labels');
-        if (mode === 'both') {
-            labelsDiv.style.display = 'flex';
-        } else {
-            labelsDiv.style.display = 'none';
-        }
+    function wpcAddCycle() {
+        var container = document.getElementById('wpc-cycles-container');
+        var index = container.children.length;
+        var html = `
+            <div class="wpc-cycle-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                <input type="text" name="wpc_cycles[${index}][slug]" placeholder="Slug (e.g. lifetime)" style="width: 120px; font-family: monospace;" required />
+                <input type="text" name="wpc_cycles[${index}][label]" placeholder="Label (e.g. Lifetime)" style="flex: 1;" required />
+                <label style="font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                    <input type="radio" name="wpc_default_cycle" value="" onclick="this.value = this.closest('.wpc-cycle-row').querySelector('input[name*=\'[slug]\']').value" />
+                    Default
+                </label>
+                <button type="button" class="button wpc-remove-cycle" onclick="this.closest('.wpc-cycle-row').remove(); wpcRefreshPlanInputs();">×</button>
+            </div>
+        `;
+        var temp = document.createElement('div');
+        temp.innerHTML = html;
+        container.appendChild(temp.firstElementChild);
+        
+        // Also add inputs to existing plans? 
+        // For simplicity, wpcRefreshPlanInputs() will handle re-rendering price inputs for all plans based on current cycles.
+        wpcRefreshPlanInputs();
+    }
+
+    function wpcRefreshPlanInputs() {
+        // Gather current cycles
+        var cycles = [];
+        document.querySelectorAll('.wpc-cycle-row').forEach(row => {
+            var slug = row.querySelector('input[name*="[slug]"]').value;
+            var label = row.querySelector('input[name*="[label]"]').value;
+            if(slug) cycles.push({slug, label});
+        });
+        
+        // Update all price groups in plans
+        document.querySelectorAll('.wpc-plan-row').forEach((row, planIndex) => {
+            var pricesContainer = row.querySelector('.wpc-plan-prices');
+            if(!pricesContainer) return;
+            
+            // Preserve existing values
+            var currentValues = {};
+            pricesContainer.querySelectorAll('.wpc-price-group').forEach(group => {
+                var slug = group.getAttribute('data-slug');
+                var amt = group.querySelector('input[name*="[amount]"]').value;
+                var per = group.querySelector('input[name*="[period]"]').value;
+                currentValues[slug] = {amount: amt, period: per};
+            });
+            
+            pricesContainer.innerHTML = '';
+            
+            cycles.forEach(cycle => {
+                var val = currentValues[cycle.slug] ? currentValues[cycle.slug].amount : '';
+                var per = currentValues[cycle.slug] ? currentValues[cycle.slug].period : '';
+                
+                var html = `
+                    <div class="wpc-price-group" data-slug="${cycle.slug}" style="display: flex; gap: 2px; flex: 1 0 160px; min-width: 160px;">
+                        <input type="text" name="wpc_plans[${planIndex}][prices][${cycle.slug}][amount]" value="${val}" placeholder="${cycle.label} Price" style="flex: 2; min-width: 60px;" />
+                        <input type="text" name="wpc_plans[${planIndex}][prices][${cycle.slug}][period]" value="${per}" placeholder="/suffix" style="width: 55px; flex: 0 0 55px;" />
+                    </div>
+                `;
+                var t = document.createElement('div');
+                t.innerHTML = html;
+                pricesContainer.appendChild(t.firstElementChild);
+            });
+        });
     }
 
     function wpcAddPlan() {
         var container = document.getElementById('wpc-plans-container');
-        var index = container.children.length;
+        var index = container.children.length; // Approximate, but good enough for new unique keys
+        
+        // Gather cycles
+        var cycles = [];
+        var cycleRows = document.querySelectorAll('.wpc-cycle-row');
+        if(cycleRows.length === 0) {
+            alert('Please define at least one Billing Cycle first!');
+            return;
+        }
+        cycleRows.forEach(row => {
+            var slug = row.querySelector('input[name*="[slug]"]').value;
+            var label = row.querySelector('input[name*="[label]"]').value;
+            if(slug) cycles.push({slug, label});
+        });
+
+        var priceInputsHtml = '';
+        cycles.forEach(c => {
+             priceInputsHtml += `
+                <div class="wpc-price-group" data-slug="${c.slug}" style="display: flex; gap: 2px; flex: 1 0 160px; min-width: 160px;">
+                    <input type="text" name="wpc_plans[${index}][prices][${c.slug}][amount]" placeholder="${c.label} Price" style="flex: 2; min-width: 60px;" />
+                    <input type="text" name="wpc_plans[${index}][prices][${c.slug}][period]" placeholder="/suffix" style="width: 55px; flex: 0 0 55px;" />
+                </div>
+             `;
+        });
+
         var html = `
             <div class="wpc-plan-row" style="background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 4px;">
                 <div style="display: flex; gap: 10px; margin-bottom: 5px; flex-wrap: wrap;">
                     <input type="text" name="wpc_plans[${index}][name]" placeholder="Plan Name" style="flex: 2; min-width: 150px;" />
-                    <input type="text" name="wpc_plans[${index}][price]" placeholder="Monthly Price ($29)" style="flex: 1; min-width: 100px;" class="wpc-monthly-price-field" />
-                    <input type="text" name="wpc_plans[${index}][yearly_price]" placeholder="Yearly Price ($290)" style="flex: 1; min-width: 100px;" class="wpc-yearly-price-field" />
-                    <input type="text" name="wpc_plans[${index}][period]" placeholder="/mo" style="flex: 0.5; min-width: 60px;" />
+                    <div class="wpc-plan-prices" style="display: flex; gap: 10px; flex: 3; flex-wrap: wrap;">
+                        ${priceInputsHtml}
+                    </div>
                 </div>
                 <!-- Coupon Field -->
                 <div style="margin-bottom: 5px;">
@@ -2564,11 +2694,21 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "coupon": "Coupon"
     }
   },
+  "billing_cycles": [
+    {"slug": "monthly", "label": "Monthly"},
+    {"slug": "yearly", "label": "Yearly"},
+    {"slug": "lifetime", "label": "Lifetime"}
+  ],
+  "default_cycle": "monthly",
+  "billing_display_style": "toggle",
   "pricing_plans": [
     {
       "name": "Basic", 
-      "price": "$9", 
-      "period": "/mo", 
+      "prices": {
+        "monthly": { "amount": "$9", "period": "/mo" },
+        "yearly": { "amount": "$90", "period": "/yr" },
+        "lifetime": { "amount": "$299", "period": "once" }
+      }, 
       "features": ["Feature 1", "Feature 2", "Feature 3"], 
       "button_text": "Get Started", 
       "show_table": true, 
@@ -2578,8 +2718,10 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     },
     {
       "name": "Pro", 
-      "price": "$29", 
-      "period": "/mo", 
+      "prices": {
+        "monthly": { "amount": "$29", "period": "/mo" },
+        "yearly": { "amount": "$290", "period": "/yr" }
+      },
       "features": ["All Basic features", "Pro Feature 1", "Pro Feature 2"], 
       "button_text": "Choose Pro", 
       "is_popular": true, 
@@ -3170,6 +3312,29 @@ function wpc_save_meta_box( $post_id ) {
         update_post_meta( $post_id, '_wpc_competitors', array() );
     }
 
+    // Billing Display Style
+    if ( isset( $_POST['wpc_billing_display_style'] ) ) {
+        update_post_meta( $post_id, '_wpc_billing_display_style', sanitize_text_field( $_POST['wpc_billing_display_style'] ) );
+    }
+
+    // Billing Cycles
+    if ( isset($_POST['wpc_cycles']) && is_array($_POST['wpc_cycles']) ) {
+        $cycles = array_map(function($c) {
+            return array(
+                'slug' => sanitize_key($c['slug']),
+                'label' => sanitize_text_field($c['label'])
+            );
+        }, $_POST['wpc_cycles']);
+        update_post_meta( $post_id, '_wpc_billing_cycles', $cycles );
+    } else {
+        update_post_meta( $post_id, '_wpc_billing_cycles', array() );
+    }
+    
+    // Default Cycle
+    if ( isset($_POST['wpc_default_cycle']) ) {
+        update_post_meta( $post_id, '_wpc_default_cycle', sanitize_key($_POST['wpc_default_cycle']) );
+    }
+
     // Save Billing Mode Settings
     if ( isset( $_POST['wpc_billing_mode'] ) ) {
         update_post_meta( $post_id, '_wpc_billing_mode', sanitize_text_field( $_POST['wpc_billing_mode'] ) );
@@ -3184,32 +3349,50 @@ function wpc_save_meta_box( $post_id ) {
         update_post_meta( $post_id, '_wpc_default_billing', sanitize_text_field( $_POST['wpc_default_billing'] ) );
     }
 
-    // Save Pricing Plans
+    // Pricing Plans with Dynamic Prices
     if ( isset( $_POST['wpc_plans'] ) && is_array( $_POST['wpc_plans'] ) ) {
         $plans = array();
         foreach ( $_POST['wpc_plans'] as $p ) {
             if ( ! empty( $p['name'] ) ) { // Save only if has name
-                $plans[] = array(
+                $plan_data = array(
                     'name'         => sanitize_text_field( $p['name'] ),
-                    'price'        => sanitize_text_field( $p['price'] ),
-                    'yearly_price' => isset( $p['yearly_price'] ) ? sanitize_text_field( $p['yearly_price'] ) : '',
-                    'period'       => sanitize_text_field( $p['period'] ),
+                    'prices'       => array(), // New dynamic structure
                     'features'     => sanitize_textarea_field( $p['features'] ),
                     'link'         => esc_url_raw( $p['link'] ),
                     'show_button'  => isset( $p['show_button'] ) ? '1' : '0',
+                    'show_popup'   => isset( $p['show_popup'] ) ? '1' : '0',
+                    'show_table'   => isset( $p['show_table'] ) ? '1' : '0',
                     'button_text'  => isset( $p['button_text'] ) ? sanitize_text_field( $p['button_text'] ) : '',
+                    'coupon'       => isset( $p['coupon'] ) ? sanitize_text_field( $p['coupon'] ) : '', // Allow codes
                     'show_banner'  => isset( $p['show_banner'] ) ? '1' : '0',
                     'banner_text'  => isset( $p['banner_text'] ) ? sanitize_text_field( $p['banner_text'] ) : '',
                     'banner_color' => isset( $p['banner_color'] ) ? sanitize_hex_color( $p['banner_color'] ) : '',
-                    'show_popup'   => isset( $p['show_popup'] ) ? '1' : '0',
-                    'show_table'   => isset( $p['show_table'] ) ? '1' : '0',
-                    'coupon'       => isset( $p['coupon'] ) ? sanitize_text_field( $p['coupon'] ) : '',
                 );
+
+                // Process dynamic prices
+                if ( isset($p['prices']) && is_array($p['prices']) ) {
+                    foreach($p['prices'] as $slug => $price_info) {
+                        $plan_data['prices'][sanitize_key($slug)] = array(
+                            'amount' => sanitize_text_field($price_info['amount']),
+                            'period' => sanitize_text_field($price_info['period'])
+                        );
+                    }
+                }
+
+                // Legacy Fallback for older code reading flat fields (Optional, but good for safety)
+                // Pick first cycle as 'price' and second as 'yearly_price' just in case?
+                // Or leave blank. Let's just store the robust 'prices' array.
+
+                $plans[] = $plan_data;
             }
         }
         update_post_meta( $post_id, '_wpc_pricing_plans', $plans );
     } else {
-        delete_post_meta( $post_id, '_wpc_pricing_plans' );
+        update_post_meta( $post_id, '_wpc_pricing_plans', array() );
+    }
+
+    if ( function_exists( 'wpc_save_variants_meta' ) ) {
+        wpc_save_variants_meta( $post_id );
     }
 
     // Save Best Use Cases

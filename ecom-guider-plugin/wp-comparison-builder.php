@@ -3,7 +3,7 @@
  * Plugin Name: WP Comparison Builder
  * Plugin URI:  https://example.com/
  * Description: A powerful, generic comparison builder for WordPress. Create beautiful comparison tables, lists, and hero sections for any type of item (hosting, software, products, etc.).
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Your Name
  * Author URI:  https://example.com/
  * Text Domain: wp-comparison-builder
@@ -51,6 +51,7 @@ require_once WPC_PLUGIN_DIR . 'includes/plan-features-tab.php'; // Plan Features
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-database.php'; // Database Class
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-migrator.php'; // Migrator Class
 require_once WPC_PLUGIN_DIR . 'includes/class-wpc-tools-db.php'; // Tools Database Class
+
 
 // Initialize Database Table on Activation
 register_activation_hook( __FILE__, 'wpc_install_db' );
@@ -170,6 +171,7 @@ function wpc_register_scripts() {
         'tableFeatures' => get_option('wpc_text_table_features', 'Features'),
         'close' => get_option('wpc_text_close', 'Close'),
         'noPlans' => get_option('wpc_text_no_plans', 'No specific pricing plans available for display.'),
+        'emptyPrice' => get_option('wpc_text_empty_price', 'Free'),
     );
 
     // Hybrid Approach: Preload Data Globally
@@ -727,6 +729,86 @@ function wpc_list_shortcode( $atts ) {
     $post_id = intval( $attributes['id'] );
     
     // Fetch Saved Meta (try new keys first, then legacy)
+    // Prepare Billing Cycles
+    $billing_cycles = get_post_meta( $post_id, '_wpc_billing_cycles', true );
+    if ( ! is_array( $billing_cycles ) || empty( $billing_cycles ) ) {
+        // Fallback for legacy data or if not set: create virtual cycles based on old mode
+        $billing_mode = get_post_meta( $post_id, '_wpc_billing_mode', true ) ?: 'monthly_only';
+        $monthly_label = get_post_meta( $post_id, '_wpc_monthly_label', true ) ?: 'Monthly';
+        $yearly_label = get_post_meta( $post_id, '_wpc_yearly_label', true ) ?: 'Yearly';
+
+        $billing_cycles = array();
+        // If mode was 'monthly_only' or 'both', add monthly
+        if ( $billing_mode !== 'yearly_only' ) {
+            $billing_cycles[] = array( 'slug' => 'monthly', 'label' => $monthly_label );
+        }
+        // If mode was 'yearly_only' or 'both', add yearly
+        if ( $billing_mode !== 'monthly_only' ) {
+            $billing_cycles[] = array( 'slug' => 'yearly', 'label' => $yearly_label );
+        }
+    }
+    
+    // Normalize Plans Data (ensure 'prices' array exists)
+    $plans = get_post_meta( $post_id, '_wpc_pricing_plans', true );
+    if ( is_array( $plans ) ) {
+        foreach ( $plans as &$p ) {
+            if ( ! isset($p['prices']) || empty($p['prices']) ) {
+                $p['prices'] = array();
+                // Map legacy fields
+                if ( ! empty($p['price']) ) {
+                    $p['prices']['monthly'] = array( 
+                        'amount' => $p['price'], 
+                        'period' => isset($p['period']) ? $p['period'] : '/mo' 
+                    );
+                }
+                if ( ! empty($p['yearly_price']) ) {
+                     $p['prices']['yearly'] = array( 
+                        'amount' => $p['yearly_price'], 
+                        'period' => isset($p['yearly_period']) ? $p['yearly_period'] : '/yr' 
+                    );
+                }
+            }
+        }
+    } else {
+        $plans = array();
+    }
+
+    $default_billing = get_post_meta( $post_id, '_wpc_default_cycle', true );
+    if ( ! $default_billing ) {
+        $default_billing = get_post_meta( $post_id, '_wpc_default_billing', true ) ?: 'monthly';
+    }
+
+    // Initialize variables to prevent undefined warnings
+    $hide_features = get_post_meta( $post_id, '_wpc_list_hide_features', true );
+    $show_plan_links = get_post_meta( $post_id, '_wpc_list_show_select_table', true );
+    $show_plan_links_popup = get_post_meta( $post_id, '_wpc_list_show_select_popup', true );
+    $table_btn_pos = get_post_meta( $post_id, '_wpc_list_pt_btn_pos_table', true );
+    $popup_btn_pos = get_post_meta( $post_id, '_wpc_list_pt_btn_pos_popup', true );
+
+    $widget_config = array(
+        'postId' => $post_id,
+        'plans' => $plans,
+        'billingCycles' => $billing_cycles, // Pass dynamic cycles
+        'defaultBilling' => $default_billing,
+        // Legacy props passed for fail-safe, though frontend should prefer billingCycles
+        'billingMode' => get_post_meta( $post_id, '_wpc_billing_mode', true ), 
+        'monthlyLabel' => get_post_meta( $post_id, '_wpc_monthly_label', true ),
+        'yearlyLabel' => get_post_meta( $post_id, '_wpc_yearly_label', true ),
+        'category'    => $attributes['category'],
+        'showFeatures' => $hide_features !== '1',
+        'showPlanLinks' => $show_plan_links === '1',
+        'showPlanLinksPopup' => $show_plan_links_popup === '1',
+        'tableBtnPos' => $table_btn_pos,
+        'popupBtnPos' => $popup_btn_pos, 
+        'couponCode'  => get_post_meta( $post_id, '_wpc_coupon_code', true ),
+        'showCoupon'  => get_post_meta( $post_id, '_wpc_show_coupon', true ) === '1',
+        // Text Overrides...
+        'textEmpty' => get_option( 'wpc_text_empty_price', 'Free' ),
+        'textFeatures' => get_post_meta( $post_id, '_wpc_txt_feature_header', true ) ?: get_option( 'wpc_text_features', 'Features' ),
+        'textCopied'   => get_post_meta( $post_id, '_wpc_txt_copied_label', true ) ?: 'Copied!',
+        'textCouponLabel' => get_post_meta( $post_id, '_wpc_txt_coupon_label', true ) ?: 'Use Coupon:',
+    );
+    
     $ids = get_post_meta( $post_id, '_wpc_list_ids', true );
     if (empty($ids)) $ids = get_post_meta( $post_id, '_hg_list_ids', true );
     
@@ -1138,11 +1220,24 @@ function wpc_list_shortcode( $atts ) {
     
     $view_action = get_post_meta($post_id, '_wpc_list_view_action', true) ?: 'popup';
 
+    // Check for Features Override
+    $features_override = get_post_meta( $post_id, '_wpc_list_features_override', true ) === '1';
+    $custom_features = null;
+    if ( $features_override ) {
+        $custom_features = get_post_meta( $post_id, '_wpc_list_features', true );
+        // Ensure it's an array if empty
+        if ( ! is_array( $custom_features ) ) {
+            $custom_features = array();
+        }
+    }
+
     $config = array(
         'initialItems' => array_values($items), // Pass the heavily filtered items to frontend
         'ids'      => $sorted_ids,
         'style'    => $final_style, // Pass resolved style
         'featured' => !empty($featured_str) ? array_map('trim', explode(',', $featured_str)) : [],
+        // Pass Override Features if enabled
+        'compareFeatures' => $features_override ? $custom_features : null, 
         'category' => '', 
         'limit'    => intval($limit),
         'enableComparison' => $enable_comparison === '1', // Footer Bar
@@ -1197,6 +1292,8 @@ function wpc_list_shortcode( $atts ) {
             'couponText'  => get_post_meta($post_id, '_wpc_list_color_coupon_text', true) ?: get_option('wpc_color_coupon_text', '#92400e'),
             'couponHover' => get_post_meta($post_id, '_wpc_list_color_coupon_hover', true) ?: get_option('wpc_color_coupon_hover', '#fde68a'),
             'copied'      => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
+            'tick'        => get_post_meta($post_id, '_wpc_list_color_tick', true) ?: get_option('wpc_color_tick', '#10b981'),
+            'cross'       => get_post_meta($post_id, '_wpc_list_color_cross', true) ?: get_option('wpc_color_cross', '#94a3b8'),
             'category'    => $category_slug, // Product Variants Module
         ],
     );
@@ -1475,6 +1572,9 @@ function wpc_pricing_table_shortcode( $atts ) {
         'monthlyLabel' => $monthly_label,
         'yearlyLabel' => $yearly_label,
         'defaultBilling' => $default_billing,
+        'billingCycles' => get_post_meta($item['id'], '_wpc_billing_cycles', true) ?: [],
+        'defaultCycle' => get_post_meta($item['id'], '_wpc_default_cycle', true) ?: 'monthly',
+        'billingDisplay' => get_post_meta($item['id'], '_wpc_billing_display_style', true) ?: 'toggle',
         
         // Per-item pricing configuration settings
         'hideFeatures' => get_post_meta($item['id'], '_wpc_hide_plan_features', true) === '1',
@@ -1509,16 +1609,94 @@ function wpc_pricing_table_shortcode( $atts ) {
                     </div>
                 </div>
                 
-                <!-- Pricing Plans (Simplified) -->
+                <!-- Pricing Plans (Full SSR Table) -->
                  <?php if (!empty($item['pricing_plans']) && is_array($item['pricing_plans'])) : 
-                     $plan = $item['pricing_plans'][0]; 
+                     $plans = $item['pricing_plans'];
+                     $default_cycle = get_post_meta($item['id'], '_wpc_default_cycle', true) ?: 'monthly';
+                     $empty_price_text = get_option('wpc_text_empty_price', 'Free');
                  ?>
-                    <div style="padding: 1.5rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;"><?php echo esc_html($plan['title'] ?? 'Standard'); ?></h3>
-                        <div style="display: flex; align-items: baseline; gap: 0.25rem;">
-                             <span style="font-size: 2rem; font-weight: 800;"><?php echo esc_html($plan['price'] ?? '0'); ?></span>
-                             <span style="color: #6b7280;"><?php echo esc_html($plan['period'] ?? '/mo'); ?></span>
-                        </div>
+                    <div style="width:100%; overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
+                            <thead>
+                                <tr>
+                                    <?php foreach ($plans as $idx => $plan) : ?>
+                                        <th style="padding:1rem; border-bottom:1px solid var(--pt-border); background-color:var(--pt-header-bg); color:var(--pt-header-text); width:<?php echo 100/count($plans); ?>%; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
+                                            <div style="font-size:1.125rem; font-weight:700;"><?php echo esc_html($plan['name'] ?? 'Plan'); ?></div>
+                                        </th>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Price Row -->
+                                <tr>
+                                    <?php foreach ($plans as $idx => $plan) : 
+                                         // Get price logic (copied from previous step)
+                                         $ssr_price = '';
+                                         $ssr_period = '';
+                                         if (!empty($plan['prices']) && is_array($plan['prices'])) {
+                                             if (!empty($plan['prices'][$default_cycle])) {
+                                                 $ssr_price = $plan['prices'][$default_cycle]['amount'] ?? '';
+                                                 $ssr_period = $plan['prices'][$default_cycle]['period'] ?? '';
+                                             } else {
+                                                 $first_cycle = array_values($plan['prices'])[0] ?? [];
+                                                 $ssr_price = $first_cycle['amount'] ?? '';
+                                                 $ssr_period = $first_cycle['period'] ?? '';
+                                             }
+                                         } else {
+                                             $ssr_price = $plan['price'] ?? '';
+                                             $ssr_period = $plan['period'] ?? '/mo';
+                                         }
+                                         if (empty($ssr_price) || $ssr_price === '0') {
+                                             $ssr_price = $empty_price_text;
+                                             $ssr_period = '';
+                                         }
+                                    ?>
+                                        <td style="padding:1.5rem 1rem; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
+                                            <div style="display:flex; flex-wrap:wrap; align-items:baseline; justify-content:center; gap:0.25rem;">
+                                                <span style="font-size:1.875rem; font-weight:700; color:var(--primary);"><?php echo esc_html($ssr_price); ?></span>
+                                                <?php if (!empty($ssr_period)) : ?>
+                                                    <span style="color:#6b7280; font-size:0.875rem;"><?php echo esc_html($ssr_period); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                                <!-- Button Row (Simple check) -->
+                                <?php if ($show_plan_buttons) : ?>
+                                <tr>
+                                    <?php foreach ($plans as $idx => $plan) : ?>
+                                        <td style="padding:0 1rem 1.5rem; vertical-align:middle; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
+                                            <?php if (!empty($plan['link'])) : ?>
+                                                <a href="<?php echo esc_url($plan['link']); ?>" style="display:inline-block; width:100%; padding:0.5rem 1rem; background-color:var(--pt-btn-bg); color:var(--pt-btn-text); border-radius:0.375rem; font-weight:500; text-decoration:none; font-size:0.875rem;">
+                                                    <?php echo esc_html($plan['button_text'] ?? 'Select'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                                <?php endif; ?>
+                                <!-- Features Row (Simplified list) -->
+                                <tr style="border-top:1px solid var(--pt-border);">
+                                    <?php foreach ($plans as $idx => $plan) : 
+                                        $features = !empty($plan['features']) ? explode("\n", $plan['features']) : [];
+                                    ?>
+                                        <td style="padding:1rem; vertical-align:top; text-align:left; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
+                                            <?php if (!empty($features)) : ?>
+                                                <ul style="list-style:none; padding:0; margin:0; font-size:0.875rem; color:#4b5563;">
+                                                    <?php foreach ($features as $feature) : 
+                                                        if (empty(trim($feature))) continue;
+                                                    ?>
+                                                        <li style="margin-bottom:0.5rem; display:flex; gap:0.5rem;">
+                                                            <span style="color:var(--primary);">✓</span> <?php echo esc_html(trim($feature)); ?>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php endif; ?>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                  <?php endif; ?>
             </div>

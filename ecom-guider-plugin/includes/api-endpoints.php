@@ -216,6 +216,52 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 // Arrays/JSON
                 $pricing_plans = ($row && !empty($row->pricing_plans)) ? $row->pricing_plans : (get_post_meta( $id, '_wpc_pricing_plans', true ) ?: get_post_meta( $id, '_ecommerce_pricing_plans', true ) ?: array());
 
+                // Robust Price Fallback Logic:
+                // 1. Try Monthly from plans
+                // 2. Fallback to any other cycle (Yearly, etc.) from plans
+                // 3. Keep the manual price field value ($price already set)
+                // 4. If still empty, use configurable "Free" text
+                $plan_price_found = false;
+                if ( ! empty( $pricing_plans ) && is_array( $pricing_plans ) ) {
+                    foreach ( $pricing_plans as $p ) {
+                        // Check new dynamic 'prices' structure for monthly FIRST
+                        if ( ! empty($p['prices']) && isset($p['prices']['monthly']) && ! empty($p['prices']['monthly']['amount']) ) {
+                            $price = $p['prices']['monthly']['amount'];
+                            $period = isset($p['prices']['monthly']['period']) ? $p['prices']['monthly']['period'] : '/mo';
+                            $plan_price_found = true;
+                            break;
+                        }
+                    }
+                    // If no monthly found, try any other cycle
+                    if ( ! $plan_price_found ) {
+                        foreach ( $pricing_plans as $p ) {
+                            if ( ! empty($p['prices']) && is_array($p['prices']) ) {
+                                foreach ( $p['prices'] as $cycle_slug => $cycle_data ) {
+                                    if ( ! empty($cycle_data['amount']) ) {
+                                        $price = $cycle_data['amount'];
+                                        $period = isset($cycle_data['period']) ? $cycle_data['period'] : '';
+                                        $plan_price_found = true;
+                                        break 2; // Exit both loops
+                                    }
+                                }
+                            }
+                            // Legacy fallback
+                            elseif ( ! empty($p['price']) ) {
+                                $price = $p['price'];
+                                $period = isset($p['period']) ? $p['period'] : '/mo';
+                                $plan_price_found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // If price is still empty or '0', use global "Free" text
+                if ( empty($price) || $price === '0' || $price === 0 ) {
+                    $price = get_option( 'wpc_text_empty_price', 'Free' );
+                    $period = ''; // No period for "Free"
+                }
+
                 // Booleans / Checkboxes
                 // In DB, these are 1/0 ints. In Meta "1" string.
                 if ($row) {
@@ -300,6 +346,9 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 'monthly_label' => get_post_meta($id, '_wpc_monthly_label', true) ?: 'Pay monthly',
                 'yearly_label' => get_post_meta($id, '_wpc_yearly_label', true) ?: 'Pay yearly (save 25%)*',
                 'default_billing' => get_post_meta($id, '_wpc_default_billing', true) ?: 'monthly',
+                'billing_cycles' => get_post_meta($id, '_wpc_billing_cycles', true) ?: [],
+                'default_cycle' => get_post_meta($id, '_wpc_default_cycle', true) ?: 'monthly',
+                'billing_display_style' => get_post_meta($id, '_wpc_billing_display_style', true) ?: 'toggle',
 
                 'pros'     => $pros,
                 'cons'     => $cons,

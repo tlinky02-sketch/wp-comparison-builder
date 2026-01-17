@@ -19,6 +19,17 @@ function wpc_add_settings_page() {
 }
 
 /**
+ * Enqueue scripts for Settings Page
+ */
+add_action( 'admin_enqueue_scripts', 'wpc_settings_scripts' );
+function wpc_settings_scripts( $hook ) {
+    if ( strpos($hook, 'wpc-settings') === false ) {
+        return;
+    }
+    wp_enqueue_script( 'jquery-ui-sortable' );
+}
+
+/**
  * Register Settings
  */
 add_action( 'admin_init', 'wpc_register_settings' );
@@ -104,6 +115,7 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_text_price' );
     register_setting( 'wpc_settings_group', 'wpc_text_rating' );
     register_setting( 'wpc_settings_group', 'wpc_text_mo_suffix' );
+    register_setting( 'wpc_settings_group', 'wpc_text_empty_price' ); // Added explicit "Free" text override
     
     // New Misc Configurable Texts
     register_setting( 'wpc_settings_group', 'wpc_text_no_compare' );
@@ -352,6 +364,40 @@ function wpc_handle_export_data() {
         }
     }
 
+    // Export Tools (only if module is enabled)
+    $tools_module_enabled = get_option( 'wpc_enable_tools_module', '0' ) === '1';
+    if ( $tools_module_enabled && isset( $should_export['tools'] ) ) {
+        $tools = get_posts( array(
+            'post_type' => 'comparison_tool',
+            'posts_per_page' => -1,
+            'post_status' => array( 'publish', 'draft' ),
+        ));
+
+        foreach ( $tools as $tool ) {
+            $tool_data = array(
+                'post_title' => $tool->post_title,
+                'post_name' => $tool->post_name,
+                'post_status' => $tool->post_status,
+                'meta' => array(),
+            );
+
+            $all_meta = get_post_meta( $tool->ID );
+            foreach ( $all_meta as $key => $value ) {
+                if ( strpos( $key, '_wpc_' ) === 0 || strpos( $key, '_tool_' ) === 0 ) {
+                    $tool_data['meta'][ $key ] = maybe_unserialize( $value[0] );
+                }
+            }
+
+            // Get taxonomies
+            $tool_cats = wp_get_post_terms( $tool->ID, 'tool_category', array( 'fields' => 'slugs' ) );
+            $tool_tags = wp_get_post_terms( $tool->ID, 'tool_tag', array( 'fields' => 'slugs' ) );
+            $tool_data['tool_categories'] = is_array( $tool_cats ) ? $tool_cats : array();
+            $tool_data['tool_tags'] = is_array( $tool_tags ) ? $tool_tags : array();
+
+            $export_data['comparison_tools'][] = $tool_data;
+        }
+    }
+
     wp_send_json_success( $export_data );
 }
 
@@ -549,9 +595,10 @@ function wpc_handle_import_data() {
         }
     }
 
-    // Import Comparison Tools (only if allowed)
+    // Import Comparison Tools (only if module enabled AND allowed)
+    $tools_module_enabled = get_option( 'wpc_enable_tools_module', '0' ) === '1';
     $import_tools = isset( $_POST['import_tools'] ) && $_POST['import_tools'] === 'true';
-    if ( $import_tools && ! empty( $data['comparison_tools'] ) ) {
+    if ( $tools_module_enabled && $import_tools && ! empty( $data['comparison_tools'] ) ) {
         foreach ( $data['comparison_tools'] as $tool_data ) {
             $existing = get_page_by_path( $tool_data['post_name'], OBJECT, 'comparison_tool' );
             
@@ -1535,6 +1582,42 @@ function wpc_render_general_tab() {
                     <p class="description">
                         Choose the border color for standard items (non-featured). Leave empty to use default (light gray).
                     </p>
+                </td>
+            </tr>
+
+            <!-- Icon Colors -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_color_tick"><?php _e( 'Checkmark (Tick) Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <input 
+                        type="color" 
+                        id="wpc_color_tick" 
+                        name="wpc_color_tick" 
+                        value="<?php echo esc_attr( get_option( 'wpc_color_tick', '#10b981' ) ); ?>"
+                        style="width: 100px; height: 40px; cursor: pointer;"
+                    />
+                    <p class="description">
+                        Color for the "Yes" checkmark icon in the comparison table. Default: <code>#10b981</code> (Emerald)
+                    </p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_color_cross"><?php _e( 'Missing Feature (X) Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <input 
+                        type="color" 
+                        id="wpc_color_cross" 
+                        name="wpc_color_cross" 
+                        value="<?php echo esc_attr( get_option( 'wpc_color_cross', '#94a3b8' ) ); ?>"
+                        style="width: 100px; height: 40px; cursor: pointer;"
+                    />
+                    <p class="description">
+                        Color for the "No" cross icon in the comparison table. Default: <code>#94a3b8</code> (Slate)
+                    </p>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
                         <strong style="display:block; margin-bottom: 10px; color: #334155;">Global Theme Presets</strong>
@@ -1802,85 +1885,220 @@ function wpc_render_general_tab() {
         
         <hr style="margin: 40px 0;">
         
-        <h2><?php _e( 'Comparison Table Features', 'wp-comparison-builder' ); ?></h2>
-        <p><?php _e( 'Select which features should appear in the comparison table when users compare items.', 'wp-comparison-builder' ); ?></p>
+        <h2><?php _e( 'Comparison Table Features & Hierarchy', 'wp-comparison-builder' ); ?></h2>
+        <p><?php _e( 'Manage which features appear in the table and their order. Drag and drop items in the "Active" column to rearrange them.', 'wp-comparison-builder' ); ?></p>
         
         <?php
         // Get saved feature settings
         $compare_features = get_option( 'wpc_compare_features', array() );
         
-        // Ensure it's an array
-        if (!is_array($compare_features)) {
-            $compare_features = array();
-        }
-        
-        // Built-in features (always available)
-        $builtin_features = array(
-            'price' => __('Price', 'wp-comparison-builder'),
-            'rating' => __('Rating', 'wp-comparison-builder'),
-            'pros' => __('Pros', 'wp-comparison-builder'),
-            'cons' => __('Cons', 'wp-comparison-builder'),
+        // Define all available items with labels
+        // Built-ins
+        $all_items = array(
+            'price' => array('label' => __('Price', 'wp-comparison-builder'), 'type' => 'builtin'),
+            'rating' => array('label' => __('Rating', 'wp-comparison-builder'), 'type' => 'builtin'),
+            'pros' => array('label' => __('Pros', 'wp-comparison-builder'), 'type' => 'builtin'),
+            'cons' => array('label' => __('Cons', 'wp-comparison-builder'), 'type' => 'builtin'),
         );
         
-        // Get dynamic tags from taxonomy
-        $tag_terms = get_terms( array( 
-            'taxonomy' => 'comparison_feature', 
-            'hide_empty' => false 
-        ));
+        // Dynamic Tags
+        $tag_terms = get_terms( array( 'taxonomy' => 'comparison_feature', 'hide_empty' => false ) );
+        if ( ! empty($tag_terms) && ! is_wp_error($tag_terms) ) {
+            foreach ( $tag_terms as $term ) {
+                $all_items['tag_' . $term->term_id] = array(
+                    'label' => $term->name,
+                    'type' => 'tag'
+                );
+            }
+        }
+        
+        // Determine Active vs Available
+        $active_keys = array();
+        
+        // Migration: If array is associative (old format), convert to keys
+        // If it's a numeric array (new format), use as is.
+        // Simple check: isset($compare_features['price']) means associative.
+        // check if first key is int?
+        $is_associative = count(array_filter(array_keys($compare_features), 'is_string')) > 0;
+        
+        if ( empty($compare_features) ) {
+            // Default: Price, Rating, Pros, Cons
+             $active_keys = array('price', 'rating', 'pros', 'cons');
+        } elseif ( $is_associative ) {
+            // Old Format: Filter where value == '1'
+            // We want to preserve a sensible default order: Built-ins first, then Tags
+            foreach ( array('price', 'rating', 'pros', 'cons') as $k ) {
+                if ( isset($compare_features[$k]) && $compare_features[$k] === '1' ) {
+                    $active_keys[] = $k;
+                }
+            }
+            foreach ( $compare_features as $k => $v ) {
+                if ( $v === '1' && !in_array($k, $active_keys) && isset($all_items[$k]) ) {
+                    $active_keys[] = $k;
+                }
+            }
+        } else {
+            // New Format: It's just the array of keys
+            $active_keys = $compare_features;
+        }
+
+        // Available = All - Active
+        $available_keys = array_diff(array_keys($all_items), $active_keys);
         ?>
         
-        <table class="form-table">
-            <tr valign="top">
-                <th scope="row"><?php _e( 'Built-in Features', 'wp-comparison-builder' ); ?></th>
-                <td>
-                    <fieldset style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-                        <?php foreach ( $builtin_features as $key => $label ) : 
-                            $is_checked = !isset($compare_features[$key]) || $compare_features[$key] === '1';
-                        ?>
-                        <label style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" name="wpc_compare_features[<?php echo esc_attr($key); ?>]" value="1" <?php checked( $is_checked ); ?> />
-                            <span><?php echo esc_html($label); ?></span>
-                        </label>
-                        <?php endforeach; ?>
-                    </fieldset>
-                    <p class="description" style="margin-top: 10px;">
-                        <?php _e( 'Price, Rating, Pros, and Cons are built-in features.', 'wp-comparison-builder' ); ?>
-                    </p>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row">
-                    <?php _e( 'Tag Features', 'wp-comparison-builder' ); ?>
-                    <p class="description" style="font-weight: normal; margin-top: 5px;">
-                        <a href="<?php echo admin_url('edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item'); ?>"><?php _e('Manage Tags →', 'wp-comparison-builder'); ?></a>
-                    </p>
-                </th>
-                <td>
-                    <?php if ( !empty($tag_terms) && !is_wp_error($tag_terms) ) : ?>
-                    <fieldset style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa;">
-                        <?php foreach ( $tag_terms as $term ) : 
-                            $term_key = 'tag_' . $term->term_id;
-                            $is_checked = !isset($compare_features[$term_key]) || $compare_features[$term_key] === '1';
-                        ?>
-                        <label style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" name="wpc_compare_features[<?php echo esc_attr($term_key); ?>]" value="1" <?php checked( $is_checked ); ?> />
-                            <span><?php echo esc_html($term->name); ?></span>
-                        </label>
-                        <?php endforeach; ?>
-                    </fieldset>
-                    <?php else : ?>
-                    <p class="description">
-                        <?php _e( 'No tags found.', 'wp-comparison-builder' ); ?> 
-                        <a href="<?php echo admin_url('edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item'); ?>"><?php _e('Add tags →', 'wp-comparison-builder'); ?></a>
-                    </p>
-                    <?php endif; ?>
-                    <p class="description" style="margin-top: 15px;">
-                        <?php _e( 'Unchecked features will be hidden from the comparison table. This can be overridden per Custom List.', 'wp-comparison-builder' ); ?>
-                    </p>
-                </td>
-            </tr>
-        </table>
+        <div class="wpc-dual-listbox-wrapper">
+             <style>
+                .wpc-dual-listbox-wrapper { display: flex; gap: 20px; align-items: flex-start; margin-top: 20px; }
+                .wpc-list-col { flex: 1; background: #fff; border: 1px solid #ccd0d4; border-radius: 4px; display: flex; flex-direction: column; }
+                .wpc-list-header { background: #f9f9f9; padding: 10px; border-bottom: 1px solid #ccd0d4; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+                .wpc-list-search { padding: 10px; border-bottom: 1px solid #eee; }
+                .wpc-list-search input { width: 100%; }
+                .wpc-sortable-list { list-style: none; margin: 0; padding: 0; height: 300px; overflow-y: auto; background: #fff; }
+                .wpc-sortable-list li { 
+                    padding: 8px 12px; border-bottom: 1px solid #f0f0f1; cursor: grab; display: flex; justify-content: space-between; align-items: center; background: #fff;
+                    transition: background 0.1s;
+                }
+                .wpc-sortable-list li:hover { background: #f0f6fc; }
+                .wpc-sortable-list li.ui-sortable-helper { box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #fff; cursor: grabbing; }
+                .wpc-sortable-list li.placeholder { background: #f0f0f1; height: 40px; }
+                .wpc-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #e5e7eb; color: #374151; margin-left: 8px; }
+                .wpc-badge.builtin { background: #dbeafe; color: #1e40af; }
+                .wpc-action-btn { cursor: pointer; color: #2271b1; font-weight: 500; font-size: 12px; }
+                .wpc-action-btn:hover { color: #135e96; text-decoration: underline; }
+                .wpc-list-controls { display: flex; flex-direction: column; gap: 10px; justify-content: center; padding-top: 50px; }
+                
+                .wpc-empty-msg { padding: 20px; text-align: center; color: #646970; font-style: italic; display: none; }
+                ul:empty + .wpc-empty-msg { display: block; }
+            </style>
+
+            <!-- Available Column -->
+            <div class="wpc-list-col">
+                <div class="wpc-list-header">
+                    <?php _e('Available Features', 'wp-comparison-builder'); ?>
+                    <button type="button" class="button button-small" id="wpc-add-all"><?php _e('Add All', 'wp-comparison-builder'); ?></button>
+                </div>
+                <div class="wpc-list-search">
+                    <input type="text" id="wpc-search-available" placeholder="<?php _e('Search tags...', 'wp-comparison-builder'); ?>">
+                </div>
+                <ul id="wpc-available-list" class="wpc-sortable-list">
+                    <?php foreach ($available_keys as $key) : 
+                        if (!isset($all_items[$key])) continue;
+                        $item = $all_items[$key];
+                    ?>
+                    <li data-key="<?php echo esc_attr($key); ?>">
+                        <span class="wpc-item-label">
+                            <?php echo esc_html($item['label']); ?>
+                            <span class="wpc-badge <?php echo esc_attr($item['type']); ?>"><?php echo $item['type'] === 'builtin' ? 'Built-in' : 'Tag'; ?></span>
+                        </span>
+                        <span class="wpc-action-btn wpc-add-btn">Add &rarr;</span>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <div class="wpc-empty-msg"><?php _e('No features available', 'wp-comparison-builder'); ?></div>
+            </div>
+
+            <!-- Active Column -->
+            <div class="wpc-list-col">
+                <div class="wpc-list-header">
+                    <?php _e('Active Columns (Ordered)', 'wp-comparison-builder'); ?>
+                    <button type="button" class="button button-small" id="wpc-remove-all"><?php _e('Remove All', 'wp-comparison-builder'); ?></button>
+                </div>
+                 <div class="wpc-list-search" style="visibility: hidden;"> <!-- Spacer for alignment -->
+                    <input type="text" disabled>
+                </div>
+                <ul id="wpc-active-list" class="wpc-sortable-list">
+                    <?php foreach ($active_keys as $key) : 
+                         if (!isset($all_items[$key])) continue; // Skip if tag deleted
+                         $item = $all_items[$key];
+                    ?>
+                    <li data-key="<?php echo esc_attr($key); ?>">
+                        <span class="wpc-item-label">
+                            <?php echo esc_html($item['label']); ?>
+                            <span class="wpc-badge <?php echo esc_attr($item['type']); ?>"><?php echo $item['type'] === 'builtin' ? 'Built-in' : 'Tag'; ?></span>
+                        </span>
+                        <span class="wpc-action-btn wpc-remove-btn">&larr; Remove</span>
+                        <input type="hidden" name="wpc_compare_features[]" value="<?php echo esc_attr($key); ?>">
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <div class="wpc-empty-msg"><?php _e('Drag items here to active', 'wp-comparison-builder'); ?></div>
+            </div>
+        </div>
         
+        <p class="description" style="margin-top: 15px;">
+            <a href="<?php echo admin_url('edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item'); ?>"><?php _e('Manage Tags →', 'wp-comparison-builder'); ?></a>
+        </p>
+
+        <script>
+        jQuery(document).ready(function($) {
+            // define lists
+            var availableList = $('#wpc-available-list');
+            var activeList = $('#wpc-active-list');
+
+            // Initialize Sortable on Active List
+            activeList.sortable({
+                placeholder: "placeholder",
+                axis: "y",
+                containment: "parent",
+                tolerance: "pointer"
+            });
+
+            // Add Item
+            $(document).on('click', '.wpc-add-btn', function() {
+                var li = $(this).closest('li');
+                var key = li.data('key');
+                
+                // Change button to Remove works visually, but we need structure change
+                li.find('.wpc-action-btn').removeClass('wpc-add-btn').addClass('wpc-remove-btn').html('&larr; Remove');
+                
+                // Append hidden input
+                li.append('<input type="hidden" name="wpc_compare_features[]" value="'+key+'">');
+                
+                // Move to Active
+                li.appendTo(activeList);
+            });
+
+            // Remove Item
+            $(document).on('click', '.wpc-remove-btn', function() {
+                var li = $(this).closest('li');
+                
+                // Remove hidden input
+                li.find('input[name="wpc_compare_features[]"]').remove();
+                
+                // Change button
+                li.find('.wpc-action-btn').removeClass('wpc-remove-btn').addClass('wpc-add-btn').html('Add &rarr;');
+                
+                // Move to Available
+                li.appendTo(availableList);
+            });
+            
+            // Add All
+            $('#wpc-add-all').click(function() {
+                $('#wpc-available-list li:visible').each(function() {
+                    $(this).find('.wpc-add-btn').click();
+                });
+            });
+            
+            // Remove All
+            $('#wpc-remove-all').click(function() {
+                $('#wpc-active-list li').each(function() {
+                    $(this).find('.wpc-remove-btn').click();
+                });
+            });
+
+            // Search
+            $('#wpc-search-available').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('#wpc-available-list li').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+        </script>
+        
+        <table class="form-table"> <!-- Empty table just to keep structure or remove? I removed structure above --> 
+        </table>
+
         <?php submit_button(); ?>
     </form>
     
@@ -2153,10 +2371,9 @@ function wpc_render_import_export_tab() {
         <?php
         // Check if AI is configured
         $ai_configured = false;
-        $ai_provider = get_option( 'wpc_ai_active_provider', 'none' );
-        if ( $ai_provider !== 'none' && class_exists( 'WPC_AI_Handler' ) ) {
-            $ai_config = WPC_AI_Handler::get_active_provider();
-            $ai_configured = ! empty( $ai_config['api_key'] );
+        if ( class_exists( 'WPC_AI_Handler' ) ) {
+            $profiles = WPC_AI_Handler::get_profiles();
+            $ai_configured = ! empty( $profiles );
         }
         ?>
         
@@ -2166,7 +2383,7 @@ function wpc_render_import_export_tab() {
                 <span style="font-size: 24px;">&#x1F916;</span>
                 <?php _e( 'AI Bulk Generator', 'wp-comparison-builder' ); ?>
                 <?php if ( $ai_configured ) : ?>
-                <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;"><?php echo ucfirst( $ai_provider ); ?> Active</span>
+                <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;">AI Active</span>
                 <?php else : ?>
                 <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500;">Not Configured</span>
                 <?php endif; ?>
@@ -2727,7 +2944,8 @@ Return ONLY valid JSON with this structure:
   "badge": "Category/Label badge (e.g. 'Best for SEO')",
   "price": "Free / $XX/mo",
   "rating": "4.8",
-  "link": "https://example.com"
+  "link": "https://example.com",
+  "pricing_plans": [{"name": "Basic", "prices": {"monthly": {"amount": "$9", "period": "/mo"}, "yearly": {"amount": "$90", "period": "/yr"}}, "features": ["Feature 1", "Feature 2"]}]
 }`;
                 } else {
                     // Item Generation
@@ -2746,7 +2964,10 @@ Return ONLY valid JSON with this structure:
                         prompt += `,\n  "pros": ["Pro 1", "Pro 2", "Pro 3"],\n  "cons": ["Con 1", "Con 2"]`;
                     }
                     if (sections.includes('pricing')) {
-                        prompt += `,\n  "pricing_plans": [{"name": "Basic", "price": "$9", "period": "/mo", "features": "Feature 1\\nFeature 2", "button_text": "Get Started"}]`;
+                        prompt += `,\n  "billing_cycles": [{"slug": "monthly", "label": "Monthly"}, {"slug": "yearly", "label": "Yearly"}],
+  "default_cycle": "monthly",
+  "billing_display_style": "toggle",
+  "pricing_plans": [{"name": "Basic", "prices": {"monthly": {"amount": "$9", "period": "/mo"}, "yearly": {"amount": "$90", "period": "/yr"}}, "features": "Feature 1\\nFeature 2", "button_text": "Get Started", "link": "https://example.com"}]`;
                     }
                     if (sections.includes('best_use_cases')) {
                         prompt += `,\n  "best_use_cases": [{"name": "Best for Beginners", "desc": "Easy setup and intuitive interface", "icon": "fa-solid fa-rocket"}, {"name": "Great for Small Business", "desc": "Affordable plans with essential features", "icon": "fa-solid fa-briefcase"}, {"name": "Ideal for Bloggers", "desc": "Content-focused tools and SEO features", "icon": "fa-solid fa-pen-nib"}, {"name": "Perfect for E-commerce", "desc": "Shopping cart and payment integrations", "icon": "fa-solid fa-shopping-cart"}]`;
@@ -2779,7 +3000,8 @@ Return ONLY valid JSON with this structure:
                         badge: data.badge || '',
                         price: data.price || '',
                         rating: data.rating || '',
-                        link: data.link || ''
+                        link: data.link || '',
+                        pricing_plans: JSON.stringify(data.pricing_plans || [])
                     });
                 } else {
                     // Create Item
@@ -2795,7 +3017,11 @@ Return ONLY valid JSON with this structure:
                         pros: JSON.stringify(data.pros || []),
                         cons: JSON.stringify(data.cons || []),
                         pricing_plans: JSON.stringify(data.pricing_plans || []),
-                        best_use_cases: JSON.stringify(data.best_use_cases || [])
+                        best_use_cases: JSON.stringify(data.best_use_cases || []),
+                        // New Billing Fields
+                        billing_cycles: JSON.stringify(data.billing_cycles || []),
+                        default_cycle: data.default_cycle || 'monthly',
+                        billing_display_style: data.billing_display_style || 'toggle'
                     });
                 }
             }
@@ -2874,8 +3100,23 @@ function wpc_render_json_schema_tab() {
         "_wpc_primary_features": ["303", "304"], 
         "_wpc_pros": ["Pro point 1", "Pro point 2"],
         "_wpc_cons": ["Con point 1"],
+        "_wpc_billing_cycles": [
+          {"slug": "monthly", "label": "Pay monthly"},
+          {"slug": "lifetimedeal", "label": "Pay a lifetime deal"}
+        ],
+        "_wpc_default_cycle": "monthly",
+        "_wpc_billing_display_style": "toggle",
         "_wpc_pricing_plans": [
-          {"name": "Basic", "price": "$29", "period": "/mo", "features": ["Feature A", "Feature B"], "link": "https://example.com/basic", "button_text": "View Plan"}
+          {
+            "name": "Basic",
+            "prices": {
+              "monthly": {"amount": "$29", "period": "/mo"},
+              "lifetimedeal": {"amount": "$499", "period": ""}
+            },
+            "features": "Feature A\nFeature B",
+            "link": "https://example.com/basic",
+            "button_text": "View Plan"
+          }
         ],
         "_wpc_design_overrides": { "primary": "#96bf48", "accent": "#333333" }
       },
@@ -2896,7 +3137,7 @@ function wpc_render_json_schema_tab() {
         "_wpc_tool_rating": "4.8",
         "_wpc_tool_features": "Feature X\nFeature Y\nFeature Z",
         "_wpc_tool_pricing_plans": [
-            { "name": "Pro", "price": "$129", "period": "/mo", "features": ["Limit 1", "Limit 2"] }
+            { "name": "Pro", "prices": {"monthly": {"amount": "$129", "period": "/mo"}, "yearly": {"amount": "$1290", "period": "/yr"}}, "features": ["Limit 1", "Limit 2"] }
         ]
       },
       "tool_categories": ["tool-cat-a"],
@@ -4274,6 +4515,13 @@ function wpc_render_texts_tab() {
             <tr valign="top">
                 <th scope="row"><label><?php _e( 'Month Suffix (/mo)', 'wp-comparison-builder' ); ?></label></th>
                 <td><input type="text" name="wpc_text_mo_suffix" value="<?php echo esc_attr( get_option( 'wpc_text_mo_suffix', '/mo' ) ); ?>" class="regular-text" /></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label><?php _e( 'Empty/Free Price Text', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" name="wpc_text_empty_price" value="<?php echo esc_attr( get_option( 'wpc_text_empty_price', 'Free' ) ); ?>" class="regular-text" placeholder="e.g. Free" />
+                    <p class="description"><?php _e( 'Text to show when an item has no price set.', 'wp-comparison-builder' ); ?></p>
+                </td>
             </tr>
 
             <!-- Feature Labels -->
