@@ -11,7 +11,7 @@ function wpc_render_proscons_tab() {
             <?php settings_fields( 'wpc_proscons_settings' ); ?>
             
             <div style="max-width: 1200px;">
-                <h2 style="margin-top: 20px;">⚖️ Pros & Cons Configuration</h2>
+                <h2 style="margin-top: 20px;">Pros & Cons Configuration</h2>
                 <p class="description">Configure default colors, icons, and text for pros and cons. These can be overridden per-item.</p>
                 
                 <!-- Colors Section -->

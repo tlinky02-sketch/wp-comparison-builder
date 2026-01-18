@@ -918,6 +918,9 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_hover' => '#fde68a',
             'wpc_color_copied' => '#10b981',
             'wpc_usecase_icon_color' => '#6366f1',
+            'wpc_color_tick' => '#10b981',
+            'wpc_color_cross' => '#94a3b8',
+            'wpc_star_rating_color' => '#fbbf24',
         ),
         'emerald' => array(
             'wpc_primary_color' => '#10b981',
@@ -942,6 +945,9 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_hover' => '#fed7aa',
             'wpc_color_copied' => '#059669',
             'wpc_usecase_icon_color' => '#10b981',
+            'wpc_color_tick' => '#059669',
+            'wpc_color_cross' => '#94a3b8',
+            'wpc_star_rating_color' => '#10b981',
         ),
         'sunset' => array(
             'wpc_primary_color' => '#f97316',
@@ -966,6 +972,9 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_hover' => '#fecaca',
             'wpc_color_copied' => '#ea580c',
             'wpc_usecase_icon_color' => '#f97316',
+            'wpc_color_tick' => '#f97316',
+            'wpc_color_cross' => '#94a3b8',
+            'wpc_star_rating_color' => '#f97316',
         ),
         'ocean' => array(
             'wpc_primary_color' => '#0ea5e9',
@@ -990,6 +999,9 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_hover' => '#c7d2fe',
             'wpc_color_copied' => '#0ea5e9',
             'wpc_usecase_icon_color' => '#0ea5e9',
+            'wpc_color_tick' => '#0ea5e9',
+            'wpc_color_cross' => '#94a3b8',
+            'wpc_star_rating_color' => '#0ea5e9',
         ),
         'minimal' => array(
             'wpc_primary_color' => '#0f172a',
@@ -1014,6 +1026,9 @@ function wpc_get_theme_presets() {
             'wpc_color_coupon_hover' => '#e2e8f0',
             'wpc_color_copied' => '#0f172a',
             'wpc_usecase_icon_color' => '#0f172a',
+            'wpc_color_tick' => '#0f172a',
+            'wpc_color_cross' => '#94a3b8',
+            'wpc_star_rating_color' => '#64748b',
         ),
     );
 }
@@ -1219,13 +1234,13 @@ function wpc_render_settings_page() {
                 <?php _e( 'Link Behavior', 'wp-comparison-builder' ); ?>
             </a>
             <a href="#" class="nav-tab" data-tab="modules">
-                🔧 <?php _e( 'Modules', 'wp-comparison-builder' ); ?>
+                <?php _e( 'Modules', 'wp-comparison-builder' ); ?>
             </a>
             <a href="#" class="nav-tab" data-tab="ai-settings" style="color: #7c3aed;">
                 &#x1F916; <?php _e( 'AI Settings', 'wp-comparison-builder' ); ?>
             </a>
             <a href="#" class="nav-tab" data-tab="proscons">
-                ⚖️ <?php _e( 'Pros & Cons', 'wp-comparison-builder' ); ?>
+                <?php _e( 'Pros & Cons', 'wp-comparison-builder' ); ?>
             </a>
             <a href="#" class="nav-tab" data-tab="import-export">
                 <?php _e( 'Import / Export', 'wp-comparison-builder' ); ?>
