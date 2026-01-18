@@ -1589,33 +1589,33 @@ function wpc_pricing_table_shortcode( $atts ) {
     ob_start();
     ?>
     <div id="<?php echo esc_attr($unique_id); ?>" class="wpc-root" data-config="<?php echo $config_json; ?>" data-category="<?php echo esc_attr($category_slug); ?>">
-        <!-- SSR Lite Preview: Basic HTML to hold space and show content immediately -->
-        <div class="wpc-ssr-preview" style="padding: 1.5rem; background: #fff; border-radius: 0.75rem; border: 1px solidhsl(var(--border) / 0.2);">
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                <!-- Header -->
-                <div style="display: flex; align-items: start; justify-content: space-between; gap: 1rem;">
-                    <div style="flex: 1;">
-                         <?php if (!empty($item['show_hero_logo'])) : ?>
-                             <div style="width: 64px; height: 64px; margin-bottom: 1rem; border: 1px solid #e5e7eb; border-radius: 12px; padding: 4px; display: flex; align-items: center; justify-content: center;">
-                                <?php if (!empty($item['logo'])) : ?>
-                                    <img src="<?php echo esc_url($item['logo']); ?>" alt="<?php echo esc_attr($item['name']); ?>" style="width: 100%; height: 100%; object-fit: contain;">
-                                <?php endif; ?>
-                             </div>
-                         <?php endif; ?>
-                         <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem 0;"><?php echo esc_html($item['name']); ?></h2>
-                         <?php if (!empty($item['description'])) : ?>
-                             <p style="color: #6b7280; margin: 0; line-height: 1.5;"><?php echo wp_kses_post($item['description']); ?></p>
-                         <?php endif; ?>
-                    </div>
-                </div>
+        <!-- SSR Preview: Matches React PricingTable output exactly -->
+        <div class="wpc-ssr-preview" style="width:100%;">
                 
                 <!-- Pricing Plans (Full SSR Table) -->
                  <?php if (!empty($item['pricing_plans']) && is_array($item['pricing_plans'])) : 
                      $plans = $item['pricing_plans'];
+                     $billing_cycles = get_post_meta($item['id'], '_wpc_billing_cycles', true) ?: [];
                      $default_cycle = get_post_meta($item['id'], '_wpc_default_cycle', true) ?: 'monthly';
                      $empty_price_text = get_option('wpc_text_empty_price', 'Free');
                  ?>
-                    <div style="width:100%; overflow-x:auto;">
+                    <!-- Billing Toggle SSR (only if multiple cycles) -->
+                    <?php if (is_array($billing_cycles) && count($billing_cycles) > 1) : ?>
+                    <div style="display:flex; justify-content:center; margin-bottom:1rem; width:100%;">
+                        <div style="display:inline-flex; border-radius:0.5rem; border:1px solid var(--pt-border,#e5e7eb); background:rgba(0,0,0,0.02); padding:0.25rem; gap:0.25rem;">
+                            <?php foreach ($billing_cycles as $cycle) : 
+                                $is_active = ($cycle['slug'] === $default_cycle);
+                            ?>
+                            <span style="padding:0.5rem 1rem; border-radius:0.375rem; font-size:0.875rem; font-weight:500; cursor:pointer; <?php echo $is_active ? 'background:var(--primary,#f97316); color:white; box-shadow:0 1px 2px rgba(0,0,0,0.05);' : 'color:#6b7280; background:transparent;'; ?>">
+                                <?php echo esc_html($cycle['label']); ?>
+                            </span>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <!-- Main Table Container (matches React's card container) -->
+                    <div style="width:100%; border:1px solid var(--pt-border,#e5e7eb); border-radius:0.75rem; background:white; overflow:hidden;">
                         <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
                             <thead>
                                 <tr>
@@ -1661,20 +1661,6 @@ function wpc_pricing_table_shortcode( $atts ) {
                                         </td>
                                     <?php endforeach; ?>
                                 </tr>
-                                <!-- Button Row (Simple check) -->
-                                <?php if ($show_plan_buttons) : ?>
-                                <tr>
-                                    <?php foreach ($plans as $idx => $plan) : ?>
-                                        <td style="padding:0 1rem 1.5rem; vertical-align:middle; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
-                                            <?php if (!empty($plan['link'])) : ?>
-                                                <a href="<?php echo esc_url($plan['link']); ?>" style="display:inline-block; width:100%; padding:0.5rem 1rem; background-color:var(--pt-btn-bg); color:var(--pt-btn-text); border-radius:0.375rem; font-weight:500; text-decoration:none; font-size:0.875rem;">
-                                                    <?php echo esc_html($plan['button_text'] ?? 'Select'); ?>
-                                                </a>
-                                            <?php endif; ?>
-                                        </td>
-                                    <?php endforeach; ?>
-                                </tr>
-                                <?php endif; ?>
                                 <!-- Features Row (Simplified list) -->
                                 <tr style="border-top:1px solid var(--pt-border);">
                                     <?php foreach ($plans as $idx => $plan) : 
@@ -1695,9 +1681,36 @@ function wpc_pricing_table_shortcode( $atts ) {
                                         </td>
                                     <?php endforeach; ?>
                                 </tr>
+                                <!-- Button Row (After Features - matches React) -->
+                                <?php if ($show_plan_buttons) : ?>
+                                <tr>
+                                    <?php foreach ($plans as $idx => $plan) : ?>
+                                        <td style="padding:1rem; vertical-align:middle; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
+                                            <?php if (!empty($plan['link']) || !empty($plan['button_text'])) : ?>
+                                                <a href="<?php echo esc_url($plan['link'] ?: '#'); ?>" 
+                                                   style="display:block; width:100%; padding:0.75rem 1rem; background-color:var(--pt-btn-bg,var(--primary,#f97316)); color:var(--pt-btn-text,white); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:0.875rem; text-align:center;">
+                                                    <?php echo esc_html($plan['button_text'] ?? 'Select'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
+                    <!-- Footer Button SSR (dynamic) -->
+                    <?php if ($show_footer_button && !empty($item['direct_link'])) : ?>
+                    <div style="padding:1.25rem; text-align:center; border-top:1px solid var(--pt-border,#e5e7eb);">
+                        <a href="<?php echo esc_url($item['direct_link']); ?>" 
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 2rem; background:var(--pt-btn-bg,var(--primary,#f97316)); color:var(--pt-btn-text,white); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:0.9375rem;">
+                            <?php echo esc_html(!empty($footer_button_text) ? $footer_button_text : ($item['name'] ?: 'Visit Site')); ?>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                    <?php endif; ?>
                  <?php endif; ?>
             </div>
         </div>

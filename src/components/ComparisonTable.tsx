@@ -347,15 +347,8 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {features.slice(2).map((feature) => ( // Skip price/rating as they are in header or handled differently?
-              // Actually price/rating are in header, so we can skip them or show them again? 
-              // In the original code, Price and Rating were in logic but renderCell handled them. 
-              // BUT in the Table Body loop, map logic: `features.map((feature) => ... ` 
-              // If I include Price/Rating in `features` array, they will appear as rows. 
-              // Usually Price/Rating is good to reinforce or just keep in header.
-              // Original code had them in features array array.
-              // I'll keep them but usually skip price/rating row if it's in header. 
-              // Let's filter out price/rating from the body rows.
+            {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
+              // Price/Rating are displayed in header, so we filter them from body rows
               <tr key={feature.key} className="group hover:bg-muted/30 transition-colors">
                 <td className="p-2 md:p-6 text-left font-medium text-muted-foreground text-xs md:text-base sticky left-0 bg-background/95 backdrop-blur z-20 group-hover:bg-background/95 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                   {feature.label}
