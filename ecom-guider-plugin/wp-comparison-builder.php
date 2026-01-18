@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define Plugin Constants
-define( 'WPC_VERSION', '1.0.0' );
+define( 'WPC_VERSION', '1.0.3' );
 define( 'WPC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -201,6 +201,8 @@ function wpc_register_scripts() {
             'copied' => get_option( 'wpc_color_copied', '#10b981' ),
             'stars' => get_option( 'wpc_star_rating_color', '#fbbf24' ), // Star Color
             'usecaseIcon' => get_option( 'wpc_usecase_icon_color', '#6366f1' ), // Use Case Icon Color
+            'tick' => get_option( 'wpc_color_tick', '#10b981' ), // Checkmark color
+            'cross' => get_option( 'wpc_color_cross', '#94a3b8' ), // X/Cross color
         ),
         'texts' => $text_labels, // <--- NEW TEXTS OBJECT
         'visuals' => array( // New object for PT visuals

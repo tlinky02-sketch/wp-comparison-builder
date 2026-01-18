@@ -168,6 +168,9 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_color_coupon_text' );
     register_setting( 'wpc_settings_group', 'wpc_color_coupon_hover' );
     register_setting( 'wpc_settings_group', 'wpc_color_copied' );
+    register_setting( 'wpc_settings_group', 'wpc_color_tick' );
+    register_setting( 'wpc_settings_group', 'wpc_color_cross' );
+    register_setting( 'wpc_settings_group', 'wpc_star_rating_color' );
     
     // Plan Features Global Settings
     register_setting( 'wpc_settings_group', 'wpc_ft_display_mode' );

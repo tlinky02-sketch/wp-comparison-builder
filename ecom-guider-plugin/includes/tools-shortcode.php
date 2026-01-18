@@ -78,7 +78,7 @@ function wpc_tools_shortcode( $atts ) {
     // Get colors
     $primary_color = get_option( 'wpc_primary_color', '#6366f1' );
     $hover_color = get_option( 'wpc_button_hover_color', '' ) ?: '#4f46e5';
-    $star_color = get_option( 'wpc_star_color', '#fbbf24' );
+    $star_color = get_option( 'wpc_star_rating_color', '#fbbf24' );
     $border_color = get_option( 'wpc_border_color', '#e2e8f0' );
 
     $columns = intval( $atts['columns'] );

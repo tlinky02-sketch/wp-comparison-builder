@@ -15,7 +15,9 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   const getText = (key: string, def: string) => labels?.[key] || def;
   const target = config?.targetDetails || (window as any).wpcSettings?.target_details || '_blank';
 
-  const colors = config?.colors || (window as any).wpcSettings?.colors || {};
+  // Merge global colors with config-specific overrides (config wins for specific keys)
+  const globalColors = (window as any).wpcSettings?.colors || {};
+  const colors = { ...globalColors, ...(config?.colors || {}) };
   const couponBg = colors.couponBg || '#fef3c7';
   const couponText = colors.couponText || '#92400e';
   const couponHover = colors.couponHover || '#fde68a';
@@ -206,17 +208,18 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         const priceInfo = getPriceForCycle(item, selectedCycle);
         return <span className="font-bold text-primary">{priceInfo.amount}{priceInfo.period && <span className="text-xs text-muted-foreground font-normal ml-0.5">{priceInfo.period}</span>}</span>;
       case "rating":
+        const starColor = colors.stars || '#fbbf24';
         return (
           <div className="flex items-center gap-1 justify-center">
-            <Star className="w-3 h-3 md:w-4 md:h-4 fill-amber-400 text-amber-400" />
+            <Star className="w-3 h-3 md:w-4 md:h-4" style={{ fill: starColor, color: starColor }} />
             <span className="text-xs md:text-base">{item.rating}</span>
           </div>
         );
       case "ssl":
         return item.features.ssl ? (
-          <Check className="w-4 h-4 md:w-5 md:h-5 text-primary mx-auto" />
+          <Check className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: tickColor }} />
         ) : (
-          <X className="w-4 h-4 md:w-5 md:h-5 text-destructive mx-auto" />
+          <X className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: crossColor }} />
         );
       case "products":
         return item.features.products || "—";
@@ -279,7 +282,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                       </div>
                       <div className="w-full">
                         <h3 className="font-bold text-foreground text-sm md:text-lg mb-1 min-h-[1.75rem] flex items-center justify-center">{item.name}</h3>
-                        <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
+                        <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || '#fbbf24' }}>
                           <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
                           <span className="font-medium text-xs md:text-base">{item.rating}</span>
                         </div>
@@ -450,7 +453,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1">{activeItem.name}</h3>
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-1 text-amber-500">
+                <div className="flex items-center gap-1" style={{ color: colors.stars || '#fbbf24' }}>
                   <Star className="w-4 h-4 fill-current" />
                   <span className="text-sm font-medium">{activeItem.rating}</span>
                 </div>

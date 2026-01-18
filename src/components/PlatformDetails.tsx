@@ -123,7 +123,7 @@ const PlatformDetails = ({ item, allItems, onBack, hoverColor, primaryColor, lab
                             <div>
                                 <h1 className="text-4xl font-bold mb-2">{item.name}</h1>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center text-yellow-400">
+                                    <div className="flex items-center" style={{ color: (window as any).wpcSettings?.colors?.stars || '#fbbf24' }}>
                                         <Star className="w-5 h-5 fill-current" />
                                         <span className="ml-1 text-foreground font-bold">{item.rating}</span>
                                     </div>
