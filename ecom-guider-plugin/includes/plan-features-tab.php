@@ -216,10 +216,11 @@ function wpc_render_plan_features_tab( $post ) {
                                     <th style="padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; min-width: 200px;"><?php _e( 'Feature Name', 'wp-comparison-builder' ); ?></th>
                                     <?php foreach ( $cat_plan_names as $plan_idx => $plan_name ) : ?>
                                         <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; min-width: 100px;">
-                                            <span><?php echo esc_html( $plan_name ); ?></span>
+                                            <span><?php echo esc_html( $plan_name ); ?></span><br>
+                                            <input type="checkbox" class="wpc-select-all-plan" data-plan-idx="<?php echo $plan_idx; ?>" data-category="<?php echo esc_attr($cat->slug); ?>" title="Select All" style="margin-top: 5px; width: 18px; height: 18px;" onclick="wpcSelectAllPlanFeatures(this, '<?php echo esc_attr($cat->slug); ?>', <?php echo $plan_idx; ?>)" />
                                         </th>
                                     <?php endforeach; ?>
-                                    <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; width: 80px;">Visible</th>
+                                    <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; width: 80px;">Visible<br><input type="checkbox" class="wpc-select-all-visible" data-category="<?php echo esc_attr($cat->slug); ?>" title="Select All" style="margin-top: 5px; width: 18px; height: 18px;" onclick="wpcSelectAllVisible(this, '<?php echo esc_attr($cat->slug); ?>')" /></th>
                                     <th style="padding: 10px; width: 60px; border-bottom: 2px solid #e2e8f0;"></th>
                                 </tr>
                             </thead>
@@ -287,10 +288,11 @@ function wpc_render_plan_features_tab( $post ) {
                         <th style="padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0; min-width: 200px;"><?php _e( 'Feature Name', 'wp-comparison-builder' ); ?></th>
                         <?php foreach ( $all_plan_names as $plan_idx => $plan_name ) : ?>
                             <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; min-width: 100px;">
-                                <span><?php echo esc_html( $plan_name ); ?></span>
+                                <span><?php echo esc_html( $plan_name ); ?></span><br>
+                                <input type="checkbox" class="wpc-select-all-plan-legacy" data-plan-idx="<?php echo $plan_idx; ?>" title="Select All" style="margin-top: 5px; width: 18px; height: 18px;" onclick="wpcSelectAllPlanFeaturesLegacy(this, <?php echo $plan_idx; ?>)" />
                             </th>
                         <?php endforeach; ?>
-                        <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; width: 80px;">Visible</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 2px solid #e2e8f0; width: 80px;">Visible<br><input type="checkbox" class="wpc-select-all-visible-legacy" title="Select All" style="margin-top: 5px; width: 18px; height: 18px;" onclick="wpcSelectAllVisibleLegacy(this)" /></th>
                         <th style="padding: 10px; width: 60px; border-bottom: 2px solid #e2e8f0;"></th>
                     </tr>
                 </thead>
@@ -532,6 +534,42 @@ function wpc_render_plan_features_tab( $post ) {
             });
         }
     });
+    
+    // Select All for Plan Column (Category Mode)
+    function wpcSelectAllPlanFeatures(checkbox, categorySlug, planIdx) {
+        const table = document.querySelector(`.wpc-cat-feature-table[data-category="${categorySlug}"] .wpc-features-tbody-sortable`);
+        if (!table) return;
+        
+        const checkboxes = table.querySelectorAll(`input[name^="wpc_plan_features_by_category[${categorySlug}]"][name*="[plans][${planIdx}]"]`);
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+    
+    // Select All for Visible Column (Category Mode)
+    function wpcSelectAllVisible(checkbox, categorySlug) {
+        const table = document.querySelector(`.wpc-cat-feature-table[data-category="${categorySlug}"] .wpc-features-tbody-sortable`);
+        if (!table) return;
+        
+        const checkboxes = table.querySelectorAll(`input[name^="wpc_plan_features_by_category[${categorySlug}]"][name$="[visible]"][type="checkbox"]`);
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+    
+    // Select All for Plan Column (Legacy Mode)
+    function wpcSelectAllPlanFeaturesLegacy(checkbox, planIdx) {
+        const table = document.querySelector('.wpc-features-table .wpc-features-tbody-sortable');
+        if (!table) return;
+        
+        const checkboxes = table.querySelectorAll(`input[name^="wpc_plan_features"][name*="[plans][${planIdx}]"]`);
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+    
+    // Select All for Visible Column (Legacy Mode)
+    function wpcSelectAllVisibleLegacy(checkbox) {
+        const table = document.querySelector('.wpc-features-table .wpc-features-tbody-sortable');
+        if (!table) return;
+        
+        const checkboxes = table.querySelectorAll(`input[name^="wpc_plan_features"][name$="[visible]"][type="checkbox"]`);
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
     </script>
     
     <style>

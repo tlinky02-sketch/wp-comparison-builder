@@ -171,7 +171,6 @@ class WPC_Migrator {
         if(is_array($row['cons'])) $row['cons'] = array_values(array_filter(array_map('trim', $row['cons'])));
 
         return $row;
-        return $row;
     }
 
     /**

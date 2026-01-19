@@ -57,7 +57,7 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
 
     // HYBRID FETCH: Tools
     $tools_db_data = array();
-    if ( $query->have_posts() && class_exists('WPC_Tools_Database') ) {
+    if ( $query->have_posts() && class_exists('WPC_Tools_Database') && get_option('wpc_enable_tools_module') === '1' ) {
         $found_ids = wp_list_pluck( $query->posts, 'ID' );
         $tools_db = new WPC_Tools_Database();
         $tool_rows = $tools_db->get_tools( $found_ids );
