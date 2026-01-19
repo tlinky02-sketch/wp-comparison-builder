@@ -130,10 +130,12 @@ $wpdb->query(
 
 $items_table = $wpdb->prefix . 'wpc_items';
 $tools_table = $wpdb->prefix . 'wpc_tools';
+$lists_table = $wpdb->prefix . 'wpc_lists';
 
 // Drop tables
 $wpdb->query( "DROP TABLE IF EXISTS {$items_table}" );
 $wpdb->query( "DROP TABLE IF EXISTS {$tools_table}" );
+$wpdb->query( "DROP TABLE IF EXISTS {$lists_table}" );
 
 // ========== DELETE ORPHANED POST META ==========
 
