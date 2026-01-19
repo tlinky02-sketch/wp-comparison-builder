@@ -111,6 +111,13 @@ class WPC_Tools_Database {
      */
     public function get_tool( $post_id ) {
         global $wpdb;
+        
+        // Check if table exists first to prevent error
+        $table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$this->table_name}'" ) === $this->table_name;
+        if ( ! $table_exists ) {
+            return null;
+        }
+        
         $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE post_id = %d", $post_id ) );
         
         if ( $row ) {

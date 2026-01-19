@@ -99,9 +99,20 @@ add_action( 'update_option_wpc_enable_tools_module', 'wpc_on_tools_module_update
 function wpc_on_tools_module_update( $old_value, $new_value, $option ) {
     // If module is being enabled
     if ( $new_value === '1' ) {
+        // Ensure the class file is loaded
+        if ( ! class_exists('WPC_Tools_Database') ) {
+            $class_file = WPC_PLUGIN_DIR . 'includes/class-wpc-tools-db.php';
+            if ( file_exists( $class_file ) ) {
+                require_once $class_file;
+            }
+        }
+        
+        // Create the tools table
         if ( class_exists('WPC_Tools_Database') ) {
+            ob_start(); // Suppress any dbDelta output
             $db = new WPC_Tools_Database();
             $db->create_table();
+            ob_end_clean();
         }
     }
 }
