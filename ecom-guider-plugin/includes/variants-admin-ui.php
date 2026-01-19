@@ -329,7 +329,7 @@ function wpc_save_variants_meta( $post_id ) {
                 foreach ( $features as $feat_idx => $feature ) {
                     $clean_feature = array(
                         'name' => sanitize_text_field( $feature['name'] ?? '' ),
-                        'visible' => isset( $feature['visible'] ) && $feature['visible'] === '1',
+                        'visible' => ( isset( $feature['visible'] ) && $feature['visible'] === '1' ) ? '1' : '0',
                         'plans' => array()
                     );
                     

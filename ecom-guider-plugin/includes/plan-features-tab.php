@@ -239,6 +239,7 @@ function wpc_render_plan_features_tab( $post ) {
                                                 </td>
                                             <?php endforeach; ?>
                                             <td style="padding: 8px; text-align: center;">
+                                                <input type="hidden" name="wpc_plan_features_by_category[<?php echo esc_attr($cat->slug); ?>][<?php echo $f_idx; ?>][visible]" value="0">
                                                 <input type="checkbox" name="wpc_plan_features_by_category[<?php echo esc_attr($cat->slug); ?>][<?php echo $f_idx; ?>][visible]" value="1" <?php checked( $feature['visible'] ?? true ); ?> style="width: 18px; height: 18px;" title="Show in shortcode output" />
                                             </td>
                                             <td style="padding: 8px; text-align: center;">
@@ -309,6 +310,7 @@ function wpc_render_plan_features_tab( $post ) {
                                     </td>
                                 <?php endforeach; ?>
                                 <td style="padding: 8px; text-align: center;">
+                                    <input type="hidden" name="wpc_plan_features[<?php echo $f_idx; ?>][visible]" value="0">
                                     <input type="checkbox" name="wpc_plan_features[<?php echo $f_idx; ?>][visible]" value="1" <?php checked( $feature['visible'] ?? true ); ?> style="width: 18px; height: 18px;" title="Show in shortcode output" />
                                 </td>
                                 <td style="padding: 8px; text-align: center;">
@@ -446,7 +448,7 @@ function wpc_render_plan_features_tab( $post ) {
             html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][plans][' + planIdx + ']" value="1" style="width: 18px; height: 18px;" /></td>';
         });
         
-        html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
+        html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
         html += '<td style="padding: 8px; text-align: center;"><button type="button" class="button button-small" onclick="this.closest(\'tr\').remove()" title="Remove">&times;</button></td>';
         
         row.innerHTML = html;
@@ -506,7 +508,7 @@ function wpc_render_plan_features_tab( $post ) {
         html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features[' + idx + '][plans][<?php echo $plan_idx; ?>]" value="1" style="width: 18px; height: 18px;" /></td>';
         <?php endforeach; ?>
         
-        html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features[' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
+        html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features[' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features[' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
         html += '<td style="padding: 8px; text-align: center;"><button type="button" class="button button-small" onclick="this.closest(\'tr\').remove()" title="Remove">&times;</button></td>';
         
         row.innerHTML = html;

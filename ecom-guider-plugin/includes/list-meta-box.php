@@ -193,10 +193,15 @@ function wpc_render_list_meta_box( $post ) {
             <!-- Source Selection -->
             <div style="margin-bottom: 20px; padding: 15px; background: #f0f6fc; border: 1px solid #cce5ff; border-radius: 4px;">
                 <label class="wpc-label" style="font-weight: bold; margin-bottom: 5px; display: block;">List Source Type</label>
+                <?php 
+                $tools_module_enabled = get_option('wpc_enable_tools_module') === '1';
+                ?>
                 <select name="wpc_list_source_type" id="wpc_list_source_type" class="wpc-input" style="max-width: 300px;">
                     <option value="item" <?php selected( $source_type, 'item' ); ?>>Comparison Items Only</option>
+                    <?php if ($tools_module_enabled) : ?>
                     <option value="tool" <?php selected( $source_type, 'tool' ); ?>>Recommended Tools Only</option>
                     <option value="both" <?php selected( $source_type, 'both' ); ?>>Both Items & Tools</option>
+                    <?php endif; ?>
                 </select>
                 <p class="description">Select what type of content to include in this list. Click "Update" to refresh the list below.</p>
             </div>
@@ -289,7 +294,7 @@ function wpc_render_list_meta_box( $post ) {
                 </div>
 
                 <!-- TOOL Filters -->
-                <div id="wpc-tool-filters" style="display: <?php echo ($source_type === 'tool' || $source_type === 'both') ? 'block' : 'none'; ?>;">
+                <div id="wpc-tool-filters" style="display: <?php echo ($tools_module_enabled && ($source_type === 'tool' || $source_type === 'both')) ? 'block' : 'none'; ?>;">
                     <h4 style="margin: 5px 0; color: #666;">Tool Filters</h4>
                      <div style="display: flex; gap: 20px;">
                         <div style="flex: 1; border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto;">
@@ -331,16 +336,12 @@ function wpc_render_list_meta_box( $post ) {
                             $('#wpc-item-filters').hide();
                             $('#wpc-tool-filters').show();
                         } else {
-                            $('#wpc-item-filters').show();
                             $('#wpc-tool-filters').show();
                         }
                     });
                 });
                 </script>
-                <div style="margin-top:10px; display:flex; gap:10px;">
-                     <input type="text" name="wpc_list_cat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_cat_label', true) ); ?>" placeholder="Label: Categories" />
-                     <input type="text" name="wpc_list_feat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_feat_label', true) ); ?>" placeholder="Label: Features" />
-                </div>
+
             </div>
 
             <div class="wpc-field-group">
@@ -667,11 +668,11 @@ function wpc_render_list_meta_box( $post ) {
                 <div class="wpc-flex-row">
                      <div class="wpc-flex-item">
                         <label class="wpc-field-label">Category Label</label>
-                        <input type="text" name="wpc_list_cat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_cat_label', true) ?: 'Filter by Category' ); ?>" style="width: 100%;" />
+                        <input type="text" name="wpc_list_cat_label" class="wpc-input-cat-label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_cat_label', true) ?: 'Filter by Category' ); ?>" style="width: 100%;" />
                     </div>
                      <div class="wpc-flex-item">
                         <label class="wpc-field-label">Features Label</label>
-                        <input type="text" name="wpc_list_feat_label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_feat_label', true) ?: 'Features' ); ?>" style="width: 100%;" />
+                        <input type="text" name="wpc_list_feat_label" class="wpc-input-feat-label" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_feat_label', true) ?: 'Features' ); ?>" style="width: 100%;" />
                     </div>
                 </div>
             </div>

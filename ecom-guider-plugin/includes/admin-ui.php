@@ -3544,6 +3544,7 @@ function wpc_save_meta_box( $post_id ) {
             if ( ! empty( $f['name'] ) ) { // Only save if has name
                 $feature_data = array(
                     'name' => sanitize_text_field( $f['name'] ),
+                    'visible' => isset($f['visible']) ? sanitize_text_field($f['visible']) : '1', // Default to 1 (visible)
                     'plans' => array()
                 );
                 if ( isset( $f['plans'] ) && is_array( $f['plans'] ) ) {

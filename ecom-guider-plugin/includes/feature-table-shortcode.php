@@ -138,6 +138,11 @@ function wpc_feature_table_shortcode( $atts ) {
             </thead>
             <tbody>
                 <?php foreach ( $features as $idx => $feature ) : 
+                    // Check visibility (hidden input = 0, checkbox = 1)
+                    if ( isset($feature['visible']) && $feature['visible'] === '0' ) {
+                         continue;
+                    }
+
                     $row_bg = ( $idx % 2 === 1 ) ? $alt_row_bg : '#fff';
                 ?>
                     <tr style="background: <?php echo esc_attr( $row_bg ); ?>;">
