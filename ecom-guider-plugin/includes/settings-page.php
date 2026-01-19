@@ -3649,7 +3649,7 @@ function wpc_render_danger_zone_tab() {
         </div>
         
         <!-- Danger Zone Section -->
-        <div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 30px; margin-bottom: 30px;">
+        <div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 30px; margin-top: 30px; margin-bottom: 30px;">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
                 <span style="font-size: 40px;">&#x26A0;&#xFE0F;</span>
                 <div>
