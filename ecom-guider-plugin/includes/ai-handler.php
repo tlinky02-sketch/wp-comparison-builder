@@ -343,7 +343,7 @@ class WPC_AI_Handler {
                 'Content-Type'  => 'application/json'
             ],
             'body'    => json_encode( $body ),
-            'timeout' => 30
+            'timeout' => 120
         ] );
         
         if ( is_wp_error( $response ) ) return $response;
@@ -375,7 +375,7 @@ class WPC_AI_Handler {
         $response = wp_remote_post( $url, [
             'headers' => [ 'Content-Type'  => 'application/json' ],
             'body'    => json_encode( $body ),
-            'timeout' => 30
+            'timeout' => 120
         ] );
         
         if ( is_wp_error( $response ) ) return $response;
@@ -412,7 +412,7 @@ class WPC_AI_Handler {
                 'content-type' => 'application/json'
             ],
             'body'    => json_encode( $body ),
-            'timeout' => 30
+            'timeout' => 120
         ] );
         
         if ( is_wp_error( $response ) ) return $response;
@@ -452,7 +452,7 @@ class WPC_AI_Handler {
                 'Content-Type'  => 'application/json'
             ],
             'body'    => json_encode( $body ),
-            'timeout' => 30
+            'timeout' => 120
         ] );
         
         if ( is_wp_error( $response ) ) return $response;
@@ -885,16 +885,38 @@ function wpc_ajax_ai_create_item() {
         wp_send_json_error( 'Title is required' );
     }
     
-    // Create post
-    $post_id = wp_insert_post( [
-        'post_title'  => $title,
-        'post_type'   => 'comparison_item',
-        'post_status' => 'draft',
-        'post_content' => ''
-    ] );
+    $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
     
-    if ( is_wp_error( $post_id ) ) {
-        wp_send_json_error( $post_id->get_error_message() );
+    if ( $post_id > 0 ) {
+        // Update existing
+        if ( ! current_user_can( 'edit_post', $post_id ) ) {
+            wp_send_json_error( 'Permission denied for this post' );
+        }
+        
+        $post_data = [
+            'ID'           => $post_id,
+            'post_title'   => $title,
+        ];
+        
+        // Only update content if it's empty or we specifically want to overwrite (optional)
+        // For now, let's leave content alone as we deal mostly with meta
+        
+        $updated = wp_update_post( $post_data, true );
+        if ( is_wp_error( $updated ) ) {
+            wp_send_json_error( $updated->get_error_message() );
+        }
+    } else {
+        // Create new
+        $post_id = wp_insert_post( [
+            'post_title'   => $title,
+            'post_type'    => 'comparison_item',
+            'post_status'  => 'draft',
+            'post_content' => ''
+        ] );
+        
+        if ( is_wp_error( $post_id ) ) {
+            wp_send_json_error( $post_id->get_error_message() );
+        }
     }
     
     // Save meta
@@ -992,6 +1014,74 @@ function wpc_ajax_ai_create_item() {
         if ( ! empty( $term_ids ) ) {
             wp_set_object_terms( $post_id, $term_ids, 'comparison_feature' );
         }
+    }
+
+    // Save Recommended Tools
+    $recommended_tools = json_decode( stripslashes( $_POST['recommended_tools'] ?? '[]' ), true );
+    if ( ! empty( $recommended_tools ) && is_array( $recommended_tools ) ) {
+         update_post_meta( $post_id, '_wpc_recommended_tools', $recommended_tools );
+    }
+
+    // Save Custom Fields
+    $custom_fields = json_decode( stripslashes( $_POST['custom_fields'] ?? '[]' ), true );
+    if ( ! empty( $custom_fields ) && is_array( $custom_fields ) ) {
+         // Structure: [{name, value}, ...]
+         update_post_meta( $post_id, '_wpc_custom_fields', $custom_fields );
+    }
+
+    // Save SEO Data
+    $seo = json_decode( stripslashes( $_POST['seo'] ?? '{}' ), true );
+    if ( ! empty( $seo ) && is_array( $seo ) ) {
+         // Map SEO fields to meta keys
+         $seo_map = [
+            'schema_type' => '_wpc_schema_type',
+            'brand'       => '_wpc_seo_brand',
+            'sku'         => '_wpc_seo_sku',
+            'gtin'        => '_wpc_seo_gtin',
+            'condition'   => '_wpc_seo_condition',
+            'availability'=> '_wpc_seo_availability',
+            'mfg_date'    => '_wpc_seo_mfg_date',
+            'exp_date'    => '_wpc_seo_exp_date',
+            'service_type'=> '_wpc_seo_service_type',
+            'area_served' => '_wpc_seo_area_served',
+            'duration'    => '_wpc_seo_duration'
+         ];
+         foreach ($seo_map as $json_key => $meta_key) {
+             if ( isset( $seo[$json_key] ) ) {
+                 update_post_meta( $post_id, $meta_key, sanitize_text_field( $seo[$json_key] ) );
+             }
+         }
+    }
+
+    // Save Competitors
+    $competitors = json_decode( stripslashes( $_POST['competitors'] ?? '[]' ), true );
+    if ( ! empty( $competitors ) && is_array( $competitors ) ) {
+        update_post_meta( $post_id, '_wpc_competitors', $competitors );
+    }
+
+    // Save Visuals (Badge, Colors, Subtitle, Analysis)
+    $visuals = json_decode( stripslashes( $_POST['visuals'] ?? '{}' ), true );
+    if ( ! empty( $visuals ) && is_array( $visuals ) ) {
+         // Badge
+         if ( isset( $visuals['badge_text'] ) ) update_post_meta( $post_id, '_wpc_featured_badge_text', sanitize_text_field( $visuals['badge_text'] ) );
+         if ( isset( $visuals['badge_color'] ) ) update_post_meta( $post_id, '_wpc_featured_color', sanitize_hex_color( $visuals['badge_color'] ) );
+         
+         // Hero & Analysis
+         if ( isset( $visuals['hero_subtitle'] ) ) update_post_meta( $post_id, '_wpc_hero_subtitle', sanitize_text_field( $visuals['hero_subtitle'] ) );
+         if ( isset( $visuals['analysis_label'] ) ) update_post_meta( $post_id, '_wpc_analysis_label', sanitize_text_field( $visuals['analysis_label'] ) );
+
+         // Colors
+         if ( isset( $visuals['colors'] ) && is_array( $visuals['colors'] ) ) {
+             $colors = $visuals['colors'];
+             // Enable overrides if colors are present
+             update_post_meta( $post_id, '_wpc_enable_design_overrides', '1' );
+
+             if ( ! empty( $colors['primary'] ) ) update_post_meta( $post_id, '_wpc_primary_color', sanitize_hex_color( $colors['primary'] ) );
+             if ( ! empty( $colors['accent'] ) ) update_post_meta( $post_id, '_wpc_accent_color', sanitize_hex_color( $colors['accent'] ) );
+             if ( ! empty( $colors['border'] ) ) update_post_meta( $post_id, '_wpc_border_color', sanitize_hex_color( $colors['border'] ) );
+             if ( ! empty( $colors['coupon_bg'] ) ) update_post_meta( $post_id, '_wpc_color_coupon_bg', sanitize_hex_color( $colors['coupon_bg'] ) );
+             if ( ! empty( $colors['coupon_text'] ) ) update_post_meta( $post_id, '_wpc_color_coupon_text', sanitize_hex_color( $colors['coupon_text'] ) );
+         }
     }
     
     wp_send_json_success( [

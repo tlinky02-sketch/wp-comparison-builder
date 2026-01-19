@@ -3906,14 +3906,14 @@ function wpc_render_danger_zone_tab() {
                 .then(data => {
                     wpcAdmin.reset(btn);
                     if (data.success) {
-                        showStatus('wpc-orphan-status', '\u2713 Cleanup complete! Removed ' + data.data.cleaned + ' orphaned entries.', 'success');
+                        showStatus('wpc-orphan-status', 'Cleanup complete! Removed ' + data.data.cleaned + ' orphaned entries.', 'success');
                     } else {
-                        showStatus('wpc-orphan-status', '\u2717 Error: ' + data.data, 'error');
+                        showStatus('wpc-orphan-status', 'Error: ' + data.data, 'error');
                     }
                 })
                 .catch(e => { 
                     wpcAdmin.reset(btn);
-                    showStatus('wpc-orphan-status', '\u2717 Operation failed', 'error'); 
+                    showStatus('wpc-orphan-status', 'Operation failed', 'error'); 
                 });
         });
         
@@ -3932,14 +3932,14 @@ function wpc_render_danger_zone_tab() {
                 .then(data => {
                     wpcAdmin.reset(btn);
                     if (data.success) {
-                        showStatus('wpc-recount-status', '\u2713 Term counts rebuilt! Categories: ' + data.data.categories + ', Features: ' + data.data.features, 'success');
+                        showStatus('wpc-recount-status', 'Term counts rebuilt! Categories: ' + data.data.categories + ', Features: ' + data.data.features, 'success');
                     } else {
-                        showStatus('wpc-recount-status', '\u2717 Error: ' + data.data, 'error');
+                        showStatus('wpc-recount-status', 'Error: ' + data.data, 'error');
                     }
                 })
                 .catch(e => { 
                     wpcAdmin.reset(btn);
-                    showStatus('wpc-recount-status', '\u2717 Operation failed', 'error'); 
+                    showStatus('wpc-recount-status', 'Operation failed', 'error'); 
                 });
         });
         
@@ -4115,15 +4115,15 @@ function wpc_render_danger_zone_tab() {
                         const r = data.data;
                         document.getElementById('wpc-delete-panel').style.display = 'none';
                         document.getElementById('wpc-delete-confirm-text').value = '';
-                        showStatus('wpc-delete-status', `\u2713 Data deleted successfully!<br><br>
+                        showStatus('wpc-delete-status', `Data deleted successfully!<br><br>
                             <strong>Deleted:</strong><br>
-                            â€¢ Items: ${r.items_deleted || 0}<br>
-                            â€¢ Lists: ${r.lists_deleted || 0}<br>
-                            â€¢ Categories: ${r.categories_deleted || 0}<br>
-                            â€¢ Features: ${r.features_deleted || 0}<br>
-                            ${r.settings_reset ? 'â€¢ Settings: Reset to defaults' : ''}`, 'success');
+                            &bull; Items: ${r.items_deleted || 0}<br>
+                            &bull; Lists: ${r.lists_deleted || 0}<br>
+                            &bull; Categories: ${r.categories_deleted || 0}<br>
+                            &bull; Features: ${r.features_deleted || 0}<br>
+                            ${r.settings_reset ? '&bull; Settings: Reset to defaults' : ''}`, 'success');
                     } else {
-                        showStatus('wpc-delete-status', '\u2717 Error: ' + data.data, 'error');
+                        showStatus('wpc-delete-status', 'Error: ' + data.data, 'error');
                     }
                 })
                 .catch(e => { 

@@ -203,6 +203,7 @@ function wpc_render_meta_box( $post ) {
         ?>
         <script>
             var wpcGlobalDefaults = <?php echo json_encode($global_defaults); ?>;
+            var wpcCurrentPostId = <?php echo isset($post) ? $post->ID : 0; ?>;
         </script>
         
         <!-- AI Assistant Panel - Always Visible -->
@@ -1839,6 +1840,10 @@ function wpc_render_meta_box( $post ) {
                             "copied": "Code Copied!"
                         }
                     },
+                    "use_cases": [
+                        { "name": "Startups", "desc": "Great for new businesses.", "icon": "fa-solid fa-rocket", "image": "" },
+                        { "name": "Agencies", "desc": "Manage multiple clients.", "icon": "fa-solid fa-briefcase", "image": "" }
+                    ],
                     "visuals": {
                         "logo": "https://example.com/logo.png",
                         "dashboard_image": "https://example.com/dash.jpg",
@@ -2652,8 +2657,10 @@ function wpc_render_meta_box( $post ) {
         var aiNonce = document.getElementById('wpc_ai_item_nonce') ? document.getElementById('wpc_ai_item_nonce').value : '';
         
         // AI Generation Prompts
+        // Batched Prompts for Single Item
         var aiPrompts = {
-            all: `Generate comprehensive comparison data for "{name}".
+            // Batch 1: Core Data (General, Content, Pricing, Visuals, SEO)
+            core: `Generate comprehensive comparison data for "{name}".
 Return a JSON object with this EXACT structure (for importing into a comparison tool):
 {
   "public_name": "{name}",
@@ -2667,21 +2674,6 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     "direct_link": "https://{name}.com",
     "button_text": "Visit Website"
   },
-  "visuals": {
-    "logo": "",
-    "dashboard_image": "",
-    "badge_text": "Editor\'s Choice",
-    "badge_color": "#10b981",
-    "hero_subtitle": "The best solution for...",
-    "analysis_label": "Our Analysis",
-    "colors": {
-      "primary": "",
-      "accent": "",
-      "border": "",
-      "coupon_bg": "",
-      "coupon_text": ""
-    }
-  },
   "content": {
     "pros": ["Pro 1", "Pro 2", "Pro 3", "Pro 4", "Pro 5"],
     "cons": ["Con 1", "Con 2", "Con 3"],
@@ -2692,6 +2684,21 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "rating": "Rating",
       "visit_site": "Visit Site",
       "coupon": "Coupon"
+    }
+  },
+  "visuals": {
+    "logo": "",
+    "dashboard_image": "",
+    "badge_text": "Editor's Choice",
+    "badge_color": "#10b981",
+    "hero_subtitle": "The best solution for...",
+    "analysis_label": "Our Analysis",
+    "colors": {
+      "primary": "",
+      "accent": "",
+      "border": "",
+      "coupon_bg": "",
+      "coupon_text": ""
     }
   },
   "billing_cycles": [
@@ -2733,14 +2740,11 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       "coupon": "SAVE20"
     }
   ],
-  "categories": ["Category 1", "Category 2"],
-  "tags": ["Tag 1", "Tag 2"],
   "custom_fields": [
-      {"name": "Founded", "value": "2015"},
-      {"name": "Headquarters", "value": "San Francisco, USA"}
+    { "name": "Founded", "value": "2015"},
+    { "name": "Headquarters", "value": "San Francisco, USA"}
   ],
   "seo": {
-      "schema_type": "SoftwareApplication", 
       "brand": "{name}",
       "sku": "",
       "gtin": "",
@@ -2755,27 +2759,34 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
   "plan_features": [
       { "name": "Feature Name", "included_in": [0, 1] }
   ],
-  "use_cases": [
-      { "name": "Use Case 1", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-rocket", "image": "" },
-      { "name": "Use Case 2", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-briefcase", "image": "" },
-      { "name": "Use Case 3", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-users", "image": "" },
-      { "name": "Use Case 4", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-store", "image": "" }
-  ],
   "recommended_tools": ["Tool Name A", "Tool Name B"]
 }
-IMPORTANT: You MUST generate at least 4 use_cases. You MUST generate 2-3 categories and 3-5 tags.
-Be accurate and specific to the actual product/service. Use proper JSON quoting. For 'schema_type', use one of: SoftwareApplication, Product, Service, Course.`,
+Be accurate and specific to the actual product/service. Use proper JSON quoting.`,
 
-            description: `Generate a compelling 2-3 sentence marketing description for "{name}". Return JSON: {"description": "..."}`,
-            
-            pros_cons: `Generate 5 pros and 3 cons for "{name}". Return JSON: {"pros": ["..."], "cons": ["..."]}`,
-            
-            pricing: `Generate 3 realistic pricing plans for "{name}". Return JSON: {"pricing_plans": [{"name": "...", "price": "$X", "period": "/mo", "features": ["Feature 1", "Feature 2"], "button_text": "..."}]}`,
-            
-            categories: `Suggest 2-3 relevant categories and 3-5 tags for "{name}". Return JSON: {"suggested_categories": ["..."], "suggested_tags": ["..."]}`
+            // Batch 2: Use Cases (Dedicated to ensure quality)
+            use_cases: `Generate 4 detailed Best Use Cases for "{name}".
+Return JSON object:
+{
+  "use_cases": [
+      { "name": "Startups", "desc": "Perfect for early stage...", "icon": "fa-solid fa-rocket", "image": "" },
+      { "name": "Enterprise", "desc": "Scalable solution for...", "icon": "fa-solid fa-building", "image": "" },
+      { "name": "Agencies", "desc": "Manage multiple clients...", "icon": "fa-solid fa-briefcase", "image": "" },
+      { "name": "Developers", "desc": "API-first approach...", "icon": "fa-solid fa-code", "image": "" }
+  ]
+}
+IMPORTANT: Must generate exactly 4 use cases with FontAwesome 6 icons.`,
+
+            // Batch 3: Taxonomies (Categories & Tags)
+            taxonomies: `Suggest relevant Categories and Tags for "{name}".
+Return JSON object:
+{
+  "categories": ["Category 1", "Category 2"],
+  "tags": ["Tag 1", "Tag 2", "Tag 3", "Tag 4"]
+}
+IMPORTANT: Categories should be high-level industry segments. Tags should be specific features or attributes.`
         };
         
-        // Generate All button click
+        // Generate All button click (Batched Execution)
         var generateAllBtn = document.getElementById('wpc-ai-generate-all');
         if (generateAllBtn) {
             generateAllBtn.addEventListener('click', function() {
@@ -2794,83 +2805,119 @@ Be accurate and specific to the actual product/service. Use proper JSON quoting.
                     return;
                 }
                 
-                generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating...';
+                generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Core Data...';
                 generateAllBtn.disabled = true;
                 
-                var prompt = aiPrompts.all.replace('{name}', productName);
+                // --- Step 1: Core Data ---
+                var promptCore = aiPrompts.core.replace('{name}', productName);
+                if (contextText) promptCore += "\nContext: " + contextText;
                 
-                // Modify prompt if tags are disabled
-                if (!shouldGenTax) {
-                     prompt += '\n\nIMPORTANT: Do NOT generate "categories" or "tags". Return empty arrays for them: "categories": [], "tags": [].';
-                }
-                
-                // Add custom context if provided
-                if (contextText) {
-                    prompt += '\n\nAdditional context from user (use this information for accurate pricing/details):\n' + contextText;
-                }
-                
-                var ajaxData = {
-                    action: 'wpc_ai_generate',
-                    nonce: aiNonce,
-                    prompt: prompt
-                };
-                
-                // Send profile_id if selected, otherwise let server use default
-                if (profileId) {
-                    ajaxData.profile_id = profileId;
-                }
-                
-                jQuery.post(ajaxurl, ajaxData, function(response) {
-                    generateAllBtn.innerHTML = '&#x2728; Generate All';
-                    generateAllBtn.disabled = false;
-                    
-                    if (response.success) {
-                        var data = response.data;
-                        // Handle string vs object response
-                        if (typeof data === 'string') {
-                            try {
-                                data = JSON.parse(data);
-                            } catch(e) {
-                                console.error('Failed to parse AI response:', e);
-                                wpcShowAIToast('AI returned invalid data. Check console.', true);
-                                return;
+                jQuery.post(ajaxurl, {
+                    action: 'wpc_ai_generate', 
+                    item_profile_id: profileId,
+                    prompt: promptCore,
+                    nonce: aiNonce
+                }, function(response) {
+                    if (response.success && response.data) {
+                        try {
+                            var dataCore = response.data;
+                            if (typeof dataCore === 'string') {
+                                dataCore = JSON.parse(dataCore);
                             }
-                        }
-                        if (typeof wpcExecuteImport === 'function') {
-                            // Adapter: If AI returns flat structure (legacy/stubborn), map to Import structure
-                            if (!data.general && (data.price || data.description)) {
-                                console.log('Adapting flat AI response to Import format...');
-                                data.general = {
-                                    price: data.price,
-                                    period: data.period,
-                                    rating: data.rating,
-                                    button_text: 'Visit Website'
-                                };
-                                data.content = {
-                                    pros: Array.isArray(data.pros) ? data.pros.join('\n') : data.pros,
-                                    cons: Array.isArray(data.cons) ? data.cons.join('\n') : data.cons
-                                };
-                                if (data.description) {
+                            
+                            // Adapter for Description
+                            if (!dataCore.general && (dataCore.price || dataCore.description)) {
+                                if (dataCore.description) {
                                     var desc = document.getElementById('wpc_short_description');
-                                    if(desc) desc.value = data.description;
+                                    if(desc) desc.value = dataCore.description;
                                 }
                             }
                             
-                            wpcExecuteImport(data);
-                            wpcShowAIToast('Content generated & imported!');
-                        } else {
-                            wpcPopulateFromAI(data);
-                            wpcShowAIToast('Content generated successfully!');
+                            if (typeof wpcExecuteImport === 'function') {
+                                wpcExecuteImport(dataCore);
+                            } else {
+                                wpcPopulateFromAI(dataCore);
+                            }
+                            
+                            // --- Step 2: Use Cases ---
+                            generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Use Cases...';
+                            var promptUC = aiPrompts.use_cases.replace('{name}', productName);
+                            
+                            jQuery.post(ajaxurl, {
+                                action: 'wpc_ai_generate',
+                                item_profile_id: profileId,
+                                prompt: promptUC,
+                                nonce: aiNonce
+                            }, function(respUC) {
+                                if (respUC.success && respUC.data) {
+                                    try {
+                                        var dataUC = respUC.data;
+                                        if (typeof dataUC === 'string') {
+                                            dataUC = JSON.parse(dataUC);
+                                        }
+                                        if (typeof wpcExecuteImport === 'function') wpcExecuteImport(dataUC);
+                                    } catch(e) { console.error('UC Parse Error', e); }
+                                }
+                                
+                                // --- Step 3: Taxonomies (Conditional) ---
+                                if (shouldGenTax) {
+                                    generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Categories...';
+                                    var promptTax = aiPrompts.taxonomies.replace('{name}', productName);
+                                    
+                                    jQuery.post(ajaxurl, {
+                                        action: 'wpc_ai_generate',
+                                        item_profile_id: profileId,
+                                        prompt: promptTax,
+                                        nonce: aiNonce
+                                    }, function(respTax) {
+                                        if (respTax.success && respTax.data) {
+                                            try {
+                                                var dataTax = respTax.data;
+                                                if (typeof dataTax === 'string') {
+                                                    dataTax = JSON.parse(dataTax);
+                                                }
+                                                if (typeof wpcExecuteImport === 'function') wpcExecuteImport(dataTax);
+                                            } catch(e) { console.error('Tax Parse Error', e); }
+                                        }
+                                        finishBatch();
+                                    }).fail(function() { finishBatch(); });
+                                    
+                                } else {
+                                    finishBatch();
+                                }
+                                
+                            }).fail(function() { 
+                                // If Use Cases fail, still try to finish nicely
+                                if (shouldGenTax) finishBatch(); // Simplify error handling, just stop
+                                else finishBatch();
+                            });
+                            
+                        } catch (e) {
+                            console.error('Core Parse Error', e);
+                            wpcShowAIToast('Error parsing AI response', true);
+                            resetBtn();
                         }
                     } else {
-                        console.error('AI Error:', response);
-                        wpcShowAIToast('AI Error: ' + (response.data || 'Unknown error'), true);
+                        wpcShowAIToast('AI Error: ' + (response.data || 'Unknown'), true);
+                        resetBtn();
                     }
                 }).fail(function() {
+                    wpcShowAIToast('Failed to connect to AI', true);
+                    resetBtn();
+                });
+                
+                function finishBatch() {
+                    generateAllBtn.innerHTML = '&#x2714; All Done!';
+                    wpcShowAIToast('Content generated & populated! Please Update post.');
+                    setTimeout(function() {
+                        resetBtn();
+                    }, 2000);
+                }
+                
+                function resetBtn() {
                     generateAllBtn.innerHTML = '&#x2728; Generate All';
                     generateAllBtn.disabled = false;
-                    wpcShowAIToast('Failed to connect to AI. Check settings.', true);
-                });
+                }
             });
         }
         
