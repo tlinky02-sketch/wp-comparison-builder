@@ -839,14 +839,14 @@ function wpc_delete_all_data() {
     );
 
     // Delete all comparison items
-    $items = get_posts( array( 'post_type' => 'comparison_item', 'posts_per_page' => -1, 'fields' => 'ids' ) );
+    $items = get_posts( array( 'post_type' => 'comparison_item', 'posts_per_page' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
     foreach ( $items as $id ) {
         wp_delete_post( $id, true );
         $results['items_deleted']++;
     }
 
     // Delete all custom lists
-    $lists = get_posts( array( 'post_type' => 'comparison_list', 'posts_per_page' => -1, 'fields' => 'ids' ) );
+    $lists = get_posts( array( 'post_type' => 'comparison_list', 'posts_per_page' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
     foreach ( $lists as $id ) {
         wp_delete_post( $id, true );
         $results['lists_deleted']++;
@@ -3583,6 +3583,71 @@ function wpc_render_danger_zone_tab() {
             </div>
         </div>
         
+        <!-- Rebuild Database Tables -->
+        <div style="background: #fff; border: 1px solid #bae6fd; border-radius: 6px; padding: 20px; margin-top: 15px;">
+            <div>
+                <h3 style="margin: 0 0 5px 0; color: #0369a1;"><?php _e( 'Rebuild Database Tables', 'wp-comparison-builder' ); ?></h3>
+                <p style="margin: 0 0 15px 0; color: #6b7280; font-size: 13px;">
+                    Recreate custom database tables. Safe - preserves existing data using <code>dbDelta()</code>.
+                </p>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #e5e7eb;">
+                <table style="width: 100%; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e5e7eb;">
+                            <th style="text-align: left; padding: 8px; font-weight: 600;">Table</th>
+                            <th style="text-align: left; padding: 8px; font-weight: 600;">Status</th>
+                            <th style="text-align: right; padding: 8px; font-weight: 600;">Rows</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        global $wpdb;
+                        $items_table = $wpdb->prefix . 'wpc_items';
+                        $tools_table = $wpdb->prefix . 'wpc_tools';
+                        
+                        $items_exists = $wpdb->get_var("SHOW TABLES LIKE '$items_table'") === $items_table;
+                        $tools_exists = $wpdb->get_var("SHOW TABLES LIKE '$tools_table'") === $tools_table;
+                        
+                        $items_count = $items_exists ? $wpdb->get_var("SELECT COUNT(*) FROM $items_table") : 0;
+                        $tools_count = $tools_exists ? $wpdb->get_var("SELECT COUNT(*) FROM $tools_table") : 0;
+                        $tools_module_enabled = get_option('wpc_enable_tools_module') === '1';
+                        ?>
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 8px; font-family: monospace; font-size: 12px;"><?php echo esc_html($items_table); ?></td>
+                            <td style="padding: 8px;">
+                                <?php if ($items_exists): ?>
+                                    <span style="color: #059669; font-weight: 600;">✓ Exists</span>
+                                <?php else: ?>
+                                    <span style="color: #dc2626; font-weight: 600;">✗ Missing</span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="padding: 8px; text-align: right; font-weight: 500;"><?php echo number_format($items_count); ?></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; font-family: monospace; font-size: 12px;"><?php echo esc_html($tools_table); ?></td>
+                            <td style="padding: 8px;">
+                                <?php if (!$tools_module_enabled): ?>
+                                    <span style="color: #9ca3af; font-weight: 600;">— Module Disabled</span>
+                                <?php elseif ($tools_exists): ?>
+                                    <span style="color: #059669; font-weight: 600;">✓ Exists</span>
+                                <?php else: ?>
+                                    <span style="color: #dc2626; font-weight: 600;">✗ Missing</span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="padding: 8px; text-align: right; font-weight: 500;"><?php echo $tools_module_enabled ? number_format($tools_count) : '—'; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <button type="button" id="wpc-rebuild-tables-btn" class="button button-secondary" style="white-space: nowrap;">
+                <?php _e( 'Rebuild All Tables', 'wp-comparison-builder' ); ?>
+            </button>
+            <div id="wpc-rebuild-tables-status" class="wpc-tool-status"></div>
+        </div>
+        
         <!-- Danger Zone Section -->
         <div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 30px; margin-bottom: 30px;">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
@@ -3658,6 +3723,26 @@ function wpc_render_danger_zone_tab() {
                 <div id="wpc-reset-status" class="wpc-tool-status"></div>
             </div>
             
+            <!-- Uninstall Plugin -->
+            <div style="background: #fff; border: 1px solid #fca5a5; border-radius: 6px; padding: 20px; margin-bottom: 15px;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0; color: #dc2626;"><?php _e( 'Uninstall WP Comparison Builder', 'wp-comparison-builder' ); ?></h3>
+                    <p style="margin: 10px 0; color: #6b7280; font-size: 13px;">
+                        Check this if you would like to remove <strong>ALL</strong> WP Comparison Builder data upon plugin deletion. All data will be unrecoverable.
+                    </p>
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 12px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 4px;">
+                        <input type="checkbox" id="wpc-uninstall-on-delete" name="wpc_uninstall_on_delete" value="1" <?php checked( get_option('wpc_uninstall_on_delete'), '1' ); ?> style="margin-top: 2px;">
+                        <span style="color: #991b1b; font-weight: 600;">
+                            Remove all data when plugin is uninstalled (comparison items, lists, categories, features, settings, and database tables)
+                        </span>
+                    </label>
+                    <button type="button" id="wpc-save-uninstall-setting" class="button" style="margin-top: 15px;">
+                        <?php _e( 'Save Uninstall Setting', 'wp-comparison-builder' ); ?>
+                    </button>
+                    <span id="wpc-uninstall-status" style="margin-left: 10px; font-weight: 600;"></span>
+                </div>
+            </div>
+            
             <!-- Delete All Data -->
             <div style="background: #fff; border: 2px solid #dc2626; border-radius: 6px; padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -3672,8 +3757,8 @@ function wpc_render_danger_zone_tab() {
                     </button>
                 </div>
                 
-                <!-- Inline Confirmation Panel -->
-                <div id="wpc-delete-panel" style="display: none; margin-top: 15px; padding: 15px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px;">
+                <!-- Inline Confirmation Panel (Always Visible) -->
+                <div id="wpc-delete-panel" style="display: block; margin-top: 15px; padding: 15px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px;">
                     <h4 style="margin: 0 0 10px 0; color: #dc2626;">&#x26A0;&#xFE0F; Critical: Select what to delete:</h4>
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 15px;">
@@ -3880,7 +3965,7 @@ function wpc_render_danger_zone_tab() {
                 .then(data => {
                     wpcAdmin.reset(btn);
                     if (data.success) {
-                        showStatus('wpc-cache-status', '\u2713 Cache cleared! ' + data.data.message, 'success');
+                        showStatus('wpc-cache-status', 'Cache cleared! ' + data.data.message, 'success');
                     } else {
                         showStatus('wpc-cache-status', '\u2717 Error: ' + data.data, 'error');
                     }
@@ -3988,6 +4073,36 @@ function wpc_render_danger_zone_tab() {
                 });
             });
         }
+        
+        // ========== SAVE UNINSTALL SETTING ==========
+        document.getElementById('wpc-save-uninstall-setting').addEventListener('click', function() {
+            const checkbox = document.getElementById('wpc-uninstall-on-delete');
+            const btn = this;
+            const status = document.getElementById('wpc-uninstall-status');
+            
+            wpcAdmin.loading(btn, 'Saving...');
+            
+            const formData = new FormData();
+            formData.append('action', 'wpc_save_uninstall_setting');
+            formData.append('nonce', nonce);
+            formData.append('enabled', checkbox.checked ? '1' : '0');
+            
+            fetch(ajaxurl, { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    wpcAdmin.reset(btn);
+                    if (data.success) {
+                        status.innerHTML = '<span style="color: #059669;">✓ Saved</span>';
+                        setTimeout(() => status.innerHTML = '', 3000);
+                    } else {
+                        status.innerHTML = '<span style="color: #dc2626;">✗ Error</span>';
+                    }
+                })
+                .catch(e => {
+                    wpcAdmin.reset(btn);
+                    status.innerHTML = '<span style="color: #dc2626;">✗ Failed</span>';
+                });
+        });
         
         // ========== RESET SETTINGS ==========
         
@@ -4130,6 +4245,40 @@ function wpc_render_danger_zone_tab() {
                     wpcAdmin.reset(btn);
                     showStatus('wpc-delete-status', '\u2717 Delete operation failed', 'error'); 
                 });
+        });
+        
+        // ========== REBUILD DATABASE TABLES ==========
+        document.getElementById('wpc-rebuild-tables-btn').addEventListener('click', function() {
+            const btn = this;
+            
+            wpcAdmin.confirm(
+                'Rebuild Database Tables',
+                'This will recreate missing tables and add missing columns. Existing data will be preserved. Continue?',
+                function() {
+                    wpcAdmin.loading(btn, 'Rebuilding...');
+                    showLoading('wpc-rebuild-tables-status', 'Rebuilding database tables...');
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'wpc_rebuild_tables');
+                    formData.append('nonce', '<?php echo wp_create_nonce('wpc_danger_zone_nonce'); ?>');
+                    
+                    fetch(ajaxurl, { method: 'POST', body: formData })
+                        .then(r => r.json())
+                        .then(data => {
+                            wpcAdmin.reset(btn);
+                            if (data.success) {
+                                showStatus('wpc-rebuild-tables-status', '\u2713 ' + data.data, 'success');
+                                setTimeout(() => location.reload(), 2000);
+                            } else {
+                                showStatus('wpc-rebuild-tables-status', '\u2717 Error: ' + data.data, 'error');
+                            }
+                        })
+                        .catch(e => { 
+                            wpcAdmin.reset(btn);
+                            showStatus('wpc-rebuild-tables-status', '\u2717 Request failed', 'error'); 
+                        });
+                }
+            );
         });
     })();
     </script>
@@ -5684,3 +5833,132 @@ function wpc_run_migration_ajax() {
  * Danger Zone Tab
  */
 
+/**
+ * Save Uninstall Setting (AJAX Handler)
+ */
+add_action( 'wp_ajax_wpc_save_uninstall_setting', 'wpc_save_uninstall_setting_ajax' );
+function wpc_save_uninstall_setting_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+
+    check_ajax_referer( 'wpc_import_export_nonce', 'nonce' );
+
+    $enabled = isset( $_POST['enabled'] ) && $_POST['enabled'] === '1' ? '1' : '0';
+    update_option( 'wpc_uninstall_on_delete', $enabled );
+
+    wp_send_json_success( 'Uninstall setting saved' );
+}
+
+/**
+ * Rebuild Database Tables (AJAX Handler)
+ */
+add_action( 'wp_ajax_wpc_rebuild_tables', 'wpc_rebuild_tables_ajax' );
+function wpc_rebuild_tables_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+
+    check_ajax_referer( 'wpc_danger_zone_nonce', 'nonce' );
+
+    $results = [];
+    $errors = [];
+
+    // Rebuild Items Table
+    if ( class_exists('WPC_Database') ) {
+        try {
+            $db = new WPC_Database();
+            ob_start(); // Suppress dbDelta output
+            $db->create_table();
+            ob_end_clean();
+            $results[] = 'Items table rebuilt';
+        } catch (Exception $e) {
+            $errors[] = 'Items error: ' . $e->getMessage();
+        }
+    }
+
+    // Rebuild Tools Table (if module enabled)
+    if ( get_option('wpc_enable_tools_module') === '1' && class_exists('WPC_Tools_Database') ) {
+        try {
+            $tools_db = new WPC_Tools_Database();
+            ob_start();
+            $tools_db->create_table();
+            ob_end_clean();
+            $results[] = 'Tools table rebuilt';
+        } catch (Exception $e) {
+            $errors[] = 'Tools error: ' . $e->getMessage();
+        }
+    }
+
+    if ( !empty($errors) ) {
+        wp_send_json_error( implode('; ', array_merge($results, $errors)) );
+    } else {
+        wp_send_json_success( implode('; ', $results) );
+    }
+}
+
+/**
+ * Render Danger Zone Section (call this where needed in settings page)
+ */
+function wpc_render_danger_zone_section() {
+    global $wpdb;
+    
+    $items_table = $wpdb->prefix . 'wpc_items';
+    $tools_table = $wpdb->prefix . 'wpc_tools';
+    
+    $items_exists = $wpdb->get_var("SHOW TABLES LIKE '$items_table'") === $items_table;
+    $tools_exists = $wpdb->get_var("SHOW TABLES LIKE '$tools_table'") === $tools_table;
+    
+    $items_count = $items_exists ? $wpdb->get_var("SELECT COUNT(*) FROM $items_table") : 0;
+    $tools_count = $tools_exists ? $wpdb->get_var("SELECT COUNT(*) FROM $tools_table") : 0;
+    ?>
+    <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 20px;">
+        <h2 style="margin-top: 0; color: #d92d20;">⚠️ Danger Zone</h2>
+        
+        <div style="background: #f9fafb; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">Database Tables</h3>
+            <table style="width: 100%;">
+                <tr><th>Table</th><th>Status</th><th>Rows</th></tr>
+                <tr>
+                    <td><?php echo esc_html($items_table); ?></td>
+                    <td><?php echo $items_exists ? '<span style="color: green;">✓ Exists</span>' : '<span style="color: red;">✗ Missing</span>'; ?></td>
+                    <td><?php echo number_format($items_count); ?></td>
+                </tr>
+                <tr>
+                    <td><?php echo esc_html($tools_table); ?></td>
+                    <td><?php echo $tools_exists ? '<span style="color: green;">✓ Exists</span>' : '<span style="color: red;">✗ Missing</span>'; ?></td>
+                    <td><?php echo number_format($tools_count); ?></td>
+                </tr>
+            </table>
+        </div>
+        
+        <button type="button" id="wpc-rebuild-tables-btn" class="button">🔧 Rebuild All Tables</button>
+        <span id="wpc-rebuild-status" style="margin-left: 15px; font-weight: 600;"></span>
+    </div>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        $('#wpc-rebuild-tables-btn').on('click', function() {
+            if (!confirm('Rebuild database tables? Existing data will be preserved.')) return;
+            
+            const $btn = $(this);
+            $btn.prop('disabled', true).text('⏳ Rebuilding...');
+            
+            $.post(ajaxurl, {
+                action: 'wpc_rebuild_tables',
+                nonce: '<?php echo wp_create_nonce('wpc_danger_zone_nonce'); ?>'
+            }, function(response) {
+                $btn.prop('disabled', false).text('🔧 Rebuild All Tables');
+                
+                if (response.success) {
+                    $('#wpc-rebuild-status').html('<span style="color: green;">✓ ' + response.data + '</span>');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    $('#wpc-rebuild-status').html('<span style="color: red;">✗ ' + response.data + '</span>');
+                }
+            });
+        });
+    });
+    </script>
+    <?php
+}

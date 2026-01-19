@@ -56,6 +56,9 @@ require_once WPC_PLUGIN_DIR . 'includes/class-wpc-tools-db.php'; // Tools Databa
 // Initialize Database Table on Activation
 register_activation_hook( __FILE__, 'wpc_install_db' );
 function wpc_install_db() {
+    // Suppress output from dbDelta()
+    ob_start();
+    
     // Items Table
     if ( class_exists('WPC_Database') ) {
         $db = new WPC_Database();
@@ -64,14 +67,14 @@ function wpc_install_db() {
     
     // Tools Table (Conditional)
     if ( class_exists('WPC_Tools_Database') ) {
-        // We create it if the module is enabled OR if we just want to ensure it exists for safety 
-        // given that activation usually implies "setup everything needed".
-        // Use module check to be consistent with Migrator logic.
         if ( get_option( 'wpc_enable_tools_module' ) === '1' ) {
             $tools_db = new WPC_Tools_Database();
             $tools_db->create_table();
         }
     }
+    
+    // Discard all output
+    ob_end_clean();
 }
 
 /**
