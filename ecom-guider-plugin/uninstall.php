@@ -23,103 +23,70 @@ global $wpdb;
 
 // ========== DELETE ALL POSTS ==========
 
-// Delete all Comparison Items
-$comparison_items = get_posts( array(
-    'post_type' => 'comparison_item',
-    'numberposts' => -1,
-    'post_status' => 'any'
-) );
+// All plugin post types
+$post_types = array(
+    'comparison_item',
+    'comparison_tool',
+    'comparison_list',
+    'comparison_review',
+    'wpc_custom_list'
+);
 
-foreach ( $comparison_items as $item ) {
-    wp_delete_post( $item->ID, true ); // true = force delete, skip trash
+// Delete posts directly from database (more reliable during uninstall)
+$post_types_sql = "'" . implode( "','", $post_types ) . "'";
+$wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type IN ({$post_types_sql})" );
+
+// ========== DELETE ALL TAXONOMIES (DIRECTLY FROM DB) ==========
+
+// All plugin taxonomies
+$taxonomies = array(
+    'comparison_category',
+    'comparison_feature',
+    'tool_category',
+    'tool_tag'
+);
+
+$taxonomies_sql = "'" . implode( "','", $taxonomies ) . "'";
+
+// Get term_taxonomy_ids for our taxonomies
+$term_taxonomy_ids = $wpdb->get_col( 
+    "SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE taxonomy IN ({$taxonomies_sql})" 
+);
+
+if ( ! empty( $term_taxonomy_ids ) ) {
+    $tt_ids_sql = implode( ',', array_map( 'intval', $term_taxonomy_ids ) );
+    
+    // Delete term relationships
+    $wpdb->query( "DELETE FROM {$wpdb->term_relationships} WHERE term_taxonomy_id IN ({$tt_ids_sql})" );
 }
 
-// Delete all Comparison Tools
-$comparison_tools = get_posts( array(
-    'post_type' => 'comparison_tool',
-    'numberposts' => -1,
-    'post_status' => 'any'
-) );
+// Get term_ids for our taxonomies
+$term_ids = $wpdb->get_col( 
+    "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE taxonomy IN ({$taxonomies_sql})" 
+);
 
-foreach ( $comparison_tools as $tool ) {
-    wp_delete_post( $tool->ID, true );
+// Delete from term_taxonomy
+$wpdb->query( "DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy IN ({$taxonomies_sql})" );
+
+// Delete from terms (only orphaned terms that are no longer in term_taxonomy)
+if ( ! empty( $term_ids ) ) {
+    $term_ids_sql = implode( ',', array_map( 'intval', $term_ids ) );
+    $wpdb->query( 
+        "DELETE FROM {$wpdb->terms} WHERE term_id IN ({$term_ids_sql}) 
+         AND term_id NOT IN (SELECT term_id FROM {$wpdb->term_taxonomy})" 
+    );
 }
 
-// Delete all Custom Lists
-$custom_lists = get_posts( array(
-    'post_type' => 'wpc_custom_list',
-    'numberposts' => -1,
-    'post_status' => 'any'
-) );
-
-foreach ( $custom_lists as $list ) {
-    wp_delete_post( $list->ID, true );
-}
-
-// ========== DELETE ALL TAXONOMIES ==========
-
-// Delete all terms from comparison_category
-$cat_terms = get_terms( array(
-    'taxonomy' => 'comparison_category',
-    'hide_empty' => false,
-    'fields' => 'ids'
-) );
-
-if ( ! is_wp_error( $cat_terms ) && ! empty( $cat_terms ) ) {
-    foreach ( $cat_terms as $term_id ) {
-        wp_delete_term( $term_id, 'comparison_category' );
-    }
-}
-
-// Delete all terms from comparison_feature
-$feat_terms = get_terms( array(
-    'taxonomy' => 'comparison_feature',
-    'hide_empty' => false,
-    'fields' => 'ids'
-) );
-
-if ( ! is_wp_error( $feat_terms ) && ! empty( $feat_terms ) ) {
-    foreach ( $feat_terms as $term_id ) {
-        wp_delete_term( $term_id, 'comparison_feature' );
-    }
-}
-
-// Delete all terms from tool_category
-$tool_cat_terms = get_terms( array(
-    'taxonomy' => 'tool_category',
-    'hide_empty' => false,
-    'fields' => 'ids'
-) );
-
-if ( ! is_wp_error( $tool_cat_terms ) && ! empty( $tool_cat_terms ) ) {
-    foreach ( $tool_cat_terms as $term_id ) {
-        wp_delete_term( $term_id, 'tool_category' );
-    }
-}
-
-// Delete all terms from tool_tag
-$tool_tag_terms = get_terms( array(
-    'taxonomy' => 'tool_tag',
-    'hide_empty' => false,
-    'fields' => 'ids'
-) );
-
-if ( ! is_wp_error( $tool_tag_terms ) && ! empty( $tool_tag_terms ) ) {
-    foreach ( $tool_tag_terms as $term_id ) {
-        wp_delete_term( $term_id, 'tool_tag' );
-    }
+// Delete termmeta for our terms
+if ( ! empty( $term_ids ) ) {
+    $term_ids_sql = implode( ',', array_map( 'intval', $term_ids ) );
+    $wpdb->query( "DELETE FROM {$wpdb->termmeta} WHERE term_id IN ({$term_ids_sql})" );
 }
 
 // ========== DELETE ALL OPTIONS ==========
 
 // Get all WPC options
-$options_to_delete = $wpdb->get_col( 
-    "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wpc_%'" 
-);
-
-foreach ( $options_to_delete as $option ) {
-    delete_option( $option );
-}
+$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'wpc_%'" );
 
 // Delete transients
 $wpdb->query(
@@ -128,23 +95,21 @@ $wpdb->query(
 
 // ========== DELETE CUSTOM DATABASE TABLES ==========
 
-$items_table = $wpdb->prefix . 'wpc_items';
-$tools_table = $wpdb->prefix . 'wpc_tools';
-$lists_table = $wpdb->prefix . 'wpc_lists';
+$tables = array(
+    $wpdb->prefix . 'wpc_items',
+    $wpdb->prefix . 'wpc_tools',
+    $wpdb->prefix . 'wpc_lists'
+);
 
-// Drop tables
-$wpdb->query( "DROP TABLE IF EXISTS {$items_table}" );
-$wpdb->query( "DROP TABLE IF EXISTS {$tools_table}" );
-$wpdb->query( "DROP TABLE IF EXISTS {$lists_table}" );
+foreach ( $tables as $table ) {
+    $wpdb->query( "DROP TABLE IF EXISTS {$table}" );
+}
 
 // ========== DELETE ORPHANED POST META ==========
 
-// Clean up any leftover post meta (in case some posts were already deleted)
-$wpdb->query(
-    "DELETE pm FROM {$wpdb->postmeta} pm 
-     LEFT JOIN {$wpdb->posts} p ON pm.post_id = p.ID 
-     WHERE p.ID IS NULL AND pm.meta_key LIKE '_wpc_%'"
-);
+// Delete all post meta with our prefix
+$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wpc_%'" );
+$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE 'wpc_%'" );
 
 // ========== CLEAR OBJECT CACHE ==========
 
