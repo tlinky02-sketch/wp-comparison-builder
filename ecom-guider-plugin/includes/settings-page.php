@@ -2450,6 +2450,10 @@ function wpc_render_import_export_tab() {
                             <input type="checkbox" class="wpc-ai-section-opt" value="best_use_cases" checked /> 
                             <span style="margin-left: 5px;">Best Use Cases</span>
                         </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" class="wpc-ai-section-opt" value="taxonomies" checked /> 
+                            <span style="margin-left: 5px;">Categories & Tags</span>
+                        </label>
                     </div>
                 </div>
 
@@ -2990,6 +2994,9 @@ Return ONLY valid JSON with this structure:
                     if (sections.includes('best_use_cases')) {
                         prompt += `,\n  "best_use_cases": [{"name": "Best for Beginners", "desc": "Easy setup and intuitive interface", "icon": "fa-solid fa-rocket"}, {"name": "Great for Small Business", "desc": "Affordable plans with essential features", "icon": "fa-solid fa-briefcase"}, {"name": "Ideal for Bloggers", "desc": "Content-focused tools and SEO features", "icon": "fa-solid fa-pen-nib"}, {"name": "Perfect for E-commerce", "desc": "Shopping cart and payment integrations", "icon": "fa-solid fa-shopping-cart"}]`;
                     }
+                    if (sections.includes('taxonomies')) {
+                        prompt += `,\n  "categories": ["Category 1", "Category 2"],\n  "tags": ["Tag 1", "Tag 2", "Tag 3"]`;
+                    }
                     
                     prompt += `\n}`;
                 }
@@ -3036,6 +3043,9 @@ Return ONLY valid JSON with this structure:
                         cons: JSON.stringify(data.cons || []),
                         pricing_plans: JSON.stringify(data.pricing_plans || []),
                         best_use_cases: JSON.stringify(data.best_use_cases || []),
+                        // Categories and Tags
+                        categories: JSON.stringify(data.categories || []),
+                        tags: JSON.stringify(data.tags || []),
                         // New Billing Fields
                         billing_cycles: JSON.stringify(data.billing_cycles || []),
                         default_cycle: data.default_cycle || 'monthly',

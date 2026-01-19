@@ -1137,7 +1137,7 @@ function wpc_list_shortcode( $atts ) {
     // Map: Frontend Key => [ Meta Key, Global Opt, Default ]
     $text_fields = [
         // General UI
-        'viewDetails'     => ['meta' => '_wpc_list_txt_view_details', 'global' => 'wpc_text_view_details', 'default' => 'View Details'],
+        'viewDetails'     => ['meta' => '_wpc_list_txt_view', 'global' => 'wpc_text_view_details', 'default' => 'View Details'],
         'compareAlternatives' => ['meta' => '_wpc_list_txt_compare_alts', 'global' => 'wpc_text_compare_alternatives', 'default' => 'Compare Alternatives'],
         'compareNow'      => ['meta' => '_wpc_list_txt_compare_now', 'global' => 'wpc_text_compare_now', 'default' => 'Compare Now'],
         'readReview'      => ['meta' => '_wpc_list_txt_reviews', 'global' => 'wpc_text_reviews', 'default' => 'Read Review'],
@@ -1203,6 +1203,12 @@ function wpc_list_shortcode( $atts ) {
         'showAllItems'    => ['meta' => '_wpc_list_txt_show_all', 'global' => 'wpc_text_show_all', 'default' => 'Show All Items'],
         'revealMore'      => ['meta' => '_wpc_list_txt_reveal_more', 'global' => 'wpc_text_reveal_more', 'default' => 'Click to reveal'],
         'noLogo'          => ['meta' => '_wpc_list_txt_no_logo', 'global' => 'wpc_text_no_logo', 'default' => 'No Logo'],
+        
+        // Pricing Table & Popup Labels
+        'selectPlan'      => ['meta' => '_wpc_list_txt_select_plan', 'global' => 'wpc_text_select_plan', 'default' => 'Select'],
+        'ptPlan'          => ['meta' => '_wpc_list_txt_pt_plan', 'global' => 'wpc_text_pt_plan', 'default' => 'Plan'],
+        'ptPrice'         => ['meta' => '_wpc_list_txt_pt_price', 'global' => 'wpc_text_pt_price', 'default' => 'Price'],
+        'ptFeatures'      => ['meta' => '_wpc_list_txt_pt_features', 'global' => 'wpc_text_pt_features', 'default' => 'Features'],
     ];
 
     $labels = [];

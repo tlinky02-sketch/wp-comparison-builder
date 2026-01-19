@@ -239,7 +239,7 @@ function wpc_render_meta_box( $post ) {
                     </div>
 
                     <label style="height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); font-size: 12px; display: flex; align-items: center; gap: 6px; color: white; cursor: pointer; user-select: none;">
-                        <input type="checkbox" id="wpc-ai-gen-taxonomies" style="margin: 0;" />
+                        <input type="checkbox" id="wpc-ai-gen-taxonomies" style="margin: 0;" checked />
                         Generate Tags and Categories
                     </label>
 
@@ -2657,7 +2657,7 @@ function wpc_render_meta_box( $post ) {
 Return a JSON object with this EXACT structure (for importing into a comparison tool):
 {
   "public_name": "{name}",
-  "title": "{name} Review",
+  "title": "{name}",
   "description": "2-3 sentence marketing description of {name} including key selling points.",
   "general": {
     "price": "$29",
@@ -2756,10 +2756,14 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
       { "name": "Feature Name", "included_in": [0, 1] }
   ],
   "use_cases": [
-      { "name": "Startups", "desc": "Great for early stage...", "icon": "fa-solid fa-rocket", "image": "" }
+      { "name": "Use Case 1", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-rocket", "image": "" },
+      { "name": "Use Case 2", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-briefcase", "image": "" },
+      { "name": "Use Case 3", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-users", "image": "" },
+      { "name": "Use Case 4", "desc": "Description of why this use case is ideal", "icon": "fa-solid fa-store", "image": "" }
   ],
   "recommended_tools": ["Tool Name A", "Tool Name B"]
 }
+IMPORTANT: You MUST generate at least 4 use_cases. You MUST generate 2-3 categories and 3-5 tags.
 Be accurate and specific to the actual product/service. Use proper JSON quoting. For 'schema_type', use one of: SoftwareApplication, Product, Service, Course.`,
 
             description: `Generate a compelling 2-3 sentence marketing description for "{name}". Return JSON: {"description": "..."}`,

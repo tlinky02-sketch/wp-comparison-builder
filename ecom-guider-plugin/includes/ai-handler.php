@@ -946,6 +946,54 @@ function wpc_ajax_ai_create_item() {
         update_post_meta( $post_id, '_wpc_use_cases', $formatted_cases );
     }
     
+    // Save Categories (create if new, then assign to post)
+    $categories = json_decode( stripslashes( $_POST['categories'] ?? '[]' ), true );
+    if ( ! empty( $categories ) && is_array( $categories ) ) {
+        $term_ids = [];
+        foreach ( $categories as $cat_name ) {
+            $cat_name = sanitize_text_field( $cat_name );
+            if ( empty( $cat_name ) ) continue;
+            
+            $term = get_term_by( 'name', $cat_name, 'comparison_category' );
+            if ( ! $term ) {
+                // Create new term
+                $result = wp_insert_term( $cat_name, 'comparison_category' );
+                if ( ! is_wp_error( $result ) ) {
+                    $term_ids[] = $result['term_id'];
+                }
+            } else {
+                $term_ids[] = $term->term_id;
+            }
+        }
+        if ( ! empty( $term_ids ) ) {
+            wp_set_object_terms( $post_id, $term_ids, 'comparison_category' );
+        }
+    }
+    
+    // Save Tags/Features (create if new, then assign to post)
+    $tags = json_decode( stripslashes( $_POST['tags'] ?? '[]' ), true );
+    if ( ! empty( $tags ) && is_array( $tags ) ) {
+        $term_ids = [];
+        foreach ( $tags as $tag_name ) {
+            $tag_name = sanitize_text_field( $tag_name );
+            if ( empty( $tag_name ) ) continue;
+            
+            $term = get_term_by( 'name', $tag_name, 'comparison_feature' );
+            if ( ! $term ) {
+                // Create new term
+                $result = wp_insert_term( $tag_name, 'comparison_feature' );
+                if ( ! is_wp_error( $result ) ) {
+                    $term_ids[] = $result['term_id'];
+                }
+            } else {
+                $term_ids[] = $term->term_id;
+            }
+        }
+        if ( ! empty( $term_ids ) ) {
+            wp_set_object_terms( $post_id, $term_ids, 'comparison_feature' );
+        }
+    }
+    
     wp_send_json_success( [
         'post_id' => $post_id,
         'edit_url' => get_edit_post_link( $post_id, 'raw' )

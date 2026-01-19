@@ -798,8 +798,8 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                         onClearFilters={() => { setSelectedCategories([]); setSelectedFeatures([]); }}
                         layout="top"
                         labels={{
-                            categories: config.categoriesLabel || getText('category', 'Category'),
-                            features: config.featuresLabel || getText('features', 'Platform Features'),
+                            categories: config.categoriesLabel || getText('categoryLabel', 'Category'),
+                            features: config.featuresLabel || getText('featuresLabel', 'Platform Features'),
                             filters: getText('filters', 'Filters'),
                             resetFilters: getText('resetFilters', 'Reset Filters'),
                             select: getText('select', 'Select %s'),
@@ -827,8 +827,8 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             onClearFilters={() => { setSelectedCategories([]); setSelectedFeatures([]); }}
                             layout="sidebar"
                             labels={{
-                                categories: config.categoriesLabel,
-                                features: config.featuresLabel,
+                                categories: config.categoriesLabel || getText('categoryLabel', 'Categories'),
+                                features: config.featuresLabel || getText('featuresLabel', 'Features'),
                                 filters: getText('filters', 'Filters'),
                                 resetFilters: getText('resetFilters', 'Reset Filters'),
                                 select: getText('select', 'Select %s'),
@@ -849,7 +849,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             {/* Active Filters Display */}
                             {config.showFilters !== false && (selectedCategories.length > 0 || selectedFeatures.length > 0) && (
                                 <div className="mb-6 flex flex-wrap items-center gap-2">
-                                    <span className="text-sm font-medium text-muted-foreground mr-2">Active filters:</span>
+                                    <span className="text-sm font-medium text-muted-foreground mr-2">{getText('activeFilters', 'Active filters:')}</span>
                                     {selectedCategories.map(cat => (
                                         <button
                                             key={cat}
@@ -872,7 +872,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                         onClick={() => { setSelectedCategories([]); setSelectedFeatures([]); }}
                                         className="text-sm text-muted-foreground hover:text-accent underline ml-2"
                                     >
-                                        Clear all
+                                        {getText('clearAll', 'Clear all')}
                                     </button>
                                 </div>
                             )}
@@ -919,7 +919,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                 <input
                                                     type="text"
-                                                    placeholder="Search by name..."
+                                                    placeholder={getText('searchPlaceholder', 'Search by name...')}
                                                     value={searchQuery}
                                                     onChange={(e) => setSearchQuery(e.target.value)}
                                                     className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
@@ -949,11 +949,11 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                                 borderColor: (window as any).wpcSettings?.colors?.cardBorder || undefined
                                             }}
                                         >
-                                            <option value="default">Sort: Default</option>
-                                            <option value="name-asc">Name: A to Z</option>
-                                            <option value="name-desc">Name: Z to A</option>
-                                            <option value="rating-desc">Rating: Highest</option>
-                                            <option value="price-asc">Price: Lowest</option>
+                                            <option value="default">{getText('sortDefault', 'Sort: Default')}</option>
+                                            <option value="name-asc">{getText('sortNameAsc', 'Name (A-Z)')}</option>
+                                            <option value="name-desc">{getText('sortNameDesc', 'Name (Z-A)')}</option>
+                                            <option value="rating-desc">{getText('sortRating', 'Highest Rated')}</option>
+                                            <option value="price-asc">{getText('sortPrice', 'Lowest Price')}</option>
                                         </select>
                                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                                     </div>
@@ -1061,7 +1061,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
 
                             {filteredItems.length === 0 && (
                                 <div className="text-center p-12 bg-muted/20 rounded-xl">
-                                    <p>No items match your filters.</p>
+                                    <p>{getText('noResults', 'No items match your filters.')}</p>
                                 </div>
                             )}
                         </div>
