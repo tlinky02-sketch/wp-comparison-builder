@@ -69,6 +69,22 @@ function wpc_hero_shortcode( $atts ) {
     $visit_text = get_option( 'wpc_text_visit', 'Visit' );
     $open_new_tab = get_option( 'wpc_open_new_tab', '1' ) === '1' ? '_blank' : '_self';
 
+    // Typography Options - Check if they are Set
+    $opt_h1 = get_option('wpc_font_size_h1', '');
+    $opt_sub = get_option('wpc_font_size_subheading', '');
+    $opt_body = get_option('wpc_font_size_body', '');
+    $opt_small = get_option('wpc_font_size_small', '');
+    $opt_btn = get_option('wpc_font_size_btn', '');
+    
+    // Construct style strings ONLY if option is set, otherwise empty (inherit theme)
+    $style_h1 = !empty($opt_h1) ? "font-size: var(--wpc-font-size-h1) !important;" : "";
+    $style_sub = !empty($opt_sub) ? "font-size: var(--wpc-font-size-subheading) !important;" : "";
+    $style_body = !empty($opt_body) ? "font-size: var(--wpc-font-size-body) !important;" : "";
+    $style_small = !empty($opt_small) ? "font-size: var(--wpc-font-size-small) !important;" : "";
+    $style_btn = !empty($opt_btn) ? "font-size: var(--wpc-font-size-btn) !important;" : "";
+
+    // Escape all the things
+
     // Escape all the things
     $name = esc_html( $name );
     $description = esc_html( $description );
@@ -87,7 +103,7 @@ function wpc_hero_shortcode( $atts ) {
 
     ob_start();
     ?>
-    <div class="wpc-hero" data-wpc-category="<?php echo esc_attr( $category_slug ); ?>" style="margin-bottom: 3rem;">
+    <div class="wpc-hero wpc-root" data-wpc-category="<?php echo esc_attr( $category_slug ); ?>" style="margin-bottom: 3rem;">
         <div style="display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: start;">
             
             <!-- Left Column: Content -->
@@ -100,10 +116,10 @@ function wpc_hero_shortcode( $atts ) {
                         width: 4rem;
                         height: 4rem;
                         border-radius: 1rem;
-                        background: #fff;
+                        background: hsl(var(--card));
                         padding: 0.5rem;
                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                        border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                        border: 1px solid hsl(var(--border));
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -115,33 +131,31 @@ function wpc_hero_shortcode( $atts ) {
                 <?php endif; ?>
 
                 <!-- Title -->
-                <h1 style="
-                    font-size: clamp(2rem, 5vw, 3rem);
+                <h1 class="wpc-heading" style="
                     font-weight: 700;
-                    color: #1f2937;
                     margin: 0 0 1rem 0;
                     line-height: 1.2;
+                    line-height: 1.2;
+                    <?php echo $style_h1; ?>
                 "><?php echo $name; ?></h1>
 
                 <?php if ( ! empty( $hero_subtitle ) ) : ?>
                 <!-- Subtitle -->
-                <p style="
-                    font-size: 1.25rem;
-                    color: #6b7280;
+                <p class="wpc-text-muted" style="
                     margin: 0 0 1.5rem 0;
                     line-height: 1.6;
+                    line-height: 1.6;
+                    <?php echo $style_sub; ?>
                 "><?php echo $hero_subtitle; ?></p>
                 <?php endif; ?>
 
                 <?php if ( ! empty( $description ) ) : ?>
                 <!-- Description -->
-                <div style="
-                    font-size: 1.125rem;
-                    color: #6b7280;
+                <div class="wpc-text-muted" style="
                     margin: 0 0 2rem 0;
                     line-height: 1.7;
                 ">
-                    <p style="margin: 0;"><?php echo $description; ?></p>
+                    <p style="margin: 0; <?php echo $style_body; ?>"><?php echo $description; ?></p>
                 </div>
                 <?php endif; ?>
 
@@ -153,7 +167,7 @@ function wpc_hero_shortcode( $atts ) {
                         <?php endfor; ?>
                         <?php if ( $has_half ) : ?>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="none">
-                                <defs><linearGradient id="star-partial-<?php echo $item_id; ?>"><stop offset="<?php echo $partial_percent; ?>%" stop-color="<?php echo esc_attr( $star_color ); ?>"/><stop offset="<?php echo $partial_percent; ?>%" stop-color="#e5e7eb"/></linearGradient></defs>
+                                <defs><linearGradient id="star-partial-<?php echo $item_id; ?>"><stop offset="<?php echo $partial_percent; ?>%" stop-color="<?php echo esc_attr( $star_color ); ?>"/><stop offset="<?php echo $partial_percent; ?>%" stop-color="hsl(var(--muted))"/></linearGradient></defs>
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#star-partial-<?php echo $item_id; ?>)"></polygon>
                             </svg>
                         <?php endif; ?>
@@ -161,9 +175,9 @@ function wpc_hero_shortcode( $atts ) {
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         <?php endfor; ?>
                     </div>
-                    <span style="font-weight: 700; color: #1f2937;"><?php echo number_format( $rating, 1 ); ?>/5</span>
+                    <span class="wpc-heading" style="font-weight: 700;"><?php echo number_format( $rating, 1 ); ?>/5</span>
                     <?php if ( ! empty( $analysis_label ) ) : ?>
-                        <span style="font-size: 0.875rem; color: #6b7280;">(<?php echo $analysis_label; ?>)</span>
+                        <span class="wpc-text-muted" style="<?php echo $style_small; ?>">(<?php echo $analysis_label; ?>)</span>
                     <?php endif; ?>
                 </div>
 
@@ -172,16 +186,17 @@ function wpc_hero_shortcode( $atts ) {
                 <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
                     <button 
                         type="button"
-                        onclick="window.open('<?php echo esc_js( $details_link ); ?>', '<?php echo $open_new_tab; ?>');"
+                        onclick="window.open('<?php echo esc_js( $details_link ); ?>', '<?php echo $open_new_tab; ?>');" 
+                        class="wpc-text-body"
                         style="
                             display: inline-flex;
                             align-items: center;
                             gap: 0.5rem;
                             padding: 0.875rem 2rem;
                             background: <?php echo esc_attr( $primary_color ); ?>;
-                            color: #fff;
+                            color: <?php echo esc_attr( get_option('wpc_button_text_color', '#ffffff') ); ?> !important;
+                            <?php echo $style_btn; ?>
                             font-weight: 600;
-                            font-size: 1rem;
                             border-radius: 0.5rem;
                             border: none;
                             cursor: pointer;
@@ -192,7 +207,7 @@ function wpc_hero_shortcode( $atts ) {
                         onmouseout="this.style.background='<?php echo esc_attr( $primary_color ); ?>'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px <?php echo esc_attr( $primary_color ); ?>40';"
                     >
                         <?php echo !empty($hero_button_text) ? esc_html($hero_button_text) : esc_html($visit_text) . ' ' . $name; ?>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( get_option('wpc_button_text_color', '#ffffff') ); ?>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                     </button>
                 </div>
                 <?php endif; ?>

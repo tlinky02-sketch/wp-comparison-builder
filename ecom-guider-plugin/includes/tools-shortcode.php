@@ -143,14 +143,13 @@ function wpc_tools_shortcode( $atts ) {
                         <?php endif; ?>
                         <div style="flex: 1; min-width: 0;">
                             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <h3 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin: 0;"><?php echo $name; ?></h3>
+                                <h3 class="wpc-heading" style="font-weight: 600; margin: 0;"><?php echo $name; ?></h3>
                                 <?php if ( ! empty( $badge ) ) : ?>
                                     <span style="
                                         display: inline-block;
                                         padding: 0.125rem 0.5rem;
                                         background: <?php echo esc_attr( $primary_color ); ?>20;
                                         color: <?php echo esc_attr( $primary_color ); ?>;
-                                        font-size: 0.75rem;
                                         font-weight: 500;
                                         border-radius: 9999px;
                                     "><?php echo $badge; ?></span>
@@ -167,16 +166,14 @@ function wpc_tools_shortcode( $atts ) {
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#half-tool)"></polygon>
                                     </svg>
                                 <?php endif; ?>
-                                <span style="font-size: 0.75rem; color: #6b7280; margin-left: 0.25rem;"><?php echo number_format( $rating, 1 ); ?></span>
+                                <span class="wpc-text-muted" style="margin-left: 0.25rem;"><?php echo number_format( $rating, 1 ); ?></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Description -->
                     <?php if ( ! empty( $desc ) ) : ?>
-                    <p style="
-                        font-size: 0.875rem;
-                        color: #6b7280;
+                    <p class="wpc-text-muted" style="
                         line-height: 1.5;
                         margin: 0 0 1rem 0;
                         flex: 1;
@@ -192,6 +189,7 @@ function wpc_tools_shortcode( $atts ) {
                     <button 
                         type="button"
                         onclick="window.open('<?php echo esc_js( $link ); ?>', '_blank');"
+                        class="wpc-text-body"
                         style="
                             display: block;
                             width: 100%;
@@ -200,7 +198,6 @@ function wpc_tools_shortcode( $atts ) {
                             background: <?php echo esc_attr( $primary_color ); ?>;
                             color: #fff;
                             font-weight: 500;
-                            font-size: 0.875rem;
                             border-radius: 0.5rem;
                             border: none;
                             cursor: pointer;

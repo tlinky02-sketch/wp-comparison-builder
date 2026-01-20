@@ -134,7 +134,7 @@ const PricingTable = ({
         headerBg: settings?.wpc_pt_header_bg || '#f8fafc',
         headerText: settings?.wpc_pt_header_text || '#0f172a',
         btnBg: settings?.wpc_pt_btn_bg || '',
-        btnText: settings?.wpc_pt_btn_text || '#ffffff',
+        btnText: settings?.colors?.btnText || settings?.wpc_button_text_color || settings?.wpc_pt_btn_text || '#ffffff',
     };
 
     const overrides = item.design_overrides || { enabled: false } as NonNullable<ComparisonItem['design_overrides']>;
@@ -144,8 +144,12 @@ const PricingTable = ({
     const headerBg = defaultStyles.headerBg;
     const headerText = defaultStyles.headerText;
     const btnBg = (useOverrides && overrides.primary) ? overrides.primary : (defaultStyles.btnBg || primaryColor);
-    const btnText = defaultStyles.btnText;
+    const btnText = (useOverrides && overrides.primary && !overrides.btn_text_color) ? '#ffffff' : ((useOverrides && overrides.btn_text_color) ? overrides.btn_text_color : defaultStyles.btnText);
     const borderColor = useOverrides && overrides.border ? overrides.border : 'hsl(var(--border))';
+
+    const resolvedTickColor = (useOverrides && overrides.primary) ? overrides.primary : (settings?.colors?.tick || settings?.colors?.primary || '#10b981');
+    // Force Primary Color for Price (ignoring global text color)
+    const resolvedPriceColor = (useOverrides && overrides.primary) ? overrides.primary : (settings?.colors?.primary || primaryColor);
 
     // Footer Visibility Logic
     const resolvedShowFooter = (() => {
@@ -211,7 +215,7 @@ const PricingTable = ({
                             </div>
                         )}
                     </div>
-                    <h2 className="text-3xl font-bold mb-2">{((window as any).wpcSettings?.texts?.pricingHeader || 'Pricing Plans: {name}').replace('{name}', item.name)}</h2>
+                    <h2 className="font-bold mb-2" style={{ fontSize: 'var(--wpc-font-size-h2)' }}>{((window as any).wpcSettings?.texts?.pricingHeader || 'Pricing Plans: {name}').replace('{name}', item.name)}</h2>
                     <p className="text-muted-foreground">{(window as any).wpcSettings?.texts?.pricingSub || 'Compare available plans explicitly'}</p>
                 </div>
             )}
@@ -225,14 +229,29 @@ const PricingTable = ({
                                 <button
                                     key={cycle.slug}
                                     onClick={() => setSelectedCycle(cycle.slug)}
-                                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-all ${selectedCycle === cycle.slug
+                                    className={`px-4 py-3 font-medium border-b-2 transition-all ${selectedCycle === cycle.slug
                                         ? 'text-primary'
                                         : 'border-transparent text-muted-foreground hover:text-foreground'
                                         }`}
                                     style={selectedCycle === cycle.slug ? {
                                         borderColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
                                         color: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
-                                    } : { borderBottomColor: 'transparent' }}
+                                        fontSize: 'var(--wpc-font-size-base)'
+                                    } : {
+                                        borderBottomColor: 'transparent',
+                                        fontSize: 'var(--wpc-font-size-base)'
+                                    }}
+                                    ref={(el) => {
+                                        if (!el) return;
+                                        if (selectedCycle === cycle.slug) {
+                                            const color = useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1');
+                                            el.style.setProperty('color', color, 'important');
+                                            el.style.setProperty('border-color', color, 'important');
+                                        } else {
+                                            el.style.setProperty('color', 'var(--muted-foreground)', 'important');
+                                            el.style.setProperty('border-bottom-color', 'transparent', 'important');
+                                        }
+                                    }}
                                 >
                                     {cycle.label}
                                 </button>
@@ -244,14 +263,31 @@ const PricingTable = ({
                                 <button
                                     key={cycle.slug}
                                     onClick={() => setSelectedCycle(cycle.slug)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${selectedCycle === cycle.slug
+                                    className={`px-4 py-2 font-medium rounded-md transition-all ${selectedCycle === cycle.slug
                                         ? 'shadow-sm'
                                         : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                     style={selectedCycle === cycle.slug ? {
                                         backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
-                                        color: 'white'
-                                    } : {}}
+                                        color: (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff',
+                                        fontSize: 'var(--wpc-font-size-base)'
+                                    } : {
+                                        fontSize: 'var(--wpc-font-size-base)'
+                                    }}
+                                    ref={(el) => {
+                                        if (!el) return;
+                                        if (selectedCycle === cycle.slug) {
+                                            // Selected: Background uses Primary, Text uses Button Text Color
+                                            const bg = useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1');
+                                            const btnTextColor = (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff';
+                                            el.style.setProperty('background-color', bg, 'important');
+                                            el.style.setProperty('color', btnTextColor, 'important');
+                                        } else {
+                                            // Unselected: Transparent BG, Muted Text (Important)
+                                            el.style.setProperty('background-color', 'transparent', 'important');
+                                            el.style.setProperty('color', 'var(--muted-foreground)', 'important');
+                                        }
+                                    }}
                                 >
                                     {cycle.label}
                                 </button>
@@ -268,20 +304,20 @@ const PricingTable = ({
             >
                 {/* Desktop Table View */}
                 <div className="hidden md:block w-full">
-                    <table className="w-full table-fixed border-collapse text-sm">
+                    <table className="w-full table-fixed border-collapse">
                         <thead>
                             <tr className="border-b border-border" style={{ backgroundColor: 'var(--pt-header-bg)', borderColor: 'var(--pt-border)' }}>
                                 {plans.map((plan, idx) => (
                                     <th key={idx} className={`p-4 text-center font-bold align-top relative ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ color: 'var(--pt-header-text)', borderColor: 'var(--pt-border)' }}>
                                         {plan.show_banner === '1' && plan.banner_text && (
                                             <div
-                                                className="absolute top-0 right-0 text-[10px] font-bold px-2 py-0.5 rounded-bl-md text-white shadow-sm z-10"
-                                                style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981' }}
+                                                className="absolute top-0 right-0 font-bold px-2 py-0.5 rounded-bl-md text-white shadow-sm z-10"
+                                                style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981', fontSize: 'var(--wpc-font-size-small, 0.75rem)' }}
                                             >
                                                 {plan.banner_text}
                                             </div>
                                         )}
-                                        <span className="text-lg block truncate mt-2" title={plan.name}>{plan.name}</span>
+                                        <span className="block truncate mt-2" title={plan.name} style={{ fontSize: 'var(--wpc-font-size-h2)' }}>{plan.name}</span>
                                     </th>
                                 ))}
                             </tr>
@@ -294,10 +330,10 @@ const PricingTable = ({
                                     return (
                                         <td key={idx} className={`p-4 text-center align-top ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
                                             <div className="flex flex-wrap items-baseline justify-center gap-1">
-                                                <span className="text-2xl font-bold truncate" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>
+                                                <span className="font-bold truncate" style={{ color: resolvedPriceColor, fontSize: 'var(--wpc-font-size-price, var(--wpc-font-size-h3, 1.5rem))' }} ref={(el) => { if (el) el.style.setProperty('color', resolvedPriceColor, 'important'); }}>
                                                     {amount}
                                                 </span>
-                                                {period && <span className="text-xs text-muted-foreground truncate">
+                                                {period && <span className="text-muted-foreground truncate" style={{ fontSize: 'calc(var(--wpc-font-size-price) * 0.5)', lineHeight: '1.2' }}>
                                                     {period}
                                                 </span>}
                                             </div>
@@ -316,10 +352,11 @@ const PricingTable = ({
                                                     href={plan.link}
                                                     target={config?.targetPricing || settings?.target_pricing || '_blank'}
                                                     rel="noreferrer"
-                                                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
+                                                    className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
                                                     style={{
                                                         backgroundColor: 'var(--pt-btn-bg)',
-                                                        color: 'var(--pt-btn-text)',
+                                                        color: 'var(--pt-btn-text, #ffffff)',
+                                                        fontSize: 'var(--wpc-font-size-btn, 1rem)',
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
@@ -332,6 +369,11 @@ const PricingTable = ({
                                                     onMouseLeave={(e) => {
                                                         e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
                                                         e.currentTarget.style.filter = 'brightness(100%)';
+                                                    }}
+                                                    ref={(el) => {
+                                                        if (!el) return;
+                                                        const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
+                                                        el.style.setProperty('color', btnColor, 'important');
                                                     }}
                                                 >
                                                     {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
@@ -350,9 +392,9 @@ const PricingTable = ({
                                             <ul className="space-y-2 text-left inline-block w-full min-w-0">
                                                 {plan.features.split('\n').map((feature, i) => (
                                                     feature.trim() && (
-                                                        <li key={i} className="flex items-start gap-2 text-sm break-words whitespace-normal">
-                                                            <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }} />
-                                                            <span className="text-muted-foreground break-words whitespace-normal min-w-0">{feature.trim()}</span>
+                                                        <li key={i} className="flex items-start gap-2 break-words whitespace-normal">
+                                                            <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
+                                                            <span className="text-muted-foreground break-words whitespace-normal min-w-0" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>{feature.trim()}</span>
                                                         </li>
                                                     )
                                                 ))}
@@ -372,10 +414,11 @@ const PricingTable = ({
                                                     href={plan.link}
                                                     target={config?.targetPricing || settings?.target_pricing || '_blank'}
                                                     rel="noreferrer"
-                                                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
+                                                    className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
                                                     style={{
                                                         backgroundColor: 'var(--pt-btn-bg)',
                                                         color: 'var(--pt-btn-text)',
+                                                        fontSize: 'var(--wpc-font-size-btn)',
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
@@ -388,6 +431,11 @@ const PricingTable = ({
                                                     onMouseLeave={(e) => {
                                                         e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
                                                         e.currentTarget.style.filter = 'brightness(100%)';
+                                                    }}
+                                                    ref={(el) => {
+                                                        if (!el) return;
+                                                        const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
+                                                        el.style.setProperty('color', btnColor, 'important');
                                                     }}
                                                 >
                                                     {plan.button_text || 'Select'}
@@ -419,22 +467,22 @@ const PricingTable = ({
                                     {/* Discount Banner */}
                                     {plan.show_banner === '1' && plan.banner_text && (
                                         <div
-                                            className="absolute top-0 right-0 text-xs font-bold px-2 py-1 rounded-bl-md text-white shadow-sm z-10"
-                                            style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981' }}
+                                            className="inline-block px-2 py-0.5 rounded-md text-white font-bold mb-2"
+                                            style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981', fontSize: 'var(--wpc-font-size-small, 0.75rem)' }}
                                         >
                                             {plan.banner_text}
                                         </div>
                                     )}
-                                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                                    <h3 className="font-bold" style={{ fontSize: 'var(--wpc-font-size-h2)' }}>{plan.name}</h3>
                                 </div>
 
                                 {/* Price */}
                                 <div className="p-6 text-center border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
                                     <div className="flex flex-wrap items-baseline justify-center gap-1">
-                                        <span className="text-3xl font-bold" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }}>
+                                        <span className="font-bold" style={{ color: resolvedPriceColor, fontSize: 'var(--wpc-font-size-price, var(--wpc-font-size-h3, 1.5rem))' }} ref={(el) => { if (el) el.style.setProperty('color', resolvedPriceColor, 'important'); }}>
                                             {amount}
                                         </span>
-                                        {period && <span className="text-sm text-muted-foreground">
+                                        {period && <span className="text-muted-foreground" style={{ fontSize: 'calc(var(--wpc-font-size-price) * 0.5)', lineHeight: '1.2' }}>
                                             {period}
                                         </span>}
                                     </div>
@@ -442,10 +490,10 @@ const PricingTable = ({
                                 {/* Features */}
                                 {plan.features && showFeatures && (
                                     <div className="p-4 border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
-                                        <ul className="space-y-2 text-sm">
+                                        <ul className="space-y-2">
                                             {plan.features.split('\n').filter(f => f.trim()).map((feature, i) => (
                                                 <li key={i} className="flex items-start gap-2">
-                                                    <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: useOverrides && overrides.primary ? overrides.primary : undefined }} />
+                                                    <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
                                                     <span>{feature}</span>
                                                 </li>
                                             ))}
@@ -461,6 +509,9 @@ const PricingTable = ({
                                             style={{
                                                 backgroundColor: useOverrides && overrides.primary ? overrides.primary : 'var(--pt-btn-bg)',
                                                 color: 'var(--pt-btn-text)',
+                                                height: 'auto',
+                                                padding: '0.75rem 1.5rem',
+                                                fontSize: 'var(--wpc-font-size-btn)',
                                             }}
                                             onMouseEnter={(e) => {
                                                 if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
@@ -474,9 +525,13 @@ const PricingTable = ({
                                                 e.currentTarget.style.backgroundColor = useOverrides && overrides.primary ? overrides.primary : 'var(--pt-btn-bg)';
                                                 e.currentTarget.style.filter = 'brightness(100%)';
                                             }}
+                                            ref={(el) => {
+                                                if (!el) return;
+                                                const btnColor = (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff';
+                                                el.style.setProperty('color', btnColor, 'important');
+                                            }}
                                             onClick={() => {
-                                                const shouldOpenNewTab = settings?.openNewTab !== false;
-                                                window.open(plan.link, shouldOpenNewTab ? '_blank' : '_self');
+                                                if (plan.link) window.open(plan.link, (window as any).wpcSettings?.openNewTab === '1' ? '_blank' : '_self');
                                             }}
                                         >
                                             {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
@@ -488,7 +543,7 @@ const PricingTable = ({
                                 {item.show_coupon && plan.coupon && (
                                     <div className="px-4 pb-4">
                                         <div className="flex items-center justify-between bg-secondary/20 p-3 rounded-lg">
-                                            <span className="text-sm font-medium">Coupon: <code className="font-mono font-bold">{plan.coupon}</code></span>
+                                            <span className="font-medium" style={{ fontSize: 'var(--wpc-font-size-base)' }}>Coupon: <code className="font-mono font-bold" style={{ fontSize: 'var(--wpc-font-size-code)' }}>{plan.coupon}</code></span>
                                         </div>
                                     </div>
                                 )}

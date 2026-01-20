@@ -45,6 +45,7 @@ function wpc_pros_cons_shortcode( $atts ) {
         'prosText' => (get_post_meta($item['id'], '_wpc_enable_pros_cons_colors', true) === '1' ? get_post_meta($item['id'], '_wpc_color_pros_text', true) : '') ?: get_option('wpc_color_pros_text', '#166534'),
         'consBg' => (get_post_meta($item['id'], '_wpc_enable_pros_cons_colors', true) === '1' ? get_post_meta($item['id'], '_wpc_color_cons_bg', true) : '') ?: get_option('wpc_color_cons_bg', '#fef2f2'),
         'consText' => (get_post_meta($item['id'], '_wpc_enable_pros_cons_colors', true) === '1' ? get_post_meta($item['id'], '_wpc_color_cons_text', true) : '') ?: get_option('wpc_color_cons_text', '#991b1b'),
+        
         // Icon settings (global only for now, per-item can be added later)
         'prosIcon' => get_option('wpc_pros_icon', '✓'),
         'consIcon' => get_option('wpc_cons_icon', '✗'),
@@ -58,32 +59,32 @@ function wpc_pros_cons_shortcode( $atts ) {
         <!-- SSR Lite Preview -->
         <div class="wpc-ssr-preview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
             <!-- Pros -->
-            <div style="background: <?php echo esc_attr($widget_config['prosBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.05);">
-                <h3 style="color: <?php echo esc_attr($widget_config['prosText']); ?>; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="background: <?php echo esc_attr($widget_config['prosBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid <?php echo esc_attr($widget_config['prosText']); ?>40;">
+                <h3 style="color: <?php echo esc_attr($widget_config['prosText']); ?> !important; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; font-family: var(--wpc-font-heading, inherit);">
                     <span><?php echo esc_html($widget_config['prosIcon']); ?></span>
                     <?php echo esc_html($widget_config['prosLabel']); ?>
                 </h3>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
                     <?php if (!empty($item['pros']) && is_array($item['pros'])) : foreach($item['pros'] as $pro) : ?>
-                        <li style="display: flex; gap: 0.5rem; align-items: start; color: #374151;">
-                            <span style="color: <?php echo esc_attr($widget_config['prosText']); ?>;">✓</span>
-                            <span><?php echo esc_html($pro); ?></span>
+                        <li class="wpc-text-body" style="display: flex; gap: 0.5rem; align-items: start; font-size: var(--wpc-font-size-body, inherit);">
+                            <span style="color: <?php echo esc_attr($widget_config['prosText']); ?> !important;">✓</span>
+                            <span style="color: <?php echo esc_attr($widget_config['prosText']); ?> !important; font-family: var(--wpc-font-family, inherit);"><?php echo esc_html($pro); ?></span>
                         </li>
                     <?php endforeach; endif; ?>
                 </ul>
             </div>
             
             <!-- Cons -->
-            <div style="background: <?php echo esc_attr($widget_config['consBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.05);">
-                <h3 style="color: <?php echo esc_attr($widget_config['consText']); ?>; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+            <div style="background: <?php echo esc_attr($widget_config['consBg']); ?>; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid <?php echo esc_attr($widget_config['consText']); ?>40;">
+                <h3 style="color: <?php echo esc_attr($widget_config['consText']); ?> !important; font-weight: 600; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; font-family: var(--wpc-font-heading, inherit);">
                     <span><?php echo esc_html($widget_config['consIcon']); ?></span>
                     <?php echo esc_html($widget_config['consLabel']); ?>
                 </h3>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
                     <?php if (!empty($item['cons']) && is_array($item['cons'])) : foreach($item['cons'] as $con) : ?>
-                        <li style="display: flex; gap: 0.5rem; align-items: start; color: #374151;">
-                            <span style="color: <?php echo esc_attr($widget_config['consText']); ?>;">✗</span>
-                            <span><?php echo esc_html($con); ?></span>
+                        <li class="wpc-text-body" style="display: flex; gap: 0.5rem; align-items: start; font-size: var(--wpc-font-size-body, inherit);">
+                            <span style="color: <?php echo esc_attr($widget_config['consText']); ?> !important;">✗</span>
+                            <span style="color: <?php echo esc_attr($widget_config['consText']); ?> !important; font-family: var(--wpc-font-family, inherit);"><?php echo esc_html($con); ?></span>
                         </li>
                     <?php endforeach; endif; ?>
                 </ul>

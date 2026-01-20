@@ -102,10 +102,10 @@ function wpc_feature_table_shortcode( $atts ) {
     // Fall back to global settings if per-item not set
     $global_display_mode = get_option( 'wpc_ft_display_mode', 'full_table' );
     $global_header_label = get_option( 'wpc_ft_header_label', 'Key Features' );
-    $global_header_bg    = get_option( 'wpc_ft_header_bg', '#f3f4f6' );
+    $global_header_bg    = get_option( 'wpc_ft_header_bg', 'hsl(var(--muted))' );
     $global_check_color  = get_option( 'wpc_ft_check_color', '#10b981' );
     $global_x_color      = get_option( 'wpc_ft_x_color', '#ef4444' );
-    $global_alt_row_bg   = get_option( 'wpc_ft_alt_row_bg', '#f9fafb' );
+    $global_alt_row_bg   = get_option( 'wpc_ft_alt_row_bg', 'hsl(var(--muted))' );
 
     $display_mode   = ! empty( $options['display_mode'] ) ? $options['display_mode'] : $global_display_mode;
     $header_label   = ! empty( $options['header_label'] ) ? esc_html( $options['header_label'] ) : esc_html( $global_header_label );
@@ -118,18 +118,18 @@ function wpc_feature_table_shortcode( $atts ) {
     ob_start();
     ?>
     <div class="wpc-feature-table-wrapper" style="overflow-x: auto; margin: 20px 0;">
-        <table class="wpc-feature-table" style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <table class="wpc-feature-table" style="width: 100%; border-collapse: collapse; background: hsl(var(--card)); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             <thead>
                 <tr style="background: <?php echo esc_attr( $header_bg ); ?>;">
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; font-size: 15px; border-bottom: 2px solid #e2e8f0;">
+                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; font-size: var(--wpc-font-size-body, inherit); border-bottom: 2px solid hsl(var(--border));">
                         <?php echo $header_label; ?>
                     </th>
                     <?php if ( $display_mode === 'features_only' ) : ?>
                         <!-- Features Only: Single checkmark column -->
-                        <th style="padding: 16px 20px; text-align: center; font-weight: 600; font-size: 15px; border-bottom: 2px solid #e2e8f0; width: 80px;"></th>
+                        <th style="padding: 16px 20px; text-align: center; font-weight: 600; font-size: var(--wpc-font-size-body, inherit); border-bottom: 2px solid hsl(var(--border)); width: 80px;"></th>
                     <?php elseif ( ! empty( $plan_names ) ) : ?>
                         <?php foreach ( $plan_names as $plan_name ) : ?>
-                            <th style="padding: 16px 20px; text-align: center; font-weight: 600; font-size: 15px; border-bottom: 2px solid #e2e8f0; min-width: 120px;">
+                            <th style="padding: 16px 20px; text-align: center; font-weight: 600; font-size: var(--wpc-font-size-body, inherit); border-bottom: 2px solid hsl(var(--border)); min-width: 120px;">
                                 <?php echo esc_html( $plan_name ); ?>
                             </th>
                         <?php endforeach; ?>
@@ -143,15 +143,15 @@ function wpc_feature_table_shortcode( $atts ) {
                          continue;
                     }
 
-                    $row_bg = ( $idx % 2 === 1 ) ? $alt_row_bg : '#fff';
+                    $row_bg = ( $idx % 2 === 1 ) ? $alt_row_bg : 'hsl(var(--card))';
                 ?>
                     <tr style="background: <?php echo esc_attr( $row_bg ); ?>;">
-                        <td style="padding: 14px 20px; font-size: 14px; color: #374151; border-bottom: 1px solid #f0f0f0;">
+                        <td style="padding: 14px 20px; font-size: var(--wpc-font-size-body, inherit); color: hsl(var(--foreground)); border-bottom: 1px solid hsl(var(--border));">
                             <?php echo esc_html( $feature['name'] ); ?>
                         </td>
                         <?php if ( $display_mode === 'features_only' ) : ?>
                             <!-- Features Only: Show checkmark for each feature -->
-                            <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid hsl(var(--border));">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( $check_color ); ?>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <path d="M9 12l2 2 4-4"></path>
@@ -161,7 +161,7 @@ function wpc_feature_table_shortcode( $atts ) {
                             <?php foreach ( $plan_names as $plan_idx => $plan_name ) : 
                                 $is_available = ! empty( $feature['plans'][$plan_idx] );
                             ?>
-                                <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid #f0f0f0;">
+                                <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid hsl(var(--border));">
                                     <?php if ( $is_available ) : ?>
                                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( $check_color ); ?>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
                                             <circle cx="12" cy="12" r="10"></circle>

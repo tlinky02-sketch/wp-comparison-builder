@@ -206,6 +206,21 @@ function wpc_register_scripts() {
             'usecaseIcon' => get_option( 'wpc_usecase_icon_color', '#6366f1' ), // Use Case Icon Color
             'tick' => get_option( 'wpc_color_tick', '#10b981' ), // Checkmark color
             'cross' => get_option( 'wpc_color_cross', '#94a3b8' ), // X/Cross color
+            'btnText' => get_option( 'wpc_button_text_color', '#ffffff' ), // <--- New Button Text Color
+        ),
+        'typography' => array( // <--- New Typography Object
+            'h1' => get_option('wpc_font_size_h1', ''),
+            'h2' => get_option('wpc_font_size_h2', ''),
+            'h3' => get_option('wpc_font_size_h3', ''),
+            'h4' => get_option('wpc_font_size_h4', ''),
+            'h5' => get_option('wpc_font_size_h5', ''),
+            'h6' => get_option('wpc_font_size_h6', ''),
+            'subheading' => get_option('wpc_font_size_subheading', ''),
+            'body' => get_option('wpc_font_size_body', ''),
+            'small' => get_option('wpc_font_size_small', ''),
+            'btn' => get_option('wpc_font_size_btn', ''),
+            'price' => get_option('wpc_font_size_price', ''),
+            'code' => get_option('wpc_font_size_code', ''),
         ),
         'texts' => $text_labels, // <--- NEW TEXTS OBJECT
         'visuals' => array( // New object for PT visuals
@@ -261,15 +276,82 @@ function wpc_register_scripts() {
     $accent_hsl = wpc_hex2hsl( $accent_color );
     $secondary_hsl = wpc_hex2hsl( $secondary_color );
     
-    
     // Button Hover Color
     $button_hover_color = get_option( 'wpc_button_hover_color', '' );
     
-    // If not set, we default to injecting a fallback OR handling it in CSS.
-    // However, the cleanest way is to always define the variable, either to the custom value or to the calculated darker primary.
-    // For "Automatic", we usually want HSL manipulation in CSS, but here we can't easily do calc() on the HSL variable for text hex.
-    // So if empty, we won't define --wpc-btn-hover here, and let CSS fallback to its default.
+    // Typography Settings
+    $font_family = get_option( 'wpc_font_family', 'inherit' );
+    $font_heading = get_option( 'wpc_font_heading', 'inherit' );
+    $font_size_base = get_option( 'wpc_font_size_base', '16' );
+    $line_height = get_option( 'wpc_line_height', '1.5' );
     
+    // Custom font names (if 'custom' is selected)
+    $font_family_custom = get_option( 'wpc_font_family_custom', '' );
+    $font_heading_custom = get_option( 'wpc_font_heading_custom', '' );
+    
+    // Font stack mapping
+    $font_stacks = array(
+        'inherit'      => 'inherit',
+        'inter'        => "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        'roboto'       => "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif",
+        'poppins'      => "'Poppins', -apple-system, BlinkMacSystemFont, sans-serif",
+        'open-sans'    => "'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        'lato'         => "'Lato', -apple-system, BlinkMacSystemFont, sans-serif",
+        'plus-jakarta' => "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        'montserrat'   => "'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif",
+        'raleway'      => "'Raleway', -apple-system, BlinkMacSystemFont, sans-serif",
+    );
+    
+    // Handle custom fonts
+    if ( $font_family === 'custom' && ! empty( $font_family_custom ) ) {
+        $body_font_stack = "'" . esc_attr( $font_family_custom ) . "', -apple-system, BlinkMacSystemFont, sans-serif";
+    } else {
+        $body_font_stack = isset( $font_stacks[$font_family] ) ? $font_stacks[$font_family] : 'inherit';
+    }
+    
+    if ( $font_heading === 'custom' && ! empty( $font_heading_custom ) ) {
+        $heading_font_stack = "'" . esc_attr( $font_heading_custom ) . "', -apple-system, BlinkMacSystemFont, sans-serif";
+    } else {
+        $heading_font_stack = isset( $font_stacks[$font_heading] ) ? $font_stacks[$font_heading] : 'inherit';
+    }
+    
+    // Enqueue Google Fonts if not using inherit
+    $google_fonts = array();
+    $google_font_map = array(
+        'inter'        => 'Inter:wght@400;500;600;700',
+        'roboto'       => 'Roboto:wght@400;500;700',
+        'poppins'      => 'Poppins:wght@400;500;600;700',
+        'open-sans'    => 'Open+Sans:wght@400;500;600;700',
+        'lato'         => 'Lato:wght@400;700',
+        'plus-jakarta' => 'Plus+Jakarta+Sans:wght@500;600;700;800',
+        'montserrat'   => 'Montserrat:wght@400;500;600;700',
+        'raleway'      => 'Raleway:wght@400;500;600;700',
+    );
+    
+    // Add predefined fonts
+    if ( $font_family !== 'inherit' && $font_family !== 'custom' && isset( $google_font_map[$font_family] ) ) {
+        $google_fonts[] = $google_font_map[$font_family];
+    }
+    if ( $font_heading !== 'inherit' && $font_heading !== 'custom' && $font_heading !== $font_family && isset( $google_font_map[$font_heading] ) ) {
+        $google_fonts[] = $google_font_map[$font_heading];
+    }
+    
+    // Add custom fonts
+    if ( $font_family === 'custom' && ! empty( $font_family_custom ) ) {
+        $custom_font_url = str_replace( ' ', '+', $font_family_custom ) . ':wght@400;500;600;700';
+        $google_fonts[] = $custom_font_url;
+    }
+    if ( $font_heading === 'custom' && ! empty( $font_heading_custom ) && $font_heading_custom !== $font_family_custom ) {
+        $custom_heading_url = str_replace( ' ', '+', $font_heading_custom ) . ':wght@400;500;600;700;800';
+        $google_fonts[] = $custom_heading_url;
+    }
+    
+    if ( ! empty( $google_fonts ) ) {
+        $font_url = 'https://fonts.googleapis.com/css2?' . implode( '&', array_map( function($f) { return 'family=' . $f; }, $google_fonts ) ) . '&display=swap';
+        wp_enqueue_style( 'wpc-google-fonts', $font_url, array(), null );
+    }
+    
+    // Build custom CSS
     $custom_css = "
         :root {
             --primary: {$primary_hsl};
@@ -282,7 +364,303 @@ function wpc_register_scripts() {
         $custom_css .= " --wpc-btn-hover: " . esc_attr($button_hover_color) . "; ";
     }
     
+    // Add font size and line height variables (only if not default)
+    if ( $font_size_base !== '16' && ! empty( $font_size_base ) ) {
+        $custom_css .= " --wpc-font-size-base: {$font_size_base}px; ";
+    }
+    if ( $line_height !== '1.5' && ! empty( $line_height ) ) {
+        $custom_css .= " --wpc-line-height: {$line_height}; ";
+    }
+    
+    // Advanced Typography Variables
+    $font_size_h1 = get_option('wpc_font_size_h1', '');
+    $font_size_h2 = get_option('wpc_font_size_h2', '');
+    $font_size_h3 = get_option('wpc_font_size_h3', '');
+    $font_size_h4 = get_option('wpc_font_size_h4', '');
+    $font_size_h5 = get_option('wpc_font_size_h5', '');
+    $font_size_h6 = get_option('wpc_font_size_h6', '');
+    $font_size_btn = get_option('wpc_font_size_btn', '');
+    $font_size_price = get_option('wpc_font_size_price', '');
+    $font_size_code = get_option('wpc_font_size_code', '');
+
+    if (!empty($font_size_h1)) $custom_css .= " --wpc-font-size-h1: {$font_size_h1}px; ";
+    if (!empty($font_size_h2)) $custom_css .= " --wpc-font-size-h2: {$font_size_h2}px; ";
+    if (!empty($font_size_h3)) $custom_css .= " --wpc-font-size-h3: {$font_size_h3}px; ";
+    if (!empty($font_size_h4)) $custom_css .= " --wpc-font-size-h4: {$font_size_h4}px; ";
+    if (!empty($font_size_h5)) $custom_css .= " --wpc-font-size-h5: {$font_size_h5}px; ";
+    if (!empty($font_size_h6)) $custom_css .= " --wpc-font-size-h6: {$font_size_h6}px; ";
+    if (!empty($font_size_btn)) $custom_css .= " --wpc-font-size-btn: {$font_size_btn}px; ";
+    if (!empty($font_size_price)) $custom_css .= " --wpc-font-size-price: {$font_size_price}px; ";
+    if (!empty($font_size_code)) $custom_css .= " --wpc-font-size-code: {$font_size_code}px; ";
+    
+    // New Typography Variables
+    $font_size_subheading = get_option('wpc_font_size_subheading', '');
+    $font_size_body = get_option('wpc_font_size_body', '');
+    $font_size_small = get_option('wpc_font_size_small', '');
+
+    if (!empty($font_size_subheading)) $custom_css .= " --wpc-font-size-subheading: {$font_size_subheading}px; ";
+    if (!empty($font_size_body)) $custom_css .= " --wpc-font-size-body: {$font_size_body}px; ";
+    if (!empty($font_size_small)) $custom_css .= " --wpc-font-size-small: {$font_size_small}px; ";
+
+
+    
+    // Text Color Settings
+    $text_body_color = get_option( 'wpc_text_body_color', '' );
+    $text_heading_color = get_option( 'wpc_text_heading_color', '' );
+    $text_muted_color = get_option( 'wpc_text_muted_color', '' );
+    $text_link_color = get_option( 'wpc_text_link_color', '' );
+    $text_button_color = get_option( 'wpc_button_text_color', '' );
+    
     $custom_css .= " } ";
+
+    // Injected Button Text Color
+    if ( ! empty( $text_button_color ) ) {
+        $custom_css .= "
+            :root {
+                --wpc-btn-text: " . esc_attr($text_button_color) . ";
+                --pt-btn-text: " . esc_attr($text_button_color) . ";
+            }
+            .wpc-root .button, .wpc-root .btn, .wpc-root button,
+            .button, .btn, button {
+                color: " . esc_attr($text_button_color) . " !important;
+            }
+        ";
+    }
+
+    // Build typography override CSS
+    // When inherit is selected, use CSS 'inherit' keyword which looks at parent (theme)
+    // When custom font/color is selected, use the specific value
+    
+    $font_family_css = ( $font_family === 'inherit' || empty( $body_font_stack ) || $body_font_stack === 'inherit' ) 
+        ? 'inherit' 
+        : $body_font_stack;
+    
+    $font_heading_css = ( $font_heading === 'inherit' || empty( $heading_font_stack ) || $heading_font_stack === 'inherit' ) 
+        ? 'inherit' 
+        : $heading_font_stack;
+    
+    // Typography override - applies to ALL plugin components with !important
+    $custom_css .= "
+        /* Typography Override - Complete Coverage */
+        .wpc-root,
+        .wpc-root *,
+        .wpc-comparison-wrapper,
+        .wpc-comparison-wrapper *,
+        .wpc-list-wrapper,
+        .wpc-list-wrapper *,
+        .wpc-hero,
+        .wpc-hero *,
+        .ecg-pricing-table-wrapper,
+        .ecg-pricing-table-wrapper *,
+        .wpc-compare-table,
+        .wpc-compare-table *,
+        .wpc-feature-table,
+        .wpc-feature-table *,
+        [class*='wpc-'] {
+            font-family: {$font_family_css} !important;
+        }
+        
+        /* Headings override */
+        .wpc-root h1, .wpc-root h2, .wpc-root h3, .wpc-root h4, .wpc-root h5,
+        .wpc-comparison-wrapper h1, .wpc-comparison-wrapper h2, .wpc-comparison-wrapper h3,
+        .wpc-list-wrapper h1, .wpc-list-wrapper h2, .wpc-list-wrapper h3,
+        .wpc-hero h1, .wpc-hero h2, .wpc-hero h3,
+        .font-display,
+        [class*='wpc-'] h1, [class*='wpc-'] h2, [class*='wpc-'] h3, [class*='wpc-'] h4 {
+            font-family: {$font_heading_css} !important;
+        }
+    ";
+    
+    // Text Color overrides (only if custom colors are set)
+    // EXCLUDE buttons, links styled as buttons to prevent breaking button text colors
+    if ( ! empty( $text_body_color ) ) {
+        $custom_css .= "
+            .wpc-root:not(button):not(a):not(.btn),
+            .wpc-root *:not(button):not(a):not(.btn),
+            .wpc-comparison-wrapper:not(button):not(a):not(.btn),
+            .wpc-comparison-wrapper *:not(button):not(a):not(.btn),
+            .wpc-list-wrapper:not(button):not(a):not(.btn),
+            .wpc-list-wrapper *:not(button):not(a):not(.btn),
+            .wpc-hero:not(button):not(a):not(.btn),
+            .wpc-hero *:not(button):not(a):not(.btn),
+            .ecg-pricing-table-wrapper:not(button):not(a):not(.btn),
+            .ecg-pricing-table-wrapper *:not(button):not(a):not(.btn),
+            [class*='wpc-']:not(button):not(a):not(.btn) {
+                color: " . esc_attr($text_body_color) . " !important;
+            }
+        ";
+    }
+    
+    // Helper to convert Hex to HSL (space separated for Tailwind)
+    if (!function_exists('wpc_hex2hsl')) {
+        function wpc_hex2hsl($hex) {
+            $hex = str_replace('#', '', $hex);
+            if (strlen($hex) == 3) {
+                $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            }
+            $r = hexdec(substr($hex, 0, 2)) / 255;
+            $g = hexdec(substr($hex, 2, 2)) / 255;
+            $b = hexdec(substr($hex, 4, 2)) / 255;
+            $max = max($r, $g, $b);
+            $min = min($r, $g, $b);
+            $h = $s = $l = ($max + $min) / 2;
+
+            if ($max == $min) {
+                $h = $s = 0;
+            } else {
+                $d = $max - $min;
+                $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+                switch ($max) {
+                    case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
+                    case $g: $h = ($b - $r) / $d + 2; break;
+                    case $b: $h = ($r - $g) / $d + 4; break;
+                }
+                $h /= 6;
+            }
+            $h = round($h * 360);
+            $s = round($s * 100);
+            $l = round($l * 100);
+            return "$h $s% $l%";
+        }
+    }
+
+    // Convert colors to HSL for Tailwind
+    $primary_hsl = !empty($primary_color) ? wpc_hex2hsl($primary_color) : '';
+    $muted_hsl = !empty($text_muted_color) ? wpc_hex2hsl($text_muted_color) : '';
+    $foreground_hsl = !empty($text_body_color) ? wpc_hex2hsl($text_body_color) : '';
+    
+    // Additional vars (Border, Card, etc.)
+    $border_color_hex = get_option( 'wpc_border_color', '#e2e8f0' );
+    $border_hsl = wpc_hex2hsl($border_color_hex);
+    
+    // Muted BG (usually lighter than border, or just use a standard light gray if not set)
+    // We'll default to a standard light gray if not explicitly controllable, or matching border for simplicity
+    $muted_bg_hsl = '210 40% 96.1%'; // Standard shadcn muted
+    $card_bg_hsl = '0 0% 100%'; 
+
+    // Pros/Cons Colors
+    $pros_bg_hex = get_option('wpc_color_pros_bg', '#f0fdf4');
+    $pros_text_hex = get_option('wpc_color_pros_text', '#166534');
+    $cons_bg_hex = get_option('wpc_color_cons_bg', '#fef2f2');
+    $cons_text_hex = get_option('wpc_color_cons_text', '#991b1b');
+
+    // Convert to HSL if needed, or simply inject as is. 
+    // Tailwind usually expects just the channels for opacity support, 
+    // but for simple backgrounds we can use full color or hex. 
+    // However, for consistency with other vars like --primary, let's try to stick to channels if we want opacity support.
+    // If we just want to use `var(--pros-bg)`, hex is fine.
+    // Let's stick to Hex for these specific ones for now unless we need opacity, 
+    // BUT our PHP `wpc_hex2hsl` is available if we want to be fancy.
+    // Let's just inject them as standard CSS variables.
+
+    // Inject Tailwind Variables
+    $custom_css .= "
+        :root {
+            " . ($primary_hsl ? "--primary: $primary_hsl;" : "") . "
+            " . ($primary_hsl ? "--ring: $primary_hsl;" : "") . "
+            " . ($muted_hsl ? "--muted-foreground: $muted_hsl;" : "") . "
+            " . ($foreground_hsl ? "--foreground: $foreground_hsl;" : "") . "
+            " . ($foreground_hsl ? "--card-foreground: $foreground_hsl;" : "") . "
+            " . ($foreground_hsl ? "--popover-foreground: $foreground_hsl;" : "") . "
+            
+            /* Pros/Cons Colors */
+            --pros-bg: $pros_bg_hex;
+            --pros-text: $pros_text_hex;
+            --cons-bg: $cons_bg_hex;
+            --cons-text: $cons_text_hex;
+            
+            /* New Injections for full UI support */
+            --border: $border_hsl;
+            --input: $border_hsl;
+            --card: $card_bg_hsl;
+            --popover: $card_bg_hsl;
+            --muted: $muted_bg_hsl;
+            --secondary: $muted_bg_hsl;
+            --secondary-foreground: " . ($foreground_hsl ?: '222.2 47.4% 11.2%') . ";
+            --accent: $muted_bg_hsl;
+            --accent-foreground: " . ($foreground_hsl ?: '222.2 47.4% 11.2%') . ";
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            
+            --wpc-star-color: <?php echo esc_attr(get_option('wpc_star_rating_color', '#fbbf24')); ?>;
+            --wpc-btn-text: <?php echo esc_attr(get_option('wpc_button_text_color', '#ffffff')); ?>;
+            --pt-btn-text: <?php echo esc_attr(get_option('wpc_button_text_color', '#ffffff')); ?>;
+        }
+    ";
+
+    if ( ! empty( $text_heading_color ) ) {
+        $custom_css .= "
+            .wpc-root h1, .wpc-root h2, .wpc-root h3, .wpc-root h4, .wpc-root h5,
+            .wpc-comparison-wrapper h1, .wpc-comparison-wrapper h2, .wpc-comparison-wrapper h3,
+            .wpc-list-wrapper h1, .wpc-list-wrapper h2, .wpc-list-wrapper h3,
+            .wpc-hero h1, .wpc-hero h2, .wpc-hero h3,
+            [class*='wpc-'] h1, [class*='wpc-'] h2, [class*='wpc-'] h3, [class*='wpc-'] h4 {
+                color: " . esc_attr($text_heading_color) . " !important;
+            }
+        ";
+    }
+    
+    if ( ! empty( $text_muted_color ) ) {
+        $custom_css .= "
+            .text-muted, .text-muted-foreground,
+            .wpc-root .text-muted, .wpc-root .text-muted-foreground,
+            [class*='wpc-'] .text-muted, [class*='wpc-'] .text-muted-foreground,
+            [class*='wpc-'] .description, [class*='wpc-'] small {
+                color: " . esc_attr($text_muted_color) . " !important;
+            }
+        ";
+    }
+    
+    if ( ! empty( $text_link_color ) ) {
+        $custom_css .= "
+            .wpc-root a, .wpc-comparison-wrapper a, .wpc-list-wrapper a, .wpc-hero a,
+            [class*='wpc-'] a {
+                color: " . esc_attr($text_link_color) . " !important;
+            }
+        ";
+    }
+    
+    // Utility classes for SSR templates - these inherit from theme by default
+    // but can be overridden when custom colors are set
+    $body_color_value = ! empty( $text_body_color ) ? esc_attr($text_body_color) : 'inherit';
+    $heading_color_value = ! empty( $text_heading_color ) ? esc_attr($text_heading_color) : 'inherit';
+    $muted_color_value = ! empty( $text_muted_color ) ? esc_attr($text_muted_color) : 'inherit';
+    $link_color_value = ! empty( $text_link_color ) ? esc_attr($text_link_color) : 'inherit';
+    
+    $custom_css .= "
+        /* WPC Utility Classes for Theme Inheritance */
+        .wpc-root,
+        .wpc-typography-inherit,
+        .wpc-typography-inherit * {
+            font-family: {$font_family_css} !important;
+            color: {$body_color_value};
+        }
+        
+        .wpc-text-body {
+            color: {$body_color_value} !important;
+        }
+        
+        .wpc-text-muted {
+            color: {$muted_color_value} !important;
+            opacity: 0.8;
+        }
+        
+        .wpc-heading,
+        .wpc-typography-inherit h1,
+        .wpc-typography-inherit h2,
+        .wpc-typography-inherit h3 {
+            font-family: {$font_heading_css} !important;
+            color: {$heading_color_value} !important;
+        }
+        
+        .wpc-link {
+            color: {$link_color_value} !important;
+        }
+        
+        .wpc-star {
+            font-size: inherit;
+        }
+    ";
 
     if ( ! empty( $border_color ) ) {
         $custom_css .= " .bg-card { border-color: " . esc_attr($border_color) . " !important; }";
@@ -1613,11 +1991,11 @@ function wpc_pricing_table_shortcode( $atts ) {
                     <!-- Billing Toggle SSR (only if multiple cycles) -->
                     <?php if (is_array($billing_cycles) && count($billing_cycles) > 1) : ?>
                     <div style="display:flex; justify-content:center; margin-bottom:1rem; width:100%;">
-                        <div style="display:inline-flex; border-radius:0.5rem; border:1px solid var(--pt-border,#e5e7eb); background:rgba(0,0,0,0.02); padding:0.25rem; gap:0.25rem;">
+                        <div style="display:inline-flex; border-radius:0.5rem; border:1px solid hsl(var(--border)); background:hsl(var(--muted)); padding:0.25rem; gap:0.25rem;">
                             <?php foreach ($billing_cycles as $cycle) : 
                                 $is_active = ($cycle['slug'] === $default_cycle);
                             ?>
-                            <span style="padding:0.5rem 1rem; border-radius:0.375rem; font-size:0.875rem; font-weight:500; cursor:pointer; <?php echo $is_active ? 'background:var(--primary,#f97316); color:white; box-shadow:0 1px 2px rgba(0,0,0,0.05);' : 'color:#6b7280; background:transparent;'; ?>">
+                            <span style="padding:0.5rem 1rem; border-radius:0.375rem; font-size:var(--wpc-font-size-base); font-weight:500; cursor:pointer; <?php echo $is_active ? 'background:hsl(var(--primary)); color:hsl(var(--primary-foreground)); box-shadow:0 1px 2px rgba(0,0,0,0.05);' : 'color:hsl(var(--muted-foreground)); background:transparent;'; ?>">
                                 <?php echo esc_html($cycle['label']); ?>
                             </span>
                             <?php endforeach; ?>
@@ -1626,13 +2004,13 @@ function wpc_pricing_table_shortcode( $atts ) {
                     <?php endif; ?>
                     
                     <!-- Main Table Container (matches React's card container) -->
-                    <div style="width:100%; border:1px solid var(--pt-border,#e5e7eb); border-radius:0.75rem; background:white; overflow:hidden;">
+                    <div style="width:100%; border:1px solid hsl(var(--border)); border-radius:0.75rem; background:hsl(var(--card)); overflow:hidden;">
                         <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
                             <thead>
                                 <tr>
                                     <?php foreach ($plans as $idx => $plan) : ?>
-                                        <th style="padding:1rem; border-bottom:1px solid var(--pt-border); background-color:var(--pt-header-bg); color:var(--pt-header-text); width:<?php echo 100/count($plans); ?>%; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
-                                            <div style="font-size:1.125rem; font-weight:700;"><?php echo esc_html($plan['name'] ?? 'Plan'); ?></div>
+                                        <th style="padding:1rem; border-bottom:1px solid hsl(var(--border)); background-color:var(--pt-header-bg); color:var(--pt-header-text); width:<?php echo 100/count($plans); ?>%; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid hsl(var(--border))' : 'none'; ?>;">
+                                            <div style="font-size:var(--wpc-font-size-h2); font-weight:700;"><?php echo esc_html($plan['name'] ?? 'Plan'); ?></div>
                                         </th>
                                     <?php endforeach; ?>
                                 </tr>
@@ -1664,9 +2042,9 @@ function wpc_pricing_table_shortcode( $atts ) {
                                     ?>
                                         <td style="padding:1.5rem 1rem; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
                                             <div style="display:flex; flex-wrap:wrap; align-items:baseline; justify-content:center; gap:0.25rem;">
-                                                <span style="font-size:1.875rem; font-weight:700; color:var(--primary);"><?php echo esc_html($ssr_price); ?></span>
+                                                <span style="font-size:var(--wpc-font-size-price, var(--wpc-font-size-h2)); font-weight:700; color:hsl(var(--primary));"><?php echo esc_html($ssr_price); ?></span>
                                                 <?php if (!empty($ssr_period)) : ?>
-                                                    <span style="color:#6b7280; font-size:0.875rem;"><?php echo esc_html($ssr_period); ?></span>
+                                                    <span style="color:hsl(var(--muted-foreground)); font-size:calc(var(--wpc-font-size-price) * 0.5); line-height:1.2;"><?php echo esc_html($ssr_period); ?></span>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
@@ -1679,12 +2057,12 @@ function wpc_pricing_table_shortcode( $atts ) {
                                     ?>
                                         <td style="padding:1rem; vertical-align:top; text-align:left; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
                                             <?php if (!empty($features)) : ?>
-                                                <ul style="list-style:none; padding:0; margin:0; font-size:0.875rem; color:#4b5563;">
+                                                <ul style="list-style:none; padding:0; margin:0; color:hsl(var(--muted-foreground));">
                                                     <?php foreach ($features as $feature) : 
                                                         if (empty(trim($feature))) continue;
                                                     ?>
-                                                        <li style="margin-bottom:0.5rem; display:flex; gap:0.5rem;">
-                                                            <span style="color:var(--primary);">✓</span> <?php echo esc_html(trim($feature)); ?>
+                                                        <li style="margin-bottom:0.5rem; display:flex; gap:0.5rem; font-size:var(--wpc-font-size-body);">
+                                                            <span style="color:hsl(var(--primary));">✓</span> <?php echo esc_html(trim($feature)); ?>
                                                         </li>
                                                     <?php endforeach; ?>
                                                 </ul>
@@ -1699,7 +2077,7 @@ function wpc_pricing_table_shortcode( $atts ) {
                                         <td style="padding:1rem; vertical-align:middle; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid var(--pt-border)' : 'none'; ?>;">
                                             <?php if (!empty($plan['link']) || !empty($plan['button_text'])) : ?>
                                                 <a href="<?php echo esc_url($plan['link'] ?: '#'); ?>" 
-                                                   style="display:block; width:100%; padding:0.75rem 1rem; background-color:var(--pt-btn-bg,var(--primary,#f97316)); color:var(--pt-btn-text,white); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:0.875rem; text-align:center;">
+                                                   style="display:block; width:100%; padding:0.75rem 1rem; background-color:var(--pt-btn-bg,hsl(var(--primary))); color:var(--pt-btn-text,hsl(var(--primary-foreground))); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:var(--wpc-font-size-btn); text-align:center;">
                                                     <?php echo esc_html($plan['button_text'] ?? 'Select'); ?>
                                                 </a>
                                             <?php endif; ?>
@@ -1712,11 +2090,11 @@ function wpc_pricing_table_shortcode( $atts ) {
                     </div>
                     <!-- Footer Button SSR (dynamic) -->
                     <?php if ($show_footer_button && !empty($item['direct_link'])) : ?>
-                    <div style="padding:1.25rem; text-align:center; border-top:1px solid var(--pt-border,#e5e7eb);">
+                    <div style="padding:1.25rem; text-align:center; border-top:1px solid hsl(var(--border));">
                         <a href="<?php echo esc_url($item['direct_link']); ?>" 
                            target="_blank"
                            rel="noopener noreferrer"
-                           style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 2rem; background:var(--pt-btn-bg,var(--primary,#f97316)); color:var(--pt-btn-text,white); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:0.9375rem;">
+                           style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 2rem; background:var(--pt-btn-bg,hsl(var(--primary))); color:var(--pt-btn-text,hsl(var(--primary-foreground))); border-radius:0.5rem; font-weight:600; text-decoration:none; font-size:var(--wpc-font-size-btn);">
                             <?php echo esc_html(!empty($footer_button_text) ? $footer_button_text : ($item['name'] ?: 'Visit Site')); ?>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                         </a>
@@ -1757,3 +2135,13 @@ function wpc_template_include( $template ) {
     return $template;
 }
 add_filter( 'template_include', 'wpc_template_include' );
+
+/**
+ * Enqueue styles on single comparison_item pages
+ */
+function wpc_enqueue_single_item_styles() {
+    if ( is_singular( 'comparison_item' ) || is_singular( 'ecommerce_provider' ) ) {
+        wp_enqueue_style( 'wpc-styles' );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'wpc_enqueue_single_item_styles' );

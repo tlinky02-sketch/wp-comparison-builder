@@ -124,8 +124,13 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_text_analysis' );
     register_setting( 'wpc_settings_group', 'wpc_text_start_price' );
     register_setting( 'wpc_settings_group', 'wpc_text_dash_prev' );
+    register_setting( 'wpc_settings_group', 'wpc_text_body_color' );
+    register_setting( 'wpc_settings_group', 'wpc_text_heading_color' );
+    register_setting( 'wpc_settings_group', 'wpc_text_muted_color' );
+    register_setting( 'wpc_settings_group', 'wpc_text_link_color' );
+    register_setting( 'wpc_settings_group', 'wpc_button_text_color' );
     
-    // Filter & Search Internal Labels
+    // License Keysarch Internal Labels
     register_setting( 'wpc_settings_group', 'wpc_text_reset_filt' );
     register_setting( 'wpc_settings_group', 'wpc_text_select_fmt' );
     register_setting( 'wpc_settings_group', 'wpc_text_clear' );
@@ -179,6 +184,34 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_ft_check_color' );
     register_setting( 'wpc_settings_group', 'wpc_ft_x_color' );
     register_setting( 'wpc_settings_group', 'wpc_ft_alt_row_bg' );
+    
+    // Typography Settings
+    register_setting( 'wpc_settings_group', 'wpc_font_family' );      // 'inherit'|'inter'|'roboto'|'poppins'|'open-sans'|'custom'
+    register_setting( 'wpc_settings_group', 'wpc_font_heading' );     // 'inherit'|'plus-jakarta'|'montserrat'|etc.|'custom'
+    register_setting( 'wpc_settings_group', 'wpc_font_size_base' );   // Base font size in px (default 16)
+    register_setting( 'wpc_settings_group', 'wpc_line_height' );      // Line height (default 1.5)
+    register_setting( 'wpc_settings_group', 'wpc_font_family_custom' );  // Custom Google Font name for body
+    register_setting( 'wpc_settings_group', 'wpc_font_heading_custom' ); // Custom Google Font name for headings
+    
+    // Text Color Settings (NEW)
+    register_setting( 'wpc_settings_group', 'wpc_text_body_color' );      // Body text color (empty = inherit)
+    register_setting( 'wpc_settings_group', 'wpc_text_heading_color' );   // Heading text color (empty = inherit)
+    register_setting( 'wpc_settings_group', 'wpc_text_muted_color' );     // Muted/secondary text color
+    register_setting( 'wpc_settings_group', 'wpc_text_link_color' );      // Link color (empty = inherit)
+
+    // Advanced Typography (New)
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h1' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h2' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h3' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h4' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h5' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_h6' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_subheading' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_body' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_small' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_btn' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_price' );
+    register_setting( 'wpc_settings_group', 'wpc_font_size_code' );
 }
 
 /**
@@ -1834,6 +1867,436 @@ function wpc_render_general_tab() {
                     <label for="wpc_show_footer_button_global">
                         Show the footer button (Visit Website) in pricing tables/popups by default
                     </label>
+                </td>
+            </tr>
+        </table>
+
+        <hr style="margin: 40px 0;">
+        
+        <h2><?php _e( 'Typography', 'wp-comparison-builder' ); ?></h2>
+        <p><?php _e( 'Customize fonts and text styling. Default: Inherit from your WordPress theme.', 'wp-comparison-builder' ); ?></p>
+        
+        <table class="form-table">
+            <!-- Body Font Family -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_font_family"><?php _e( 'Body Font Family', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <select name="wpc_font_family" id="wpc_font_family" style="min-width: 200px;">
+                        <option value="inherit" <?php selected( get_option( 'wpc_font_family', 'inherit' ), 'inherit' ); ?>><?php _e( 'Inherit from Theme', 'wp-comparison-builder' ); ?></option>
+                        <option value="inter" <?php selected( get_option( 'wpc_font_family' ), 'inter' ); ?>>Inter</option>
+                        <option value="roboto" <?php selected( get_option( 'wpc_font_family' ), 'roboto' ); ?>>Roboto</option>
+                        <option value="poppins" <?php selected( get_option( 'wpc_font_family' ), 'poppins' ); ?>>Poppins</option>
+                        <option value="open-sans" <?php selected( get_option( 'wpc_font_family' ), 'open-sans' ); ?>>Open Sans</option>
+                        <option value="lato" <?php selected( get_option( 'wpc_font_family' ), 'lato' ); ?>>Lato</option>
+                        <option value="custom" <?php selected( get_option( 'wpc_font_family' ), 'custom' ); ?>><?php _e( '✨ Custom Google Font...', 'wp-comparison-builder' ); ?></option>
+                    </select>
+                    <div id="wpc_font_family_custom_wrap" style="margin-top: 8px; <?php echo get_option( 'wpc_font_family' ) === 'custom' ? '' : 'display: none;'; ?>">
+                        <input 
+                            type="text" 
+                            name="wpc_font_family_custom" 
+                            id="wpc_font_family_custom"
+                            value="<?php echo esc_attr( get_option( 'wpc_font_family_custom', '' ) ); ?>"
+                            placeholder="e.g. Nunito, Source Sans Pro, Barlow"
+                            style="width: 300px;"
+                        />
+                        <p class="description" style="margin-top: 4px;">
+                            <?php _e( 'Enter the exact Google Font name from <a href="https://fonts.google.com" target="_blank">fonts.google.com</a>', 'wp-comparison-builder' ); ?>
+                        </p>
+                    </div>
+                    <p class="description">
+                        <?php _e( 'Main font for body text, buttons, and UI elements.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+            
+            <!-- Heading Font Family -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_font_heading"><?php _e( 'Heading Font Family', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <select name="wpc_font_heading" id="wpc_font_heading" style="min-width: 200px;">
+                        <option value="inherit" <?php selected( get_option( 'wpc_font_heading', 'inherit' ), 'inherit' ); ?>><?php _e( 'Inherit from Theme', 'wp-comparison-builder' ); ?></option>
+                        <option value="plus-jakarta" <?php selected( get_option( 'wpc_font_heading' ), 'plus-jakarta' ); ?>>Plus Jakarta Sans</option>
+                        <option value="montserrat" <?php selected( get_option( 'wpc_font_heading' ), 'montserrat' ); ?>>Montserrat</option>
+                        <option value="inter" <?php selected( get_option( 'wpc_font_heading' ), 'inter' ); ?>>Inter</option>
+                        <option value="poppins" <?php selected( get_option( 'wpc_font_heading' ), 'poppins' ); ?>>Poppins</option>
+                        <option value="raleway" <?php selected( get_option( 'wpc_font_heading' ), 'raleway' ); ?>>Raleway</option>
+                        <option value="custom" <?php selected( get_option( 'wpc_font_heading' ), 'custom' ); ?>><?php _e( '✨ Custom Google Font...', 'wp-comparison-builder' ); ?></option>
+                    </select>
+                    <div id="wpc_font_heading_custom_wrap" style="margin-top: 8px; <?php echo get_option( 'wpc_font_heading' ) === 'custom' ? '' : 'display: none;'; ?>">
+                        <input 
+                            type="text" 
+                            name="wpc_font_heading_custom" 
+                            id="wpc_font_heading_custom"
+                            value="<?php echo esc_attr( get_option( 'wpc_font_heading_custom', '' ) ); ?>"
+                            placeholder="e.g. Playfair Display, Oswald, Merriweather"
+                            style="width: 300px;"
+                        />
+                        <p class="description" style="margin-top: 4px;">
+                            <?php _e( 'Enter the exact Google Font name from <a href="https://fonts.google.com" target="_blank">fonts.google.com</a>', 'wp-comparison-builder' ); ?>
+                        </p>
+                    </div>
+                    <p class="description">
+                        <?php _e( 'Font for headings and titles (h1, h2, h3, etc.)', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+            
+            <script>
+            (function() {
+                // Toggle custom font input visibility
+                document.getElementById('wpc_font_family').addEventListener('change', function() {
+                    document.getElementById('wpc_font_family_custom_wrap').style.display = this.value === 'custom' ? 'block' : 'none';
+                });
+                document.getElementById('wpc_font_heading').addEventListener('change', function() {
+                    document.getElementById('wpc_font_heading_custom_wrap').style.display = this.value === 'custom' ? 'block' : 'none';
+                });
+            })();
+            </script>
+            
+            <!-- Base Font Size -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_font_size_base"><?php _e( 'Base Font Size (px)', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <input 
+                        type="number" 
+                        id="wpc_font_size_base" 
+                        name="wpc_font_size_base" 
+                        value="<?php echo esc_attr( get_option( 'wpc_font_size_base', '16' ) ); ?>"
+                        min="12"
+                        max="24"
+                        step="1"
+                        style="width: 80px;"
+                    />
+                    <p class="description">
+                        <?php _e( 'Base font size in pixels. All other sizes scale relative to this. Default: 16', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+            
+            <!-- Line Height -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_line_height"><?php _e( 'Line Height', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <input 
+                        type="number" 
+                        id="wpc_line_height" 
+                        name="wpc_line_height" 
+                        value="<?php echo esc_attr( get_option( 'wpc_line_height', '1.5' ) ); ?>"
+                        min="1.2"
+                        max="2.0"
+                        step="0.1"
+                        style="width: 80px;"
+                    />
+                    <p class="description">
+                        <?php _e( 'Line height multiplier for text. Default: 1.5', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
+
+            <!-- Advanced Typography: Heading Sizes -->
+            <tr valign="top">
+                <th scope="row" colspan="2" style="padding-top: 20px;">
+                    <h3 style="margin: 0; font-size: 16px;"><?php _e( 'Heading Sizes', 'wp-comparison-builder' ); ?></h3>
+                    <p class="description"><?php _e( 'Set specific font sizes for headings. Include unit (px, rem, em). Empty = Theme Default.', 'wp-comparison-builder' ); ?></p>
+                </th>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h1">H1 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h1" name="wpc_font_size_h1" value="<?php echo esc_attr( get_option( 'wpc_font_size_h1', '' ) ); ?>" placeholder="e.g. 2.5rem or 40px" style="width: 150px;" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h2">H2 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h2" name="wpc_font_size_h2" value="<?php echo esc_attr( get_option( 'wpc_font_size_h2', '' ) ); ?>" placeholder="e.g. 2rem or 32px" style="width: 150px;" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h3">H3 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h3" name="wpc_font_size_h3" value="<?php echo esc_attr( get_option( 'wpc_font_size_h3', '' ) ); ?>" placeholder="e.g. 1.75rem or 28px" style="width: 150px;" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h4">H4 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h4" name="wpc_font_size_h4" value="<?php echo esc_attr( get_option( 'wpc_font_size_h4', '' ) ); ?>" placeholder="e.g. 1.5rem or 24px" style="width: 150px;" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h5">H5 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h5" name="wpc_font_size_h5" value="<?php echo esc_attr( get_option( 'wpc_font_size_h5', '' ) ); ?>" placeholder="e.g. 1.25rem or 20px" style="width: 150px;" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_h6">H6 <?php _e( 'Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_h6" name="wpc_font_size_h6" value="<?php echo esc_attr( get_option( 'wpc_font_size_h6', '' ) ); ?>" placeholder="e.g. 1rem or 16px" style="width: 150px;" />
+                </td>
+            </tr>
+
+            <!-- Advanced Typography: Element Sizes -->
+            <tr valign="top">
+                <th scope="row" colspan="2" style="padding-top: 20px;">
+                    <h3 style="margin: 0; font-size: 16px;"><?php _e( 'Element Sizes', 'wp-comparison-builder' ); ?></h3>
+                    <p class="description"><?php _e( 'Set font sizes for specific elements.', 'wp-comparison-builder' ); ?></p>
+                </th>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_btn"><?php _e( 'Button Text Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_btn" name="wpc_font_size_btn" value="<?php echo esc_attr( get_option( 'wpc_font_size_btn', '' ) ); ?>" placeholder="e.g. 1rem or 16px" style="width: 150px;" />
+                    <p class="description"><?php _e( 'Font size for primary buttons.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_price"><?php _e( 'Price Text Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_price" name="wpc_font_size_price" value="<?php echo esc_attr( get_option( 'wpc_font_size_price', '' ) ); ?>" placeholder="e.g. 2.25rem or 36px" style="width: 150px;" />
+                    <p class="description"><?php _e( 'Font size for the main price display.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_code"><?php _e( 'Coupon Code Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_code" name="wpc_font_size_code" value="<?php echo esc_attr( get_option( 'wpc_font_size_code', '' ) ); ?>" placeholder="e.g. 0.875rem or 14px" style="width: 150px;" />
+                    <p class="description"><?php _e( 'Font size for coupon codes.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            
+            <!-- Reset Typography Button -->
+            <tr valign="top">
+                <th scope="row"></th>
+                <td>
+                    <button type="button" id="wpc_reset_typography_btn" class="button" style="color: #d32f2f; border-color: #ef9a9a;">
+                        <?php _e( 'Reset to Theme Defaults', 'wp-comparison-builder' ); ?>
+                    </button>
+                    <p class="description">
+                        <?php _e( 'Reset all typography settings to inherit from your WordPress theme.', 'wp-comparison-builder' ); ?>
+                    </p>
+                    
+                    <script>
+                    document.getElementById('wpc_reset_typography_btn').addEventListener('click', function() {
+                        if (confirm('<?php echo esc_js( __( 'Reset all typography settings to theme defaults?', 'wp-comparison-builder' ) ); ?>')) {
+                            document.getElementById('wpc_font_family').value = 'inherit';
+                            document.getElementById('wpc_font_heading').value = 'inherit';
+                            document.getElementById('wpc_font_size_base').value = '16';
+                            document.getElementById('wpc_line_height').value = '1.5';
+                            
+                            // Reset Advanced Typography
+                            document.getElementById('wpc_font_size_h1').value = '';
+                            document.getElementById('wpc_font_size_h2').value = '';
+                            document.getElementById('wpc_font_size_h3').value = '';
+                            document.getElementById('wpc_font_size_h4').value = '';
+                            document.getElementById('wpc_font_size_h5').value = '';
+                            document.getElementById('wpc_font_size_h6').value = '';
+                            document.getElementById('wpc_font_size_btn').value = '';
+                            document.getElementById('wpc_font_size_price').value = '';
+                            document.getElementById('wpc_font_size_code').value = '';
+                            
+                            // Clear and hide custom font inputs
+                            document.getElementById('wpc_font_family_custom').value = '';
+                            document.getElementById('wpc_font_heading_custom').value = '';
+                            document.getElementById('wpc_font_family_custom_wrap').style.display = 'none';
+                            document.getElementById('wpc_font_heading_custom_wrap').style.display = 'none';
+                            
+                            // Show feedback
+                            if (typeof wpcAdmin !== 'undefined' && wpcAdmin.toast) {
+                                wpcAdmin.toast('Typography reset to theme defaults. Click Save Changes to apply.', 'success');
+                            } else {
+                                alert('Typography reset. Click Save Changes to apply.');
+                            }
+                        }
+                    });
+                    </script>
+                </td>
+            </tr>
+        </table>
+
+        <hr style="margin: 40px 0;">
+        
+        <h2><?php _e( 'Text Colors', 'wp-comparison-builder' ); ?></h2>
+        <p><?php _e( 'Customize text colors. Leave empty to inherit from your WordPress theme.', 'wp-comparison-builder' ); ?></p>
+        
+        <table class="form-table">
+            <!-- Body Text Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_text_body_color"><?php _e( 'Body Text Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_text_body_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_body_color', '#333333' ) ?: '#333333' ); ?>"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                            onchange="document.getElementById('wpc_text_body_color').value = this.value"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_text_body_color" 
+                            name="wpc_text_body_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_body_color', '' ) ); ?>"
+                            placeholder="#333333"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_text_body_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description"><?php _e( 'Main text color. Leave empty to use theme default.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            
+            <!-- Heading Text Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_text_heading_color"><?php _e( 'Heading Text Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_text_heading_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_heading_color', '#111111' ) ?: '#111111' ); ?>"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                            onchange="document.getElementById('wpc_text_heading_color').value = this.value"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_text_heading_color" 
+                            name="wpc_text_heading_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_heading_color', '' ) ); ?>"
+                            placeholder="#111111"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_text_heading_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description"><?php _e( 'Color for h1, h2, h3, etc. Leave empty to use theme default.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            
+            <!-- Muted Text Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_text_muted_color"><?php _e( 'Muted Text Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_text_muted_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_muted_color', '#6b7280' ) ?: '#6b7280' ); ?>"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                            onchange="document.getElementById('wpc_text_muted_color').value = this.value"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_text_muted_color" 
+                            name="wpc_text_muted_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_muted_color', '' ) ); ?>"
+                            placeholder="#6b7280"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_text_muted_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description"><?php _e( 'Secondary/muted text color (descriptions, labels). Leave empty to use default.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            
+            <!-- Button Text Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_button_text_color"><?php _e( 'Button Text Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_button_text_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_button_text_color', '#ffffff' ) ?: '#ffffff' ); ?>"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                            onchange="document.getElementById('wpc_button_text_color').value = this.value"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_button_text_color" 
+                            name="wpc_button_text_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_button_text_color', '' ) ); ?>"
+                            placeholder="#ffffff"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_button_text_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description"><?php _e( 'Color for text inside buttons. Default: #ffffff (White).', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+
+            <!-- Link Color -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_text_link_color"><?php _e( 'Link Color', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input 
+                            type="color" 
+                            id="wpc_text_link_color_picker" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_link_color', '#6366f1' ) ?: '#6366f1' ); ?>"
+                            style="width: 50px; height: 40px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;"
+                            onchange="document.getElementById('wpc_text_link_color').value = this.value"
+                        />
+                        <input 
+                            type="text" 
+                            id="wpc_text_link_color" 
+                            name="wpc_text_link_color" 
+                            value="<?php echo esc_attr( get_option( 'wpc_text_link_color', '' ) ); ?>"
+                            placeholder="#6366f1"
+                            style="width: 120px;"
+                            onchange="document.getElementById('wpc_text_link_color_picker').value = this.value"
+                        />
+                    </div>
+                    <p class="description"><?php _e( 'Color for links. Leave empty to use theme default.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            
+            <!-- Reset Colors Button -->
+            <tr valign="top">
+                <th scope="row"></th>
+                <td>
+                    <button type="button" id="wpc_reset_text_colors_btn" class="button" style="color: #d32f2f; border-color: #ef9a9a;">
+                        <?php _e( 'Reset to Theme Defaults', 'wp-comparison-builder' ); ?>
+                    </button>
+                    <p class="description"><?php _e( 'Clear all text color settings to inherit from theme.', 'wp-comparison-builder' ); ?></p>
+                    
+                    <script>
+                    document.getElementById('wpc_reset_text_colors_btn').addEventListener('click', function() {
+                        if (confirm('<?php echo esc_js( __( 'Reset all text colors to theme defaults?', 'wp-comparison-builder' ) ); ?>')) {
+                            // Clear color picker values
+                            var colorInputs = ['wpc_text_body_color', 'wpc_text_heading_color', 'wpc_text_muted_color', 'wpc_text_link_color'];
+                            colorInputs.forEach(function(id) {
+                                var input = document.getElementById(id);
+                                if (input) {
+                                    input.value = '';
+                                    // Try to update WordPress color picker if present
+                                    if (jQuery && jQuery.fn.wpColorPicker) {
+                                        jQuery(input).wpColorPicker('color', '');
+                                    }
+                                }
+                            });
+                            alert('Text colors reset. Click Save Changes to apply.');
+                        }
+                    });
+                    </script>
                 </td>
             </tr>
         </table>

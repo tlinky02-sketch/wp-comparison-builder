@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+/* Google Fonts are loaded dynamically by PHP based on typography settings */
+/* DO NOT add hardcoded font imports here - they come from wp-comparison-builder.php */
 
 @tailwind base;
 @tailwind components;
@@ -84,6 +85,14 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Typography - managed by PHP settings */
+    --wpc-font-family: inherit;
+    --wpc-font-heading: inherit;
+    --wpc-text-color: inherit;
+    --wpc-heading-color: inherit;
+    --wpc-muted-color: inherit;
+    --wpc-link-color: inherit;
   }
 
   .dark {
@@ -124,8 +133,9 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--wpc-font-family, inherit);
+    color: var(--wpc-text-color, inherit);
   }
 
   h1,
@@ -134,7 +144,8 @@
   h4,
   h5,
   h6 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--wpc-font-heading, inherit);
+    color: var(--wpc-heading-color, inherit);
   }
 }
 

@@ -90,6 +90,7 @@ export interface ComparisonItem {
         show_footer_popup?: boolean | string;
         show_footer_table?: boolean | string;
         footer_text?: string;
+        btn_text_color?: string;
     };
     // Per-item text label overrides
     prosLabel?: string;
@@ -525,8 +526,11 @@ const PlatformCard = ({
                         e.stopPropagation(); // Prevent card click
                         handleDetailsClick(e);
                     }}
-                    className="w-full gap-2 font-display font-bold shadow-sm hover:shadow-md transition-all relative z-20 cursor-pointer text-primary-foreground"
-                    style={{ backgroundColor: (window as any).wpcSettings?.colors?.primary || undefined }}
+                    className="w-full gap-2 font-display font-bold shadow-sm hover:shadow-md transition-all relative z-20 cursor-pointer"
+                    style={{
+                        backgroundColor: (window as any).wpcSettings?.colors?.primary || undefined,
+                        color: (window as any).wpcSettings?.colors?.btnText || '#ffffff'
+                    }}
                     onMouseEnter={(e) => {
                         const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
                         if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;

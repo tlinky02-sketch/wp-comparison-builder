@@ -599,16 +599,20 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                 borderColor: prosText + '40'
                             }}
                         >
-                            <h3 className="text-xl font-bold mb-4 flex items-center gap-3" style={{ color: prosText }}>
-                                <span className="text-3xl">{prosIcon}</span>
+                            <h3
+                                className="font-semibold mb-4 flex items-center gap-2"
+                                style={{ color: prosText, fontFamily: 'var(--wpc-font-heading, inherit)' }}
+                                ref={(el) => { if (el) el.style.setProperty('color', prosText, 'important'); }}
+                            >
+                                <span style={{ color: 'transparent', textShadow: `0 0 0 ${prosText}` }} ref={(el) => { if (el) { el.style.setProperty('color', 'transparent', 'important'); el.style.setProperty('text-shadow', `0 0 0 ${prosText}`, 'important'); } }}>{prosIcon}</span>
                                 {prosLabel}
                             </h3>
                             {pros.length > 0 ? (
                                 <ul className="space-y-3">
                                     {pros.map((pro: string, idx: number) => (
-                                        <li key={idx} className="flex items-start gap-3 text-sm">
-                                            <span className="mt-0.5 font-bold" style={{ color: prosText }}>{prosIcon}</span>
-                                            <span style={{ color: prosText }}>{pro}</span>
+                                        <li key={idx} className="flex gap-2 items-start" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>
+                                            <span style={{ color: 'transparent', textShadow: `0 0 0 ${prosText}` }} ref={(el) => { if (el) { el.style.setProperty('color', 'transparent', 'important'); el.style.setProperty('text-shadow', `0 0 0 ${prosText}`, 'important'); } }}>{prosIcon}</span>
+                                            <span style={{ color: prosText, fontFamily: 'var(--wpc-font-family, inherit)' }} ref={(el) => { if (el) el.style.setProperty('color', prosText, 'important'); }}>{pro}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -625,16 +629,20 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                 borderColor: consText + '40'
                             }}
                         >
-                            <h3 className="text-xl font-bold mb-4 flex items-center gap-3" style={{ color: consText }}>
-                                <span className="text-3xl">{consIcon}</span>
+                            <h3
+                                className="font-semibold mb-4 flex items-center gap-2"
+                                style={{ color: consText, fontFamily: 'var(--wpc-font-heading, inherit)' }}
+                                ref={(el) => { if (el) el.style.setProperty('color', consText, 'important'); }}
+                            >
+                                <span style={{ color: 'transparent', textShadow: `0 0 0 ${consText}` }} ref={(el) => { if (el) { el.style.setProperty('color', 'transparent', 'important'); el.style.setProperty('text-shadow', `0 0 0 ${consText}`, 'important'); } }}>{consIcon}</span>
                                 {consLabel}
                             </h3>
                             {cons.length > 0 ? (
                                 <ul className="space-y-3">
                                     {cons.map((con: string, idx: number) => (
-                                        <li key={idx} className="flex items-start gap-3 text-sm">
-                                            <span className="mt-0.5 font-bold" style={{ color: consText }}>{consIcon}</span>
-                                            <span style={{ color: consText }}>{con}</span>
+                                        <li key={idx} className="flex gap-2 items-start" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>
+                                            <span style={{ color: 'transparent', textShadow: `0 0 0 ${consText}` }} ref={(el) => { if (el) { el.style.setProperty('color', 'transparent', 'important'); el.style.setProperty('text-shadow', `0 0 0 ${consText}`, 'important'); } }}>{consIcon}</span>
+                                            <span style={{ color: consText, fontFamily: 'var(--wpc-font-family, inherit)' }} ref={(el) => { if (el) el.style.setProperty('color', consText, 'important'); }}>{con}</span>
                                         </li>
                                     ))}
                                 </ul>

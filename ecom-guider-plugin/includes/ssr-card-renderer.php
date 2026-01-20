@@ -90,9 +90,9 @@ function wpc_render_card_ssr( $item, $config = array() ) {
         data-wpc-cats="<?php echo $cat_data; ?>"
         data-wpc-feats="<?php echo $feat_data; ?>"
         style="
-            background: #fff;
+            background: hsl(var(--card));
             border-radius: 0.75rem;
-            border: 1px solid <?php echo esc_attr( $is_featured ? $featured_color : $border_color ); ?>;
+            border: 1px solid <?php echo esc_attr( $is_featured ? $featured_color : 'hsl(var(--border))' ); ?>;
             box-shadow: <?php echo $is_featured ? '0 4px 12px rgba(99,102,241,0.15)' : '0 1px 3px rgba(0,0,0,0.05)'; ?>;
             padding: 1.5rem;
             display: flex;
@@ -124,8 +124,8 @@ function wpc_render_card_ssr( $item, $config = array() ) {
                 width: 3rem;
                 height: 3rem;
                 border-radius: 0.5rem;
-                background: #f9fafb;
-                border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                background: hsl(var(--muted));
+                border: 1px solid hsl(var(--border));
                 padding: 0.375rem;
                 flex-shrink: 0;
             ">
@@ -133,7 +133,7 @@ function wpc_render_card_ssr( $item, $config = array() ) {
             </div>
             <?php endif; ?>
             <div style="flex: 1; min-width: 0;">
-                <h3 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin: 0;"><?php echo $name; ?></h3>
+                <h3 class="wpc-heading" style="font-weight: 600; margin: 0; font-size: var(--wpc-font-size-h3);"><?php echo $name; ?></h3>
                 
                 <?php if ( ! empty( $badge ) && $config['badge_style'] === 'inline' ) : ?>
                 <span style="
@@ -141,7 +141,6 @@ function wpc_render_card_ssr( $item, $config = array() ) {
                     margin-top: 0.25rem;
                     background: <?php echo esc_attr( $badge_bg ); ?>20;
                     color: <?php echo esc_attr( $badge_bg ); ?>;
-                    font-size: 0.75rem;
                     font-weight: 500;
                     padding: 0.125rem 0.5rem;
                     border-radius: 9999px;
@@ -165,25 +164,23 @@ function wpc_render_card_ssr( $item, $config = array() ) {
             <?php for ( $i = 0; $i < $empty_stars; $i++ ) : ?>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             <?php endfor; ?>
-            <span style="font-size: 0.75rem; color: #6b7280; margin-left: 0.25rem;"><?php echo number_format( $rating, 1 ); ?></span>
+            <span class="wpc-text-muted" style="margin-left: 0.25rem; color: hsl(var(--muted-foreground));"><?php echo number_format( $rating, 1 ); ?></span>
         </div>
         <?php endif; ?>
 
         <?php if ( $config['show_price'] && ! empty( $price ) ) : ?>
         <!-- Price -->
         <div style="margin-bottom: 0.75rem;">
-            <span style="font-size: 1.25rem; font-weight: 700; color: <?php echo esc_attr( $primary_color ); ?>;"><?php echo $price; ?></span>
+            <span class="wpc-text-body" style="font-weight: 700; color: hsl(var(--primary)); font-size: var(--wpc-font-size-h3);"><?php echo $price; ?></span>
             <?php if ( ! empty( $price_period ) ) : ?>
-                <span style="font-size: 0.875rem; color: #6b7280;">/<?php echo $price_period; ?></span>
+                <span class="wpc-text-muted" style="color: hsl(var(--muted-foreground));">/<?php echo $price_period; ?></span>
             <?php endif; ?>
         </div>
         <?php endif; ?>
 
         <?php if ( ! empty( $description ) ) : ?>
         <!-- Description -->
-        <p style="
-            font-size: 0.875rem;
-            color: #6b7280;
+        <p class="wpc-text-muted" style="
             line-height: 1.5;
             margin: 0 0 1rem 0;
             flex: 1;
@@ -191,6 +188,7 @@ function wpc_render_card_ssr( $item, $config = array() ) {
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: hsl(var(--muted-foreground));
         "><?php echo $description; ?></p>
         <?php endif; ?>
 
@@ -201,6 +199,7 @@ function wpc_render_card_ssr( $item, $config = array() ) {
             <button 
                 data-wpc-compare-btn="<?php echo $id; ?>"
                 data-wpc-name="<?php echo esc_attr( $name ); ?>"
+                class="wpc-text-muted"
                 style="
                     display: flex;
                     align-items: center;
@@ -208,12 +207,11 @@ function wpc_render_card_ssr( $item, $config = array() ) {
                     gap: 0.5rem;
                     padding: 0.5rem 1rem;
                     background: transparent;
-                    border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                    border: 1px solid hsl(var(--border));
                     border-radius: 0.5rem;
-                    font-size: 0.875rem;
-                    color: #6b7280;
                     cursor: pointer;
                     transition: all 0.2s;
+                    color: hsl(var(--muted-foreground));
                 "
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
@@ -226,22 +224,23 @@ function wpc_render_card_ssr( $item, $config = array() ) {
             <button 
                 type="button"
                 onclick="window.open('<?php echo esc_js( $link ); ?>', '_blank');"
+                class="wpc-text-body"
                 style="
                     display: block;
                     width: 100%;
                     text-align: center;
                     padding: 0.625rem 1rem;
-                    background: <?php echo esc_attr( $primary_color ); ?>;
-                    color: #fff;
+                    background: hsl(var(--primary));
+                    color: var(--wpc-btn-text, #fff);
+                    font-size: var(--wpc-font-size-btn, 1rem);
                     font-weight: 500;
-                    font-size: 0.875rem;
                     border-radius: 0.5rem;
                     border: none;
                     cursor: pointer;
                     transition: background 0.2s;
                 "
-                onmouseover="this.style.background='<?php echo esc_attr( $hover_color ); ?>';"
-                onmouseout="this.style.background='<?php echo esc_attr( $primary_color ); ?>';"
+                onmouseover="this.style.opacity='0.9';"
+                onmouseout="this.style.opacity='1';"
             ><?php echo esc_html( $config['button_text'] ?: $config['txt_visit'] ); ?></button>
             <?php endif; ?>
         </div>

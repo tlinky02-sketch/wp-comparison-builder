@@ -70,7 +70,7 @@ function wpc_use_cases_shortcode( $atts ) {
     ?>
     <div class="wpc-use-cases" style="width: 100%;">
         <?php if ( ! empty( $title ) ) : ?>
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;"><?php echo $title; ?></h2>
+            <h2 class="wpc-heading" style="font-weight: 700; margin-bottom: 1.5rem; text-align: center;"><?php echo $title; ?></h2>
         <?php endif; ?>
 
         <div class="wpc-use-cases-grid" style="display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1.5rem;">
@@ -96,9 +96,9 @@ function wpc_use_cases_shortcode( $atts ) {
                 $icon_color = ! empty( $case['icon_color'] ) ? esc_attr( $case['icon_color'] ) : $global_icon_color;
             ?>
                 <div class="wpc-use-case-card" style="
-                    background: #fff;
+                    background: hsl(var(--card));
                     border-radius: 0.75rem;
-                    border: 1px solid <?php echo esc_attr( $border_color ); ?>;
+                    border: 1px solid hsl(var(--border));
                     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
                     padding: 1.5rem;
                     display: flex;
@@ -127,8 +127,8 @@ function wpc_use_cases_shortcode( $atts ) {
                     </div>
 
                     <!-- Content -->
-                    <h3 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #1f2937;"><?php echo $name; ?></h3>
-                    <p style="font-size: 0.875rem; color: #6b7280; line-height: 1.5; margin: 0;"><?php echo $desc; ?></p>
+                    <h3 class="wpc-heading" style="font-weight: 700; margin: 0 0 0.5rem 0;"><?php echo $name; ?></h3>
+                    <p class="wpc-text-muted" style="line-height: 1.5; margin: 0;"><?php echo $desc; ?></p>
                 </div>
             <?php endforeach; ?>
         </div>

@@ -178,7 +178,7 @@ const PlatformDetailedRow: React.FC<PlatformDetailedRowProps> = ({
                         {[...Array(5)].map((_, i) => (
                             <span key={i}>{i < Math.floor(item.rating) ? '★' : '☆'}</span>
                         ))}
-                        <span className="ml-1 text-xs text-muted-foreground font-medium text-gray-500">({item.rating})</span>
+                        <span className="ml-1 text-xs text-muted-foreground font-medium">({item.rating})</span>
                     </div>
                 )}
 

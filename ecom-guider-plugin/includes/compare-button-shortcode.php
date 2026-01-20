@@ -194,9 +194,9 @@ function wpc_compare_button_shortcode( $atts ) {
             <div 
                 id="<?php echo $unique_id; ?>" 
                 class="wpc-compare-dropdown"
-                style="display: none; position: absolute; top: calc(100% + 8px); left: 0; min-width: 320px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"
+                style="display: none; position: absolute; top: calc(100% + 8px); left: 0; min-width: 320px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"
             >
-                <div style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
+                <div style="padding: 12px 16px; border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--muted)); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
                     <strong style="font-size: 13px; color: #666;">Compare with...</strong>
                     
                     <!-- Mobile specific: Compare Now button in header -->
@@ -223,7 +223,7 @@ function wpc_compare_button_shortcode( $atts ) {
                             id="<?php echo $unique_id; ?>-search" 
                             onkeyup="filterCompareOptions('<?php echo $unique_id; ?>')" 
                             placeholder="Search..." 
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; margin-bottom: 0;"
+                            style="width: 100%; padding: 8px 12px; border: 1px solid hsl(var(--border)); border-radius: 8px; font-size: 14px; margin-bottom: 0;"
                         />
                     </div>
                 </div>
@@ -239,14 +239,14 @@ function wpc_compare_button_shortcode( $atts ) {
                         class="compare-option-<?php echo $unique_id; ?> compare-option-item" 
                         data-id="<?php echo $p->ID; ?>"
                         data-name="<?php echo esc_attr( strtolower( $p->post_title ) ); ?>"
-                        style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: #333; text-decoration: none; border-bottom: 1px solid #f3f4f6; transition: background 0.2s; cursor: pointer;"
-                        onmouseover="this.style.background='#f8fafc'" 
-                        onmouseout="this.style.background='white'"
+                        style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; color: hsl(var(--foreground)); text-decoration: none; border-bottom: 1px solid hsl(var(--border)); transition: background 0.2s; cursor: pointer;"
+                        onmouseover="this.style.background='hsl(var(--muted))'" 
+                        onmouseout="this.style.background='hsl(var(--card))'"
                     >
                         <?php if ( $logo ) : ?>
-                            <img src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $p->post_title ); ?>" style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; padding: 3px; background: white;">
+                            <img src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $p->post_title ); ?>" style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; border: 1px solid hsl(var(--border)); padding: 3px; background: hsl(var(--card));">
                         <?php else : ?>
-                            <div style="width: 32px; height: 32px; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #6366f1; font-size: 12px;">
+                            <div style="width: 32px; height: 32px; background: hsl(var(--muted)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: hsl(var(--primary)); font-size: 12px;">
                                 <?php echo esc_html( substr( $p->post_title, 0, 1 ) ); ?>
                             </div>
                         <?php endif; ?>
@@ -329,11 +329,11 @@ function wpc_compare_button_shortcode( $atts ) {
                 var checkmark = opt.querySelector('.checkmark');
                 var chevron = opt.querySelector('.chevron');
                 if (selectedItems[id]) {
-                    opt.style.background = '#f8fafc';
+                    opt.style.background = 'hsl(var(--muted))';
                     if (checkmark) checkmark.style.display = 'block';
                     if (chevron) chevron.style.display = 'none';
                 } else {
-                    opt.style.background = 'white';
+                    opt.style.background = 'hsl(var(--card))';
                     if (checkmark) checkmark.style.display = 'none';
                     if (chevron) chevron.style.display = 'block';
                 }
