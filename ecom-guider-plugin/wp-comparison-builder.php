@@ -1688,8 +1688,8 @@ function wpc_list_shortcode( $atts ) {
             'couponText'  => get_post_meta($post_id, '_wpc_list_color_coupon_text', true) ?: get_option('wpc_color_coupon_text', '#92400e'),
             'couponHover' => get_post_meta($post_id, '_wpc_list_color_coupon_hover', true) ?: get_option('wpc_color_coupon_hover', '#fde68a'),
             'copied'      => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
-            'tick'        => get_post_meta($post_id, '_wpc_list_color_tick', true) ?: get_option('wpc_color_tick', '#10b981'),
-            'cross'       => get_post_meta($post_id, '_wpc_list_color_cross', true) ?: get_option('wpc_color_cross', '#94a3b8'),
+            'tick'        => (get_post_meta($post_id, '_wpc_list_use_tick', true) === '1' ? get_post_meta($post_id, '_wpc_list_color_tick', true) : '') ?: get_option('wpc_color_tick', '#10b981'),
+            'cross'       => (get_post_meta($post_id, '_wpc_list_use_cross', true) === '1' ? get_post_meta($post_id, '_wpc_list_color_cross', true) : '') ?: get_option('wpc_color_cross', '#94a3b8'),
             'category'    => $category_slug, // Product Variants Module
         ],
     );

@@ -297,7 +297,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                           const priceInfo = getPriceForCycle(item, selectedCycle);
                           return (
                             <div className="text-lg md:text-2xl font-bold mb-2 md:mb-4" style={{ color: primaryColor }}>
-                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm text-muted-foreground font-normal" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}
+                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm font-normal ml-1" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}
                             </div>
                           );
                         })()}
@@ -402,7 +402,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                         {!config?.hideRemoveButton && (
                           <button
                             onClick={() => onRemove(item.id)}
-                            className="mt-2 text-xs hover:text-destructive flex items-center justify-center gap-1 w-full"
+                            className="mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
                             style={{ color: mutedTextColor }}
                           >
                             <X className="w-3 h-3" /> {getText('remove', 'Remove')}
@@ -546,7 +546,8 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             {!config?.hideRemoveButton && (
               <button
                 onClick={() => onRemove(activeItem.id)}
-                className="text-muted-foreground hover:text-destructive p-1"
+                className="p-1 opacity-70 hover:opacity-100 transition-opacity"
+                style={{ color: mutedTextColor }}
               >
                 <X className="w-5 h-5" />
               </button>

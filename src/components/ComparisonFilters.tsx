@@ -147,7 +147,7 @@ const ComparisonFilters = ({
       {/* Category Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed" style={{ color: headingColor }}>
+          <Button variant="outline" size="sm" className="h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {catLabel}
             {selectedCategories.length > 0 && (
@@ -234,7 +234,7 @@ const ComparisonFilters = ({
       {/* Features Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed" style={{ color: headingColor }}>
+          <Button variant="outline" size="sm" className="h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {featLabel}
             {selectedFeatures.length > 0 && (
