@@ -1172,6 +1172,29 @@ function wpc_list_shortcode( $atts ) {
     $table_btn_pos = get_post_meta( $post_id, '_wpc_list_pt_btn_pos_table', true );
     $popup_btn_pos = get_post_meta( $post_id, '_wpc_list_pt_btn_pos_popup', true );
 
+    // Resolve Colors (List > Global > Default)
+    // Mirrors logic in wpc_get_frontend_config
+    $colors_config = [
+        'primary'     => (get_post_meta($post_id, '_wpc_list_use_primary', true) === '1' ? get_post_meta($post_id, '_wpc_list_primary_color', true) : '') ?: get_option('wpc_primary_color', '#6366f1'),
+        'btnText'     => get_option('wpc_button_text_color', '#ffffff'),
+        'hoverButton' => (get_post_meta($post_id, '_wpc_list_use_hover', true) === '1' ? get_post_meta($post_id, '_wpc_list_hover_color', true) : '') ?: get_option('wpc_button_hover_color', ''),
+        'stars'       => get_option('wpc_star_rating_color', '#fbbf24'),
+        'textHeading' => get_option('wpc_text_heading_color', '#0f172a'),
+        'textBody'    => get_option('wpc_text_body_color', '#334155'),
+        'textMuted'   => get_option('wpc_text_muted_color', '#64748b'),
+        
+        'prosBg'      => get_post_meta($post_id, '_wpc_list_color_pros_bg', true) ?: get_option('wpc_color_pros_bg', '#f0fdf4'),
+        'prosText'    => get_post_meta($post_id, '_wpc_list_color_pros_text', true) ?: get_option('wpc_color_pros_text', '#166534'),
+        'consBg'      => get_post_meta($post_id, '_wpc_list_color_cons_bg', true) ?: get_option('wpc_color_cons_bg', '#fef2f2'),
+        'consText'    => get_post_meta($post_id, '_wpc_list_color_cons_text', true) ?: get_option('wpc_color_cons_text', '#991b1b'),
+        'couponBg'    => get_post_meta($post_id, '_wpc_list_color_coupon_bg', true) ?: get_option('wpc_color_coupon_bg', '#fef3c7'),
+        'couponText'  => get_post_meta($post_id, '_wpc_list_color_coupon_text', true) ?: get_option('wpc_color_coupon_text', '#92400e'),
+        'couponHover' => get_post_meta($post_id, '_wpc_list_color_coupon_hover', true) ?: get_option('wpc_color_coupon_hover', '#fde68a'),
+        'copied'      => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
+        'tick'        => (get_post_meta($post_id, '_wpc_list_use_tick', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_tick', true) : '') ?: get_option('wpc_color_tick', '#10b981'), // Relaxed check
+        'cross'       => (get_post_meta($post_id, '_wpc_list_use_cross', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_cross', true) : '') ?: get_option('wpc_color_cross', '#94a3b8'), // Relaxed check
+    ];
+
     $widget_config = array(
         'postId' => $post_id,
         'plans' => $plans,
@@ -1194,6 +1217,7 @@ function wpc_list_shortcode( $atts ) {
         'textFeatures' => get_post_meta( $post_id, '_wpc_txt_feature_header', true ) ?: get_option( 'wpc_text_features', 'Features' ),
         'textCopied'   => get_post_meta( $post_id, '_wpc_txt_copied_label', true ) ?: 'Copied!',
         'textCouponLabel' => get_post_meta( $post_id, '_wpc_txt_coupon_label', true ) ?: 'Use Coupon:',
+        'colors' => $colors_config,
     );
     
     $ids = get_post_meta( $post_id, '_wpc_list_ids', true );
@@ -1696,8 +1720,8 @@ function wpc_list_shortcode( $atts ) {
             'couponText'  => get_post_meta($post_id, '_wpc_list_color_coupon_text', true) ?: get_option('wpc_color_coupon_text', '#92400e'),
             'couponHover' => get_post_meta($post_id, '_wpc_list_color_coupon_hover', true) ?: get_option('wpc_color_coupon_hover', '#fde68a'),
             'copied'      => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
-            'tick'        => (get_post_meta($post_id, '_wpc_list_use_tick', true) === '1' ? get_post_meta($post_id, '_wpc_list_color_tick', true) : '') ?: get_option('wpc_color_tick', '#10b981'),
-            'cross'       => (get_post_meta($post_id, '_wpc_list_use_cross', true) === '1' ? get_post_meta($post_id, '_wpc_list_color_cross', true) : '') ?: get_option('wpc_color_cross', '#94a3b8'),
+            'tick'        => (get_post_meta($post_id, '_wpc_list_use_tick', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_tick', true) : '') ?: get_option('wpc_color_tick', '#10b981'),
+            'cross'       => (get_post_meta($post_id, '_wpc_list_use_cross', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_cross', true) : '') ?: get_option('wpc_color_cross', '#94a3b8'),
             'category'    => $category_slug, // Product Variants Module
         ],
     );
