@@ -424,12 +424,32 @@ function wpc_register_scripts() {
                 --wpc-btn-text: " . esc_attr($text_button_color) . ";
                 --pt-btn-text: " . esc_attr($text_button_color) . ";
             }
-            .wpc-root .button, .wpc-root .btn, .wpc-root button,
-            .button, .btn, button {
+            .wpc-root .button:not(.wpc-filter-tag):not(.wpc-text-link), 
+            .wpc-root .btn:not(.wpc-filter-tag):not(.wpc-text-link), 
+            .wpc-root button:not(.wpc-filter-tag):not(.wpc-text-link),
+            .button:not(.wpc-filter-tag):not(.wpc-text-link), 
+            .btn:not(.wpc-filter-tag):not(.wpc-text-link), 
+            button:not(.wpc-filter-tag):not(.wpc-text-link) {
                 color: " . esc_attr($text_button_color) . " !important;
+            }
+            /* CTA buttons/links use button text color explicitly */
+            .wpc-cta-btn,
+            a.wpc-cta-btn,
+            .wpc-root .wpc-cta-btn,
+            .wpc-root a.wpc-cta-btn {
+                color: " . esc_attr($text_button_color) . " !important;
+            }
+            .wpc-cta-btn svg,
+            a.wpc-cta-btn svg,
+            .wpc-root .wpc-cta-btn svg,
+            .wpc-root a.wpc-cta-btn svg {
+                stroke: " . esc_attr($text_button_color) . " !important;
             }
         ";
     }
+
+    // Note: Tick/Cross colors are applied via inline styles in React
+    // Priority: Custom List config > Global settings (handled by React's config merge)
 
     // Build typography override CSS
     // When inherit is selected, use CSS 'inherit' keyword which looks at parent (theme)

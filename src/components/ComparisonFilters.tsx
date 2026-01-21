@@ -45,6 +45,7 @@ const ComparisonFilters = ({
   const headingColor = globalColors.textHeading;
   const bodyColor = globalColors.textBody;
   const mutedColor = globalColors.textMuted;
+  const accentColor = globalColors.accent || '#0d9488';
 
   if (layout === 'sidebar') {
     return (
@@ -147,7 +148,7 @@ const ComparisonFilters = ({
       {/* Category Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
+          <Button variant="outline" size="sm" className="wpc-text-link h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {catLabel}
             {selectedCategories.length > 0 && (
@@ -189,19 +190,19 @@ const ComparisonFilters = ({
                     key={category}
                     onClick={() => onCategoryChange(category)}
                     className={cn(
-                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                      isSelected ? "bg-accent/10" : ""
+                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-muted data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     )}
+                    style={isSelected ? { backgroundColor: accentColor + '1A' } : {}}
                   >
                     <div className={cn(
-                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                      isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
+                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                      isSelected ? "text-white" : "opacity-50 [&_svg]:invisible"
                     )}
-                      style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                      style={isSelected ? { backgroundColor: accentColor, borderColor: accentColor } : { borderColor: globalColors.primary }}
                     >
                       <Check className={cn("h-3 w-3")} />
                     </div>
-                    <span style={{ color: isSelected ? bodyColor : mutedColor }}>{category}</span>
+                    <span style={{ color: isSelected ? accentColor : mutedColor }}>{category}</span>
                   </div>
                 );
               })}
@@ -234,7 +235,7 @@ const ComparisonFilters = ({
       {/* Features Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
+          <Button variant="outline" size="sm" className="wpc-text-link h-9 border-dashed bg-transparent hover:bg-muted/50" style={{ color: bodyColor || mutedColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {featLabel}
             {selectedFeatures.length > 0 && (
@@ -276,19 +277,19 @@ const ComparisonFilters = ({
                     key={feature}
                     onClick={() => onFeatureChange(feature)}
                     className={cn(
-                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                      isSelected ? "bg-accent/10" : ""
+                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-muted data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     )}
+                    style={isSelected ? { backgroundColor: accentColor + '1A' } : {}}
                   >
                     <div className={cn(
-                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                      isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
+                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                      isSelected ? "text-white" : "opacity-50 [&_svg]:invisible"
                     )}
-                      style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                      style={isSelected ? { backgroundColor: accentColor, borderColor: accentColor } : { borderColor: globalColors.primary }}
                     >
                       <Check className={cn("h-3 w-3")} />
                     </div>
-                    <span style={{ color: isSelected ? bodyColor : mutedColor }}>{feature}</span>
+                    <span style={{ color: isSelected ? accentColor : mutedColor }}>{feature}</span>
                   </div>
                 );
               })}

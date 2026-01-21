@@ -45,7 +45,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     };
 
     // Helper to get color with override priority: config.colorsOverride > wpcSettings.colors
-    const getColor = (colorKey: 'primary' | 'accent' | 'hoverButton' | 'secondary') => {
+    const getColor = (colorKey: 'primary' | 'accent' | 'hoverButton' | 'secondary' | 'cross' | 'btnText' | 'textMuted') => {
         // First check list-specific override from config (passed via PHP)
         if (config.colorsOverride && config.colorsOverride[colorKey]) {
             return config.colorsOverride[colorKey];
@@ -61,6 +61,9 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             accent: '#0d9488',
             hoverButton: '',
             secondary: '#1e293b',
+            cross: '#94a3b8',
+            btnText: '#ffffff',
+            textMuted: '#64748b',
         };
         return defaults[colorKey] || '';
     };
@@ -862,23 +865,32 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                         <button
                                             key={cat}
                                             onClick={() => handleCategoryChange(cat)}
-                                            className="flex items-center gap-1.5 px-3 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium hover:bg-accent/20 transition-colors"
+                                            className="wpc-filter-tag flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                                            style={{
+                                                color: getColor('accent'),
+                                                backgroundColor: getColor('accent') + '1A'
+                                            }}
                                         >
-                                            {cat} <X className="w-3 h-3" />
+                                            {cat} <X className="w-3 h-3" style={{ color: getColor('cross') }} />
                                         </button>
                                     ))}
                                     {selectedFeatures.map(feat => (
                                         <button
                                             key={feat}
                                             onClick={() => handleFeatureChange(feat)}
-                                            className="flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium hover:bg-primary/20 transition-colors"
+                                            className="wpc-filter-tag flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                                            style={{
+                                                color: getColor('accent'),
+                                                backgroundColor: getColor('accent') + '1A'
+                                            }}
                                         >
-                                            {feat} <X className="w-3 h-3" />
+                                            {feat} <X className="w-3 h-3" style={{ color: getColor('cross') }} />
                                         </button>
                                     ))}
                                     <button
                                         onClick={() => { setSelectedCategories([]); setSelectedFeatures([]); }}
-                                        className="text-sm text-muted-foreground hover:text-accent underline ml-2"
+                                        className="wpc-text-link text-sm underline ml-2 transition-colors"
+                                        style={{ color: getColor('textMuted') }}
                                     >
                                         {getText('clearAll', 'Clear all')}
                                     </button>

@@ -205,9 +205,17 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         raw.some((f: string) => f.toLowerCase() === term.name.toLowerCase());
 
       if (hasTag) {
-        return <Check className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: tickColor }} />;
+        return <Check
+          className="wpc-tick w-4 h-4 md:w-5 md:h-5 mx-auto"
+          style={{ color: tickColor }}
+          ref={(el) => { if (el) { el.style.setProperty('color', tickColor, 'important'); el.style.setProperty('stroke', tickColor, 'important'); } }}
+        />;
       }
-      return <X className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: crossColor }} />;
+      return <X
+        className="wpc-cross w-4 h-4 md:w-5 md:h-5 mx-auto"
+        style={{ color: crossColor }}
+        ref={(el) => { if (el) { el.style.setProperty('color', crossColor, 'important'); el.style.setProperty('stroke', crossColor, 'important'); } }}
+      />;
     }
 
     switch (key) {
@@ -224,9 +232,17 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         );
       case "ssl":
         return item.features.ssl ? (
-          <Check className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: tickColor }} />
+          <Check
+            className="wpc-tick w-4 h-4 md:w-5 md:h-5 mx-auto"
+            style={{ color: tickColor }}
+            ref={(el) => { if (el) { el.style.setProperty('color', tickColor, 'important'); el.style.setProperty('stroke', tickColor, 'important'); } }}
+          />
         ) : (
-          <X className="w-4 h-4 md:w-5 md:h-5 mx-auto" style={{ color: crossColor }} />
+          <X
+            className="wpc-cross w-4 h-4 md:w-5 md:h-5 mx-auto"
+            style={{ color: crossColor }}
+            ref={(el) => { if (el) { el.style.setProperty('color', crossColor, 'important'); el.style.setProperty('stroke', crossColor, 'important'); } }}
+          />
         );
       case "products":
         return item.features.products || "—";
@@ -253,11 +269,18 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
               key={cycle.slug}
               onClick={() => setSelectedCycle(cycle.slug)}
               className={cn(
-                "px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
+                "wpc-text-link px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
                 selectedCycle === cycle.slug
-                  ? "bg-primary text-white border-primary shadow-sm"
-                  : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                  ? "shadow-sm"
+                  : "bg-transparent border-border hover:bg-muted"
               )}
+              style={selectedCycle === cycle.slug ? {
+                backgroundColor: primaryColor,
+                color: btnTextColor,
+                borderColor: primaryColor
+              } : {
+                color: mutedTextColor
+              }}
             >
               {cycle.label}
             </button>
@@ -367,14 +390,11 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                         {/* Footer / Button Visibility Check */}
                         {(item.design_overrides?.show_footer_table !== false) && (
                           (() => {
-                            // Button Text Color Logic
-                            const btnTextColor = (window as any).wpcSettings?.colors?.btnText;
-
                             return (
                               <a
                                 href={item.details_link || '#'}
                                 target={target}
-                                className="inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
+                                className="wpc-cta-btn inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
                                 rel="noreferrer"
                                 style={{
                                   backgroundColor: primaryColor,
@@ -389,7 +409,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                                   e.currentTarget.style.filter = '';
                                 }}
                               >
-                                {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" />
+                                {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" style={{ stroke: btnTextColor }} />
                               </a>
                             );
                           })()
@@ -397,7 +417,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                         {!config?.hideRemoveButton && (
                           <button
                             onClick={() => onRemove(item.id)}
-                            className="mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
+                            className="wpc-text-link mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
                             style={{ color: mutedTextColor }}
                           >
                             <X className="w-3 h-3" /> {getText('remove', 'Remove')}
@@ -594,22 +614,22 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <a
               href={activeItem.details_link || '#'}
               target={target}
-              className="flex w-full items-center justify-center gap-2 text-white transition-all py-3 rounded-xl font-bold text-sm shadow-lg"
+              className="wpc-cta-btn flex w-full items-center justify-center gap-2 transition-all py-3 rounded-xl font-bold text-sm shadow-lg"
               rel="noreferrer"
               style={{
-                backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
+                backgroundColor: primaryColor,
+                color: btnTextColor,
               }}
               onMouseEnter={(e) => {
-                const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
                 if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
                 else e.currentTarget.style.filter = 'brightness(90%)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
+                e.currentTarget.style.backgroundColor = primaryColor;
                 e.currentTarget.style.filter = '';
               }}
             >
-              {activeItem.button_text || getText('visitSite', "Visit Site")} <ExternalLink className="w-4 h-4" />
+              {activeItem.button_text || getText('visitSite', "Visit Site")} <ExternalLink className="w-4 h-4" style={{ stroke: btnTextColor }} />
             </a>
           )}
         </div>

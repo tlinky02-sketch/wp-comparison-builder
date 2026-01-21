@@ -137,9 +137,27 @@ const PricingTable = ({
         btnText: settings?.colors?.btnText || settings?.wpc_button_text_color || settings?.wpc_pt_btn_text || '#ffffff',
     };
 
+    // Color Priority Logic:
+    // - List context (config exists): List colors (if set) > Global (item overrides IGNORED)
+    // - Item context (no config): item.design_overrides (if enabled) > Global
+    const isListContext = !!config;
+    const listHasColors = !!(config?.colors?.primary || config?.colorsOverride?.primary);
     const overrides = item.design_overrides || { enabled: false } as NonNullable<ComparisonItem['design_overrides']>;
-    const useOverrides = overrides.enabled === true || overrides.enabled === '1';
-    const primaryColor = useOverrides && overrides.primary ? overrides.primary : (settings?.primary_color || '#6366f1');
+
+    // Only allow item overrides when NOT in a list context
+    const useOverrides = !isListContext && (overrides.enabled === true || overrides.enabled === '1');
+
+    // Primary color: List colors > Item overrides (if applicable) > Global
+    const getPrimaryColor = () => {
+        if (isListContext && listHasColors) {
+            return config?.colors?.primary || config?.colorsOverride?.primary;
+        }
+        if (useOverrides && overrides.primary) {
+            return overrides.primary;
+        }
+        return settings?.colors?.primary || '#6366f1';
+    };
+    const primaryColor = getPrimaryColor();
 
     const headerBg = defaultStyles.headerBg;
     const headerText = defaultStyles.headerText;

@@ -187,14 +187,14 @@ function wpc_hero_shortcode( $atts ) {
                     <button 
                         type="button"
                         onclick="window.open('<?php echo esc_js( $details_link ); ?>', '<?php echo $open_new_tab; ?>');" 
-                        class="wpc-text-body"
+                        class="wpc-hero-btn"
                         style="
                             display: inline-flex;
                             align-items: center;
                             gap: 0.5rem;
                             padding: 0.875rem 2rem;
                             background: <?php echo esc_attr( $primary_color ); ?>;
-                            color: <?php echo esc_attr( get_option('wpc_button_text_color', '#ffffff') ); ?> !important;
+                            color: <?php echo esc_attr( get_option('wpc_button_text_color', '') ?: '#ffffff' ); ?> !important;
                             <?php echo $style_btn; ?>
                             font-weight: 600;
                             border-radius: 0.5rem;
@@ -207,7 +207,7 @@ function wpc_hero_shortcode( $atts ) {
                         onmouseout="this.style.background='<?php echo esc_attr( $primary_color ); ?>'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px <?php echo esc_attr( $primary_color ); ?>40';"
                     >
                         <?php echo !empty($hero_button_text) ? esc_html($hero_button_text) : esc_html($visit_text) . ' ' . $name; ?>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( get_option('wpc_button_text_color', '#ffffff') ); ?>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( get_option('wpc_button_text_color', '') ?: '#ffffff' ); ?>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                     </button>
                 </div>
                 <?php endif; ?>
