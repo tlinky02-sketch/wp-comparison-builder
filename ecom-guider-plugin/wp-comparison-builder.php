@@ -160,8 +160,8 @@ function wpc_register_scripts() {
         'filters' => get_option('wpc_text_filters', ''),
         'searchPlaceholder' => get_option('wpc_text_search_placeholder', ''),
         'sortDefault' => get_option('wpc_text_sort_default', ''),
-        'category' => get_option('wpc_text_category', ''),
-        'features' => get_option('wpc_text_features', 'Tags'),
+        'categoryLabel' => get_option('wpc_text_category', ''),
+        'featuresLabel' => get_option('wpc_text_features', 'Tags'),
         'itemsCount' => get_option('wpc_text_items_count', ''),
         'selected' => get_option('wpc_text_selected', ''),
         'clearAll' => get_option('wpc_text_clear_all', ''),
@@ -1595,8 +1595,8 @@ function wpc_list_shortcode( $atts ) {
         'ptPrice'         => ['meta' => '_wpc_list_txt_pt_price', 'global' => 'wpc_text_pt_price', 'default' => 'Price'],
         'ptFeatures'      => ['meta' => '_wpc_list_txt_pt_features', 'global' => 'wpc_text_pt_features', 'default' => 'Features'],
         // Dynamic Filter Labels
-        'categoryLabel'   => ['meta' => '_wpc_list_txt_cat_label', 'global' => 'wpc_text_cat_label', 'default' => 'Category'],
-        'featuresLabel'   => ['meta' => '_wpc_list_txt_feat_label', 'global' => 'wpc_text_feat_label', 'default' => 'Features'],
+        'categoryLabel'   => ['meta' => '_wpc_list_cat_label', 'global' => 'wpc_text_category', 'default' => 'Category'],
+        'featuresLabel'   => ['meta' => '_wpc_list_feat_label', 'global' => 'wpc_text_features', 'default' => 'Features'],
     ];
 
     $labels = [];
@@ -1680,6 +1680,14 @@ function wpc_list_shortcode( $atts ) {
         
         // Configurable Colors (Per-List > Global > Default)
         'colors' => [
+            'primary'     => (get_post_meta($post_id, '_wpc_list_use_primary', true) === '1' ? get_post_meta($post_id, '_wpc_list_primary_color', true) : '') ?: get_option('wpc_primary_color', '#6366f1'),
+            'btnText'     => get_option('wpc_button_text_color', '#ffffff'),
+            'hoverButton' => (get_post_meta($post_id, '_wpc_list_use_hover', true) === '1' ? get_post_meta($post_id, '_wpc_list_hover_color', true) : '') ?: get_option('wpc_button_hover_color', ''),
+            'stars'       => get_option('wpc_star_rating_color', '#fbbf24'),
+            'textHeading' => get_option('wpc_text_heading_color', '#0f172a'),
+            'textBody'    => get_option('wpc_text_body_color', '#334155'),
+            'textMuted'   => get_option('wpc_text_muted_color', '#64748b'),
+            
             'prosBg'      => get_post_meta($post_id, '_wpc_list_color_pros_bg', true) ?: get_option('wpc_color_pros_bg', '#f0fdf4'),
             'prosText'    => get_post_meta($post_id, '_wpc_list_color_pros_text', true) ?: get_option('wpc_color_pros_text', '#166534'),
             'consBg'      => get_post_meta($post_id, '_wpc_list_color_cons_bg', true) ?: get_option('wpc_color_cons_bg', '#fef2f2'),

@@ -306,17 +306,12 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                         {item.coupon_code && (
                           <div className="w-full mb-2">
                             {(() => {
-                              // COUPON COLOR HIERARCHY: List (Config) > Item (Meta) > Global
-                              const globalColors = (window as any).wpcSettings?.colors || {};
-                              const listColors = config?.colors || {};
-                              // Use optional chaining
-
-                              const bg = listColors.couponBg || item.design_overrides?.coupon_bg || globalColors.couponBg || '#fef3c7';
-                              const text = listColors.couponText || item.design_overrides?.coupon_text || globalColors.couponText || '#92400e';
-                              const hover = listColors.couponHover || item.design_overrides?.coupon_hover || globalColors.couponHover || '#fde68a';
+                              const bg = itemCouponBg;
+                              const text = itemCouponText;
+                              const hover = item.design_overrides?.coupon_hover || colors.couponHover || '#fde68a';
 
                               // Copied state colors
-                              const copiedColor = globalColors.copied || '#10b981';
+                              const copiedColor = colors.copied || '#10b981';
                               const copiedTextLabel = item.copiedLabel || labels?.copied || "Copied!";
 
                               return (
