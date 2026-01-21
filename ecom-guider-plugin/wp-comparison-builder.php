@@ -207,6 +207,10 @@ function wpc_register_scripts() {
             'tick' => get_option( 'wpc_color_tick', '#10b981' ), // Checkmark color
             'cross' => get_option( 'wpc_color_cross', '#94a3b8' ), // X/Cross color
             'btnText' => get_option( 'wpc_button_text_color', '#ffffff' ), // <--- New Button Text Color
+            'textBody' => get_option( 'wpc_text_body_color', '#334155' ),
+            'textHeading' => get_option( 'wpc_text_heading_color', '#0f172a' ),
+            'textMuted' => get_option( 'wpc_text_muted_color', '#64748b' ),
+            'textLink' => get_option( 'wpc_text_link_color', '#6366f1' ),
         ),
         'typography' => array( // <--- New Typography Object
             'h1' => get_option('wpc_font_size_h1', ''),
@@ -1590,6 +1594,9 @@ function wpc_list_shortcode( $atts ) {
         'ptPlan'          => ['meta' => '_wpc_list_txt_pt_plan', 'global' => 'wpc_text_pt_plan', 'default' => 'Plan'],
         'ptPrice'         => ['meta' => '_wpc_list_txt_pt_price', 'global' => 'wpc_text_pt_price', 'default' => 'Price'],
         'ptFeatures'      => ['meta' => '_wpc_list_txt_pt_features', 'global' => 'wpc_text_pt_features', 'default' => 'Features'],
+        // Dynamic Filter Labels
+        'categoryLabel'   => ['meta' => '_wpc_list_txt_cat_label', 'global' => 'wpc_text_cat_label', 'default' => 'Category'],
+        'featuresLabel'   => ['meta' => '_wpc_list_txt_feat_label', 'global' => 'wpc_text_feat_label', 'default' => 'Features'],
     ];
 
     $labels = [];

@@ -40,19 +40,26 @@ const ComparisonFilters = ({
   const catLabel = labels?.categories || (layout === 'top' ? 'Category' : 'Categories');
   const featLabel = labels?.features || (layout === 'top' ? 'Platform Features' : 'Features');
 
+  // Dynamic Text Colors from Global Settings
+  const globalColors = (window as any).wpcSettings?.colors || {};
+  const headingColor = globalColors.textHeading;
+  const bodyColor = globalColors.textBody;
+  const mutedColor = globalColors.textMuted;
+
   if (layout === 'sidebar') {
     return (
       <div className="space-y-2 py-2">
         <div>
           <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
-            <Filter className="w-5 h-5 text-muted-foreground" />
-            <span className="font-display font-bold text-lg text-foreground">{labels?.filters || "Filters"}</span>
+            <Filter className="w-5 h-5 text-muted-foreground" style={{ color: mutedColor }} />
+            <span className="font-display font-bold text-lg text-foreground" style={{ color: headingColor }}>{labels?.filters || "Filters"}</span>
           </div>
           {hasFilters && (
             <Button
               variant="link"
               onClick={onClearFilters}
               className="px-0 text-xs text-muted-foreground hover:text-primary h-auto mt-1 mb-1 block"
+              style={{ color: mutedColor }}
             >
               {labels?.resetFilters || "Reset Filters"}
             </Button>
@@ -61,7 +68,7 @@ const ComparisonFilters = ({
 
         {/* Category Filter */}
         <div className="space-y-3 pt-2">
-          <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">{labels?.categories || 'Categories'}</h4>
+          <h4 className="text-sm font-bold text-foreground uppercase tracking-wider" style={{ color: headingColor }}>{labels?.categories || 'Categories'}</h4>
           <div className="space-y-2 max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
             {categories.map((category) => {
               const isSelected = selectedCategories.includes(category);
@@ -74,13 +81,17 @@ const ComparisonFilters = ({
                   <div className={cn(
                     "flex h-4 w-4 shrink-0 items-center justify-center rounded border border-primary transition-colors",
                     isSelected ? "bg-primary text-primary-foreground" : "bg-background border-border group-hover:border-primary/50"
-                  )}>
+                  )}
+                    style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                  >
                     <Check className={cn("h-3 w-3", isSelected ? "opacity-100" : "opacity-0")} />
                   </div>
                   <span className={cn(
                     "text-sm transition-colors",
                     isSelected ? "text-foreground font-medium" : "text-muted-foreground group-hover:text-foreground"
-                  )}>
+                  )}
+                    style={{ color: isSelected ? bodyColor : mutedColor }}
+                  >
                     {category}
                   </span>
                 </div>
@@ -91,7 +102,7 @@ const ComparisonFilters = ({
 
         {/* Features - Sidebar */}
         <div className="space-y-3 pt-2">
-          <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">{labels?.features || 'Features'}</h4>
+          <h4 className="text-sm font-bold text-foreground uppercase tracking-wider" style={{ color: headingColor }}>{labels?.features || 'Features'}</h4>
           <div className="space-y-2 max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
             {features.map((feature) => {
               const isSelected = selectedFeatures.includes(feature);
@@ -104,13 +115,17 @@ const ComparisonFilters = ({
                   <div className={cn(
                     "flex h-4 w-4 shrink-0 items-center justify-center rounded border border-primary transition-colors",
                     isSelected ? "bg-primary text-primary-foreground" : "bg-background border-border group-hover:border-primary/50"
-                  )}>
+                  )}
+                    style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                  >
                     <Check className={cn("h-3 w-3", isSelected ? "opacity-100" : "opacity-0")} />
                   </div>
                   <span className={cn(
                     "text-sm transition-colors",
                     isSelected ? "text-foreground font-medium" : "text-muted-foreground group-hover:text-foreground"
-                  )}>
+                  )}
+                    style={{ color: isSelected ? bodyColor : mutedColor }}
+                  >
                     {feature}
                   </span>
                 </div>
@@ -125,14 +140,14 @@ const ComparisonFilters = ({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="flex items-center gap-2 mr-2">
-        <Filter className="w-5 h-5 text-muted-foreground" />
-        <span className="font-display font-bold text-lg text-foreground">{labels?.filters || "Filters"}</span>
+        <Filter className="w-5 h-5 text-muted-foreground" style={{ color: mutedColor }} />
+        <span className="font-display font-bold text-lg text-foreground" style={{ color: headingColor }}>{labels?.filters || "Filters"}</span>
       </div>
 
       {/* Category Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed">
+          <Button variant="outline" size="sm" className="h-9 border-dashed" style={{ color: headingColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {catLabel}
             {selectedCategories.length > 0 && (
@@ -181,10 +196,12 @@ const ComparisonFilters = ({
                     <div className={cn(
                       "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                       isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
-                    )}>
+                    )}
+                      style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                    >
                       <Check className={cn("h-3 w-3")} />
                     </div>
-                    <span>{category}</span>
+                    <span style={{ color: isSelected ? bodyColor : mutedColor }}>{category}</span>
                   </div>
                 );
               })}
@@ -204,6 +221,7 @@ const ComparisonFilters = ({
                       if (selectedCategories.includes(c)) onCategoryChange(c); // Toggle off
                     });
                   }}
+                  style={{ color: mutedColor }}
                 >
                   {labels?.clear || "Clear"} {catLabel}
                 </Button>
@@ -216,7 +234,7 @@ const ComparisonFilters = ({
       {/* Features Filter */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="h-9 border-dashed">
+          <Button variant="outline" size="sm" className="h-9 border-dashed" style={{ color: headingColor }}>
             <PlusCircle className="mr-2 h-4 w-4" />
             {featLabel}
             {selectedFeatures.length > 0 && (
@@ -265,10 +283,12 @@ const ComparisonFilters = ({
                     <div className={cn(
                       "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                       isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
-                    )}>
+                    )}
+                      style={isSelected ? { backgroundColor: globalColors.primary, borderColor: globalColors.primary } : {}}
+                    >
                       <Check className={cn("h-3 w-3")} />
                     </div>
-                    <span>{feature}</span>
+                    <span style={{ color: isSelected ? bodyColor : mutedColor }}>{feature}</span>
                   </div>
                 );
               })}

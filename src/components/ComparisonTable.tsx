@@ -18,6 +18,13 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   // Merge global colors with config-specific overrides (config wins for specific keys)
   const globalColors = (window as any).wpcSettings?.colors || {};
   const colors = { ...globalColors, ...(config?.colors || {}) };
+
+  // Centralized Color Definitions (User Setting > Default)
+  const primaryColor = colors.primary || '#6366f1';
+  const btnTextColor = colors.btnText || '#ffffff';
+  const hoverColor = colors.hoverButton; // Allow undefined to fallback to brightness filter
+  const mutedTextColor = colors.textMuted || '#64748b';
+
   const couponBg = colors.couponBg || '#fef3c7';
   const couponText = colors.couponText || '#92400e';
   const couponHover = colors.couponHover || '#fde68a';
@@ -206,7 +213,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     switch (key) {
       case "price":
         const priceInfo = getPriceForCycle(item, selectedCycle);
-        return <span className="font-bold text-primary">{priceInfo.amount}{priceInfo.period && <span className="text-xs text-muted-foreground font-normal ml-0.5">{priceInfo.period}</span>}</span>;
+        return <span className="font-bold" style={{ color: primaryColor }}>{priceInfo.amount}{priceInfo.period && <span className="text-xs font-normal ml-0.5" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}</span>;
       case "rating":
         const starColor = colors.stars || '#fbbf24';
         return (
@@ -289,55 +296,114 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                         {(() => {
                           const priceInfo = getPriceForCycle(item, selectedCycle);
                           return (
-                            <div className="text-lg md:text-2xl font-bold text-primary mb-2 md:mb-4">
-                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm text-muted-foreground font-normal">{priceInfo.period}</span>}
+                            <div className="text-lg md:text-2xl font-bold mb-2 md:mb-4" style={{ color: primaryColor }}>
+                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm text-muted-foreground font-normal" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}
                             </div>
                           );
                         })()}
 
                         {/* Coupon in Header if Main Item has one */}
                         {item.coupon_code && (
-                          <button
-                            className="px-2 py-1 rounded mb-2 w-full flex items-center justify-center gap-1 transition-colors text-[10px]"
-                            style={{
-                              backgroundColor: itemCouponBg,
-                              color: itemCouponText,
-                              border: `1px solid ${itemCouponText}40`
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = couponHover; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = itemCouponBg; }}
-                            onClick={(e) => { e.stopPropagation(); copyCoupon(item.coupon_code || '', e.currentTarget); }}
-                          >
-                            <Tag className="w-3 h-3" /> {item.couponLabel || getText('getCoupon', 'Code')}: {item.coupon_code}
-                          </button>
+                          <div className="w-full mb-2">
+                            {(() => {
+                              // COUPON COLOR HIERARCHY: List (Config) > Item (Meta) > Global
+                              const globalColors = (window as any).wpcSettings?.colors || {};
+                              const listColors = config?.colors || {};
+                              // Use optional chaining
+
+                              const bg = listColors.couponBg || item.design_overrides?.coupon_bg || globalColors.couponBg || '#fef3c7';
+                              const text = listColors.couponText || item.design_overrides?.coupon_text || globalColors.couponText || '#92400e';
+                              const hover = listColors.couponHover || item.design_overrides?.coupon_hover || globalColors.couponHover || '#fde68a';
+
+                              // Copied state colors
+                              const copiedColor = globalColors.copied || '#10b981';
+                              const copiedTextLabel = item.copiedLabel || labels?.copied || "Copied!";
+
+                              return (
+                                <button
+                                  className="px-2 py-1 rounded w-full flex items-center justify-center gap-1 transition-colors text-[10px]"
+                                  style={{
+                                    backgroundColor: bg,
+                                    color: text,
+                                    border: `1px solid ${text}40`
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = bg; }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const btn = e.currentTarget;
+                                    const originalHTML = btn.innerHTML;
+
+                                    // Copy Action
+                                    const performCopy = () => {
+                                      btn.innerHTML = `<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ${copiedTextLabel}`;
+                                      btn.style.backgroundColor = copiedColor;
+                                      btn.style.borderColor = copiedColor;
+                                      btn.style.color = '#ffffff';
+
+                                      setTimeout(() => {
+                                        btn.innerHTML = originalHTML;
+                                        btn.style.backgroundColor = bg;
+                                        btn.style.borderColor = `${text}40`;
+                                        btn.style.color = text;
+                                      }, 2000);
+                                    };
+
+                                    if (navigator.clipboard) {
+                                      navigator.clipboard.writeText(item.coupon_code || '').then(performCopy);
+                                    } else {
+                                      // Fallback
+                                      const ta = document.createElement('textarea');
+                                      ta.value = item.coupon_code || '';
+                                      document.body.appendChild(ta);
+                                      ta.select();
+                                      document.execCommand('copy');
+                                      document.body.removeChild(ta);
+                                      performCopy();
+                                    }
+                                  }}
+                                >
+                                  <Tag className="w-3 h-3" /> {item.couponLabel || getText('getCoupon', 'Code')}: {item.coupon_code}
+                                </button>
+                              );
+                            })()}
+                          </div>
                         )}
                         {/* Footer / Button Visibility Check */}
                         {(item.design_overrides?.show_footer_table !== false) && (
-                          <a
-                            href={item.details_link || '#'}
-                            target={target}
-                            className="inline-flex items-center justify-center w-full text-white px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
-                            rel="noreferrer"
-                            style={{
-                              backgroundColor: (window as any).wpcSettings?.colors?.primary || '#6366f1',
-                            }}
-                            onMouseEnter={(e) => {
-                              const hoverColor = (window as any).wpcSettings?.colors?.hoverButton;
-                              if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                              else e.currentTarget.style.filter = 'brightness(90%)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = (window as any).wpcSettings?.colors?.primary || '#6366f1';
-                              e.currentTarget.style.filter = '';
-                            }}
-                          >
-                            {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" />
-                          </a>
+                          (() => {
+                            // Button Text Color Logic
+                            const btnTextColor = (window as any).wpcSettings?.colors?.btnText;
+
+                            return (
+                              <a
+                                href={item.details_link || '#'}
+                                target={target}
+                                className="inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
+                                rel="noreferrer"
+                                style={{
+                                  backgroundColor: primaryColor,
+                                  color: btnTextColor
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                                  else e.currentTarget.style.filter = 'brightness(90%)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = primaryColor;
+                                  e.currentTarget.style.filter = '';
+                                }}
+                              >
+                                {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" />
+                              </a>
+                            );
+                          })()
                         )}
                         {!config?.hideRemoveButton && (
                           <button
                             onClick={() => onRemove(item.id)}
-                            className="mt-2 text-xs text-muted-foreground hover:text-destructive flex items-center justify-center gap-1 w-full"
+                            className="mt-2 text-xs hover:text-destructive flex items-center justify-center gap-1 w-full"
+                            style={{ color: mutedTextColor }}
                           >
                             <X className="w-3 h-3" /> {getText('remove', 'Remove')}
                           </button>

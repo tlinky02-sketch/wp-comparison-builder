@@ -1092,11 +1092,17 @@ function wpc_render_list_meta_box( $post ) {
                         <div style="display:flex; gap: 20px;">
                             <div>
                                 <label style="display:block; font-size: 12px; margin-bottom: 3px;">Tick Color</label>
-                                <input type="color" name="wpc_list_color_tick" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_tick', true) ); ?>" style="height:30px; cursor:pointer;">
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    <input type="color" name="wpc_list_color_tick" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_tick', true) ?: '#10b981' ); ?>" style="height:30px; cursor:pointer;" />
+                                    <label><input type="checkbox" name="wpc_list_use_tick" value="1" <?php checked( get_post_meta($post->ID, '_wpc_list_use_tick', true), '1' ); ?> /> Set</label>
+                                </div>
                             </div>
                             <div>
                                 <label style="display:block; font-size: 12px; margin-bottom: 3px;">Cross Color</label>
-                                <input type="color" name="wpc_list_color_cross" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_cross', true) ); ?>" style="height:30px; cursor:pointer;">
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    <input type="color" name="wpc_list_color_cross" value="<?php echo esc_attr( get_post_meta($post->ID, '_wpc_list_color_cross', true) ?: '#ef4444' ); ?>" style="height:30px; cursor:pointer;" />
+                                     <label><input type="checkbox" name="wpc_list_use_cross" value="1" <?php checked( get_post_meta($post->ID, '_wpc_list_use_cross', true), '1' ); ?> /> Set</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1448,11 +1454,24 @@ function wpc_save_list_meta( $post_id ) {
     }
 
     // Save Icon Color Overrides (Sanitize as hex)
-    if ( isset( $_POST['wpc_list_color_tick'] ) ) {
-        update_post_meta( $post_id, '_wpc_list_color_tick', sanitize_hex_color( $_POST['wpc_list_color_tick'] ) );
+    if ( isset( $_POST['wpc_list_use_tick'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_use_tick', '1' );
+        if ( isset( $_POST['wpc_list_color_tick'] ) ) {
+            update_post_meta( $post_id, '_wpc_list_color_tick', sanitize_hex_color( $_POST['wpc_list_color_tick'] ) );
+        }
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_use_tick' );
+        delete_post_meta( $post_id, '_wpc_list_color_tick' );
     }
-    if ( isset( $_POST['wpc_list_color_cross'] ) ) {
-        update_post_meta( $post_id, '_wpc_list_color_cross', sanitize_hex_color( $_POST['wpc_list_color_cross'] ) );
+
+    if ( isset( $_POST['wpc_list_use_cross'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_use_cross', '1' );
+        if ( isset( $_POST['wpc_list_color_cross'] ) ) {
+            update_post_meta( $post_id, '_wpc_list_color_cross', sanitize_hex_color( $_POST['wpc_list_color_cross'] ) );
+        }
+    } else {
+        delete_post_meta( $post_id, '_wpc_list_use_cross' );
+        delete_post_meta( $post_id, '_wpc_list_color_cross' );
     }
 
     // Save Visibility Flags

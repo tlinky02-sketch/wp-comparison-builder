@@ -103,7 +103,7 @@ function wpc_hero_shortcode( $atts ) {
 
     ob_start();
     ?>
-    <div class="wpc-hero wpc-root" data-wpc-category="<?php echo esc_attr( $category_slug ); ?>" style="margin-bottom: 3rem;">
+    <div class="wpc-hero" data-wpc-category="<?php echo esc_attr( $category_slug ); ?>" style="margin-bottom: 3rem;">
         <div style="display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: start;">
             
             <!-- Left Column: Content -->

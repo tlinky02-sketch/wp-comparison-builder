@@ -424,6 +424,8 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                         $out['border'] = get_post_meta( $id, '_wpc_border_color', true );
                         $out['coupon_bg'] = get_post_meta( $id, '_wpc_color_coupon_bg', true );
                         $out['coupon_text'] = get_post_meta( $id, '_wpc_color_coupon_text', true );
+                        $out['coupon_hover'] = get_post_meta( $id, '_wpc_color_coupon_hover', true );
+                        $out['copied_text'] = get_post_meta( $id, '_wpc_color_copied', true );
                     }
                     
                     return $out;

@@ -86,6 +86,8 @@ export interface ComparisonItem {
         border?: string;
         coupon_bg?: string;
         coupon_text?: string;
+        coupon_hover?: string; // Added field
+        copied_text?: string; // Added field
         show_footer?: boolean | string;
         show_footer_popup?: boolean | string;
         show_footer_table?: boolean | string;
@@ -342,81 +344,80 @@ const PlatformCard = ({
             {/* Coupon Button (If enabled) */}
             {item.show_coupon && item.coupon_code && (
                 <div className="mb-4 w-full">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            const couponCode = item.coupon_code;
+                    {(() => {
+                        // COUPON COLOR HIERARCHY: List (Config) > Item (Meta) > Global
+                        const globalColors = (window as any).wpcSettings?.colors || {};
+                        const listColors = config?.colors || {};
+                        // Use optional chaining directly on item.design_overrides
 
-                            // Try modern clipboard API first
-                            if (navigator.clipboard && navigator.clipboard.writeText) {
-                                navigator.clipboard.writeText(couponCode as string).then(() => {
-                                    const target = e.currentTarget;
-                                    const originalHTML = target.innerHTML;
-                                    // Use global copied color
-                                    const successColor = (window as any).wpcSettings?.colors?.copied || '#10b981';
-                                    const copiedText = item.copiedLabel || labels?.copied || "Copied!";
+                        const bg = listColors.couponBg || item.design_overrides?.coupon_bg || globalColors.couponBg || '#fef3c7';
+                        const text = listColors.couponText || item.design_overrides?.coupon_text || globalColors.couponText || '#92400e';
+                        const hover = listColors.couponHover || item.design_overrides?.coupon_hover || globalColors.couponHover || '#fde68a';
 
-                                    target.innerHTML = '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ' + copiedText;
-                                    target.style.background = successColor;
-                                    target.style.borderColor = successColor;
-                                    target.style.color = '#ffffff'; // Keep white text for contrast on colored background
+                        // Copied state colors
+                        const copiedColor = globalColors.copied || '#10b981'; // Usually global is fine for success state, but let's check hierarchy if needed
+                        const copiedTextLabel = item.copiedLabel || labels?.copied || "Copied!";
 
-                                    setTimeout(() => {
-                                        target.innerHTML = originalHTML;
-                                        target.style.background = '';
-                                        target.style.borderColor = '';
-                                        target.style.color = '';
-                                    }, 1500);
-                                });
-                            } else {
-                                // Fallback for older browsers
-                                const textArea = document.createElement('textarea');
-                                textArea.value = couponCode as string;
-                                textArea.style.position = 'fixed';
-                                textArea.style.left = '-999999px';
-                                document.body.appendChild(textArea);
-                                textArea.select();
-                                try {
-                                    document.execCommand('copy');
-                                    const target = e.currentTarget;
-                                    const originalHTML = target.innerHTML;
-                                    // Use global copied color
-                                    const successColor = (window as any).wpcSettings?.colors?.copied || '#10b981';
-                                    const copiedText = labels?.copied || "Copied!";
+                        return (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const couponCode = item.coupon_code;
 
-                                    target.innerHTML = '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ' + copiedText;
-                                    target.style.background = successColor;
-                                    target.style.borderColor = successColor;
-                                    target.style.color = '#ffffff';
+                                    // Try modern clipboard API first
+                                    const copyAction = () => {
+                                        const target = e.currentTarget;
+                                        const originalHTML = target.innerHTML;
 
-                                    setTimeout(() => {
-                                        target.innerHTML = originalHTML;
-                                        target.style.background = '';
-                                        target.style.borderColor = '';
-                                        target.style.color = '';
-                                    }, 1500);
-                                } catch (err) {
-                                    console.error('Copy failed:', err);
-                                }
-                                document.body.removeChild(textArea);
-                            }
-                        }}
-                        className="w-full py-1.5 text-xs font-bold border border-dashed rounded-lg transition-all duration-200 relative z-20 flex items-center justify-center gap-2 cursor-pointer"
-                        style={{
-                            backgroundColor: item.design_overrides?.coupon_bg || config?.colors?.couponBg || (window as any).wpcSettings?.colors?.couponBg || '#fef3c7',
-                            color: item.design_overrides?.coupon_text || config?.colors?.couponText || (window as any).wpcSettings?.colors?.couponText || '#92400e',
-                            borderColor: `${item.design_overrides?.coupon_text || config?.colors?.couponText || (window as any).wpcSettings?.colors?.couponText || '#92400e'}40`
-                        }}
-                        onMouseEnter={(e) => {
-                            const hoverColor = config?.colors?.couponHover || (window as any).wpcSettings?.colors?.couponHover || '#fde68a';
-                            e.currentTarget.style.backgroundColor = hoverColor;
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = item.design_overrides?.coupon_bg || config?.colors?.couponBg || (window as any).wpcSettings?.colors?.couponBg || '#fef3c7';
-                        }}
-                    >
-                        <Tag className="w-3 h-3" /> {labels?.getCoupon || "Get Coupon:"} {item.coupon_code}
-                    </button>
+                                        target.innerHTML = '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ' + copiedTextLabel;
+                                        target.style.background = copiedColor;
+                                        target.style.borderColor = copiedColor;
+                                        target.style.color = '#ffffff'; // Always white for success contrast
+
+                                        setTimeout(() => {
+                                            target.innerHTML = originalHTML;
+                                            target.style.background = bg;
+                                            target.style.borderColor = `${text}40`;
+                                            target.style.color = text;
+                                        }, 1500);
+                                    };
+
+                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                        navigator.clipboard.writeText(couponCode as string).then(copyAction);
+                                    } else {
+                                        // Fallback
+                                        const textArea = document.createElement('textarea');
+                                        textArea.value = couponCode as string;
+                                        textArea.style.position = 'fixed';
+                                        textArea.style.left = '-999999px';
+                                        document.body.appendChild(textArea);
+                                        textArea.select();
+                                        try {
+                                            document.execCommand('copy');
+                                            copyAction();
+                                        } catch (err) {
+                                            console.error('Copy failed:', err);
+                                        }
+                                        document.body.removeChild(textArea);
+                                    }
+                                }}
+                                className="w-full py-1.5 text-xs font-bold border border-dashed rounded-lg transition-all duration-200 relative z-20 flex items-center justify-center gap-2 cursor-pointer"
+                                style={{
+                                    backgroundColor: bg,
+                                    color: text,
+                                    borderColor: `${text}40`
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = hover;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = bg;
+                                }}
+                            >
+                                <Tag className="w-3 h-3" /> {labels?.getCoupon || "Get Coupon:"} {item.coupon_code}
+                            </button>
+                        );
+                    })()}
                 </div>
             )}
 

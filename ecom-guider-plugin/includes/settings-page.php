@@ -954,6 +954,13 @@ function wpc_get_theme_presets() {
             'wpc_color_tick' => '#10b981',
             'wpc_color_cross' => '#94a3b8',
             'wpc_star_rating_color' => '#fbbf24',
+            // Text Colors (Slate/Indigo)
+            'wpc_text_body_color' => '#334155',
+            'wpc_text_heading_color' => '#0f172a',
+            'wpc_text_muted_color' => '#64748b',
+            'wpc_text_link_color' => '#6366f1',
+            'wpc_button_text_color' => '#ffffff',
+            'wpc_button_hover_color' => '#4f46e5', // Indigo-600
         ),
         'emerald' => array(
             'wpc_primary_color' => '#10b981',
@@ -981,6 +988,13 @@ function wpc_get_theme_presets() {
             'wpc_color_tick' => '#059669',
             'wpc_color_cross' => '#94a3b8',
             'wpc_star_rating_color' => '#10b981',
+            // Text Colors (Gray/Emerald)
+            'wpc_text_body_color' => '#374151',
+            'wpc_text_heading_color' => '#064e3b',
+            'wpc_text_muted_color' => '#6b7280',
+            'wpc_text_link_color' => '#059669',
+            'wpc_button_text_color' => '#ffffff',
+            'wpc_button_hover_color' => '#059669', // Emerald-600
         ),
         'sunset' => array(
             'wpc_primary_color' => '#f97316',
@@ -1008,6 +1022,13 @@ function wpc_get_theme_presets() {
             'wpc_color_tick' => '#f97316',
             'wpc_color_cross' => '#94a3b8',
             'wpc_star_rating_color' => '#f97316',
+            // Text Colors (Stone/Orange)
+            'wpc_text_body_color' => '#44403c',
+            'wpc_text_heading_color' => '#7c2d12',
+            'wpc_text_muted_color' => '#78716c',
+            'wpc_text_link_color' => '#ea580c',
+            'wpc_button_text_color' => '#ffffff',
+            'wpc_button_hover_color' => '#ea580c', // Orange-600
         ),
         'ocean' => array(
             'wpc_primary_color' => '#0ea5e9',
@@ -1035,6 +1056,13 @@ function wpc_get_theme_presets() {
             'wpc_color_tick' => '#0ea5e9',
             'wpc_color_cross' => '#94a3b8',
             'wpc_star_rating_color' => '#0ea5e9',
+            // Text Colors (Slate/Sky)
+            'wpc_text_body_color' => '#334155',
+            'wpc_text_heading_color' => '#0c4a6e',
+            'wpc_text_muted_color' => '#64748b',
+            'wpc_text_link_color' => '#0284c7',
+            'wpc_button_text_color' => '#ffffff',
+            'wpc_button_hover_color' => '#0284c7', // Sky-600
         ),
         'minimal' => array(
             'wpc_primary_color' => '#0f172a',
@@ -1062,6 +1090,13 @@ function wpc_get_theme_presets() {
             'wpc_color_tick' => '#0f172a',
             'wpc_color_cross' => '#94a3b8',
             'wpc_star_rating_color' => '#64748b',
+            // Text Colors (Zinc/Black)
+            'wpc_text_body_color' => '#27272a',
+            'wpc_text_heading_color' => '#000000',
+            'wpc_text_muted_color' => '#71717a',
+            'wpc_text_link_color' => '#000000',
+            'wpc_button_text_color' => '#ffffff',
+            'wpc_button_hover_color' => '#000000', // Black
         ),
     );
 }
@@ -2087,36 +2122,38 @@ function wpc_render_general_tab() {
                     
                     <script>
                     document.getElementById('wpc_reset_typography_btn').addEventListener('click', function() {
-                        if (confirm('<?php echo esc_js( __( 'Reset all typography settings to theme defaults?', 'wp-comparison-builder' ) ); ?>')) {
-                            document.getElementById('wpc_font_family').value = 'inherit';
-                            document.getElementById('wpc_font_heading').value = 'inherit';
-                            document.getElementById('wpc_font_size_base').value = '16';
-                            document.getElementById('wpc_line_height').value = '1.5';
-                            
-                            // Reset Advanced Typography
-                            document.getElementById('wpc_font_size_h1').value = '';
-                            document.getElementById('wpc_font_size_h2').value = '';
-                            document.getElementById('wpc_font_size_h3').value = '';
-                            document.getElementById('wpc_font_size_h4').value = '';
-                            document.getElementById('wpc_font_size_h5').value = '';
-                            document.getElementById('wpc_font_size_h6').value = '';
-                            document.getElementById('wpc_font_size_btn').value = '';
-                            document.getElementById('wpc_font_size_price').value = '';
-                            document.getElementById('wpc_font_size_code').value = '';
-                            
-                            // Clear and hide custom font inputs
-                            document.getElementById('wpc_font_family_custom').value = '';
-                            document.getElementById('wpc_font_heading_custom').value = '';
-                            document.getElementById('wpc_font_family_custom_wrap').style.display = 'none';
-                            document.getElementById('wpc_font_heading_custom_wrap').style.display = 'none';
-                            
-                            // Show feedback
-                            if (typeof wpcAdmin !== 'undefined' && wpcAdmin.toast) {
+                        wpcAdmin.confirm(
+                            '<?php echo esc_js( __( 'Reset Typography', 'wp-comparison-builder' ) ); ?>',
+                            '<?php echo esc_js( __( 'Reset all typography settings to theme defaults?', 'wp-comparison-builder' ) ); ?>',
+                            function() {
+                                document.getElementById('wpc_font_family').value = 'inherit';
+                                document.getElementById('wpc_font_heading').value = 'inherit';
+                                document.getElementById('wpc_font_size_base').value = '16';
+                                document.getElementById('wpc_line_height').value = '1.5';
+                                
+                                // Reset Advanced Typography
+                                document.getElementById('wpc_font_size_h1').value = '';
+                                document.getElementById('wpc_font_size_h2').value = '';
+                                document.getElementById('wpc_font_size_h3').value = '';
+                                document.getElementById('wpc_font_size_h4').value = '';
+                                document.getElementById('wpc_font_size_h5').value = '';
+                                document.getElementById('wpc_font_size_h6').value = '';
+                                document.getElementById('wpc_font_size_btn').value = '';
+                                document.getElementById('wpc_font_size_price').value = '';
+                                document.getElementById('wpc_font_size_code').value = '';
+                                
+                                // Clear and hide custom font inputs
+                                document.getElementById('wpc_font_family_custom').value = '';
+                                document.getElementById('wpc_font_heading_custom').value = '';
+                                document.getElementById('wpc_font_family_custom_wrap').style.display = 'none';
+                                document.getElementById('wpc_font_heading_custom_wrap').style.display = 'none';
+                                
+                                // Show feedback
                                 wpcAdmin.toast('Typography reset to theme defaults. Click Save Changes to apply.', 'success');
-                            } else {
-                                alert('Typography reset. Click Save Changes to apply.');
-                            }
-                        }
+                            },
+                            'Reset',
+                            '#ef4444'
+                        );
                     });
                     </script>
                 </td>
@@ -2280,21 +2317,61 @@ function wpc_render_general_tab() {
                     
                     <script>
                     document.getElementById('wpc_reset_text_colors_btn').addEventListener('click', function() {
-                        if (confirm('<?php echo esc_js( __( 'Reset all text colors to theme defaults?', 'wp-comparison-builder' ) ); ?>')) {
-                            // Clear color picker values
-                            var colorInputs = ['wpc_text_body_color', 'wpc_text_heading_color', 'wpc_text_muted_color', 'wpc_text_link_color'];
-                            colorInputs.forEach(function(id) {
-                                var input = document.getElementById(id);
-                                if (input) {
-                                    input.value = '';
-                                    // Try to update WordPress color picker if present
-                                    if (jQuery && jQuery.fn.wpColorPicker) {
-                                        jQuery(input).wpColorPicker('color', '');
-                                    }
-                                }
-                            });
-                            alert('Text colors reset. Click Save Changes to apply.');
+                        var presetName = window.wpcActivePreset || 'indigo';
+                        // Use active preset defaults OR fallback to Indigo/Slate defaults if somehow missing
+                        var defaults = {
+                            'wpc_text_body_color': '#334155',
+                            'wpc_text_heading_color': '#0f172a',
+                            'wpc_text_muted_color': '#64748b',
+                            'wpc_text_link_color': '#6366f1',
+                            'wpc_button_text_color': '#ffffff'
+                        };
+
+                        if (window.wpcThemePresets && window.wpcThemePresets[presetName]) {
+                            var t = window.wpcThemePresets[presetName];
+                            if (t.wpc_text_body_color) defaults.wpc_text_body_color = t.wpc_text_body_color;
+                            if (t.wpc_text_heading_color) defaults.wpc_text_heading_color = t.wpc_text_heading_color;
+                            if (t.wpc_text_muted_color) defaults.wpc_text_muted_color = t.wpc_text_muted_color;
+                            if (t.wpc_text_link_color) defaults.wpc_text_link_color = t.wpc_text_link_color;
+                            if (t.wpc_button_text_color) defaults.wpc_button_text_color = t.wpc_button_text_color;
                         }
+
+                        wpcAdmin.confirm(
+                            '<?php echo esc_js( __( 'Reset Text Colors', 'wp-comparison-builder' ) ); ?>',
+                            '<?php echo esc_js( __( 'Reset all text colors to the active theme defaults?', 'wp-comparison-builder' ) ); ?>',
+                            function() {
+                                // List of IDs mapped to key names if needed, but here IDs match keys
+                                var map = {
+                                    'wpc_text_body_color': defaults.wpc_text_body_color,
+                                    'wpc_text_heading_color': defaults.wpc_text_heading_color,
+                                    'wpc_text_muted_color': defaults.wpc_text_muted_color,
+                                    'wpc_text_link_color': defaults.wpc_text_link_color,
+                                    'wpc_button_text_color': defaults.wpc_button_text_color
+                                };
+
+                                Object.keys(map).forEach(function(id) {
+                                    var val = map[id];
+                                    var input = document.getElementById(id);
+                                    var picker = document.getElementById(id + '_picker'); // Color picker input
+                                    
+                                    if (input) {
+                                        input.value = val;
+                                        // Update linked picker if exists
+                                        if (picker) {
+                                            picker.value = val;
+                                        }
+                                        
+                                        // Specific handling for WP Color Picker (Legacy) if initialized
+                                        if (jQuery && jQuery.fn.wpColorPicker) {
+                                            jQuery(input).wpColorPicker('color', val);
+                                        }
+                                    }
+                                });
+                                wpcAdmin.toast('Text colors reset to ' + presetName + ' defaults.', 'success');
+                            },
+                            'Reset',
+                            '#ef4444'
+                        );
                     });
                     </script>
                 </td>
@@ -2359,8 +2436,31 @@ function wpc_render_general_tab() {
         }
         
         function resetButtonHover() {
-            document.getElementById('wpc_button_hover_color').value = '';
-            document.getElementById('wpc_button_hover_color_picker').value = '#059669';
+            var presetName = window.wpcActivePreset || 'indigo';
+            // Default fallback if not found in preset (Indigo-600)
+            var defaultHover = '#059669'; 
+            
+            if (window.wpcThemePresets && window.wpcThemePresets[presetName]) {
+                 if (window.wpcThemePresets[presetName].wpc_button_hover_color) {
+                     defaultHover = window.wpcThemePresets[presetName].wpc_button_hover_color;
+                 }
+            }
+
+            wpcAdmin.confirm(
+                '<?php echo esc_js( __( 'Reset Hover Color', 'wp-comparison-builder' ) ); ?>',
+                '<?php echo esc_js( __( 'Reset button hover color to the active theme default?', 'wp-comparison-builder' ) ); ?>',
+                function() {
+                    document.getElementById('wpc_button_hover_color').value = defaultHover;
+                    document.getElementById('wpc_button_hover_color_picker').value = defaultHover;
+                    
+                    if (jQuery && jQuery.fn.wpColorPicker) {
+                        jQuery('#wpc_button_hover_color').wpColorPicker('color', defaultHover);
+                    }
+                    wpcAdmin.toast('Button hover color reset to ' + presetName + ' default.', 'success');
+                },
+                'Reset',
+                '#ef4444'
+            );
         }
         </script>
         
