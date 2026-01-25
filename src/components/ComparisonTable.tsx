@@ -221,9 +221,24 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     switch (key) {
       case "price":
         const priceInfo = getPriceForCycle(item, selectedCycle);
-        return <span className="font-bold" style={{ color: primaryColor }}>{priceInfo.amount}{priceInfo.period && <span className="text-xs font-normal ml-0.5" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}</span>;
+        return (
+          <span
+            className="font-bold"
+            ref={(el) => {
+              if (el) {
+                el.style.setProperty('color', primaryColor, 'important');
+              }
+            }}
+            style={{ color: primaryColor }}
+          >
+            {priceInfo.amount}
+            {priceInfo.period && (
+              <span className="text-xs font-normal ml-0.5" style={{ color: mutedTextColor }}>{priceInfo.period}</span>
+            )}
+          </span>
+        );
       case "rating":
-        const starColor = colors.stars || '#fbbf24';
+        const starColor = colors.stars || 'var(--wpc-star-color, #fbbf24)';
         return (
           <div className="flex items-center gap-1 justify-center">
             <Star className="w-3 h-3 md:w-4 md:h-4" style={{ fill: starColor, color: starColor }} />
@@ -312,15 +327,28 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                       </div>
                       <div className="w-full">
                         <h3 className="font-bold text-foreground text-sm md:text-lg mb-1 min-h-[1.75rem] flex items-center justify-center">{item.name}</h3>
-                        <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || '#fbbf24' }}>
+                        <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
                           <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
                           <span className="font-medium text-xs md:text-base">{item.rating}</span>
                         </div>
                         {(() => {
                           const priceInfo = getPriceForCycle(item, selectedCycle);
                           return (
-                            <div className="text-lg md:text-2xl font-bold mb-2 md:mb-4" style={{ color: primaryColor }}>
-                              {priceInfo.amount}{priceInfo.period && <span className="text-xs md:text-sm font-normal ml-1" style={{ color: mutedTextColor }}>{priceInfo.period}</span>}
+                            <div
+                              className="text-lg md:text-2xl font-bold mb-2 md:mb-4"
+                              ref={(el) => {
+                                if (el) {
+                                  el.style.setProperty('color', primaryColor, 'important');
+                                }
+                              }}
+                              style={{ color: primaryColor }}
+                            >
+                              {priceInfo.amount}
+                              {priceInfo.period && (
+                                <span className="text-xs md:text-sm font-normal ml-1" style={{ color: mutedTextColor }}>
+                                  {priceInfo.period}
+                                </span>
+                              )}
                             </div>
                           );
                         })()}
@@ -534,13 +562,28 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1">{activeItem.name}</h3>
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-1" style={{ color: colors.stars || '#fbbf24' }}>
+                <div className="flex items-center gap-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
                   <Star className="w-4 h-4 fill-current" />
                   <span className="text-sm font-medium">{activeItem.rating}</span>
                 </div>
                 {(() => {
                   const priceInfo = getPriceForCycle(activeItem, selectedCycle);
-                  return <span className="text-2xl font-bold text-primary">{priceInfo.amount}{priceInfo.period && <span className="text-sm text-muted-foreground font-normal">{priceInfo.period}</span>}</span>;
+                  return (
+                    <span
+                      className="text-2xl font-bold text-primary"
+                      ref={(el) => {
+                        if (el) {
+                          el.style.setProperty('color', primaryColor, 'important');
+                        }
+                      }}
+                      style={{ color: primaryColor }}
+                    >
+                      {priceInfo.amount}
+                      {priceInfo.period && (
+                        <span className="text-sm text-muted-foreground font-normal">{priceInfo.period}</span>
+                      )}
+                    </span>
+                  );
                 })()}
               </div>
               {/* Coupon */}

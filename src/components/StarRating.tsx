@@ -19,7 +19,7 @@ const StarRating: React.FC<StarRatingProps> = ({
     showLabel = false
 }) => {
     // Default fallback color if none provided
-    const fillColor = color || '#fbbf24';
+    const fillColor = color || 'var(--wpc-star-color, #fbbf24)';
     const emptyColor = '#e2e8f0'; // Gray-200 for empty part
 
     return (

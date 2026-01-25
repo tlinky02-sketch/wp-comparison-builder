@@ -321,7 +321,7 @@ const PlatformCard = ({
                         <StarRating
                             rating={item.rating || 0}
                             size={14}
-                            color={(window as any).wpcSettings?.colors?.primary || '#fbbf24'}
+                            color={(window as any).wpcSettings?.colors?.stars || 'var(--wpc-star-color, #fbbf24)'}
                             showLabel={true}
                         />
                     )}
@@ -333,7 +333,13 @@ const PlatformCard = ({
                 <div className="mb-4 p-3 bg-muted/30 rounded-lg text-center backdrop-blur-sm">
                     <span
                         className="text-3xl font-display font-bold text-primary"
-                        style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
+                        ref={(el) => {
+                            if (el) {
+                                // Force priority over global text override
+                                el.style.setProperty('color', primaryColor, 'important');
+                            }
+                        }}
+                        style={{ color: primaryColor }}
                     >
                         {item.price}
                     </span>

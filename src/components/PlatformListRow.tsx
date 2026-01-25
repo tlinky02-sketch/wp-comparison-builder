@@ -339,6 +339,12 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
                     <div className="md:hidden flex items-baseline justify-center gap-1 mt-2">
                         <span
                             className="text-xl font-bold text-primary"
+                            ref={(el) => {
+                                const pColor = (window as any).wpcSettings?.colors?.primary;
+                                if (el && pColor) {
+                                    el.style.setProperty('color', pColor, 'important');
+                                }
+                            }}
                             style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
                         >
                             {item.price}
@@ -357,6 +363,12 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
                         <div className="flex items-baseline gap-1">
                             <span
                                 className="text-2xl font-bold text-primary"
+                                ref={(el) => {
+                                    const pColor = (window as any).wpcSettings?.colors?.primary;
+                                    if (el && pColor) {
+                                        el.style.setProperty('color', pColor, 'important');
+                                    }
+                                }}
                                 style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
                             >
                                 {item.price}
