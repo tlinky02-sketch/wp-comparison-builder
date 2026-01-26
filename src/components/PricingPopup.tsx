@@ -11,8 +11,7 @@ interface PricingPopupProps {
 }
 
 const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupProps) => {
-    // Product Variants: Local Category State (defaults to active context or item default)
-    const [localCategory, setLocalCategory] = useState<string | null>(config?.category || item.variants?.default_category || null);
+    // Product Variants: Local Category State (Handled by PricingTable now)
 
     // Lock body scroll when popup is open
     useEffect(() => {
@@ -50,7 +49,7 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
     const primaryColor = getPrimaryColor();
 
     return (
-        <div className="fixed inset-0 z-[10000] bg-background/95 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex items-start justify-center pt-8 md:pt-16">
+        <div className="wpc-root fixed inset-0 z-[10000] bg-background/95 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex items-start justify-center pt-8 md:pt-16">
             <div className="relative bg-card w-full max-w-6xl rounded-2xl shadow-2xl border border-border p-6 md:p-10 mb-8 flex flex-col">
                 <button
                     onClick={onClose}
@@ -58,7 +57,7 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
                     className="absolute top-4 right-4 p-2 rounded-full transition-colors z-10 border"
                     style={{
                         backgroundColor: primaryColor,
-                        color: 'white',
+                        color: 'var(--wpc-btn-text, #ffffff) !important',
                         borderColor: primaryColor,
                     }}
                     onMouseEnter={(e) => {
@@ -74,57 +73,12 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
                     <X className="w-6 h-6" />
                 </button>
 
-                {/* Product Variants: Category Selector */}
-                {item.variants?.enabled && item.variants.plans_by_category && Object.keys(item.variants.plans_by_category).length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-6 justify-center">
-                        <button
-                            onClick={() => setLocalCategory(null)}
-                            className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${!localCategory
-                                ? "text-white shadow-md scale-105"
-                                : "bg-transparent text-muted-foreground border-border hover:bg-muted"
-                                }`}
-                            style={!localCategory ? {
-                                backgroundColor: primaryColor,
-                                borderColor: primaryColor,
-                            } : {}}
-                        >
-                            {(window as any).wpcSettings?.texts?.allPlans || 'All Plans'}
-                        </button>
-                        {Object.keys(item.variants.plans_by_category).map((catSlug) => {
-                            // Try to match slug to a pretty name from item.category if possible, else prettify slug
-                            const prettyName = catSlug
-                                .split('-')
-                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                .join(' ');
-
-                            const isActive = localCategory === catSlug;
-
-                            return (
-                                <button
-                                    key={catSlug}
-                                    onClick={() => setLocalCategory(catSlug)}
-                                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${isActive
-                                        ? "text-white shadow-md scale-105"
-                                        : "bg-transparent text-muted-foreground border-border hover:bg-muted"
-                                        }`}
-                                    style={isActive ? {
-                                        backgroundColor: primaryColor,
-                                        borderColor: primaryColor,
-                                    } : {}}
-                                >
-                                    {prettyName}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
-
                 <PricingTable
                     item={item}
                     showPlanButtons={showPlanButtons}
                     showHeaders={true}
                     displayContext="popup"
-                    config={{ ...config, category: localCategory }}
+                    config={config}
                 />
             </div>
         </div>

@@ -36,7 +36,7 @@ const BlogCard = ({ image, category, title, excerpt, readTime, featured = false,
           <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-3 group-hover:text-emerald-light transition-colors leading-tight">
             {title}
           </h3>
-          <p className="text-white/70 text-base mb-6 line-clamp-2 max-w-xl">{excerpt}</p>
+          <p className="text-white/70 text-[length:var(--wpc-font-size-body,1rem)] mb-6 line-clamp-2 max-w-xl">{excerpt}</p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-white/60 text-sm">
               <Clock className="w-4 h-4" />

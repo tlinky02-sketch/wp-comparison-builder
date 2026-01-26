@@ -1,5 +1,5 @@
-﻿import { useState } from "react";
-import { Check, ExternalLink } from "lucide-react";
+﻿import { useState, useRef, useEffect } from "react";
+import { Check, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
 
@@ -52,20 +52,42 @@ const PricingTable = ({
     // 3. Plans Data Preparation
     let plans = item.pricing_plans || [];
 
+
+    // Product Variants: Local Category State (defaults to config category, item default, or null)
+    const [localCategory, setLocalCategory] = useState<string | null>(config?.category || item.variants?.default_category || null);
+
     // Product Variants: Filter Plans by Category (with fallback to all plans)
-    if (config?.category && item.variants?.enabled && item.variants?.plans_by_category) {
-        const allowedIndices = item.variants.plans_by_category[config.category];
-        if (allowedIndices && Array.isArray(allowedIndices)) {
-            const indices = allowedIndices.map(Number);
-            const filteredPlans = plans.filter((_, idx) => indices.includes(idx));
-            // Fallback: If no plans match the category, show ALL plans instead of empty
-            if (filteredPlans.length > 0) {
-                plans = filteredPlans;
+    if (item.variants?.enabled && item.variants?.plans_by_category) {
+        // Use local state if set, otherwise fall back to config (if any)
+        const activeCat = localCategory;
+
+        if (activeCat) {
+            const allowedIndices = item.variants.plans_by_category[activeCat];
+            if (allowedIndices && Array.isArray(allowedIndices)) {
+                const indices = allowedIndices.map(Number);
+                const filteredPlans = plans.filter((_, idx) => indices.includes(idx));
+                // Fallback: If no plans match the category, show ALL plans instead of empty
+                if (filteredPlans.length > 0) {
+                    plans = filteredPlans;
+                }
             }
-            // else: keep original plans array (fallback to all)
         }
     }
     const showFeatures = !item.hide_plan_features;
+
+
+    // Helper to get price availability (strictly checks if price exists for cycle)
+    const hasPriceForCycle = (plan: any, cycleSlug: string) => {
+        // New structure check
+        if (plan.prices && plan.prices[cycleSlug]) {
+            return plan.prices[cycleSlug].amount !== undefined && plan.prices[cycleSlug].amount !== '';
+        }
+        // Legacy fallback
+        if (cycleSlug === 'monthly') return !!plan.price;
+        if (cycleSlug === 'yearly') return !!(plan.yearly_price || plan.price);
+
+        return false;
+    };
 
     // Helper to get price info
     const getPriceInfo = (plan: any, cycleSlug: string) => {
@@ -84,14 +106,18 @@ const PricingTable = ({
             result = { amount: plan.yearly_price || plan.price, period: (plan as any).yearly_period || '/yr' };
         }
 
-        // If amount is empty or '0', use the configurable "Free" text
-        if (!result.amount || result.amount === '0') {
+        // Fix logic: Only show "Free" if amount is "0", NOT if it's empty/missing (which should be hidden)
+        if (result.amount === '0') {
             result.amount = emptyPriceText;
-            result.period = ''; // No period for "Free"
+            result.period = '';
         }
 
         return result;
     };
+
+    // Filter plans based on cycle availability
+    // If a plan does NOT have a price for the selected cycle, it should be hidden from view.
+    const visiblePlans = plans.filter(plan => hasPriceForCycle(plan, selectedCycle));
 
     // 4. Settings & Visibility Logic
     const settings = window.wpcSettings || window.ecommerceGuiderSettings;
@@ -121,7 +147,7 @@ const PricingTable = ({
         }
     };
 
-    const hasAnyButtons = plans.some(plan => shouldShowPlanButton(plan));
+    const hasAnyButtons = visiblePlans.some(plan => shouldShowPlanButton(plan));
 
     // 5. Style Logic
     const visuals = settings?.visuals || {};
@@ -143,6 +169,39 @@ const PricingTable = ({
     const isListContext = !!config;
     const listHasColors = !!(config?.colors?.primary || config?.colorsOverride?.primary);
     const overrides = item.design_overrides || { enabled: false } as NonNullable<ComparisonItem['design_overrides']>;
+
+    // Scroll Logic for "More than 3 columns"
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [showLeftArrow, setShowLeftArrow] = useState(false);
+    const [showRightArrow, setShowRightArrow] = useState(true);
+
+    const showScroll = visiblePlans.length > 3;
+    const minTableWidth = showScroll ? `${visiblePlans.length * 280}px` : '100%';
+
+    const handleScroll = () => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+            setShowLeftArrow(scrollLeft > 0);
+            // Tolerance of 5px for floating point issues
+            setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+        }
+    };
+
+    useEffect(() => {
+        handleScroll(); // Check initial state
+        window.addEventListener('resize', handleScroll);
+        return () => window.removeEventListener('resize', handleScroll);
+    }, [plans]);
+
+    const scrollTable = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const scrollAmount = 300;
+            scrollContainerRef.current.scrollBy({
+                left: direction === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     // Only allow item overrides when NOT in a list context
     const useOverrides = !isListContext && (overrides.enabled === true || overrides.enabled === '1');
@@ -238,6 +297,56 @@ const PricingTable = ({
                 </div>
             )}
 
+            {/* Product Variants: Category Selector (Pricing Table) */}
+            {item.variants?.enabled && item.variants.plans_by_category && Object.keys(item.variants.plans_by_category).length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                    <div
+                        onClick={() => setLocalCategory(null)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border cursor-pointer ${!localCategory
+                            ? "text-white shadow-md scale-105"
+                            : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                            }`}
+                        style={!localCategory ? {
+                            backgroundColor: primaryColor,
+                            borderColor: primaryColor,
+                            color: 'var(--wpc-btn-text, #ffffff) !important',
+                        } : {
+                            color: 'var(--muted-foreground)'
+                        }}
+                    >
+                        {(window as any).wpcSettings?.texts?.allPlans || 'All Plans'}
+                    </div>
+                    {Object.keys(item.variants.plans_by_category).map((catSlug) => {
+                        const prettyName = catSlug
+                            .split('-')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+
+                        const isActive = localCategory === catSlug;
+
+                        return (
+                            <div
+                                key={catSlug}
+                                onClick={() => setLocalCategory(catSlug)}
+                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
+                                    ? "shadow-md scale-105"
+                                    : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                                    }`}
+                                style={isActive ? {
+                                    backgroundColor: primaryColor,
+                                    borderColor: primaryColor,
+                                    color: 'var(--wpc-btn-text, #ffffff) !important',
+                                } : {
+                                    color: 'var(--muted-foreground)'
+                                }}
+                            >
+                                {prettyName}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
             {/* Billing Cycle Toggle/Tabs (Dynamic for N items) */}
             {billingCycles.length > 1 && billingStyle !== 'none' && (
                 <div className="flex justify-center mb-4 w-full">
@@ -321,155 +430,195 @@ const PricingTable = ({
                 style={{ borderColor: 'var(--pt-border)' }}
             >
                 {/* Desktop Table View */}
-                <div className="hidden md:block w-full">
-                    <table className="w-full table-fixed border-collapse">
-                        <thead>
-                            <tr className="border-b border-border" style={{ backgroundColor: 'var(--pt-header-bg)', borderColor: 'var(--pt-border)' }}>
-                                {plans.map((plan, idx) => (
-                                    <th key={idx} className={`p-4 text-center font-bold align-top relative ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ color: 'var(--pt-header-text)', borderColor: 'var(--pt-border)' }}>
-                                        {plan.show_banner === '1' && plan.banner_text && (
-                                            <div
-                                                className="absolute top-0 right-0 font-bold px-2 py-0.5 rounded-bl-md text-white shadow-sm z-10"
-                                                style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981', fontSize: 'var(--wpc-font-size-small, 0.75rem)' }}
-                                            >
-                                                {plan.banner_text}
-                                            </div>
-                                        )}
-                                        <span className="block truncate mt-2" title={plan.name} style={{ fontSize: 'var(--wpc-font-size-h2)' }}>{plan.name}</span>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border" style={{ borderColor: 'var(--pt-border)' }}>
-                            {/* Price Row */}
-                            <tr className="bg-card">
-                                {plans.map((plan, idx) => {
-                                    const { amount, period } = getPriceInfo(plan, selectedCycle);
-                                    return (
-                                        <td key={idx} className={`p-4 text-center align-top ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
-                                            <div className="flex flex-wrap items-baseline justify-center gap-1">
-                                                <span className="font-bold truncate" style={{ color: resolvedPriceColor, fontSize: 'var(--wpc-font-size-price, var(--wpc-font-size-h3, 1.5rem))' }} ref={(el) => { if (el) el.style.setProperty('color', resolvedPriceColor, 'important'); }}>
-                                                    {amount}
-                                                </span>
-                                                {period && <span className="text-muted-foreground truncate" style={{ fontSize: 'calc(var(--wpc-font-size-price) * 0.5)', lineHeight: '1.2' }}>
-                                                    {period}
-                                                </span>}
-                                            </div>
-                                        </td>
-                                    );
-                                })}
-                            </tr>
+                <div className="hidden md:block w-full relative group/table">
+                    {/* Scroll Arrows */}
+                    {showScroll && (
+                        <>
+                            {showLeftArrow && (
+                                <button
+                                    onClick={() => scrollTable('left')}
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full shadow-lg border transition-all hover:scale-110"
+                                    style={{
+                                        backgroundColor: 'var(--pt-header-bg)',
+                                        color: 'var(--pt-header-text)',
+                                        borderColor: 'var(--pt-border)',
+                                        marginLeft: '0.5rem'
+                                    }}
+                                >
+                                    <ChevronLeft className="w-6 h-6" />
+                                </button>
+                            )}
+                            {showRightArrow && (
+                                <button
+                                    onClick={() => scrollTable('right')}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full shadow-lg border transition-all hover:scale-110"
+                                    style={{
+                                        backgroundColor: btnBg,
+                                        color: btnText,
+                                        borderColor: 'transparent',
+                                        marginRight: '0.5rem'
+                                    }}
+                                >
+                                    <ChevronRight className="w-6 h-6" />
+                                </button>
+                            )}
+                        </>
+                    )}
 
-                            {/* Action Row (Top) */}
-                            {hasAnyButtons && buttonPosition === 'after_price' && (
-                                <tr className="bg-muted/5">
-                                    {plans.map((plan, idx) => (
-                                        <td key={idx} className={`p-4 text-center align-middle ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
-                                            {shouldShowPlanButton(plan) && plan.link && (
-                                                <a
-                                                    href={plan.link}
-                                                    target={config?.targetPricing || settings?.target_pricing || '_blank'}
-                                                    rel="noreferrer"
-                                                    className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
-                                                    style={{
-                                                        backgroundColor: 'var(--pt-btn-bg)',
-                                                        color: 'var(--pt-btn-text, #ffffff)',
-                                                        fontSize: 'var(--wpc-font-size-btn, 1rem)',
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
-                                                            e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
-                                                            e.currentTarget.style.filter = 'none';
-                                                        } else {
-                                                            e.currentTarget.style.filter = 'brightness(90%)';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
-                                                        e.currentTarget.style.filter = 'brightness(100%)';
-                                                    }}
-                                                    ref={(el) => {
-                                                        if (!el) return;
-                                                        const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
-                                                        el.style.setProperty('color', btnColor, 'important');
-                                                    }}
+                    <div
+                        ref={scrollContainerRef}
+                        onScroll={handleScroll}
+                        className={`w-full ${showScroll ? 'overflow-x-auto pb-4 scrollbar-hide' : ''}`}
+                    >
+                        <table className="w-full table-fixed border-collapse" style={{ minWidth: minTableWidth }}>
+                            <thead>
+                                <tr className="border-b border-border" style={{ backgroundColor: 'var(--pt-header-bg)', borderColor: 'var(--pt-border)' }}>
+                                    {visiblePlans.map((plan, idx) => (
+                                        <th key={idx} className={`p-4 text-center font-bold align-top relative ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''}`} style={{ color: 'var(--pt-header-text)', borderColor: 'var(--pt-border)' }}>
+                                            {plan.show_banner === '1' && plan.banner_text && (
+                                                <div
+                                                    className="absolute top-0 right-0 font-bold px-2 py-0.5 rounded-bl-md text-white shadow-sm z-10"
+                                                    style={{ backgroundColor: plan.banner_color || settings?.colors?.banner || '#10b981', fontSize: 'var(--wpc-font-size-small, 0.75rem)' }}
                                                 >
-                                                    {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
-                                                </a>
+                                                    {plan.banner_text}
+                                                </div>
                                             )}
-                                        </td>
+                                            <span className="block truncate mt-2" title={plan.name} style={{ fontSize: 'var(--wpc-font-size-h2)' }}>{plan.name}</span>
+                                        </th>
                                     ))}
                                 </tr>
-                            )}
-
-                            {/* Features Row */}
-                            {showFeatures && (
+                            </thead>
+                            <tbody className="divide-y divide-border" style={{ borderColor: 'var(--pt-border)' }}>
+                                {/* Price Row */}
                                 <tr className="bg-card">
-                                    {plans.map((plan, idx) => (
-                                        <td key={idx} className={`p-4 align-top ${idx !== plans.length - 1 ? 'border-r border-border' : ''} break-words whitespace-normal`} style={{ borderColor: 'var(--pt-border)' }}>
-                                            <ul className="space-y-2 text-left inline-block w-full min-w-0">
-                                                {plan.features.split('\n').map((feature, i) => (
-                                                    feature.trim() && (
-                                                        <li key={i} className="flex items-start gap-2 break-words whitespace-normal">
-                                                            <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
-                                                            <span className="text-muted-foreground break-words whitespace-normal min-w-0" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>{feature.trim()}</span>
-                                                        </li>
-                                                    )
-                                                ))}
-                                            </ul>
-                                        </td>
-                                    ))}
+                                    {visiblePlans.map((plan, idx) => {
+                                        const { amount, period } = getPriceInfo(plan, selectedCycle);
+                                        return (
+                                            <td key={idx} className={`p-4 text-center align-top ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
+                                                <div className="flex flex-wrap items-baseline justify-center gap-1">
+                                                    <span className="font-bold truncate" style={{ color: resolvedPriceColor, fontSize: 'var(--wpc-font-size-price, var(--wpc-font-size-h3, 1.5rem))' }} ref={(el) => { if (el) el.style.setProperty('color', resolvedPriceColor, 'important'); }}>
+                                                        {amount}
+                                                    </span>
+                                                    {period && <span className="text-muted-foreground truncate" style={{ fontSize: 'calc(var(--wpc-font-size-price) * 0.5)', lineHeight: '1.2' }}>
+                                                        {period}
+                                                    </span>}
+                                                </div>
+                                            </td>
+                                        );
+                                    })}
                                 </tr>
-                            )}
 
-                            {/* Action Row (Bottom) */}
-                            {hasAnyButtons && buttonPosition === 'bottom' && (
-                                <tr className="bg-muted/5">
-                                    {plans.map((plan, idx) => (
-                                        <td key={idx} className={`p-4 text-center align-middle ${idx !== plans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
-                                            {shouldShowPlanButton(plan) && plan.link && (
-                                                <a
-                                                    href={plan.link}
-                                                    target={config?.targetPricing || settings?.target_pricing || '_blank'}
-                                                    rel="noreferrer"
-                                                    className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
-                                                    style={{
-                                                        backgroundColor: 'var(--pt-btn-bg)',
-                                                        color: 'var(--pt-btn-text)',
-                                                        fontSize: 'var(--wpc-font-size-btn)',
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
-                                                            e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
-                                                            e.currentTarget.style.filter = 'none';
-                                                        } else {
-                                                            e.currentTarget.style.filter = 'brightness(90%)';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
-                                                        e.currentTarget.style.filter = 'brightness(100%)';
-                                                    }}
-                                                    ref={(el) => {
-                                                        if (!el) return;
-                                                        const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
-                                                        el.style.setProperty('color', btnColor, 'important');
-                                                    }}
-                                                >
-                                                    {plan.button_text || 'Select'}
-                                                </a>
-                                            )}
-                                        </td>
-                                    ))}
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                {/* Action Row (Top) */}
+                                {hasAnyButtons && buttonPosition === 'after_price' && (
+                                    <tr className="bg-muted/5">
+                                        {visiblePlans.map((plan, idx) => (
+                                            <td key={idx} className={`p-4 text-center align-middle ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
+                                                {shouldShowPlanButton(plan) && plan.link && (
+                                                    <a
+                                                        href={plan.link}
+                                                        target={config?.targetPricing || settings?.target_pricing || '_blank'}
+                                                        rel="noreferrer"
+                                                        className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
+                                                        style={{
+                                                            backgroundColor: 'var(--pt-btn-bg)',
+                                                            color: 'var(--pt-btn-text, #ffffff)',
+                                                            fontSize: 'var(--wpc-font-size-btn, 1rem)',
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
+                                                                e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
+                                                                e.currentTarget.style.filter = 'none';
+                                                            } else {
+                                                                e.currentTarget.style.filter = 'brightness(90%)';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
+                                                            e.currentTarget.style.filter = 'brightness(100%)';
+                                                        }}
+                                                        ref={(el) => {
+                                                            if (!el) return;
+                                                            const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
+                                                            el.style.setProperty('color', btnColor, 'important');
+                                                        }}
+                                                    >
+                                                        {plan.button_text || (window as any).wpcSettings?.texts?.selectPlan || 'Select'}
+                                                    </a>
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                )}
+
+                                {/* Features Row */}
+                                {showFeatures && (
+                                    <tr className="bg-card">
+                                        {visiblePlans.map((plan, idx) => (
+                                            <td key={idx} className={`p-4 align-top ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''} break-words whitespace-normal`} style={{ borderColor: 'var(--pt-border)' }}>
+                                                <ul className="space-y-2 text-left inline-block w-full min-w-0">
+                                                    {plan.features.split('\n').map((feature, i) => (
+                                                        feature.trim() && (
+                                                            <li key={i} className="flex items-start gap-2 break-words whitespace-normal">
+                                                                <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
+                                                                <span className="text-muted-foreground break-words whitespace-normal min-w-0" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>{feature.trim()}</span>
+                                                            </li>
+                                                        )
+                                                    ))}
+                                                </ul>
+                                            </td>
+                                        ))}
+                                    </tr>
+                                )}
+
+                                {/* Action Row (Bottom) */}
+                                {hasAnyButtons && buttonPosition === 'bottom' && (
+                                    <tr className="bg-muted/5">
+                                        {visiblePlans.map((plan, idx) => (
+                                            <td key={idx} className={`p-4 text-center align-middle ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''}`} style={{ borderColor: 'var(--pt-border)' }}>
+                                                {shouldShowPlanButton(plan) && plan.link && (
+                                                    <a
+                                                        href={plan.link}
+                                                        target={config?.targetPricing || settings?.target_pricing || '_blank'}
+                                                        rel="noreferrer"
+                                                        className="inline-flex items-center justify-center rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 w-full shadow-sm"
+                                                        style={{
+                                                            backgroundColor: 'var(--pt-btn-bg)',
+                                                            color: 'var(--pt-btn-text)',
+                                                            fontSize: 'var(--wpc-font-size-btn)',
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            if (!(useOverrides && overrides.primary) && settings?.colors?.hoverButton) {
+                                                                e.currentTarget.style.backgroundColor = settings.colors.hoverButton;
+                                                                e.currentTarget.style.filter = 'none';
+                                                            } else {
+                                                                e.currentTarget.style.filter = 'brightness(90%)';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
+                                                            e.currentTarget.style.filter = 'brightness(100%)';
+                                                        }}
+                                                        ref={(el) => {
+                                                            if (!el) return;
+                                                            const btnColor = (window as any).wpcSettings?.colors?.btnText || '#ffffff';
+                                                            el.style.setProperty('color', btnColor, 'important');
+                                                        }}
+                                                    >
+                                                        {plan.button_text || 'Select'}
+                                                    </a>
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Mobile Card View - Each Plan as Individual Card */}
                 <div className="md:hidden w-full space-y-4 p-4">
-                    {plans.map((plan, idx) => {
+                    {visiblePlans.map((plan, idx) => {
                         const { amount, period } = getPriceInfo(plan, selectedCycle);
                         return (
                             <div

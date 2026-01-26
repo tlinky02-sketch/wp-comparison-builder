@@ -74,7 +74,7 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
 
                     {/* Actions */}
                     <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-primary/20" onClick={handleVisit}>
+                        <Button size="lg" className="h-12 px-8 text-[length:var(--wpc-font-size-btn,1rem)] shadow-lg shadow-primary/20" onClick={handleVisit}>
                             {item.hero_button_text || `${((window as any).wpcSettings?.texts?.visit || 'Visit')} ${item.name}`} <ExternalLink className="w-4 h-4 ml-2" />
                         </Button>
                     </div>

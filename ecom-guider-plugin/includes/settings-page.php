@@ -2088,6 +2088,13 @@ function wpc_render_general_tab() {
                 </th>
             </tr>
             <tr valign="top">
+                <th scope="row"><label for="wpc_font_size_body"><?php _e( 'Body Text Size', 'wp-comparison-builder' ); ?></label></th>
+                <td>
+                    <input type="text" id="wpc_font_size_body" name="wpc_font_size_body" value="<?php echo esc_attr( get_option( 'wpc_font_size_body', '' ) ); ?>" placeholder="e.g. 1rem or 16px" style="width: 150px;" />
+                    <p class="description"><?php _e( 'Font size for main body text. Leave empty to inherit from theme.', 'wp-comparison-builder' ); ?></p>
+                </td>
+            </tr>
+            <tr valign="top">
                 <th scope="row"><label for="wpc_font_size_btn"><?php _e( 'Button Text Size', 'wp-comparison-builder' ); ?></label></th>
                 <td>
                     <input type="text" id="wpc_font_size_btn" name="wpc_font_size_btn" value="<?php echo esc_attr( get_option( 'wpc_font_size_btn', '' ) ); ?>" placeholder="e.g. 1rem or 16px" style="width: 150px;" />
@@ -2138,6 +2145,7 @@ function wpc_render_general_tab() {
                                 document.getElementById('wpc_font_size_h4').value = '';
                                 document.getElementById('wpc_font_size_h5').value = '';
                                 document.getElementById('wpc_font_size_h6').value = '';
+                                document.getElementById('wpc_font_size_body').value = '';
                                 document.getElementById('wpc_font_size_btn').value = '';
                                 document.getElementById('wpc_font_size_price').value = '';
                                 document.getElementById('wpc_font_size_code').value = '';

@@ -403,7 +403,14 @@ function wpc_register_scripts() {
     $font_size_small = get_option('wpc_font_size_small', '');
 
     if (!empty($font_size_subheading)) $custom_css .= " --wpc-font-size-subheading: {$font_size_subheading}px; ";
-    if (!empty($font_size_body)) $custom_css .= " --wpc-font-size-body: {$font_size_body}px; ";
+    
+    // Body font size: if set, use px; if empty, use the detected theme paragraph size (via JS) or fallback to inherit
+    if (!empty($font_size_body)) {
+        $custom_css .= " --wpc-font-size-body: {$font_size_body}px; ";
+    } else {
+        $custom_css .= " --wpc-font-size-body: var(--wpc-theme-p-size, inherit); ";
+    }
+
     if (!empty($font_size_small)) $custom_css .= " --wpc-font-size-small: {$font_size_small}px; ";
 
 
@@ -606,9 +613,9 @@ function wpc_register_scripts() {
             --destructive: 0 84.2% 60.2%;
             --destructive-foreground: 210 40% 98%;
             
-            --wpc-star-color: <?php echo esc_attr(get_option('wpc_star_rating_color', '#fbbf24')); ?>;
-            --wpc-btn-text: <?php echo esc_attr(get_option('wpc_button_text_color', '#ffffff')); ?>;
-            --pt-btn-text: <?php echo esc_attr(get_option('wpc_button_text_color', '#ffffff')); ?>;
+            --wpc-star-color: " . esc_attr(get_option('wpc_star_rating_color', '#fbbf24')) . ";
+            --wpc-btn-text: " . esc_attr(get_option('wpc_button_text_color', '#ffffff')) . ";
+            --pt-btn-text: " . esc_attr(get_option('wpc_button_text_color', '#ffffff')) . ";
         }
     ";
 
@@ -728,6 +735,37 @@ function wpc_register_scripts() {
         wp_enqueue_style( 'wpc-styles' );
         wp_enqueue_style( 'fontawesome' );
     }
+
+    // Dynamic Paragraph Size Detection
+    // If the user wants to inherit theme font (which means 'inherit' is set for --wpc-font-size-body),
+    // we try to detect the computed font size of a <p> tag in the content area and apply it.
+    wp_add_inline_script( 'wpc-styles', "
+        document.addEventListener('DOMContentLoaded', function() {
+            var roots = document.querySelectorAll('.wpc-root');
+            if (roots.length === 0) return;
+
+            // Create a temporary hidden paragraph to measure theme styles
+            var tempP = document.createElement('p');
+            tempP.style.visibility = 'hidden';
+            tempP.style.position = 'absolute';
+            tempP.style.pointerEvents = 'none';
+            tempP.innerText = 'M'; // Some text to measure
+            
+            // Try to append to a common content container to get scoped styles
+            var container = document.querySelector('.entry-content') || document.querySelector('article') || document.body;
+            container.appendChild(tempP);
+            
+            var computedSize = window.getComputedStyle(tempP).fontSize;
+            
+            // Cleanup
+            if(tempP.parentNode) tempP.parentNode.removeChild(tempP);
+
+            // Apply to document root so it's available everywhere (including React portals/popups)
+            if (computedSize) {
+                document.documentElement.style.setProperty('--wpc-theme-p-size', computedSize);
+            }
+        });
+    " );
 }
 add_action( 'wp_enqueue_scripts', 'wpc_register_scripts' );
 
@@ -944,7 +982,7 @@ function wpc_shortcode( $atts ) {
     ob_start();
     ?>
     <div class="wpc-root" data-config="<?php echo $config_json; ?>">
-        <div class="wpc-comparison-wrapper bg-background text-foreground min-h-[100px] py-4">
+        <div class="wpc-comparison-wrapper text-foreground min-h-[100px] py-4">
              
              <?php if ($filter_style === 'top'): ?>
                 <!-- Top Layout -->

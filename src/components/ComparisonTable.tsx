@@ -308,7 +308,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         <table className="w-full relative table-fixed">
           <thead>
             <tr className="border-b border-border bg-muted/40 backdrop-blur">
-              <th className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-base sticky left-0 bg-background/95 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] w-[20%]">
+              <th className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] w-[20%]">
                 {getText('featureHeader', "Feature")}
               </th>
               {items.map((item) => {
@@ -462,11 +462,11 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
               // Price/Rating are displayed in header, so we filter them from body rows
               <tr key={feature.key} className="group hover:bg-muted/30 transition-colors">
-                <td className="p-2 md:p-6 text-left font-medium text-muted-foreground text-xs md:text-base sticky left-0 bg-background/95 backdrop-blur z-20 group-hover:bg-background/95 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                <td className="p-2 md:p-6 text-left font-medium text-muted-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 backdrop-blur z-20 group-hover:bg-background/95 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                   {feature.label}
                 </td>
                 {items.map((item) => (
-                  <td key={item.id} className="p-2 md:p-6 text-center text-xs md:text-base break-words whitespace-normal min-w-0">
+                  <td key={item.id} className="p-2 md:p-6 text-center text-xs md:text-[length:var(--wpc-font-size-body,1rem)] break-words whitespace-normal min-w-0">
                     {renderCell(feature.key, item)}
                   </td>
                 ))}
