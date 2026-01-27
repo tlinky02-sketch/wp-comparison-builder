@@ -37,7 +37,13 @@ const PricingTable = ({
     const defaultBilling = config?.defaultBilling || itemAny.default_billing || 'monthly';
 
     // 2. Billing Mode Logic (Dynamic)
-    const billingCycles: any[] = config?.billingCycles || (item as any).billing_cycles || [];
+    let billingCycles: any[] = config?.billingCycles || (item as any).billing_cycles;
+
+    // Ensure billingCycles is an array (PHP sometimes sends {} for [])
+    if (!Array.isArray(billingCycles)) {
+        billingCycles = [];
+    }
+
     const billingStyle = config?.billingDisplay || (item as any).billing_display_style || 'toggle';
     // Fallback if cycles missing but legacy props exist (safety net)
     if (billingCycles.length === 0) {
@@ -46,7 +52,9 @@ const PricingTable = ({
     }
 
     // Determine default cycle
-    const initialCycle = billingCycles.find((c: any) => c.slug === defaultBilling) ? defaultBilling : (billingCycles[0]?.slug || 'monthly');
+    const initialCycle = (Array.isArray(billingCycles) && billingCycles.find((c: any) => c.slug === defaultBilling))
+        ? defaultBilling
+        : (billingCycles[0]?.slug || 'monthly');
     const [selectedCycle, setSelectedCycle] = useState<string>(initialCycle);
 
     // 3. Plans Data Preparation

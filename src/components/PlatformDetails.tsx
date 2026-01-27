@@ -31,10 +31,10 @@ const PlatformDetails = ({ item, allItems, onBack, hoverColor, primaryColor, lab
     // Generate unique ID for scoping styles
     const uniqueId = "pd-" + Math.random().toString(36).substr(2, 9);
 
-    const filteredItems = allItems.filter(p =>
+    const filteredItems = Array.isArray(allItems) ? allItems.filter(p =>
         p.id !== item.id &&
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    ) : [];
 
     const toggleAlt = (p: ComparisonItem) => {
         if (selectedAlts.some(a => a.id === p.id)) {
@@ -252,15 +252,15 @@ const PlatformDetails = ({ item, allItems, onBack, hoverColor, primaryColor, lab
                             </div>
                             <div className="p-4 bg-secondary/10 rounded-xl">
                                 <div className="text-sm text-muted-foreground mb-1">{labels?.featureFees || "Transaction Fees"}</div>
-                                <div className="text-2xl font-bold text-primary">{item.features.fees || 'Varies'}</div>
+                                <div className="text-2xl font-bold text-primary">{item.features?.fees || 'Varies'}</div>
                             </div>
                             <div className="p-4 bg-secondary/10 rounded-xl">
                                 <div className="text-sm text-muted-foreground mb-1">{labels?.featureProducts || "Products"}</div>
-                                <div className="text-2xl font-bold text-primary">{item.features.products || 'Unlimited'}</div>
+                                <div className="text-2xl font-bold text-primary">{item.features?.products || 'Unlimited'}</div>
                             </div>
                             <div className="p-4 bg-secondary/10 rounded-xl">
                                 <div className="text-sm text-muted-foreground mb-1">{labels?.featureSupport || "Support"}</div>
-                                <div className="text-xl font-bold text-primary">{item.features.support || '24/7'}</div>
+                                <div className="text-xl font-bold text-primary">{item.features?.support || '24/7'}</div>
                             </div>
                         </div>
                     </div>

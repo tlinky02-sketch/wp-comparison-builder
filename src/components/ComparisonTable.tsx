@@ -40,12 +40,14 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   const allCycles = React.useMemo(() => {
     const cyclesMap = new Map<string, string>();
     items.forEach(item => {
-      const cycles = (item as any).billing_cycles || [];
-      cycles.forEach((c: { slug: string, label: string }) => {
-        if (c.slug && !cyclesMap.has(c.slug)) {
-          cyclesMap.set(c.slug, c.label);
-        }
-      });
+      const cycles = (item as any).billing_cycles;
+      if (Array.isArray(cycles)) {
+        cycles.forEach((c: { slug: string, label: string }) => {
+          if (c.slug && !cyclesMap.has(c.slug)) {
+            cyclesMap.set(c.slug, c.label);
+          }
+        });
+      }
     });
     if (cyclesMap.size === 0) {
       cyclesMap.set('monthly', 'Monthly');
@@ -244,24 +246,25 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   const renderCell = (key: string, item: ComparisonItem) => {
     // 1. Dynamic Tag Features
     if (key.startsWith('tag_')) {
-      const term = compareTagTerms.find((t: any) => t.key === key);
+      const term = Array.isArray(compareTagTerms) ? compareTagTerms.find((t: any) => t.key === key) : null;
       if (!term) return <span className="text-muted-foreground/30">—</span>;
 
       // Smart Legacy fallback: If tag name matches legacy field, show text value
       const lowerName = term.name.toLowerCase();
       const itemFeatures = item.features;
 
-      if (lowerName === 'products' && itemFeatures.products) return itemFeatures.products;
-      if ((lowerName === 'fees' || lowerName === 'transaction fees') && itemFeatures.fees) return itemFeatures.fees;
-      if ((lowerName === 'channels' || lowerName === 'sales channels') && itemFeatures.channels) return itemFeatures.channels;
-      if (lowerName === 'support' && itemFeatures.support) return itemFeatures.support;
+      if (lowerName === 'products' && itemFeatures?.products) return itemFeatures.products;
+      if ((lowerName === 'fees' || lowerName === 'transaction fees') && itemFeatures?.fees) return itemFeatures.fees;
+      if ((lowerName === 'channels' || lowerName === 'sales channels') && itemFeatures?.channels) return itemFeatures.channels;
+      if (lowerName === 'support' && itemFeatures?.support) return itemFeatures.support;
 
       // Boolean Tag Check
-      const raw = item.raw_features || [];
-      const hasTag =
+      const raw = item.raw_features;
+      const hasTag = Array.isArray(raw) && (
         raw.includes(term.name) ||
         raw.includes(term.slug) ||
-        raw.some((f: string) => f.toLowerCase() === term.name.toLowerCase());
+        raw.some((f: string) => f.toLowerCase() === term.name.toLowerCase())
+      );
 
       if (hasTag) {
         return <Check
@@ -316,7 +319,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
           </div>
         );
       case "ssl":
-        return item.features.ssl ? (
+        return item.features?.ssl ? (
           <Check
             className="wpc-tick w-4 h-4 md:w-5 md:h-5 mx-auto"
             style={{ color: tickColor }}
@@ -330,16 +333,16 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
           />
         );
       case "products":
-        return item.features.products || "—";
+        return item.features?.products || "—";
       case "fees":
-        return item.features.fees || "—";
+        return item.features?.fees || "—";
       case "channels":
-        return item.features.channels || "—";
+        return item.features?.channels || "—";
       case "support":
-        return item.features.support || "—";
+        return item.features?.support || "—";
       default:
         // Fallback for any other keys
-        return (item.features as any)[key] || "—";
+        return (item.features as any)?.[key] || "—";
     }
   };
 
@@ -591,7 +594,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                   <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
                     <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
                       style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
-                      {item.pros.slice(0, 3).map((pro, i) => (
+                      {(item.pros || []).slice(0, 3).map((pro, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
                           <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
                           <span className="min-w-0">{pro}</span>
@@ -610,7 +613,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
                   <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
                     <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
                       style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
-                      {item.cons.slice(0, 3).map((con, i) => (
+                      {(item.cons || []).slice(0, 3).map((con, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
                           <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
                           <span className="min-w-0">{con}</span>
@@ -738,7 +741,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <div className="rounded-xl p-4" style={{ backgroundColor: prosBg }}>
               <h4 className="font-bold text-sm mb-2" style={{ color: prosText }}>{getText('prosLabel', 'Pros')}</h4>
               <ul className="space-y-2">
-                {activeItem.pros.slice(0, 4).map((pro, i) => (
+                {(activeItem.pros || []).slice(0, 4).map((pro, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
                     <span>{pro}</span>
@@ -753,7 +756,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
             <div className="rounded-xl p-4" style={{ backgroundColor: consBg }}>
               <h4 className="font-bold text-sm mb-2" style={{ color: consText }}>{getText('consLabel', 'Cons')}</h4>
               <ul className="space-y-2">
-                {activeItem.cons.slice(0, 4).map((con, i) => (
+                {(activeItem.cons || []).slice(0, 4).map((con, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
                     <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
                     <span>{con}</span>

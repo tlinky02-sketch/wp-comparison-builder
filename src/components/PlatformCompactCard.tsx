@@ -299,13 +299,13 @@ const PlatformCompactCard: React.FC<PlatformCompactCardProps> = ({
                     ))
                 ) : (
                     <>
-                        {item.features.products && (
+                        {item.features?.products && (
                             <li className="flex items-center gap-2 text-sm text-foreground/80">
                                 <Tag className="w-4 h-4 text-primary flex-shrink-0" />
                                 <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
                             </li>
                         )}
-                        {item.features.fees && (
+                        {item.features?.fees && (
                             <li className="flex items-center gap-2 text-sm text-foreground/80">
                                 <Check className="w-4 h-4 text-primary flex-shrink-0" />
                                 <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
@@ -313,7 +313,7 @@ const PlatformCompactCard: React.FC<PlatformCompactCardProps> = ({
                         )}
                         <li className="flex items-center gap-2 text-sm text-foreground/80">
                             <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                            <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>
+                            <span className="truncate">{item.features?.support || '24/7'} {labels?.featureSupport || "Support"}</span>
                         </li>
                     </>
                 )}

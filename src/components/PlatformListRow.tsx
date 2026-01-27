@@ -240,13 +240,13 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
                         ))
                     ) : (
                         <>
-                            {item.features.products && (
+                            {item.features?.products && (
                                 <li className="flex items-center gap-2 text-sm text-foreground/80">
                                     <Tag className="w-4 h-4 text-primary flex-shrink-0" />
                                     <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
                                 </li>
                             )}
-                            {item.features.fees && (
+                            {item.features?.fees && (
                                 <li className="flex items-center gap-2 text-sm text-foreground/80">
                                     <Check className="w-4 h-4 text-primary flex-shrink-0" />
                                     <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>

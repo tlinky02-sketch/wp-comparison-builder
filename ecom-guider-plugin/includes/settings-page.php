@@ -917,16 +917,16 @@ function wpc_get_theme_presets() {
     return array(
         'indigo' => array(
             'wpc_primary_color' => '#6366f1',
-            'wpc_accent_color' => '#0d9488',
-            'wpc_secondary_color' => '#1e293b',
-            'wpc_card_border_color' => '#e2e8f0',
-            'wpc_pricing_banner_color' => '#10b981',
-            'wpc_pt_header_bg' => '#f8fafc',
-            'wpc_pt_header_text' => '#0f172a',
-            'wpc_pt_btn_bg' => '#0f172a',
+            'wpc_accent_color' => '#f43f5e',
+            'wpc_secondary_color' => '#eef2ff', // Light indigo background for better text contrast
+            'wpc_card_border_color' => '#e0e7ff',
+            'wpc_pricing_banner_color' => '#4f46e5',
+            'wpc_pt_header_bg' => '#eef2ff',
+            'wpc_pt_header_text' => '#3730a3',
+            'wpc_pt_btn_bg' => '#4f46e5',
             'wpc_pt_btn_text' => '#ffffff',
-            'wpc_ft_header_bg' => '#f3f4f6',
-            'wpc_ft_check_color' => '#10b981',
+            'wpc_ft_header_bg' => '#eef2ff',
+            'wpc_ft_check_color' => '#4f46e5',
             'wpc_ft_x_color' => '#ef4444',
             'wpc_ft_alt_row_bg' => '#f9fafb',
             'wpc_color_pros_bg' => '#f0fdf4',
@@ -939,7 +939,7 @@ function wpc_get_theme_presets() {
             'wpc_color_copied' => '#10b981',
             'wpc_usecase_icon_color' => '#6366f1',
             'wpc_color_tick' => '#10b981',
-            'wpc_color_cross' => '#94a3b8',
+            'wpc_color_cross' => '#ef4444', // Red for missing features
             'wpc_star_rating_color' => '#fbbf24',
             // Text Colors (Slate/Indigo)
             'wpc_text_body_color' => '#334155',
@@ -952,7 +952,7 @@ function wpc_get_theme_presets() {
         'emerald' => array(
             'wpc_primary_color' => '#10b981',
             'wpc_accent_color' => '#3b82f6',
-            'wpc_secondary_color' => '#064e3b',
+            'wpc_secondary_color' => '#ecfdf5', // Light emerald background
             'wpc_card_border_color' => '#d1fae5',
             'wpc_pricing_banner_color' => '#059669',
             'wpc_pt_header_bg' => '#ecfdf5',
@@ -973,7 +973,7 @@ function wpc_get_theme_presets() {
             'wpc_color_copied' => '#059669',
             'wpc_usecase_icon_color' => '#10b981',
             'wpc_color_tick' => '#059669',
-            'wpc_color_cross' => '#94a3b8',
+            'wpc_color_cross' => '#ef4444', // Red for missing features
             'wpc_star_rating_color' => '#10b981',
             // Text Colors (Gray/Emerald)
             'wpc_text_body_color' => '#374151',
@@ -986,7 +986,7 @@ function wpc_get_theme_presets() {
         'sunset' => array(
             'wpc_primary_color' => '#f97316',
             'wpc_accent_color' => '#be123c',
-            'wpc_secondary_color' => '#431407',
+            'wpc_secondary_color' => '#fff7ed', // Light orange background
             'wpc_card_border_color' => '#ffedd5',
             'wpc_pricing_banner_color' => '#ea580c',
             'wpc_pt_header_bg' => '#fff7ed',
@@ -1007,7 +1007,9 @@ function wpc_get_theme_presets() {
             'wpc_color_copied' => '#ea580c',
             'wpc_usecase_icon_color' => '#f97316',
             'wpc_color_tick' => '#f97316',
-            'wpc_color_cross' => '#94a3b8',
+            'wpc_usecase_icon_color' => '#f97316',
+            'wpc_color_tick' => '#f97316',
+            'wpc_color_cross' => '#ef4444', // Red for missing features
             'wpc_star_rating_color' => '#f97316',
             // Text Colors (Stone/Orange)
             'wpc_text_body_color' => '#44403c',
@@ -1020,7 +1022,7 @@ function wpc_get_theme_presets() {
         'ocean' => array(
             'wpc_primary_color' => '#0ea5e9',
             'wpc_accent_color' => '#6366f1',
-            'wpc_secondary_color' => '#0c4a6e',
+            'wpc_secondary_color' => '#f0f9ff', // Light sky background
             'wpc_card_border_color' => '#e0f2fe',
             'wpc_pricing_banner_color' => '#0284c7',
             'wpc_pt_header_bg' => '#f0f9ff',
@@ -1041,7 +1043,7 @@ function wpc_get_theme_presets() {
             'wpc_color_copied' => '#0ea5e9',
             'wpc_usecase_icon_color' => '#0ea5e9',
             'wpc_color_tick' => '#0ea5e9',
-            'wpc_color_cross' => '#94a3b8',
+            'wpc_color_cross' => '#ef4444', // Red for missing features
             'wpc_star_rating_color' => '#0ea5e9',
             // Text Colors (Slate/Sky)
             'wpc_text_body_color' => '#334155',
@@ -1054,7 +1056,7 @@ function wpc_get_theme_presets() {
         'minimal' => array(
             'wpc_primary_color' => '#0f172a',
             'wpc_accent_color' => '#64748b',
-            'wpc_secondary_color' => '#334155', 
+            'wpc_secondary_color' => '#f1f5f9', // Light slate background
             'wpc_card_border_color' => '#e2e8f0',
             'wpc_pricing_banner_color' => '#000000',
             'wpc_pt_header_bg' => '#ffffff',
@@ -1075,7 +1077,7 @@ function wpc_get_theme_presets() {
             'wpc_color_copied' => '#0f172a',
             'wpc_usecase_icon_color' => '#0f172a',
             'wpc_color_tick' => '#0f172a',
-            'wpc_color_cross' => '#94a3b8',
+            'wpc_color_cross' => '#ef4444', // Red for missing features
             'wpc_star_rating_color' => '#64748b',
             // Text Colors (Zinc/Black)
             'wpc_text_body_color' => '#27272a',
@@ -1097,6 +1099,9 @@ function wpc_apply_theme_preset() {
     check_ajax_referer( 'wpc_import_export_nonce', 'nonce' );
 
     $theme = isset( $_POST['theme'] ) ? sanitize_text_field( $_POST['theme'] ) : 'indigo';
+    
+    // Save the selected theme
+    update_option( 'wpc_current_theme_preset', $theme );
     
     $themes = wpc_get_theme_presets();
 
@@ -1728,12 +1733,13 @@ function wpc_render_general_tab() {
                         <p class="description" style="margin-bottom: 10px;">Select a predefined theme to automatically set <strong>ALL</strong> colors (General, Card, Pricing Table, Coupons) to a professional palette.</p>
                         
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <?php $current_theme = get_option( 'wpc_current_theme_preset', 'indigo' ); ?>
                             <select id="wpc_theme_selector" style="max-width: 200px;">
-                                <option value="indigo">Indigo Modern (Default)</option>
-                                <option value="emerald">Emerald Green</option>
-                                <option value="sunset">Sunset Orange</option>
-                                <option value="ocean">Ocean Blue</option>
-                                <option value="minimal">Minimal Slate</option>
+                                <option value="indigo" <?php selected( $current_theme, 'indigo' ); ?>>Indigo Modern (Default)</option>
+                                <option value="emerald" <?php selected( $current_theme, 'emerald' ); ?>>Emerald Green</option>
+                                <option value="sunset" <?php selected( $current_theme, 'sunset' ); ?>>Sunset Orange</option>
+                                <option value="ocean" <?php selected( $current_theme, 'ocean' ); ?>>Ocean Blue</option>
+                                <option value="minimal" <?php selected( $current_theme, 'minimal' ); ?>>Minimal Slate</option>
                             </select>
                             <button type="button" id="wpc_apply_theme_btn" class="button button-secondary">Apply Theme</button>
                             <button type="button" id="wpc_reset_colors_btn" class="button" style="color: #ef4444; border-color: #fca5a5;">Reset Colors</button>

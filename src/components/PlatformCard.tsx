@@ -499,21 +499,21 @@ const PlatformCard = ({
                     // 3. Fallback to Legacy/Specific Features (if no list features found)
                     return (
                         <>
-                            {item.features.products && (
+                            {item.features?.products && (
                                 <li className="flex items-center gap-2 text-sm text-foreground/80">
                                     <Tag className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
                                     <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
                                 </li>
                             )}
-                            {item.features.fees && (
+                            {item.features?.fees && (
                                 <li className="flex items-center gap-2 text-sm text-foreground/80">
                                     <Check className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
                                     <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
                                 </li>
                             )}
-                            {item.features.support && (
+                            {item.features?.support && (
                                 <li className="flex items-center gap-2 text-sm text-foreground/80">
                                     <Check className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />

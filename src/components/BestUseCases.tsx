@@ -49,7 +49,7 @@ const BestUseCases: React.FC<BestUseCasesProps> = ({ items, config, title }) => 
             {title && <h2 className="text-2xl font-bold mb-6 text-center">{title}</h2>}
 
             <div className={`grid grid-cols-1 ${gridClass} gap-6`}>
-                {items.map((item, idx) => (
+                {Array.isArray(items) && items.map((item, idx) => (
                     <div
                         key={idx}
                         className="bg-card text-card-foreground rounded-xl border border-border bg-white shadow-sm p-6 flex flex-col items-center text-center transition-all hover:shadow-md"
