@@ -70,6 +70,10 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
         $logo_url = get_post_meta( $post_id, '_wpc_external_logo_url', true );
     }
     
+    // Get categories for type-specific assignment
+    $categories = wp_get_post_terms( $post_id, 'comparison_category', array( 'fields' => 'names' ) );
+    $category_text = ( ! empty( $categories ) && ! is_wp_error( $categories ) ) ? implode( ', ', $categories ) : '';
+
     // Build schema base
     $schema = array(
         '@context' => 'https://schema.org',
@@ -92,6 +96,8 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
              $schema['provider'] = array( '@type' => 'Organization', 'name' => $brand );
         }
         if ( $service_type ) $schema['serviceType'] = $service_type;
+        elseif ( $category_text ) $schema['serviceType'] = $category_text; // Fallback to WP Categories
+        
         if ( $area_served ) $schema['areaServed'] = $area_served;
     } elseif ( $product_category === 'Course' ) {
          if ( $brand ) { // Provider
@@ -99,7 +105,7 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
          }
          if ( $duration ) $schema['timeRequired'] = $duration; // ISO 8601
     } elseif ( $product_category === 'SoftwareApplication' ) {
-        $schema['applicationCategory'] = 'BusinessApplication'; // Default
+        $schema['applicationCategory'] = $category_text ?: 'BusinessApplication'; 
         if ( $brand ) { // Author/Publisher
              $schema['author'] = array( '@type' => 'Organization', 'name' => $brand );
         }
@@ -129,7 +135,7 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
         
         $schema[$rating_key] = array(
             '@type' => 'AggregateRating',
-            'ratingValue' => round( floatval( $rating ), 1 ),
+            'ratingValue' => number_format( floatval( $rating ), 1, '.', '' ),
             'bestRating' => 5,
             'worstRating' => 1,
             'ratingCount' => 1,
@@ -158,7 +164,7 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
                 if ( $plan_price ) {
                     $offer = $offer_base;
                     $offer['name'] = isset( $plan['name'] ) ? $plan['name'] : '';
-                    $offer['price'] = round( floatval( $plan_price ), 2 );
+                    $offer['price'] = number_format( floatval( $plan_price ), 2, '.', '' );
                     
                     if ( isset( $plan['link'] ) && $plan['link'] ) {
                         $offer['url'] = $plan['link'];
@@ -170,7 +176,7 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
             $clean_price = preg_replace( '/[^0-9.]/', '', $price );
             if ( $clean_price ) {
                 $offer = $offer_base;
-                $offer['price'] = round( floatval( $clean_price ), 2 );
+                $offer['price'] = number_format( floatval( $clean_price ), 2, '.', '' );
                 $offers[] = $offer;
             }
         }
@@ -227,12 +233,6 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
         }
         
         $schema['review'] = $review;
-    }
-    
-    // Add categories as additionalType
-    $categories = wp_get_post_terms( $post_id, 'comparison_category', array( 'fields' => 'names' ) );
-    if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
-        $schema['category'] = implode( ', ', $categories );
     }
     
     // Add features as additionalProperty
@@ -315,9 +315,18 @@ function wpc_generate_list_schema( $list_id ) {
     $item_list_elements = array();
     $position = 1;
     
+    // Get selective schema IDs
+    $schema_ids = get_post_meta( $list_id, '_wpc_list_schema_ids', true );
+    $has_schema_config = is_array( $schema_ids ); // If it's an array (even empty), user has configured it.
+    
     foreach ( $list_items as $list_item ) {
         $item_id = isset( $list_item['id'] ) ? intval( $list_item['id'] ) : ( is_numeric( $list_item ) ? intval( $list_item ) : 0 );
         if ( ! $item_id ) continue;
+        
+        // If config exists, only include if ID is in schema_ids
+        if ( $has_schema_config && ! in_array( $item_id, $schema_ids ) ) {
+            continue;
+        }
         
         $item_schema = wpc_generate_item_schema( $item_id, false );
         if ( ! empty( $item_schema ) && is_array( $item_schema ) ) {

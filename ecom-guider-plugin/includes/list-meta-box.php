@@ -51,6 +51,8 @@ function wpc_render_list_meta_box( $post ) {
     $badge_texts = get_post_meta( $post->ID, '_wpc_list_badge_texts', true ) ?: [];
     if (empty($badge_texts)) $badge_texts = get_post_meta( $post->ID, '_hg_list_badge_texts', true ) ?: [];
 
+    $schema_ids = get_post_meta( $post->ID, '_wpc_list_schema_ids', true ) ?: [];
+
     $badge_colors = get_post_meta( $post->ID, '_wpc_list_badge_colors', true ) ?: [];
     if (empty($badge_colors)) $badge_colors = get_post_meta( $post->ID, '_hg_list_badge_colors', true ) ?: [];
 
@@ -226,6 +228,7 @@ function wpc_render_list_meta_box( $post ) {
                             </th>
                             <th><?php _e( 'Item Name', 'wp-comparison-builder' ); ?></th>
                             <th style="width: 100px; text-align: center;"><?php _e( 'Featured?', 'wp-comparison-builder' ); ?></th>
+                            <th style="width: 80px; text-align: center;"><?php _e( 'Schema?', 'wp-comparison-builder' ); ?></th>
                             <th style="width: 180px;"><?php _e( 'Featured Badge Text', 'wp-comparison-builder' ); ?></th>
                             <th style="width: 120px;"><?php _e( 'Badge Color', 'wp-comparison-builder' ); ?></th>
                         </tr>
@@ -249,6 +252,10 @@ function wpc_render_list_meta_box( $post ) {
                                     <td><strong><?php echo esc_html( $item->post_title ); ?></strong></td>
                                     <td style="text-align: center;">
                                         <input type="checkbox" name="featured_ids[]" value="<?php echo esc_attr( $item->ID ); ?>" <?php checked( $is_featured ); ?> />
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <?php $is_schema = in_array( $item->ID, $schema_ids ); ?>
+                                        <input type="checkbox" name="schema_ids[]" value="<?php echo esc_attr( $item->ID ); ?>" <?php checked( $is_schema ); ?> title="Include this item in JSON-LD Schema (ItemList)" />
                                     </td>
                                     <td>
                                         <input type="text" name="badge_texts[<?php echo esc_attr( $item->ID ); ?>]" value="<?php echo esc_attr( $badge_text ); ?>" placeholder="e.g., Top Choice" style="width: 100%; border: 1px solid #ddd; border-radius: 3px;" />
@@ -1347,6 +1354,14 @@ function wpc_save_list_meta( $post_id ) {
     } else {
         update_post_meta( $post_id, '_wpc_list_featured', [] );
     }
+
+    // Save schema IDs
+    if ( isset( $_POST['schema_ids'] ) && is_array( $_POST['schema_ids'] ) ) {
+        $schema_ids = array_map( 'intval', $_POST['schema_ids'] );
+        update_post_meta( $post_id, '_wpc_list_schema_ids', $schema_ids );
+    } else {
+        update_post_meta( $post_id, '_wpc_list_schema_ids', [] );
+    }
     
     // Save badge texts
     if ( isset( $_POST['badge_texts'] ) && is_array( $_POST['badge_texts'] ) ) {
@@ -1495,26 +1510,6 @@ function wpc_save_list_meta( $post_id ) {
         update_post_meta( $post_id, '_wpc_list_button_text', sanitize_text_field( $_POST['wpc_list_button_text'] ) );
     } else {
         delete_post_meta( $post_id, '_wpc_list_button_text' );
-    }
-
-    // Save List Source Type
-    if ( isset( $_POST['wpc_list_source_type'] ) ) {
-        update_post_meta( $post_id, '_wpc_list_source_type', sanitize_text_field( $_POST['wpc_list_source_type'] ) );
-    }
-
-    // Save Tool Filters
-    if ( isset( $_POST['wpc_list_filter_tool_cats'] ) ) {
-        $tool_cats = array_map( 'intval', $_POST['wpc_list_filter_tool_cats'] );
-        update_post_meta( $post_id, '_wpc_list_filter_tool_cats', $tool_cats );
-    } else {
-        delete_post_meta( $post_id, '_wpc_list_filter_tool_cats' );
-    }
-
-    if ( isset( $_POST['wpc_list_filter_tool_tags'] ) ) {
-        $tool_tags = array_map( 'intval', $_POST['wpc_list_filter_tool_tags'] );
-        update_post_meta( $post_id, '_wpc_list_filter_tool_tags', $tool_tags );
-    } else {
-        delete_post_meta( $post_id, '_wpc_list_filter_tool_tags' );
     }
 
     // Save List Source Type
