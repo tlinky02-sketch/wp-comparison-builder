@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Check, X, Star, ExternalLink, ShoppingBag, Tag } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Check, X, Star, ExternalLink, ShoppingBag, Tag, ChevronLeft, ChevronRight } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -115,29 +115,24 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
       // But typically "prices" object is the new standard.
     }
 
-    // Fallback to item.price (the pre-computed default) IF no category is selected OR if fallback is desired
-    // However, if category is selected, we might want to be stricter? 
-    // User said "Should only show that plan". 
-    // If filtered plans have no valid price for this cycle, we return "Free" (or empty).
-    // Original fallback logic:
-    if (plans.length > 0 && !selectedCategory) {
+    // If no plans match the cycle, and a category is selected OR it's a non-default cycle
+    if (selectedCategory || (plans.length > 0 && cycle !== 'monthly')) {
+      return { amount: '', period: '', unavailable: true };
+    }
+
+    // Fallback to item.price only for default view (monthly + no category)
+    if (plans.length > 0 && !selectedCategory && cycle === 'monthly') {
       if (item.price && item.price !== '0') {
         return { amount: item.price, period: item.moSuffix || getText('moSuffix', '/mo') };
       }
     }
 
-    // If strict category selected but no plans match cycle, or just no price found:
-    // User Requirement: Check if it's "Unavailable" (filtered out by category) vs just "No Price" (Free)
-    // If strict filtering was applied (selectedCategory is set) and we found NO valid price logic above:
-    if (selectedCategory) {
-      // If plans were filtered, and we didn't find a price in the filtered subset.
-      // It implies the plan(s) for this category don't exist or don't have a price.
-      // We should show X.
-      return { amount: '', period: '', unavailable: true };
+    // Default fallback (Free) - strictly for cases where we don't want to hide
+    if (!selectedCategory && cycle === 'monthly' && plans.length === 0) {
+      return { amount: emptyPriceText, period: '' };
     }
 
-    // Check if we should show Free
-    return { amount: emptyPriceText, period: '' };
+    return { amount: '', period: '', unavailable: true };
   };
 
   const copyCoupon = (code: string, btn: HTMLButtonElement) => {
@@ -176,14 +171,102 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     }
   };
 
+  // Scroll Logic for "More than 4 items"
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  // 1. Strict Visibility Filter: Hide items that don't belong to category or have no plans for cycle
+  const visibleItems = React.useMemo(() => {
+    return items.filter(item => {
+      // Category Check
+      if (selectedCategory && item.variants?.enabled && item.variants.plans_by_category) {
+        const allowed = item.variants.plans_by_category[selectedCategory];
+        if (!allowed || !Array.isArray(allowed) || allowed.length === 0) return false;
+      }
+
+      // Cycle Check
+      const price = getPriceForCycle(item, selectedCycle);
+      if (price.unavailable) return false;
+
+      return true;
+    });
+  }, [items, selectedCategory, selectedCycle]);
+
+  const showScroll = visibleItems.length > 4;
+  // Calculate width based on 20% increments (Feature + 4 Items = 100%)
+  const minTableWidth = showScroll ? `${(visibleItems.length + 1) * 20}%` : '100%';
+  const columnWidth = showScroll ? `${100 / (visibleItems.length + 1)}%` : '20%';
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      // Tolerance of 5px
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener('resize', handleScroll);
+    return () => window.removeEventListener('resize', handleScroll);
+  }, [items]);
+
+  const scrollTable = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'right' ? scrollAmount : -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Mobile: Active item index for tab switching
   const [activeItemIndex, setActiveItemIndex] = useState(0);
-  const activeItem = items[activeItemIndex] || items[0];
+  const activeItem = visibleItems[activeItemIndex] || visibleItems[0];
 
-  if (items.length === 0) {
+  useEffect(() => {
+    if (activeItemIndex >= visibleItems.length) {
+      setActiveItemIndex(Math.max(0, visibleItems.length - 1));
+    }
+  }, [visibleItems.length]);
+
+  if (visibleItems.length === 0) {
     return (
       <div className="bg-card rounded-2xl border border-border p-12 text-center">
-        <p className="text-muted-foreground">{getText('noItemsToCompare', 'Select up to 4 items to compare')}</p>
+        <p className="text-muted-foreground">{getText('noItemsToCompare', 'No items match your selection for this category/billing cycle.')}</p>
+        <div className="mt-6">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => { setSelectedCategory(null); setSelectedCycle('monthly'); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setSelectedCategory(null); setSelectedCycle('monthly'); } }}
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-200 border-2 cursor-pointer btn"
+            ref={(el) => {
+              if (el) {
+                el.style.setProperty('color', mutedTextColor, 'important');
+              }
+            }}
+            style={{
+              borderColor: primaryColor,
+              backgroundColor: 'transparent',
+              padding: '0.5rem 1.5rem',
+              height: '2.75rem'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.setProperty('background-color', primaryColor, 'important');
+              e.currentTarget.style.setProperty('color', btnTextColor, 'important');
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.setProperty('background-color', 'transparent', 'important');
+              e.currentTarget.style.setProperty('color', mutedTextColor, 'important');
+            }}
+          >
+            Reset Selection
+          </div>
+        </div>
       </div>
     );
   }
@@ -418,214 +501,286 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
       )}
 
       {/* Desktop Table View */}
-      <div className="hidden md:block w-full pb-4">
-        <table className="w-full relative table-fixed">
-          <thead>
-            <tr className="border-b border-border bg-muted/40 backdrop-blur">
-              <th className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] w-[20%]">
-                {getText('featureHeader', "Feature")}
-              </th>
-              {items.map((item) => {
-                const itemCouponBg = item.design_overrides?.coupon_bg || couponBg;
-                const itemCouponText = item.design_overrides?.coupon_text || couponText;
+      <div className="hidden md:block w-full pb-4 relative group/table">
+        {/* Scroll Arrows */}
+        {showScroll && (
+          <>
+            {showLeftArrow && (
+              <button
+                onClick={() => scrollTable('left')}
+                className="absolute left-[20%] top-24 -translate-y-1/2 z-30 p-2 rounded-full shadow-lg border transition-all hover:scale-110 active:scale-95"
+                style={{
+                  backgroundColor: 'white',
+                  color: primaryColor,
+                  borderColor: 'hsl(var(--border))',
+                  marginLeft: '0.5rem'
+                }}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+            {showRightArrow && (
+              <button
+                onClick={() => scrollTable('right')}
+                className="absolute right-2 top-24 -translate-y-1/2 z-30 p-2 rounded-full shadow-lg border transition-all hover:scale-110 active:scale-95"
+                style={{
+                  backgroundColor: primaryColor,
+                  color: btnTextColor,
+                  borderColor: 'transparent',
+                  marginRight: '0.5rem'
+                }}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+          </>
+        )}
 
-                return (
-                  <th key={item.id} className="p-2 md:p-6 text-center">
-                    <div className="flex flex-col items-center gap-2 md:gap-4">
-                      <div className="w-10 h-10 md:w-16 md:h-16 rounded-lg md:rounded-xl bg-white p-1 md:p-2 shadow-sm border border-border/50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                        {item.logo ? (
-                          <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
-                        ) : (
-                          <ShoppingBag className="w-6 h-6 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="w-full">
-                        <h3 className="font-bold text-foreground text-sm md:text-lg mb-1 min-h-[1.75rem] flex items-center justify-center">{item.name}</h3>
-                        <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
-                          <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
-                          <span className="font-medium text-xs md:text-base">{item.rating}</span>
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className={`w-full ${showScroll ? 'overflow-x-auto scrollbar-hide' : ''}`}
+        >
+          <table className="w-full relative table-fixed border-collapse" style={{ minWidth: showScroll ? minTableWidth : '100%' }}>
+            <thead>
+              <tr className="border-b border-border bg-muted/40 backdrop-blur">
+                <th
+                  className="p-2 md:p-6 text-left font-display font-bold text-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
+                  style={{ width: columnWidth }}
+                >
+                  {getText('featureHeader', "Feature")}
+                </th>
+                {visibleItems.map((item) => {
+                  const itemCouponBg = item.design_overrides?.coupon_bg || couponBg;
+                  const itemCouponText = item.design_overrides?.coupon_text || couponText;
+
+                  return (
+                    <th
+                      key={item.id}
+                      className="p-2 md:p-6 text-center align-top relative group/header"
+                      style={{ width: columnWidth }}
+                    >
+                      <div className="flex flex-col items-center gap-2 md:gap-4">
+                        <div className="w-10 h-10 md:w-16 md:h-16 rounded-lg md:rounded-xl bg-white p-1 md:p-2 shadow-sm border border-border/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {item.logo ? (
+                            <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
+                          ) : (
+                            <ShoppingBag className="w-6 h-6 text-muted-foreground" />
+                          )}
                         </div>
-                        {(() => {
-                          const priceInfo = getPriceForCycle(item, selectedCycle);
-                          return (
-                            <div
-                              className="text-lg md:text-2xl font-bold mb-2 md:mb-4"
-                              ref={(el) => {
-                                if (el) {
-                                  el.style.setProperty('color', primaryColor, 'important');
-                                }
-                              }}
-                              style={{ color: primaryColor }}
-                            >
-                              {priceInfo.amount}
-                              {priceInfo.period && (
-                                <span className="text-xs md:text-sm font-normal ml-1" style={{ color: mutedTextColor }}>
-                                  {priceInfo.period}
-                                </span>
-                              )}
+                        <div className="w-full">
+                          <h3 className="font-bold text-foreground text-sm md:text-lg mb-1 min-h-[1.75rem] flex items-center justify-center">{item.name}</h3>
+                          <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
+                            <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+                            <span className="font-medium text-xs md:text-base">{item.rating}</span>
+                          </div>
+                          {(() => {
+                            const priceInfo = getPriceForCycle(item, selectedCycle);
+                            return (
+                              <div
+                                className="text-lg md:text-2xl font-bold mb-2 md:mb-4"
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('color', primaryColor, 'important');
+                                  }
+                                }}
+                                style={{ color: primaryColor }}
+                              >
+                                {priceInfo.amount}
+                                {priceInfo.period && (
+                                  <span className="text-xs md:text-sm font-normal ml-1" style={{ color: mutedTextColor }}>
+                                    {priceInfo.period}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })()}
+
+                          {/* Coupon in Header if Main Item has one */}
+                          {item.coupon_code && (
+                            <div className="w-full mb-2">
+                              {(() => {
+                                const bg = itemCouponBg;
+                                const text = itemCouponText;
+                                const hover = item.design_overrides?.coupon_hover || colors.couponHover || '#fde68a';
+
+                                // Copied state colors
+                                const copiedColor = colors.copied || '#10b981';
+                                const copiedTextLabel = item.copiedLabel || labels?.copied || "Copied!";
+
+                                return (
+                                  <button
+                                    className="px-2 py-1 rounded w-full flex items-center justify-center gap-1 transition-colors text-[10px]"
+                                    style={{
+                                      backgroundColor: bg,
+                                      color: text,
+                                      border: `1px solid ${text}40`
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = bg; }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const btn = e.currentTarget;
+                                      const originalHTML = btn.innerHTML;
+
+                                      // Copy Action
+                                      const performCopy = () => {
+                                        btn.innerHTML = `<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ${copiedTextLabel}`;
+                                        btn.style.backgroundColor = copiedColor;
+                                        btn.style.borderColor = copiedColor;
+                                        btn.style.color = '#ffffff';
+
+                                        setTimeout(() => {
+                                          btn.innerHTML = originalHTML;
+                                          btn.style.backgroundColor = bg;
+                                          btn.style.borderColor = `${text}40`;
+                                          btn.style.color = text;
+                                        }, 2000);
+                                      };
+
+                                      if (navigator.clipboard) {
+                                        navigator.clipboard.writeText(item.coupon_code || '').then(performCopy);
+                                      } else {
+                                        // Fallback
+                                        const ta = document.createElement('textarea');
+                                        ta.value = item.coupon_code || '';
+                                        document.body.appendChild(ta);
+                                        ta.select();
+                                        document.execCommand('copy');
+                                        document.body.removeChild(ta);
+                                        performCopy();
+                                      }
+                                    }}
+                                  >
+                                    <Tag className="w-3 h-3" /> {item.couponLabel || getText('getCoupon', 'Code')}: {item.coupon_code}
+                                  </button>
+                                );
+                              })()}
                             </div>
-                          );
-                        })()}
-
-                        {/* Coupon in Header if Main Item has one */}
-                        {item.coupon_code && (
-                          <div className="w-full mb-2">
-                            {(() => {
-                              const bg = itemCouponBg;
-                              const text = itemCouponText;
-                              const hover = item.design_overrides?.coupon_hover || colors.couponHover || '#fde68a';
-
-                              // Copied state colors
-                              const copiedColor = colors.copied || '#10b981';
-                              const copiedTextLabel = item.copiedLabel || labels?.copied || "Copied!";
-
+                          )}
+                          {/* Footer / Button Visibility Check */}
+                          {(item.design_overrides?.show_footer_table !== false) && (
+                            (() => {
                               return (
-                                <button
-                                  className="px-2 py-1 rounded w-full flex items-center justify-center gap-1 transition-colors text-[10px]"
+                                <a
+                                  href={item.details_link || '#'}
+                                  target={target}
+                                  className="wpc-cta-btn inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
+                                  rel="noreferrer"
                                   style={{
-                                    backgroundColor: bg,
-                                    color: text,
-                                    border: `1px solid ${text}40`
+                                    backgroundColor: primaryColor,
+                                    color: btnTextColor
                                   }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hover; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = bg; }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const btn = e.currentTarget;
-                                    const originalHTML = btn.innerHTML;
-
-                                    // Copy Action
-                                    const performCopy = () => {
-                                      btn.innerHTML = `<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg> ${copiedTextLabel}`;
-                                      btn.style.backgroundColor = copiedColor;
-                                      btn.style.borderColor = copiedColor;
-                                      btn.style.color = '#ffffff';
-
-                                      setTimeout(() => {
-                                        btn.innerHTML = originalHTML;
-                                        btn.style.backgroundColor = bg;
-                                        btn.style.borderColor = `${text}40`;
-                                        btn.style.color = text;
-                                      }, 2000);
-                                    };
-
-                                    if (navigator.clipboard) {
-                                      navigator.clipboard.writeText(item.coupon_code || '').then(performCopy);
-                                    } else {
-                                      // Fallback
-                                      const ta = document.createElement('textarea');
-                                      ta.value = item.coupon_code || '';
-                                      document.body.appendChild(ta);
-                                      ta.select();
-                                      document.execCommand('copy');
-                                      document.body.removeChild(ta);
-                                      performCopy();
-                                    }
+                                  onMouseEnter={(e) => {
+                                    if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                                    else e.currentTarget.style.filter = 'brightness(90%)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = primaryColor;
+                                    e.currentTarget.style.filter = '';
                                   }}
                                 >
-                                  <Tag className="w-3 h-3" /> {item.couponLabel || getText('getCoupon', 'Code')}: {item.coupon_code}
-                                </button>
+                                  {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" style={{ stroke: btnTextColor }} />
+                                </a>
                               );
-                            })()}
-                          </div>
-                        )}
-                        {/* Footer / Button Visibility Check */}
-                        {(item.design_overrides?.show_footer_table !== false) && (
-                          (() => {
-                            return (
-                              <a
-                                href={item.details_link || '#'}
-                                target={target}
-                                className="wpc-cta-btn inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
-                                rel="noreferrer"
-                                style={{
-                                  backgroundColor: primaryColor,
-                                  color: btnTextColor
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                                  else e.currentTarget.style.filter = 'brightness(90%)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = primaryColor;
-                                  e.currentTarget.style.filter = '';
-                                }}
-                              >
-                                {item.button_text || item.visitSiteLabel || getText('visitSite', "Visit Site")} <ExternalLink className="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 flex-shrink-0" style={{ stroke: btnTextColor }} />
-                              </a>
-                            );
-                          })()
-                        )}
-                        {!config?.hideRemoveButton && (
-                          <button
-                            onClick={() => onRemove(item.id)}
-                            className="wpc-text-link mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
-                            style={{ color: mutedTextColor }}
-                          >
-                            <X className="w-3 h-3" /> {getText('remove', 'Remove')}
-                          </button>
-                        )}
+                            })()
+                          )}
+                          {!config?.hideRemoveButton && (
+                            <button
+                              onClick={() => onRemove(item.id)}
+                              className="wpc-text-link mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
+                              style={{ color: mutedTextColor }}
+                            >
+                              <X className="w-3 h-3" /> {getText('remove', 'Remove')}
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
-              // Price/Rating are displayed in header, so we filter them from body rows
-              <tr key={feature.key} className="group hover:bg-muted/30 transition-colors">
-                <td className="p-2 md:p-6 text-left font-medium text-muted-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 backdrop-blur z-20 group-hover:bg-background/95 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                  {feature.label}
-                </td>
-                {items.map((item) => (
-                  <td key={item.id} className="p-2 md:p-6 text-center text-xs md:text-[length:var(--wpc-font-size-body,1rem)] break-words whitespace-normal min-w-0">
-                    {renderCell(feature.key, item)}
-                  </td>
-                ))}
+                    </th>
+                  );
+                })}
               </tr>
-            ))}
-            {/* Pros */}
-            {showPros && (
-              <tr className="transition-colors" style={{ backgroundColor: prosBg }}>
-                <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('prosLabel', "Pros")}</td>
-                {items.map((item) => (
-                  <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
-                    <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                      style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
-                      {(item.pros || []).slice(0, 3).map((pro, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
-                          <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
-                          <span className="min-w-0">{pro}</span>
-                        </li>
-                      ))}
-                    </ul>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {features.filter(f => !["price", "rating"].includes(f.key)).map((feature) => (
+                // Price/Rating are displayed in header, so we filter them from body rows
+                <tr key={feature.key} className="group hover:bg-muted/30 transition-colors">
+                  <td
+                    className="p-2 md:p-6 text-left font-medium text-muted-foreground text-xs md:text-[length:var(--wpc-font-size-body,1rem)] sticky left-0 bg-background/95 backdrop-blur z-20 group-hover:bg-background/95 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
+                    style={{ width: columnWidth }}
+                  >
+                    {feature.label}
                   </td>
-                ))}
-              </tr>
-            )}
-            {/* Cons */}
-            {showCons && (
-              <tr className="transition-colors" style={{ backgroundColor: consBg }}>
-                <td className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-[20%]">{getText('consLabel', "Cons")}</td>
-                {items.map((item) => (
-                  <td key={item.id} className="p-5 align-top break-words whitespace-normal min-w-0">
-                    <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                      style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
-                      {(item.cons || []).slice(0, 3).map((con, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
-                          <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
-                          <span className="min-w-0">{con}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  {visibleItems.map((item) => (
+                    <td
+                      key={item.id}
+                      className="p-2 md:p-6 text-center text-xs md:text-[length:var(--wpc-font-size-body,1rem)] break-words whitespace-normal min-w-0"
+                      style={{ width: columnWidth }}
+                    >
+                      {renderCell(feature.key, item)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              {/* Pros */}
+              {showPros && (
+                <tr className="transition-colors" style={{ backgroundColor: prosBg }}>
+                  <td
+                    className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10"
+                    style={{ width: columnWidth }}
+                  >
+                    {getText('prosLabel', "Pros")}
                   </td>
-                ))}
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  {visibleItems.map((item) => (
+                    <td
+                      key={item.id}
+                      className="p-5 align-top break-words whitespace-normal min-w-0"
+                      style={{ width: columnWidth }}
+                    >
+                      <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
+                        style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
+                        {(item.pros || []).slice(0, 3).map((pro, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
+                            <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
+                            <span className="min-w-0">{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  ))}
+                </tr>
+              )}
+              {/* Cons */}
+              {showCons && (
+                <tr className="transition-colors" style={{ backgroundColor: consBg }}>
+                  <td
+                    className="p-5 font-bold text-foreground sticky left-0 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10"
+                    style={{ width: columnWidth }}
+                  >
+                    {getText('consLabel', "Cons")}
+                  </td>
+                  {visibleItems.map((item) => (
+                    <td
+                      key={item.id}
+                      className="p-5 align-top break-words whitespace-normal min-w-0"
+                      style={{ width: columnWidth }}
+                    >
+                      <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
+                        style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
+                        {(item.cons || []).slice(0, 3).map((con, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
+                            <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />
+                            <span className="min-w-0">{con}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  ))}
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Mobile: Tabbed Single-Item View */}
@@ -633,7 +788,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
         {/* Tab Bar: Logo + Name for each item */}
         <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
           <div className="flex overflow-x-auto">
-            {items.map((item, idx) => (
+            {visibleItems.map((item, idx) => (
               <button
                 key={item.id}
                 onClick={() => setActiveItemIndex(idx)}
@@ -796,4 +951,3 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
 };
 
 export default ComparisonTable;
-

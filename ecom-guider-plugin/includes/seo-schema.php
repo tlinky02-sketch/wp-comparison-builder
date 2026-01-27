@@ -29,6 +29,13 @@ function wpc_get_schema_settings() {
  * Generate schema for a single comparison item
  */
 function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
+    static $generated_items = array();
+    
+    if ( $include_wrapper && in_array( $post_id, $generated_items ) ) {
+        return '<!-- WPC: Item Schema for ' . $post_id . ' already output -->';
+    }
+    if ( $include_wrapper ) $generated_items[] = $post_id;
+
     $settings = wpc_get_schema_settings();
     
     if ( $settings['enabled'] !== '1' ) {
@@ -280,6 +287,14 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
  * Generate schema for a custom list (ItemList with multiple products)
  */
 function wpc_generate_list_schema( $list_id ) {
+    static $generated_lists = array();
+    
+    // Prevent duplicate output of the same list schema on the same page
+    if ( in_array( $list_id, $generated_lists ) ) {
+        return '<!-- WPC: Schema for List ' . $list_id . ' already generated -->';
+    }
+    $generated_lists[] = $list_id;
+
     $settings = wpc_get_schema_settings();
     
     if ( $settings['enabled'] !== '1' ) {
@@ -319,9 +334,13 @@ function wpc_generate_list_schema( $list_id ) {
     $schema_ids = get_post_meta( $list_id, '_wpc_list_schema_ids', true );
     $has_schema_config = is_array( $schema_ids ); // If it's an array (even empty), user has configured it.
     
+    $processed_ids = array();
+    
     foreach ( $list_items as $list_item ) {
         $item_id = isset( $list_item['id'] ) ? intval( $list_item['id'] ) : ( is_numeric( $list_item ) ? intval( $list_item ) : 0 );
-        if ( ! $item_id ) continue;
+        if ( ! $item_id || in_array( $item_id, $processed_ids ) ) continue;
+        
+        $processed_ids[] = $item_id;
         
         // If config exists, only include if ID is in schema_ids
         if ( $has_schema_config && ! in_array( $item_id, $schema_ids ) ) {
