@@ -75,6 +75,8 @@ function wpc_render_list_meta_box( $post ) {
     $initial_visible_count = get_post_meta( $post->ID, '_wpc_list_initial_visible', true );
     if (empty($initial_visible_count)) $initial_visible_count = '8'; // Default to 8
 
+    $schema_desc = get_post_meta( $post->ID, '_wpc_list_schema_desc', true );
+
     // List Source Type
     $source_type = get_post_meta( $post->ID, '_wpc_list_source_type', true ) ?: 'item';
 
@@ -352,6 +354,12 @@ function wpc_render_list_meta_box( $post ) {
             </div>
 
             <div class="wpc-field-group">
+                <label class="wpc-field-label">List SEO & Schema</label>
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Schema Description (ItemList):</strong></label>
+                    <textarea name="wpc_list_schema_desc" style="width: 100%; margin-top: 5px;" rows="3" placeholder="Enter a unique description for the ItemList schema (search snippets). If empty, the list title will be used."><?php echo esc_textarea( $schema_desc ); ?></textarea>
+                </div>
+                
                 <label class="wpc-field-label">List Functionality</label>
                 <div class="wpc-flex-row">
                     <div class="wpc-flex-item">
@@ -1515,6 +1523,11 @@ function wpc_save_list_meta( $post_id ) {
     // Save List Source Type
     if ( isset( $_POST['wpc_list_source_type'] ) ) {
         update_post_meta( $post_id, '_wpc_list_source_type', sanitize_text_field( $_POST['wpc_list_source_type'] ) );
+    }
+
+    // Save Schema Description
+    if ( isset( $_POST['wpc_list_schema_desc'] ) ) {
+        update_post_meta( $post_id, '_wpc_list_schema_desc', sanitize_textarea_field( $_POST['wpc_list_schema_desc'] ) );
     }
 
     // Save Tool Filters

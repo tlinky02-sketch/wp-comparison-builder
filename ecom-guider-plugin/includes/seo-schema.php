@@ -29,12 +29,16 @@ function wpc_get_schema_settings() {
  * Generate schema for a single comparison item
  */
 function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
-    static $generated_items = array();
+    static $processed_ids = array();
     
-    if ( $include_wrapper && in_array( $post_id, $generated_items ) ) {
-        return '<!-- WPC: Item Schema for ' . $post_id . ' already output -->';
+    if ( $include_wrapper && in_array( $post_id, $processed_ids ) ) {
+        return '<!-- WPC: Item Schema for ' . $post_id . ' already output or included in a list -->';
     }
-    if ( $include_wrapper ) $generated_items[] = $post_id;
+    
+    // Track this ID globally
+    if ( ! in_array( $post_id, $processed_ids ) ) {
+        $processed_ids[] = $post_id;
+    }
 
     $settings = wpc_get_schema_settings();
     
@@ -82,15 +86,20 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
     $category_text = ( ! empty( $categories ) && ! is_wp_error( $categories ) ) ? implode( ', ', $categories ) : '';
 
     // Build schema base
+    $schema_type = $product_category;
+    if ( $product_category === 'PhysicalProduct' ) {
+        $schema_type = 'Product';
+    }
+    
     $schema = array(
         '@context' => 'https://schema.org',
-        '@type' => $product_category, // Dynamic Type
+        '@type' => $schema_type,
         'name' => $title,
         'description' => $description ?: $title,
     );
 
     // Type-Specific Fields
-    if ( $product_category === 'Product' ) {
+    if ( $product_category === 'Product' || $product_category === 'PhysicalProduct' ) {
         if ( $brand ) {
             $schema['brand'] = array( '@type' => 'Brand', 'name' => $brand );
         }
@@ -369,7 +378,7 @@ function wpc_generate_list_schema( $list_id ) {
         '@context' => 'https://schema.org',
         '@type' => 'ItemList',
         'name' => $list->post_title,
-        'description' => get_post_meta( $list_id, '_wpc_list_description', true ) ?: $list->post_title,
+        'description' => get_post_meta( $list_id, '_wpc_list_schema_desc', true ) ?: ( get_post_meta( $list_id, '_wpc_list_description', true ) ?: $list->post_title ),
         'numberOfItems' => count( $item_list_elements ),
         'itemListElement' => $item_list_elements,
     );
@@ -414,7 +423,7 @@ function wpc_output_single_schema() {
     echo wpc_generate_item_schema( $post->ID, true );
 }
 // Priority 99 ensures compatibility with other SEO plugins (they usually use 10 or lower)
-add_action( 'wp_head', 'wpc_output_single_schema', 99 );
+add_action( 'wp_footer', 'wpc_output_single_schema', 99 );
 
 /**
  * Register schema settings

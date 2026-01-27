@@ -400,19 +400,20 @@ function wpc_render_meta_box( $post ) {
                     <label class="wpc-label"><?php _e( 'Product Category', 'wp-comparison-builder' ); ?></label>
                     <select name="wpc_product_category" id="wpc_product_category" class="wpc-input" style="margin-bottom: 15px;">
                         <option value="SoftwareApplication" <?php selected( $current_schema_cat, 'SoftwareApplication' ); ?>>Digital / Software (Default)</option>
-                        <option value="Product" <?php selected( $current_schema_cat, 'Product' ); ?>>Physical Product</option>
+                        <option value="Product" <?php selected( $current_schema_cat, 'Product' ); ?>>Product</option>
+                        <option value="PhysicalProduct" <?php selected( $current_schema_cat, 'PhysicalProduct' ); ?>>Physical Product</option>
                         <option value="Service" <?php selected( $current_schema_cat, 'Service' ); ?>>Service</option>
                         <option value="Course" <?php selected( $current_schema_cat, 'Course' ); ?>>Course</option>
                     </select>
                     
                     <!-- Dynamic Fields Container -->
                     <div id="wpc-schema-fields">
-                        <div class="wpc-field-group" data-show-for="SoftwareApplication Product Service Course">
+                        <div class="wpc-field-group" data-show-for="SoftwareApplication Product PhysicalProduct Service Course">
                             <label class="wpc-label">Provider / Brand Name</label>
                             <input type="text" name="wpc_brand" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_brand', true ) ); ?>" class="wpc-input" placeholder="e.g. Sony, Coursera, Hostinger" />
                         </div>
                         
-                        <div class="wpc-field-group" data-show-for="Product" style="display:none; margin-top: 10px; border-left: 3px solid #6366f1; padding-left: 10px;">
+                        <div class="wpc-field-group" data-show-for="Product PhysicalProduct" style="display:none; margin-top: 10px; border-left: 3px solid #6366f1; padding-left: 10px;">
                             <h4 style="margin: 5px 0 10px;">Physical Product Details</h4>
                             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                                 <div style="flex:1;">
@@ -1384,119 +1385,17 @@ function wpc_render_meta_box( $post ) {
 
         <!-- TAB: SEO -->
         <div id="wpc-tab-seo" class="wpc-tab-content">
-             <!-- Schema & Product Category -->
-            <div class="wpc-row">
+             <!-- Schema & Product Category Notice -->
+            <div class="wpc-row" style="margin-bottom: 20px;">
                 <div class="wpc-col">
-                    <h3 class="wpc-section-title">Schema & Product Data</h3>
-                    <?php $current_schema_cat = get_post_meta( $post->ID, '_wpc_product_category', true ) ?: 'SoftwareApplication'; ?>
-                    <label class="wpc-label"><?php _e( 'Product Category (Schema Type)', 'wp-comparison-builder' ); ?></label>
-                    <select name="wpc_product_category" id="wpc_product_category" class="wpc-input" style="margin-bottom: 15px;">
-                        <option value="SoftwareApplication" <?php selected( $current_schema_cat, 'SoftwareApplication' ); ?>>Digital / Software (Default)</option>
-                        <option value="Product" <?php selected( $current_schema_cat, 'Product' ); ?>>Physical Product</option>
-                        <option value="Service" <?php selected( $current_schema_cat, 'Service' ); ?>>Service</option>
-                        <option value="Course" <?php selected( $current_schema_cat, 'Course' ); ?>>Course</option>
-                    </select>
-                    
-                    <!-- Dynamic Fields Container -->
-                    <div id="wpc-schema-fields">
-                        <!-- Common Identity Fields -->
-                        <div class="wpc-field-group" data-show-for="SoftwareApplication Product Service Course">
-                            <label class="wpc-label">Provider / Brand Name</label>
-                            <input type="text" name="wpc_brand" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_brand', true ) ); ?>" class="wpc-input" placeholder="e.g. Sony, Coursera, Hostinger" />
-                        </div>
-                        
-                        <!-- Physical Product Fields -->
-                        <div class="wpc-field-group" data-show-for="Product" style="display:none; margin-top: 10px; border-left: 3px solid #6366f1; padding-left: 10px;">
-                            <h4 style="margin: 5px 0 10px;">Physical Product Details</h4>
-                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                                <div style="flex:1;">
-                                    <label class="wpc-label">SKU</label>
-                                    <input type="text" name="wpc_sku" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_sku', true ) ); ?>" class="wpc-input" />
-                                </div>
-                                <div style="flex:1;">
-                                    <label class="wpc-label">GTIN / MPN</label>
-                                    <input type="text" name="wpc_gtin" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_gtin', true ) ); ?>" class="wpc-input" />
-                                </div>
-                            </div>
-                            <!-- ... rest of product fields ... -->
-                             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                                <div style="flex:1;">
-                                    <label class="wpc-label">Condition</label>
-                                    <select name="wpc_condition" class="wpc-input">
-                                        <?php $cond = get_post_meta( $post->ID, '_wpc_condition', true ) ?: 'NewCondition'; ?>
-                                        <option value="NewCondition" <?php selected($cond, 'NewCondition'); ?>>New</option>
-                                        <option value="UsedCondition" <?php selected($cond, 'UsedCondition'); ?>>Used</option>
-                                        <option value="RefurbishedCondition" <?php selected($cond, 'RefurbishedCondition'); ?>>Refurbished</option>
-                                    </select>
-                                </div>
-                                <div style="flex:1;">
-                                    <label class="wpc-label">Availability</label>
-                                    <select name="wpc_availability" class="wpc-input">
-                                        <?php $avail = get_post_meta( $post->ID, '_wpc_availability', true ) ?: 'InStock'; ?>
-                                        <option value="InStock" <?php selected($avail, 'InStock'); ?>>In Stock</option>
-                                        <option value="OutOfStock" <?php selected($avail, 'OutOfStock'); ?>>Out of Stock</option>
-                                        <option value="PreOrder" <?php selected($avail, 'PreOrder'); ?>>Pre-Order</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 10px;">
-                                <div style="flex:1;">
-                                    <label class="wpc-label">MFG Date</label>
-                                    <input type="date" name="wpc_mfg_date" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_mfg_date', true ) ); ?>" class="wpc-input" />
-                                </div>
-                                <div style="flex:1;">
-                                    <label class="wpc-label">Expiry Date</label>
-                                    <input type="date" name="wpc_exp_date" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_exp_date', true ) ); ?>" class="wpc-input" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Service Fields -->
-                        <div class="wpc-field-group" data-show-for="Service" style="display:none; margin-top: 10px; border-left: 3px solid #10b981; padding-left: 10px;">
-                            <h4 style="margin: 5px 0 10px;">Service Details</h4>
-                            <div style="margin-bottom: 10px;">
-                                <label class="wpc-label">Service Type</label>
-                                <input type="text" name="wpc_service_type" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_service_type', true ) ); ?>" class="wpc-input" placeholder="e.g. Plumbing, Web Hosting, Consulting" />
-                            </div>
-                            <div>
-                                <label class="wpc-label">Area Served (City/Country)</label>
-                                <input type="text" name="wpc_area_served" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_area_served', true ) ); ?>" class="wpc-input" />
-                            </div>
-                        </div>
-
-                        <!-- Course Fields -->
-                        <div class="wpc-field-group" data-show-for="Course" style="display:none; margin-top: 10px; border-left: 3px solid #f59e0b; padding-left: 10px;">
-                            <h4 style="margin: 5px 0 10px;">Course Details</h4>
-                            <div style="margin-bottom: 10px;">
-                                 <label class="wpc-label">Duration (ISO 8601)</label>
-                                 <input type="text" name="wpc_duration" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_duration', true ) ); ?>" class="wpc-input" placeholder="e.g. PT10H (10 Hours)" />
-                                 <p class="description"><a href="https://en.wikipedia.org/wiki/ISO_8601#Durations" target="_blank">ISO 8601 Format</a> required for Schema.</p>
-                            </div>
-                        </div>
+                    <div style="background: #f0f6fc; border-left: 4px solid #0366d6; padding: 15px; border-radius: 4px;">
+                        <h3 style="margin-top: 0; color: #0366d6;">Schema Data Management</h3>
+                        <p style="margin: 0;">
+                            Product schema fields (Category, Brand/Provider, SKU, Service/Course details) have been consolidated in the <strong>General</strong> tab for better organization and data integrity.
+                        </p>
+                        <button type="button" class="button" style="margin-top: 10px;" onclick="wpcOpenItemTab(event, 'general')">Go to General Tab</button>
                     </div>
                 </div>
-                
-                <script>
-                jQuery(document).ready(function($) {
-                    const catSelect = $('#wpc_product_category');
-                    const fieldGroups = $('.wpc-field-group');
-                    
-                    function updateFields() {
-                        const selected = catSelect.val();
-                        fieldGroups.each(function() {
-                            const showFor = $(this).data('show-for').split(' ');
-                            if (showFor.includes(selected)) {
-                                $(this).slideDown(200);
-                            } else {
-                                $(this).slideUp(200);
-                            }
-                        });
-                    }
-                    
-                    catSelect.on('change', updateFields);
-                    updateFields(); // Init
-                });
-                </script>
             </div>
 
             <!-- Schema Preview Section -->
