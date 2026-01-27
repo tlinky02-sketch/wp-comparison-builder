@@ -60,11 +60,12 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_admin_layout_style' );
     
     // Module Toggles
-    register_setting( 'wpc_modules_settings', 'wpc_enable_tools_module' );
-    register_setting( 'wpc_modules_settings', 'wpc_enable_variants_module' );
-    register_setting( 'wpc_modules_settings', 'wpc_variants_selector_style' );
-    register_setting( 'wpc_modules_settings', 'wpc_variants_show_badge' );
-    register_setting( 'wpc_modules_settings', 'wpc_variants_remember_selection' );
+    // Module Toggles
+    register_setting( 'wpc_settings_group', 'wpc_enable_tools_module' );
+    register_setting( 'wpc_settings_group', 'wpc_enable_variants_module' );
+    register_setting( 'wpc_settings_group', 'wpc_variants_selector_style' );
+    register_setting( 'wpc_settings_group', 'wpc_variants_show_badge' );
+    register_setting( 'wpc_settings_group', 'wpc_variants_remember_selection' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );
@@ -165,25 +166,21 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_text_no_plans' );
     
     // Color Settings
-    register_setting( 'wpc_settings_group', 'wpc_color_pros_bg' );
-    register_setting( 'wpc_settings_group', 'wpc_color_pros_text' );
-    register_setting( 'wpc_settings_group', 'wpc_color_cons_bg' );
-    register_setting( 'wpc_settings_group', 'wpc_color_cons_text' );
-    register_setting( 'wpc_settings_group', 'wpc_color_coupon_bg' );
-    register_setting( 'wpc_settings_group', 'wpc_color_coupon_text' );
-    register_setting( 'wpc_settings_group', 'wpc_color_coupon_hover' );
-    register_setting( 'wpc_settings_group', 'wpc_color_copied' );
-    register_setting( 'wpc_settings_group', 'wpc_color_tick' );
-    register_setting( 'wpc_settings_group', 'wpc_color_cross' );
-    register_setting( 'wpc_settings_group', 'wpc_star_rating_color' );
+    register_setting( 'wpc_settings_group', 'wpc_color_coupon_bg', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_color_coupon_text', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_color_coupon_hover', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_color_copied', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_color_tick', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_color_cross', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_star_rating_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
     
     // Plan Features Global Settings
     register_setting( 'wpc_settings_group', 'wpc_ft_display_mode' );
     register_setting( 'wpc_settings_group', 'wpc_ft_header_label' );
-    register_setting( 'wpc_settings_group', 'wpc_ft_header_bg' );
-    register_setting( 'wpc_settings_group', 'wpc_ft_check_color' );
-    register_setting( 'wpc_settings_group', 'wpc_ft_x_color' );
-    register_setting( 'wpc_settings_group', 'wpc_ft_alt_row_bg' );
+    register_setting( 'wpc_settings_group', 'wpc_ft_header_bg', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_ft_check_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_ft_x_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_ft_alt_row_bg', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
     
     // Typography Settings
     register_setting( 'wpc_settings_group', 'wpc_font_family' );      // 'inherit'|'inter'|'roboto'|'poppins'|'open-sans'|'custom'
@@ -194,10 +191,10 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_font_heading_custom' ); // Custom Google Font name for headings
     
     // Text Color Settings (NEW)
-    register_setting( 'wpc_settings_group', 'wpc_text_body_color' );      // Body text color (empty = inherit)
-    register_setting( 'wpc_settings_group', 'wpc_text_heading_color' );   // Heading text color (empty = inherit)
-    register_setting( 'wpc_settings_group', 'wpc_text_muted_color' );     // Muted/secondary text color
-    register_setting( 'wpc_settings_group', 'wpc_text_link_color' );      // Link color (empty = inherit)
+    register_setting( 'wpc_settings_group', 'wpc_text_body_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_text_heading_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_text_muted_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
+    register_setting( 'wpc_settings_group', 'wpc_text_link_color', array( 'sanitize_callback' => 'sanitize_hex_color' ) );
 
     // Advanced Typography (New)
     register_setting( 'wpc_settings_group', 'wpc_font_size_h1' );
@@ -820,31 +817,21 @@ function wpc_reset_settings() {
 
     check_ajax_referer( 'wpc_import_export_nonce', 'nonce' );
 
-    $defaults = array(
-        'wpc_primary_color' => '#6366f1',
-        'wpc_accent_color' => '#0d9488',
-        'wpc_secondary_color' => '#1e293b',
-        'wpc_card_border_color' => '#e2e8f0',
-        'wpc_pricing_banner_color' => '#10b981',
-        'wpc_button_hover_color' => '',
-        'wpc_show_plan_buttons' => '1',
-        'wpc_show_footer_button_global' => '1',
-        'wpc_filter_style' => 'top',
-        'wpc_pt_header_bg' => '#f8fafc',
-        'wpc_pt_header_text' => '#0f172a',
-        'wpc_pt_btn_bg' => '#0f172a',
-        'wpc_pt_btn_text' => '#ffffff',
-        'wpc_pt_btn_pos_table' => 'after_price',
-        'wpc_pt_btn_pos_table' => 'after_price',
-        'wpc_pt_btn_pos_popup' => 'after_price',
-        'wpc_target_details' => '_blank',
-        'wpc_target_direct' => '_blank',
-        'wpc_target_details' => '_blank',
-        'wpc_target_direct' => '_blank',
-        'wpc_target_pricing' => '_blank',
-        'wpc_default_list_style' => 'grid',
-        'wpc_star_rating_color' => '#fbbf24',
-    );
+    // Get 'indigo' preset as the single source of truth for defaults
+    $presets = wpc_get_theme_presets();
+    $defaults = $presets['indigo'];
+
+    // Add other non-color settings that aren't in the theme preset
+    $defaults['wpc_filter_style'] = 'top';
+    $defaults['wpc_show_plan_buttons'] = '1';
+    $defaults['wpc_show_footer_button_global'] = '1';
+    $defaults['wpc_pt_btn_pos_table'] = 'after_price';
+    $defaults['wpc_pt_btn_pos_popup'] = 'after_price';
+    $defaults['wpc_target_details'] = '_blank';
+    $defaults['wpc_target_direct'] = '_blank';
+    $defaults['wpc_target_pricing'] = '_blank';
+    $defaults['wpc_default_list_style'] = 'grid';
+    $defaults['wpc_active_preset'] = 'indigo';
 
     foreach ( $defaults as $key => $value ) {
         update_option( $key, $value );
@@ -1321,39 +1308,71 @@ function wpc_render_settings_page() {
             </a>
         </nav>
 
-        <!-- Tab Contents -->
-        <div class="wpc-tab-content" id="wpc-tab-general">
-            <?php wpc_render_general_tab(); ?>
-        </div>
+        <!-- Global Form Wrapper -->
+        <form method="post" action="options.php">
+            <?php 
+                settings_fields( 'wpc_settings_group' ); 
+                // We do NOT call do_settings_sections here because we manually render them in tabs
+            ?>
 
-        <div class="wpc-tab-content" id="wpc-tab-links" style="display: none;">
-            <?php wpc_render_links_tab(); ?>
-        </div>
+            <!-- Tab Contents -->
+            <div class="wpc-tab-content" id="wpc-tab-general">
+                <?php wpc_render_general_tab(); ?>
+            </div>
 
-        <div class="wpc-tab-content" id="wpc-tab-texts" style="display: none;">
-            <?php wpc_render_texts_tab(); ?>
-        </div>
-        
-        <div class="wpc-tab-content" id="wpc-tab-pricing" style="display: none;">
-            <?php wpc_render_pricing_tab(); ?>
-        </div>
-        
-        <div class="wpc-tab-content" id="wpc-tab-schema-seo" style="display: none;">
-            <?php wpc_render_schema_seo_tab(); ?>
-        </div>
-        
-        <div class="wpc-tab-content" id="wpc-tab-modules" style="display: none;">
-            <?php wpc_render_modules_tab(); ?>
-        </div>
-        
-        <div class="wpc-tab-content" id="wpc-tab-ai-settings" style="display: none;">
-            <?php wpc_render_ai_tab(); ?>
-        </div>
+            <div class="wpc-tab-content" id="wpc-tab-links" style="display: none;">
+                <?php wpc_render_links_tab(); ?>
+            </div>
 
-        <div class="wpc-tab-content" id="wpc-tab-proscons" style="display: none;">
-            <?php wpc_render_proscons_tab(); ?>
-        </div>
-        
+            <div class="wpc-tab-content" id="wpc-tab-texts" style="display: none;">
+                <?php wpc_render_texts_tab(); ?>
+            </div>
+            
+            <div class="wpc-tab-content" id="wpc-tab-pricing" style="display: none;">
+                <?php wpc_render_pricing_tab(); ?>
+            </div>
+            
+            <div class="wpc-tab-content" id="wpc-tab-schema-seo" style="display: none;">
+                <?php wpc_render_schema_seo_tab(); ?>
+            </div>
+            
+            <div class="wpc-tab-content" id="wpc-tab-modules" style="display: none;">
+                <?php wpc_render_modules_tab(); ?>
+            </div>
+            
+            <div class="wpc-tab-content" id="wpc-tab-ai-settings" style="display: none;">
+                <?php wpc_render_ai_tab(); ?>
+            </div>
+
+            <!-- Pros/Cons and others that might have their own forms need careful handling. 
+                 If they use wpc_settings_group, they must be part of this form. 
+                 If they use custom AJAX or other groups, they might need to be outside?
+                 
+                 Pros/Cons uses wpc_proscons_settings (custom group) or wpc_settings_group?
+                 Wait, I checked specifically: Pros/Cons inputs were duplicate in Texts tab.
+                 The actual Pros/Cons tab uses 'wpc_proscons_settings'.
+                 So it should probably NOT be inside this form if it saves to a different group.
+                 
+                 BUT user wants "Save General" to save "Everything".
+                 If Pros/Cons are in a different group, they won't be saved by this form submission.
+                 
+                 However, the main bug is General vs Pricing vs Texts vs Links which ALL use wpc_settings_group.
+                 So wrapping THOSE is the priority.
+                 
+                 Let's wrap the tabs that share wpc_settings_group.
+            -->
+
+            <div class="wpc-tab-content" id="wpc-tab-proscons" style="display: none;">
+                <?php wpc_render_proscons_tab(); ?>
+            </div>
+            
+            <!-- Import/Export and Danger Zone use custom handlers/AJAX, so form nesting might be harmless or wrong.
+                 They usually have their own <form> tags. Nesting forms is invalid HTML.
+                 So we should Close the global form before these if they have their own forms.
+            -->
+        </form>
+
+        <!-- Independent Tabs (Outside Global Form) -->
         <div class="wpc-tab-content" id="wpc-tab-import-export" style="display: none;">
             <?php wpc_render_import_export_tab(); ?>
         </div>
@@ -1480,8 +1499,7 @@ function wpc_render_settings_page() {
  */
 function wpc_render_general_tab() {
     ?>
-    <form method="post" action="options.php">
-        <?php settings_fields( 'wpc_settings_group' ); ?>
+    <div class="wpc-tab-inner">
         <?php do_settings_sections( 'wpc_settings_group' ); ?>
         
         <h2><?php _e( 'General Options', 'wp-comparison-builder' ); ?></h2>
@@ -2508,7 +2526,8 @@ function wpc_render_general_tab() {
         // If it's a numeric array (new format), use as is.
         // Simple check: isset($compare_features['price']) means associative.
         // check if first key is int?
-        $is_associative = count(array_filter(array_keys($compare_features), 'is_string')) > 0;
+        // Check if array is associative (safe check)
+        $is_associative = is_array($compare_features) && count(array_filter(array_keys($compare_features), 'is_string')) > 0;
         
         if ( empty($compare_features) ) {
             // Default: Price, Rating, Pros, Cons
@@ -2689,7 +2708,6 @@ function wpc_render_general_tab() {
         </table>
 
         <?php submit_button(); ?>
-    </form>
     
     <hr style="margin: 40px 0;">
     
@@ -2701,6 +2719,7 @@ function wpc_render_general_tab() {
             <li><strong>Per Item:</strong> Edit each item and set a custom "Featured Badge Text" (e.g., "Editor's Pick", "Best Value") and badge color</li>
         </ol>
         <p><em>Note: Featured card styling (badge and border color) is controlled per Custom List or per individual item, not globally.</em></p>
+    </div>
     </div>
     <?php
 }
@@ -2714,8 +2733,7 @@ function wpc_render_general_tab() {
  */
 function wpc_render_pricing_tab() {
     ?>
-    <form method="post" action="options.php">
-        <?php settings_fields( 'wpc_settings_group' ); ?>
+    <div class="wpc-tab-inner">
         
         <h2><?php _e( 'Pricing Table Visual Style', 'wp-comparison-builder' ); ?></h2>
         <p><?php _e( 'Customize the default appearance of the pricing table header and buttons (used when overrides are disabled).', 'wp-comparison-builder' ); ?></p>
@@ -2854,7 +2872,7 @@ function wpc_render_pricing_tab() {
         </table>
         
         <?php submit_button(); ?>
-    </form>
+    </div>
     <?php
 }
 
@@ -5189,9 +5207,9 @@ function wpc_ajax_save_schema_settings() {
  */
 function wpc_render_texts_tab() {
     ?>
-    <form method="post" action="options.php">
-        <?php settings_fields( 'wpc_settings_group' ); ?>
-        <?php do_settings_sections( 'wpc_settings_group' ); ?>
+    <div class="wpc-tab-inner">
+        
+        <h2><?php _e( 'Custom Text Labels', 'wp-comparison-builder' ); ?></h2>
         
         <h2><?php _e( 'Text Label Customization', 'wp-comparison-builder' ); ?></h2>
         <p><?php _e( 'Customize the text labels displayed on the frontend. Leave empty to use default values.', 'wp-comparison-builder' ); ?></p>
@@ -5526,32 +5544,8 @@ function wpc_render_texts_tab() {
             
             <!-- Color Settings -->
             <tr valign="top"><th colspan="2"><h3 style="margin:0;">Color Settings</h3></th></tr>
-            <tr valign="top">
-                <th scope="row"><label><?php _e( 'Pros Colors (Comparison Table)', 'wp-comparison-builder' ); ?></label></th>
-                <td style="display: flex; gap: 20px;">
-                    <div>
-                        <label style="font-size: 11px; display: block; margin-bottom: 2px;">Background</label>
-                        <input type="color" name="wpc_color_pros_bg" value="<?php echo esc_attr( get_option( 'wpc_color_pros_bg', '#f0fdf4' ) ); ?>" />
-                    </div>
-                    <div>
-                        <label style="font-size: 11px; display: block; margin-bottom: 2px;">Text</label>
-                        <input type="color" name="wpc_color_pros_text" value="<?php echo esc_attr( get_option( 'wpc_color_pros_text', '#166534' ) ); ?>" />
-                    </div>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th scope="row"><label><?php _e( 'Cons Colors (Comparison Table)', 'wp-comparison-builder' ); ?></label></th>
-                <td style="display: flex; gap: 20px;">
-                    <div>
-                        <label style="font-size: 11px; display: block; margin-bottom: 2px;">Background</label>
-                        <input type="color" name="wpc_color_cons_bg" value="<?php echo esc_attr( get_option( 'wpc_color_cons_bg', '#fef2f2' ) ); ?>" />
-                    </div>
-                    <div>
-                        <label style="font-size: 11px; display: block; margin-bottom: 2px;">Text</label>
-                        <input type="color" name="wpc_color_cons_text" value="<?php echo esc_attr( get_option( 'wpc_color_cons_text', '#991b1b' ) ); ?>" />
-                    </div>
-                </td>
-            </tr>
+            <!-- Pros/Cons Colors moved to dedicated "Pros & Cons" tab -->
+            
             <tr valign="top">
                 <th scope="row"><label><?php _e( 'Coupon Colors', 'wp-comparison-builder' ); ?></label></th>
                 <td style="display: flex; gap: 20px;">
@@ -5576,7 +5570,7 @@ function wpc_render_texts_tab() {
         </table>
         
         <?php submit_button(); ?>
-    </form>
+    </div>
     <?php
 }
 
@@ -5585,8 +5579,7 @@ function wpc_render_texts_tab() {
  */
 function wpc_render_links_tab() {
     ?>
-    <form method="post" action="options.php">
-        <?php settings_fields( 'wpc_settings_group' ); ?>
+    <div class="wpc-tab-inner">
         
         <h2><?php _e( 'Link Target Behavior', 'wp-comparison-builder' ); ?></h2>
         <p><?php _e( 'Control how different types of links open (New Tab vs Same Tab).', 'wp-comparison-builder' ); ?></p>
@@ -5642,7 +5635,7 @@ function wpc_render_links_tab() {
         </table>
 
         <?php submit_button(); ?>
-    </form>
+    </div>
     <?php
 }
 

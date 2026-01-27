@@ -53,28 +53,88 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     return Array.from(cyclesMap.entries()).map(([slug, label]) => ({ slug, label }));
   }, [items]);
 
+  // Category / Variant Sync
+  // Collect all unique variant categories
+  const allCategories = React.useMemo(() => {
+    const cats = new Set<string>();
+    items.forEach(item => {
+      if (item.variants?.enabled && item.variants.plans_by_category) {
+        Object.keys(item.variants.plans_by_category).forEach(c => cats.add(c));
+      }
+    });
+
+    // Check config for pre-selected category
+    const preselected = config?.category || null;
+    return {
+      list: Array.from(cats),
+      preselected
+    };
+  }, [items, config]);
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(() => {
+    // Priority: Config Shortcode > First Item Default > Null
+    if (allCategories.preselected) return allCategories.preselected;
+    return items[0]?.variants?.default_category || null;
+  });
+
   const [selectedCycle, setSelectedCycle] = useState<string>(() => {
     // Default to first item's default_cycle or 'monthly'
     return (items[0] as any)?.default_cycle || 'monthly';
   });
 
-  // Helper to get price for a specific cycle from item's plans
-  const getPriceForCycle = (item: ComparisonItem, cycle: string): { amount: string, period: string } => {
+  // Helper to get price for a specific cycle AND category
+  const getPriceForCycle = (item: ComparisonItem, cycle: string): { amount: string, period: string, unavailable?: boolean } => {
     const emptyPriceText = (window as any).wpcSettings?.texts?.emptyPrice || 'Free';
-    const plans = (item as any).pricing_plans || [];
+    let plans = (item as any).pricing_plans || [];
 
-    // Try to find price in any plan for this cycle
-    for (const plan of plans) {
-      if (plan.prices && plan.prices[cycle] && plan.prices[cycle].amount) {
-        return { amount: plan.prices[cycle].amount, period: plan.prices[cycle].period || '' };
+    // Filter plans by category if selected
+    if (selectedCategory && item.variants?.enabled && item.variants.plans_by_category) {
+      const allowedIndices = item.variants.plans_by_category[selectedCategory];
+      if (allowedIndices && Array.isArray(allowedIndices)) {
+        const indices = allowedIndices.map(Number);
+        const filtered = plans.filter((_: any, idx: number) => indices.includes(idx));
+        if (filtered.length > 0) {
+          plans = filtered;
+        }
       }
     }
 
-    // Fallback to item.price (the pre-computed default)
-    if (item.price && item.price !== '0') {
-      return { amount: item.price, period: item.moSuffix || getText('moSuffix', '/mo') };
+    // Try to find price in any plan for this cycle
+    for (const plan of plans) {
+      // Strict check: if plan has price for cycle (and it's not empty)
+      if (plan.prices && plan.prices[cycle]) {
+        const p = plan.prices[cycle];
+        if (p.amount !== undefined && p.amount !== '') {
+          return { amount: p.amount, period: p.period || '' };
+        }
+      }
+      // Legacy fallback check (if accessing plan.price/yearly_price directly)
+      // Note: PricingTable has stricter "hasPriceForCycle". We should match that logic if possible.
+      // But typically "prices" object is the new standard.
     }
 
+    // Fallback to item.price (the pre-computed default) IF no category is selected OR if fallback is desired
+    // However, if category is selected, we might want to be stricter? 
+    // User said "Should only show that plan". 
+    // If filtered plans have no valid price for this cycle, we return "Free" (or empty).
+    // Original fallback logic:
+    if (plans.length > 0 && !selectedCategory) {
+      if (item.price && item.price !== '0') {
+        return { amount: item.price, period: item.moSuffix || getText('moSuffix', '/mo') };
+      }
+    }
+
+    // If strict category selected but no plans match cycle, or just no price found:
+    // User Requirement: Check if it's "Unavailable" (filtered out by category) vs just "No Price" (Free)
+    // If strict filtering was applied (selectedCategory is set) and we found NO valid price logic above:
+    if (selectedCategory) {
+      // If plans were filtered, and we didn't find a price in the filtered subset.
+      // It implies the plan(s) for this category don't exist or don't have a price.
+      // We should show X.
+      return { amount: '', period: '', unavailable: true };
+    }
+
+    // Check if we should show Free
     return { amount: emptyPriceText, period: '' };
   };
 
@@ -94,7 +154,6 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
       btn.innerHTML = originalText;
       if (originalStyle) btn.setAttribute('style', originalStyle);
       else btn.removeAttribute('style');
-      // Restore default colors logic if handled by render
     };
 
     if (navigator.clipboard) {
@@ -221,6 +280,17 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     switch (key) {
       case "price":
         const priceInfo = getPriceForCycle(item, selectedCycle);
+
+        if (priceInfo.unavailable) {
+          return (
+            <X
+              className="wpc-cross w-4 h-4 md:w-5 md:h-5 mx-auto"
+              style={{ color: crossColor }}
+              ref={(el) => { if (el) { el.style.setProperty('color', crossColor, 'important'); el.style.setProperty('stroke', crossColor, 'important'); } }}
+            />
+          );
+        }
+
         return (
           <span
             className="font-bold"
@@ -275,6 +345,47 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
 
   return (
     <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+      {/* Category Tabs (Only if categories exist AND not pre-selected via shortcode) */}
+      {!config?.category && allCategories.list.length > 0 && (
+        <div className="flex flex-wrap items-center justify-center gap-2 p-4 border-b border-border bg-muted/20 pb-2">
+          <div
+            onClick={() => setSelectedCategory(null)}
+            className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${!selectedCategory
+              ? "shadow-sm"
+              : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+              }`}
+            style={!selectedCategory ? {
+              backgroundColor: primaryColor,
+              color: 'var(--wpc-btn-text, #ffffff) !important',
+              borderColor: primaryColor
+            } : {}}
+          >
+            {(window as any).wpcSettings?.texts?.allPlans || 'All Plans'}
+          </div>
+          {allCategories.list.map(catSlug => {
+            const pretty = catSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            const isActive = selectedCategory === catSlug;
+            return (
+              <div
+                key={catSlug}
+                onClick={() => setSelectedCategory(catSlug)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
+                  ? "shadow-sm"
+                  : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                  }`}
+                style={isActive ? {
+                  backgroundColor: primaryColor,
+                  color: 'var(--wpc-btn-text, #ffffff) !important',
+                  borderColor: primaryColor
+                } : {}}
+              >
+                {pretty}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Billing Cycle Toggle (only if multiple cycles available) */}
       {allCycles.length > 1 && (
         <div className="flex items-center justify-center gap-2 p-4 border-b border-border bg-muted/20">

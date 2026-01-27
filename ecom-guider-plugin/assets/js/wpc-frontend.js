@@ -309,4 +309,40 @@
     // Expose for external use
     window.wpcState = wpc;
     window.wpcApplyFilters = applyFilters;
+
+    /**
+     * Category Tab Switcher
+     */
+    window.wpcSwitchTab = function (containerId, slug) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+
+        // hide all contents
+        var contents = container.querySelectorAll('.wpc-tab-content');
+        contents.forEach(function (content) {
+            content.style.display = 'none';
+        });
+
+        // show selected
+        var selected = container.querySelector('.wpc-tab-content[data-tab="' + slug + '"]');
+        if (selected) {
+            selected.style.display = 'block';
+        }
+
+        // update tabs styling
+        var buttons = container.querySelectorAll('.wpc-tab-btn');
+        buttons.forEach(function (btn) {
+            if (btn.dataset.tab === slug) {
+                btn.style.color = 'hsl(var(--foreground))';
+                btn.style.borderBottom = '2px solid hsl(var(--accent))';
+                btn.style.opacity = '1';
+                btn.dataset.active = "true";
+            } else {
+                btn.style.color = 'hsl(var(--muted-foreground))';
+                btn.style.borderBottom = '2px solid transparent';
+                btn.style.opacity = '0.8';
+                delete btn.dataset.active;
+            }
+        });
+    };
 })();

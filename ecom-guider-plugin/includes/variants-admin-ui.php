@@ -286,6 +286,16 @@ function wpc_save_variants_meta( $post_id ) {
     if ( isset( $_POST['wpc_category_selector_style'] ) ) {
         update_post_meta( $post_id, '_wpc_category_selector_style', sanitize_text_field( $_POST['wpc_category_selector_style'] ) );
     }
+
+    // Variant Categories (Active Categories for Variants)
+    if ( isset( $_POST['wpc_variant_categories'] ) && is_array( $_POST['wpc_variant_categories'] ) ) {
+        $variant_cats = array_map( 'intval', $_POST['wpc_variant_categories'] );
+        update_post_meta( $post_id, '_wpc_variant_categories', $variant_cats );
+    } else {
+        // If variants enabled but field is missing (and not just empty array), it might be unchecked.
+        // Checkboxes only send if checked. So if not set, we save empty array.
+        update_post_meta( $post_id, '_wpc_variant_categories', array() );
+    }
     
     // Plans by category
     if ( isset( $_POST['wpc_plans_by_category'] ) && is_array( $_POST['wpc_plans_by_category'] ) ) {
@@ -297,7 +307,7 @@ function wpc_save_variants_meta( $post_id ) {
     } else {
         update_post_meta( $post_id, '_wpc_plans_by_category', array() );
     }
-    
+
     // Features by category
     if ( isset( $_POST['wpc_features_by_category'] ) && is_array( $_POST['wpc_features_by_category'] ) ) {
         $feats_by_cat = array();
@@ -308,17 +318,43 @@ function wpc_save_variants_meta( $post_id ) {
     } else {
         update_post_meta( $post_id, '_wpc_features_by_category', array() );
     }
-    
-    // Use Cases by category
+
+    // Use Cases by category (Hybrid: Supports Indices OR Objects)
     if ( isset( $_POST['wpc_use_cases_by_category'] ) && is_array( $_POST['wpc_use_cases_by_category'] ) ) {
         $uc_by_cat = array();
-        foreach ( $_POST['wpc_use_cases_by_category'] as $cat_slug => $uc_indices ) {
-            $uc_by_cat[ sanitize_text_field( $cat_slug ) ] = array_map( 'intval', $uc_indices );
+        foreach ( $_POST['wpc_use_cases_by_category'] as $cat_slug => $use_cases ) {
+            if ( ! is_array( $use_cases ) ) continue;
+            
+            // Check data type: List of Objects or List of Indices?
+            $first_item = reset( $use_cases );
+            
+            if ( is_array( $first_item ) ) {
+                // Objects (from Enhanced Tab)
+                $sanitized_cases = array();
+                foreach ( $use_cases as $uc ) {
+                    $sanitized_cases[] = array(
+                        'name' => isset( $uc['name'] ) ? sanitize_text_field( $uc['name'] ) : '',
+                        'icon' => isset( $uc['icon'] ) ? sanitize_text_field( $uc['icon'] ) : '',
+                        'desc' => isset( $uc['desc'] ) ? sanitize_textarea_field( $uc['desc'] ) : '',
+                        'icon_color' => isset( $uc['icon_color'] ) ? sanitize_hex_color( $uc['icon_color'] ) : '',
+                        'image' => isset( $uc['image'] ) ? esc_url_raw( $uc['image'] ) : '',
+                    );
+                }
+                $uc_by_cat[ sanitize_text_field( $cat_slug ) ] = $sanitized_cases;
+            } else {
+                // Indices (from Checkboxes)
+                $uc_by_cat[ sanitize_text_field( $cat_slug ) ] = array_map( 'intval', $use_cases );
+            }
         }
         update_post_meta( $post_id, '_wpc_use_cases_by_category', $uc_by_cat );
     } else {
-        update_post_meta( $post_id, '_wpc_use_cases_by_category', array() );
+        // Only clear if variants enabled?
+        // For now, let's keep the logic.
+        if ( isset($_POST['wpc_variants_enabled']) ) {
+             update_post_meta( $post_id, '_wpc_use_cases_by_category', array() );
+        }
     }
+    
     
     // Plan Features by category (New)
     if ( isset( $_POST['wpc_plan_features_by_category'] ) && is_array( $_POST['wpc_plan_features_by_category'] ) ) {

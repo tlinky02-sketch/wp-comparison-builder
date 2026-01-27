@@ -10,10 +10,7 @@ function wpc_render_modules_tab() {
     $variants_show_badge = get_option( 'wpc_variants_show_badge', '1' );
     $variants_remember_selection = get_option( 'wpc_variants_remember_selection', '1' );
     ?>
-    <form method="post" action="options.php">
-        <?php settings_fields( 'wpc_modules_settings' ); ?>
-        <?php do_settings_sections( 'wpc_modules_settings' ); ?>
-        
+    <div class="wrap">
         <h2><?php _e( 'Feature Modules', 'wp-comparison-builder' ); ?></h2>
         <p class="description"><?php _e( 'Enable or disable plugin features to keep your interface clean.', 'wp-comparison-builder' ); ?></p>
         
@@ -88,7 +85,7 @@ function wpc_render_modules_tab() {
         </table>
         
         <?php submit_button(); ?>
-    </form>
+    </div>
     <?php
 }
 

@@ -27,6 +27,7 @@ require_once WPC_PLUGIN_DIR . 'includes/admin-ui.php';
 require_once WPC_PLUGIN_DIR . 'includes/settings-page.php';
 require_once WPC_PLUGIN_DIR . 'includes/api-endpoints.php';
 require_once WPC_PLUGIN_DIR . 'includes/shortcode-helper.php';
+require_once WPC_PLUGIN_DIR . 'includes/frontend-helper.php'; // Frontend Helper (Tabs/Dropdowns)
 require_once WPC_PLUGIN_DIR . 'includes/sample-data.php';
 require_once WPC_PLUGIN_DIR . 'includes/seo-schema.php';
 require_once WPC_PLUGIN_DIR . 'includes/compare-button-shortcode.php';
@@ -402,16 +403,23 @@ function wpc_register_scripts() {
     $font_size_body = get_option('wpc_font_size_body', '');
     $font_size_small = get_option('wpc_font_size_small', '');
 
-    if (!empty($font_size_subheading)) $custom_css .= " --wpc-font-size-subheading: {$font_size_subheading}px; ";
+    if (!empty($font_size_subheading)) {
+        $font_size_subheading = str_replace('px', '', $font_size_subheading);
+        $custom_css .= " --wpc-font-size-subheading: {$font_size_subheading}px; ";
+    }
     
     // Body font size: if set, use px; if empty, use the detected theme paragraph size (via JS) or fallback to inherit
     if (!empty($font_size_body)) {
+        $font_size_body = str_replace('px', '', $font_size_body);
         $custom_css .= " --wpc-font-size-body: {$font_size_body}px; ";
     } else {
         $custom_css .= " --wpc-font-size-body: var(--wpc-theme-p-size, inherit); ";
     }
 
-    if (!empty($font_size_small)) $custom_css .= " --wpc-font-size-small: {$font_size_small}px; ";
+    if (!empty($font_size_small)) {
+        $font_size_small = str_replace('px', '', $font_size_small);
+        $custom_css .= " --wpc-font-size-small: {$font_size_small}px; ";
+    }
 
 
     
@@ -606,9 +614,8 @@ function wpc_register_scripts() {
             --card: $card_bg_hsl;
             --popover: $card_bg_hsl;
             --muted: $muted_bg_hsl;
-            --secondary: $muted_bg_hsl;
+            /* --secondary and --accent handled by Global Settings above */
             --secondary-foreground: " . ($foreground_hsl ?: '222.2 47.4% 11.2%') . ";
-            --accent: $muted_bg_hsl;
             --accent-foreground: " . ($foreground_hsl ?: '222.2 47.4% 11.2%') . ";
             --destructive: 0 84.2% 60.2%;
             --destructive-foreground: 210 40% 98%;
