@@ -1879,13 +1879,15 @@ function wpc_list_shortcode( $atts ) {
     <?php
     $html = ob_get_clean();
     
-    // Add schema output for SEO
-    $schema_output = '';
+    // Add schema output for SEO (Hook to footer to avoid wpautop issues)
     if ( function_exists( 'wpc_generate_list_schema' ) ) {
-        $schema_output = wpc_generate_list_schema( $post_id );
+        // Use a closure to capture $post_id and output in footer
+        add_action('wp_footer', function() use ($post_id) {
+            echo wpc_generate_list_schema( $post_id );
+        }, 99);
     }
     
-    return $schema_output . $html;
+    return $html;
 }
 
 add_shortcode( 'wpc_list', 'wpc_list_shortcode' );

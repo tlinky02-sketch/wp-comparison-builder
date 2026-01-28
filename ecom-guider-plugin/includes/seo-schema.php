@@ -146,16 +146,17 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
     
     // Add rating
     if ( $settings['include_rating'] === '1' && $rating ) {
-        $rating_key = ($product_category === 'SoftwareApplication') ? 'aggregateRating' : 'aggregateRating'; 
-        // Note: Service/Course can also use aggregateRating
-        
-        $schema[$rating_key] = array(
-            '@type' => 'AggregateRating',
-            'ratingValue' => number_format( floatval( $rating ), 1, '.', '' ),
-            'bestRating' => 5,
-            'worstRating' => 1,
-            'ratingCount' => 1,
-        );
+        // Consolidated rating in 'review' for Products to prevent "double snippets"
+        // But for other categories, standard aggregateRating is often required for stars.
+        if ( $product_category !== 'Product' && $product_category !== 'PhysicalProduct' ) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => number_format( floatval( $rating ), 1, '.', '' ),
+                'bestRating' => 5,
+                'worstRating' => 1,
+                'ratingCount' => 1,
+            );
+        }
     }
     
     // Add offers
@@ -206,45 +207,58 @@ function wpc_generate_item_schema( $post_id, $include_wrapper = true ) {
         }
     }
     
-    // Add pros/cons as review
-    if ( $settings['include_pros_cons'] === '1' && ( $pros || $cons ) ) {
+    // Add review (Pros/Cons + Rating)
+    if ( ( $settings['include_pros_cons'] === '1' && ( $pros || $cons ) ) || ( $settings['include_rating'] === '1' && $rating ) ) {
         $review = array(
             '@type' => 'Review',
             'author' => array(
                 '@type' => 'Organization',
                 'name' => get_bloginfo( 'name' ),
             ),
+            'datePublished' => get_the_date( 'Y-m-d', $post_id ) ?: date('Y-m-d'),
         );
-        
-        if ( $pros ) {
-            $pros_array = is_array( $pros ) ? $pros : array_filter( explode( "\n", $pros ) );
-            if ( ! empty( $pros_array ) ) {
-                $review['positiveNotes'] = array(
-                    '@type' => 'ItemList',
-                    'itemListElement' => array_map( function( $item, $index ) {
-                        return array(
-                            '@type' => 'ListItem',
-                            'position' => $index + 1,
-                            'name' => trim( $item ),
-                        );
-                    }, $pros_array, array_keys( $pros_array ) ),
-                );
-            }
+
+        // Add rating to review
+        if ( $settings['include_rating'] === '1' && $rating ) {
+            $review['reviewRating'] = array(
+                '@type' => 'Rating',
+                'ratingValue' => number_format( floatval( $rating ), 1, '.', '' ),
+                'bestRating' => 5,
+                'worstRating' => 1,
+            );
         }
         
-        if ( $cons ) {
-            $cons_array = is_array( $cons ) ? $cons : array_filter( explode( "\n", $cons ) );
-            if ( ! empty( $cons_array ) ) {
-                $review['negativeNotes'] = array(
-                    '@type' => 'ItemList',
-                    'itemListElement' => array_map( function( $item, $index ) {
-                        return array(
-                            '@type' => 'ListItem',
-                            'position' => $index + 1,
-                            'name' => trim( $item ),
-                        );
-                    }, $cons_array, array_keys( $cons_array ) ),
-                );
+        if ( $settings['include_pros_cons'] === '1' ) {
+            if ( $pros ) {
+                $pros_array = is_array( $pros ) ? $pros : array_filter( explode( "\n", $pros ) );
+                if ( ! empty( $pros_array ) ) {
+                    $review['positiveNotes'] = array(
+                        '@type' => 'ItemList',
+                        'itemListElement' => array_map( function( $item, $index ) {
+                            return array(
+                                '@type' => 'ListItem',
+                                'position' => $index + 1,
+                                'name' => trim( $item ),
+                            );
+                        }, $pros_array, array_keys( $pros_array ) ),
+                    );
+                }
+            }
+            
+            if ( $cons ) {
+                $cons_array = is_array( $cons ) ? $cons : array_filter( explode( "\n", $cons ) );
+                if ( ! empty( $cons_array ) ) {
+                    $review['negativeNotes'] = array(
+                        '@type' => 'ItemList',
+                        'itemListElement' => array_map( function( $item, $index ) {
+                            return array(
+                                '@type' => 'ListItem',
+                                'position' => $index + 1,
+                                'name' => trim( $item ),
+                            );
+                        }, $cons_array, array_keys( $cons_array ) ),
+                    );
+                }
             }
         }
         
@@ -338,10 +352,11 @@ function wpc_generate_list_schema( $list_id ) {
     
     $item_list_elements = array();
     $position = 1;
-    
+    $has_product = false;
+
     // Get selective schema IDs
     $schema_ids = get_post_meta( $list_id, '_wpc_list_schema_ids', true );
-    $has_schema_config = is_array( $schema_ids ); // If it's an array (even empty), user has configured it.
+    $has_schema_config = is_array( $schema_ids );
     
     $processed_ids = array();
     
@@ -356,24 +371,46 @@ function wpc_generate_list_schema( $list_id ) {
             continue;
         }
         
+        $cat = get_post_meta( $item_id, '_wpc_product_category', true );
+        if ( $cat === 'Product' || $cat === 'PhysicalProduct' ) {
+            $has_product = true;
+        }
+
         $item_schema = wpc_generate_item_schema( $item_id, false );
         if ( ! empty( $item_schema ) && is_array( $item_schema ) ) {
-            // Remove @context from nested items
-            unset( $item_schema['@context'] );
-            
-            $item_list_elements[] = array(
-                '@type' => 'ListItem',
-                'position' => $position,
-                'item' => $item_schema,
-            );
-            $position++;
+             // Remove @context from potentially nested items
+             unset( $item_schema['@context'] );
+             
+             $item_list_elements[] = array(
+                 '@type' => 'ListItem',
+                 'position' => $position,
+                 'item' => $item_schema,
+             );
+             $position++;
         }
     }
-    
+
     if ( empty( $item_list_elements ) ) {
         return '';
     }
-    
+
+    // User wants to remove ItemList layers specifically for "Product"
+    // If we have products, we output individual snippets instead of a wrapper
+    if ( $has_product ) {
+        $schema_output = '';
+        foreach ( $item_list_elements as $element ) {
+            $item = $element['item'];
+            // Reconstruct array to ensure @context is first
+            $final_item = array_merge( 
+                array( '@context' => 'https://schema.org' ), 
+                $item 
+            );
+            $schema_output .= '<script type="application/ld+json">' . wp_json_encode( $final_item, JSON_UNESCAPED_SLASHES ) . '</script>';
+        }
+        return $schema_output;
+    }
+
+    // Default: Return ItemList (standard for non-product lists)
     $schema = array(
         '@context' => 'https://schema.org',
         '@type' => 'ItemList',
