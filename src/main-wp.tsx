@@ -743,7 +743,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     }
 
     return (
-        <div className="wpc-comparison-wrapper bg-background text-foreground min-h-[100px] py-4">
+        <div className="wpc-comparison-wrapper text-foreground min-h-[100px] py-4">
             <Toaster />
 
             {/* Selection Bar - Show when providers selected (Only if Enabled) */}

@@ -57,9 +57,13 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   }, [items, config]);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(() => {
-    // Priority: Config Shortcode > First Item Default > Null
-    if (allCategories.preselected) return allCategories.preselected;
-    return items[0]?.variants?.default_category || null;
+    // Priority: Config Shortcode > All Plans (null) > First Item Default
+    // Update: User prefers "All Plans" (null) as default if available.
+    if (config?.category) return config.category;
+
+    // Default to 'All Plans' (null) so user sees everything first.
+    // Only fall back to item default if we somehow wanted strict behavior, but request is "All plans first".
+    return null;
   });
 
   const [selectedCycle, setSelectedCycle] = useState<string>(() => {
