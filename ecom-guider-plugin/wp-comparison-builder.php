@@ -2174,12 +2174,12 @@ function wpc_pricing_table_shortcode( $atts ) {
                     <?php endif; ?>
                     
                     <!-- Main Table Container (matches React's card container) -->
-                    <div style="width:100%; border:1px solid hsl(var(--border)); border-radius:0.75rem; background:hsl(var(--card)); overflow:hidden;">
-                        <table style="width:100%; border-collapse:collapse; text-align:center; table-layout:fixed;">
+                    <div style="width:100%; border:1px solid hsl(var(--border)); border-radius:0.75rem; background:hsl(var(--card)); overflow-x:auto;">
+                        <table style="width:100%; min-width:max-content; border-collapse:collapse; text-align:center;">
                             <thead>
                                 <tr>
                                     <?php foreach ($plans as $idx => $plan) : ?>
-                                        <th style="padding:1rem; border-bottom:1px solid hsl(var(--border)); background-color:var(--pt-header-bg); color:var(--pt-header-text); width:<?php echo 100/count($plans); ?>%; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid hsl(var(--border))' : 'none'; ?>;">
+                                        <th style="padding:1rem; border-bottom:1px solid hsl(var(--border)); background-color:var(--pt-header-bg); color:var(--pt-header-text); min-width:260px; vertical-align:top; border-right:<?php echo ($idx < count($plans)-1) ? '1px solid hsl(var(--border))' : 'none'; ?>;">
                                             <div style="font-size:var(--wpc-font-size-h2); font-weight:700;"><?php echo esc_html($plan['name'] ?? 'Plan'); ?></div>
                                         </th>
                                     <?php endforeach; ?>

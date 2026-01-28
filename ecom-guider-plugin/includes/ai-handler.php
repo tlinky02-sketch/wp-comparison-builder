@@ -826,8 +826,38 @@ function wpc_ajax_ai_generate() {
     }
 
     $prompt = sanitize_textarea_field( $_POST['prompt'] ?? '' );
+    $prompt_type = sanitize_text_field( $_POST['prompt_type'] ?? '' );
+    $product_name = sanitize_text_field( $_POST['product_name'] ?? '' );
+    $user_context = sanitize_textarea_field( $_POST['user_context'] ?? '' );
+    
     $profile_id = sanitize_text_field( $_POST['profile_id'] ?? '' );
     $provider = sanitize_text_field( $_POST['provider'] ?? '' );
+    
+    // Construct Prompt if Type is specifically requested
+    if ( ! empty( $prompt_type ) && ! empty( $product_name ) ) {
+        if ( $prompt_type === 'pricing' ) {
+            $prompt = "You are a pricing expert. Generate a detailed, accurate pricing configuration for '{$product_name}'.\n";
+            if ( ! empty( $user_context ) ) {
+                $prompt .= "CRITICAL: Use this raw context to extract the EXACT plans and billing cycles (e.g. Monthly, Yearly, Triennial, Lifetime, 2-Year Plan):\n----- \n{$user_context}\n----- \n";
+            }
+            $prompt .= "Return a JSON object with two keys:\n";
+            $prompt .= "1. 'billing_cycles': Array of ALL detected cycles including custom ones. Each cycle object must have 'slug' (lowercase, no spaces) and 'label' (Proper case).\n";
+            $prompt .= "2. 'pricing_plans': Array of plans. Each plan MUST contain a 'prices' object where keys match the 'slugs' defined in 'billing_cycles'.\n";
+            $prompt .= "Each plan should also have: 'name', 'features' (array), 'badge', and 'button_text'.\n";
+            $prompt .= "Format Example:\n";
+            $prompt .= '{"billing_cycles": [{"slug":"monthly","label":"Monthly"},{"slug":"triennial","label":"Triennial"}], "pricing_plans": [{"name":"Growth", "prices":{"monthly":{"amount":"$1.99","period":"/mo"},"triennial":{"amount":"$69","period":"once"}}, "features":["Feature A", "Feature B"], "badge":"Save 80%", "button_text":"Launch Site"}]}';
+        } 
+        elseif ( $prompt_type === 'pros_cons' ) {
+             $prompt = "Generate a balanced list of Pros and Cons for '{$product_name}'.\n";
+             if ( ! empty( $user_context ) ) $prompt .= "Context: {$user_context}\n";
+             $prompt .= "Return strictly JSON: { \"pros\": [\"string\", ...], \"cons\": [\"string\", ...] }";
+        }
+        elseif ( $prompt_type === 'seo' ) {
+             $prompt = "Generate SEO Schema data for '{$product_name}'.\n";
+             if ( ! empty( $user_context ) ) $prompt .= "Context: {$user_context}\n";
+             $prompt .= "Return strictly JSON: { \"brand\": \"...\", \"service_type\": \"...\", \"area_served\": \"...\", \"sku\": \"...\", \"product_category\": \"SoftwareApplication\" (or Service/Product/Course) }";
+        }
+    }
     
     if ( empty( $prompt ) ) {
         wp_send_json_error( 'Prompt is required' );

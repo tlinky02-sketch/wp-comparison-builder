@@ -330,18 +330,29 @@ const PricingTable = ({
         return (
             <div className="text-center py-12 bg-secondary/20 rounded-xl mb-8">
                 <p className="text-muted-foreground mb-4">{(window as any).wpcSettings?.texts?.noCyclePlans || 'No plans available for this billing cycle.'}</p>
-                {/* Optional: Show available cycles for these plans? */}
+                {/* Show only available cycles that actually have plans */}
                 {billingCycles.length > 1 && (
-                    <div className="flex flex-wrap gap-2 justify-center">
-                        {billingCycles.map((cycle: any) => (
-                            <button
-                                key={cycle.slug}
-                                onClick={() => setSelectedCycle(cycle.slug)}
-                                className="text-sm px-3 py-1 rounded bg-muted hover:bg-muted/80 transition-colors"
-                            >
-                                Switch to {cycle.label}
-                            </button>
-                        ))}
+                    <div className="flex flex-wrap gap-3 justify-center items-center">
+                        {billingCycles
+                            .filter((cycle: any) => plans.some(p => hasPriceForCycle(p, cycle.slug)))
+                            .map((cycle: any) => (
+                                <div
+                                    key={cycle.slug}
+                                    onClick={() => setSelectedCycle(cycle.slug)}
+                                    className="px-4 py-2 rounded-full text-sm font-bold transition-all border cursor-pointer shadow-md hover:scale-105"
+                                    style={{
+                                        backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
+                                        borderColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
+                                    }}
+                                    ref={(el) => {
+                                        if (!el) return;
+                                        const btnTextColor = (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff';
+                                        el.style.setProperty('color', btnTextColor, 'important');
+                                    }}
+                                >
+                                    Switch to {cycle.label}
+                                </div>
+                            ))}
                     </div>
                 )}
             </div>

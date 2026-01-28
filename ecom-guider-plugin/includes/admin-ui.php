@@ -240,7 +240,7 @@ function wpc_render_meta_box( $post ) {
                     </div>
 
                     <label style="height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); font-size: 12px; display: flex; align-items: center; gap: 6px; color: white; cursor: pointer; user-select: none;">
-                        <input type="checkbox" id="wpc-ai-gen-taxonomies" style="margin: 0;" checked />
+                        <input type="checkbox" id="wpc-ai-gen-taxonomies" style="margin: 0;" />
                         Generate Tags and Categories
                     </label>
 
@@ -395,7 +395,12 @@ function wpc_render_meta_box( $post ) {
             <!-- MOVED FROM SEO TAB -->
             <div class="wpc-row" style="margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 20px;">
                 <div class="wpc-col">
-                    <h3 class="wpc-section-title">Product & Schema Data</h3>
+                    <h3 class="wpc-section-title">
+                        Product & Schema Data
+                        <?php if ( $ai_configured ) : ?>
+                        <button type="button" class="button button-small wpc-ai-gen-btn" data-target="seo" style="float:right; margin-top:-5px;">✨ AI Generate SEO</button>
+                        <?php endif; ?>
+                    </h3>
                     <?php $current_schema_cat = get_post_meta( $post->ID, '_wpc_product_category', true ) ?: 'SoftwareApplication'; ?>
                     <label class="wpc-label"><?php _e( 'Product Category', 'wp-comparison-builder' ); ?></label>
                     <select name="wpc_product_category" id="wpc_product_category" class="wpc-input" style="margin-bottom: 15px;">
@@ -707,7 +712,7 @@ function wpc_render_meta_box( $post ) {
                 </div>
                 <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Featured Color', 'wp-comparison-builder' ); ?></label>
-                    <input type="color" name="wpc_featured_color" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_featured_color', true ) ); ?>" class="wpc-input" style="height:35px;" />
+                    <input type="color" name="wpc_featured_color" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_featured_color', true ) ?: '#10b981' ); ?>" class="wpc-input" style="height:35px;" />
                 </div>
             </div>
 
@@ -841,7 +846,12 @@ function wpc_render_meta_box( $post ) {
             }
             ?>
             
-            <h3 class="wpc-section-title">Pricing Plans & Coupons</h3>
+            <h3 class="wpc-section-title">
+                Pricing Plans & Coupons
+                <?php if ( $ai_configured ) : ?>
+                <button type="button" class="button button-small wpc-ai-gen-btn" data-target="pricing" style="float:right; margin-top:-5px;">✨ AI Generate Pricing</button>
+                <?php endif; ?>
+            </h3>
             
             <div class="wpc-row">
                 <div class="wpc-col">
@@ -1060,7 +1070,12 @@ function wpc_render_meta_box( $post ) {
             $item_cons_label = get_post_meta( $post->ID, '_wpc_txt_cons_label', true );
             ?>
             
-            <h3 class="wpc-section-title"><?php _e( 'Pros & Cons', 'wp-comparison-builder' ); ?></h3>
+            <h3 class="wpc-section-title">
+                <?php _e( 'Pros & Cons', 'wp-comparison-builder' ); ?>
+                <?php if ( $ai_configured ) : ?>
+                <button type="button" class="button button-small wpc-ai-gen-btn" data-target="pros_cons" style="float:right; margin-top:-5px;">✨ AI Generate Pros/Cons</button>
+                <?php endif; ?>
+            </h3>
             
             <!-- Label Customization -->
             <div class="wpc-row" style="margin-bottom: 15px; padding: 10px; background: #f9fafb; border-radius: 4px;">
@@ -1901,7 +1916,7 @@ function wpc_render_meta_box( $post ) {
                     setVal('wpc_external_logo_url', data.visuals.logo);
                     setVal('wpc_dashboard_image', data.visuals.dashboard_image);
                     setVal('wpc_featured_badge_text', data.visuals.badge_text);
-                    setVal('wpc_featured_color', data.visuals.badge_color);
+                    if(data.visuals.badge_color) setVal('wpc_featured_color', data.visuals.badge_color);
                     setVal('wpc_hero_subtitle', data.visuals.hero_subtitle);
                     setVal('wpc_analysis_label', data.visuals.analysis_label);
 
@@ -1910,11 +1925,11 @@ function wpc_render_meta_box( $post ) {
                         const overrideCb = document.querySelector('[name="wpc_enable_design_overrides"]');
                         if (overrideCb) overrideCb.dispatchEvent(new Event('change')); 
                         
-                        setVal('wpc_primary_color', data.visuals.colors.primary);
-                        setVal('wpc_accent_color', data.visuals.colors.accent);
-                        setVal('wpc_border_color', data.visuals.colors.border);
-                        setVal('wpc_color_coupon_bg', data.visuals.colors.coupon_bg);
-                        setVal('wpc_color_coupon_text', data.visuals.colors.coupon_text);
+                        if(data.visuals.colors.primary) setVal('wpc_primary_color', data.visuals.colors.primary);
+                        if(data.visuals.colors.accent) setVal('wpc_accent_color', data.visuals.colors.accent);
+                        if(data.visuals.colors.border) setVal('wpc_border_color', data.visuals.colors.border);
+                        if(data.visuals.colors.coupon_bg) setVal('wpc_color_coupon_bg', data.visuals.colors.coupon_bg);
+                        if(data.visuals.colors.coupon_text) setVal('wpc_color_coupon_text', data.visuals.colors.coupon_text);
                     }
                 }
 
@@ -2023,18 +2038,22 @@ function wpc_render_meta_box( $post ) {
                    } else {
                        // Clear existing features to allow clean import
                        const tbody = document.getElementById('wpc-features-tbody');
-                       tbody.innerHTML = ''; 
+                       if (tbody) {
+                           tbody.innerHTML = ''; 
 
-                       data.plan_features.forEach(feat => {
-                           wpcAddFeatureRow(feat.name);
-                           const row = tbody.lastElementChild;
-                           if (row && feat.included_in && Array.isArray(feat.included_in)) {
-                               feat.included_in.forEach(planIdx => {
-                                   const cb = row.querySelector('.wpc-feature-plan-checkbox.plan-' + planIdx);
-                                   if (cb) cb.checked = true;
-                               });
-                           }
-                       });
+                           data.plan_features.forEach(feat => {
+                               wpcAddFeatureRow(feat.name);
+                               const row = tbody.lastElementChild;
+                               if (row && feat.included_in && Array.isArray(feat.included_in)) {
+                                   feat.included_in.forEach(planIdx => {
+                                       const cb = row.querySelector('.wpc-feature-plan-checkbox.plan-' + planIdx);
+                                       if (cb) cb.checked = true;
+                                   });
+                               }
+                           });
+                       } else {
+                           console.warn('Features table body not found.');
+                       }
                    }
                 }
 
@@ -2553,9 +2572,202 @@ function wpc_render_meta_box( $post ) {
     
     <?php if ( $ai_configured ) : ?>
     (function() {
-        var aiNonce = document.getElementById('wpc_ai_item_nonce') ? document.getElementById('wpc_ai_item_nonce').value : '';
+    // Make nonce globally available or consistently scoped
+    // Instead of relying on closure var which might be stale or undefined in callbacks
+    // We will read it fresh in the functions
+    var aiNonceInput = document.getElementById('wpc_ai_item_nonce');
+    var aiNonce = aiNonceInput ? aiNonceInput.value : '';
+    
+    // Fallback if not inside closure (though this block is PHP-gated)
+    window.wpcAiNonce = aiNonce;
         
         // AI Generation Prompts
+        var aiNonce = document.getElementById('wpc_ai_item_nonce') ? document.getElementById('wpc_ai_item_nonce').value : '';
+
+        // Shared Helpers for AI Population
+        function _wpcPopulatePlans(data) {
+            // Handle wrapped response (Robust Prompt) vs direct array (Legacy)
+            var plans = [];
+            var cycles = [];
+            
+            if (data.pricing_plans) {
+                plans = data.pricing_plans;
+                cycles = data.billing_cycles || [];
+            } else if (Array.isArray(data)) {
+                plans = data; // Legacy
+            }
+
+            // A. Populate Billing Cycles (if robust)
+            if (cycles.length > 0) {
+                var cyclesContainer = document.getElementById('wpc-cycles-container');
+                if (cyclesContainer) {
+                    cycles.forEach(function(cycle) {
+                        var exists = false;
+                        cyclesContainer.querySelectorAll('input[name*="[slug]"]').forEach(function(input) {
+                            if (input.value === cycle.slug) exists = true;
+                        });
+                        
+                        if (!exists && typeof wpcAddCycle === 'function') {
+                            wpcAddCycle(); 
+                            var newRow = cyclesContainer.lastElementChild;
+                            if (newRow) {
+                                if(newRow.querySelector('input[name*="[slug]"]')) newRow.querySelector('input[name*="[slug]"]').value = cycle.slug;
+                                if(newRow.querySelector('input[name*="[label]"]')) newRow.querySelector('input[name*="[label]"]').value = cycle.label;
+                            }
+                        }
+                    });
+                    if (typeof wpcRefreshPlanInputs === 'function') wpcRefreshPlanInputs();
+                }
+            }
+            
+            // B. Populate Plans
+            jQuery('#wpc-plans-container').empty();
+            plans.forEach(function(plan){
+                wpcAddPlan(); 
+                var row = jQuery('#wpc-plans-container .wpc-plan-row').last();
+                row.find('input[name*="[name]"]').val(plan.name || '');
+                if(plan.button_text) row.find('input[name*="[button_text]"]').val(plan.button_text);
+                if (plan.features) {
+                    var featText = Array.isArray(plan.features) ? plan.features.join('\n') : plan.features;
+                    row.find('textarea[name*="[features]"]').val(featText);
+                }
+                if (plan.badge) {
+                    row.find('input[name*="[show_banner]"]').prop('checked', true);
+                    row.find('input[name*="[banner_text]"]').val(plan.badge);
+                }
+                if (plan.prices) {
+                    for (var cycle in plan.prices) {
+                        if (plan.prices.hasOwnProperty(cycle)) {
+                            var pData = plan.prices[cycle];
+                            var group = row.find('.wpc-price-group[data-slug="' + cycle + '"]');
+                            if (group.length) {
+                                group.find('input[name*="[amount]"]').val(pData.amount || '');
+                                group.find('input[name*="[period]"]').val(pData.period || '');
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // NEW: Granular Generation Logic
+        jQuery('.wpc-ai-gen-btn').on('click', function(e) {
+            e.preventDefault();
+            var btn = jQuery(this);
+            var target = btn.data('target');
+            var originalText = btn.text();
+            
+            // Context Gathering
+            var productName = document.getElementById('wpc-ai-product-name') ? document.getElementById('wpc-ai-product-name').value : jQuery('input[name="post_title"]').val();
+            if (!productName) {
+                wpcShowAIToast('Please enter a Title (Product Name) above first.', true);
+                return;
+            }
+
+            var profileSelect = document.getElementById('wpc-ai-item-profile');
+            var profileId = profileSelect ? profileSelect.value : '';
+            
+            if (!profileId) {
+                wpcShowAIToast('Please select an AI profile first (AI Assistant panel at top).', true);
+                return;
+            }
+
+            var userContext = '';
+            // Use Global Context Field
+            var contextField = document.getElementById('wpc-ai-custom-context');
+            if (contextField) {
+                 userContext = contextField.value.trim();
+            }
+            
+            // Perform Generation Logic (Wrapped)
+            function wpcFireAjax() {
+                 btn.text('Generating...').prop('disabled', true);
+                 
+                 jQuery.post(ajaxurl, {
+                    action: 'wpc_ai_generate',
+                    nonce: window.wpcAiNonce || jQuery('#wpc_ai_item_nonce').val(), // Ensure fresh nonce
+                    profile_id: profileId, // Use scoped var
+                    prompt_type: target,
+                    product_name: productName,
+                    user_context: userContext || ''
+                 }, function(resp) {
+                     btn.text(originalText).prop('disabled', false);
+                     
+                     if (resp.success) {
+                         var data = resp.data;
+                         // Ensure JSON
+                         if (typeof data === 'string') {
+                             try { 
+                                 var clean = data.replace(/```json/g, '').replace(/```/g, '').trim();
+                                 data = JSON.parse(clean); 
+                             } catch(e) { console.error('JSON Parse Error', e); }
+                         }
+                         
+                         if (target === 'pros_cons') {
+                             if (data.pros) jQuery('textarea[name="wpc_pros"]').val( Array.isArray(data.pros) ? data.pros.join('\\n') : data.pros );
+                             if (data.cons) jQuery('textarea[name="wpc_cons"]').val( Array.isArray(data.cons) ? data.cons.join('\\n') : data.cons );
+                             wpcShowToast('Pros & Cons populated!', false);
+                         } 
+                         else if (target === 'seo') {
+                              if(data.brand) jQuery('input[name="wpc_brand"]').val(data.brand);
+                              if(data.service_type) jQuery('input[name="wpc_service_type"]').val(data.service_type);
+                              if(data.area_served) jQuery('input[name="wpc_area_served"]').val(data.area_served);
+                              if(data.sku) jQuery('input[name="wpc_sku"]').val(data.sku);
+                              // Product Category?
+                              if(data.product_category) jQuery('select[name="wpc_product_category"]').val(data.product_category).trigger('change');
+                              wpcShowToast('SEO fields populated!', false);
+                         }
+                          else if (target === 'pricing') {
+                              var plans = data.pricing_plans || (Array.isArray(data) ? data : []);
+                              if (plans.length > 0) {
+                                   // Reuse wpcAdmin.confirm for replacing plans if existing plans found
+                                   if (document.querySelectorAll('#wpc-plans-container .wpc-plan-row').length > 0) {
+                                       wpcAdmin.confirm('Import Plans', 'Received ' + plans.length + ' plans. Replace existing plans?', function(){
+                                           _wpcPopulatePlans(data);
+                                       }, 'Yes, Replace', '#6366f1');
+                                   } else {
+                                       _wpcPopulatePlans(data);
+                                       wpcShowToast('Imported ' + plans.length + ' pricing plans!', false);
+                                   }
+                              } else {
+                                  wpcShowToast('AI returned no valid plans.', true);
+                              }
+                          }
+                     } else {
+                         wpcShowToast('AI Error: ' + (resp.data || 'Unknown'), true);
+                     }
+                 }).fail(function() {
+                     btn.text(originalText).prop('disabled', false);
+                     wpcShowToast('Failed to connect to AI', true);
+                 });
+            }
+
+
+            // Check Context for Pricing
+            if (target === 'pricing' && !userContext) {
+                 wpcAdmin.confirm(
+                     'Missing Context', 
+                     'You haven\'t provided any text in the "Additional Context" box above.<br><br>For accurate pricing, we recommend pasting raw details.<br><br>Generate anyway?',
+                     function() {
+                         wpcFireAjax(); 
+                     },
+                     'Generate Anyway', 
+                     '#f59e0b'
+                 );
+            } else {
+                 wpcFireAjax();
+            }
+            
+            return; // Stop further execution here as we handled logic above
+            
+
+            
+
+
+
+
+        });
+
         // Batched Prompts for Single Item
         var aiPrompts = {
             // Batch 1: Core Data (General, Content, Pricing, Visuals, SEO)
@@ -2601,9 +2813,11 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     }
   },
   "billing_cycles": [
+    // IMPORTANT: Extract ALL billing cycles found in the context (e.g. triennial, biennial, lifetime, monthly).
+    // If user context mentions "Triennial" ($1.99/mo), create a slug "triennial" and label "Triennial".
     {"slug": "monthly", "label": "Monthly"},
     {"slug": "yearly", "label": "Yearly"},
-    {"slug": "lifetime", "label": "Lifetime"}
+    {"slug": "triennial", "label": "Triennial"} 
   ],
   "default_cycle": "monthly",
   "billing_display_style": "toggle",
@@ -2611,9 +2825,10 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     {
       "name": "Basic", 
       "prices": {
+        // Map prices to the slugs defined in billing_cycles above.
         "monthly": { "amount": "$9", "period": "/mo" },
         "yearly": { "amount": "$90", "period": "/yr" },
-        "lifetime": { "amount": "$299", "period": "once" }
+        "triennial": { "amount": "$199", "period": "once" }
       }, 
       "features": ["Feature 1", "Feature 2", "Feature 3"], 
       "button_text": "Get Started", 
@@ -2660,7 +2875,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
   ],
   "recommended_tools": ["Tool Name A", "Tool Name B"]
 }
-Be accurate and specific to the actual product/service. Use proper JSON quoting.`,
+Be accurate and specific to the actual product/service. Use proper JSON quoting. Use context to determine billing cycles.`,
 
             // Batch 2: Use Cases (Dedicated to ensure quality)
             use_cases: `Generate 4 detailed Best Use Cases for "{name}".
@@ -2713,7 +2928,7 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                 
                 jQuery.post(ajaxurl, {
                     action: 'wpc_ai_generate', 
-                    item_profile_id: profileId,
+                    profile_id: profileId,
                     prompt: promptCore,
                     nonce: aiNonce
                 }, function(response) {
@@ -2744,7 +2959,7 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                             
                             jQuery.post(ajaxurl, {
                                 action: 'wpc_ai_generate',
-                                item_profile_id: profileId,
+                                profile_id: profileId,
                                 prompt: promptUC,
                                 nonce: aiNonce
                             }, function(respUC) {
@@ -2765,7 +2980,7 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                                     
                                     jQuery.post(ajaxurl, {
                                         action: 'wpc_ai_generate',
-                                        item_profile_id: profileId,
+                                        profile_id: profileId,
                                         prompt: promptTax,
                                         nonce: aiNonce
                                     }, function(respTax) {
@@ -2822,79 +3037,56 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
         
         // Populate form fields from AI response
         function wpcPopulateFromAI(data) {
-            // Description
+            console.log('Populating from AI Batch...', data);
+            
+            // 1. Basic Fields
             if (data.description) {
                 var descField = document.getElementById('wpc_short_description');
                 if (descField) descField.value = data.description;
             }
-            
-            // Rating
             if (data.rating) {
                 var ratingField = document.getElementById('wpc_rating');
                 if (ratingField) ratingField.value = data.rating;
             }
-            
-            // Price
             if (data.price) {
                 var priceField = document.getElementById('wpc_price');
                 if (priceField) priceField.value = data.price;
             }
-            
-            // Period
             if (data.period) {
                 var periodField = document.getElementById('wpc_price_period');
                 if (periodField) periodField.value = data.period;
             }
+            if (data.public_name) jQuery('input[name="wpc_public_name"]').val(data.public_name);
+            if (data.title) jQuery('#title').val(data.title);
             
-            // Pros
+            // 2. Pricing Section (Consolidated)
+            _wpcPopulatePlans(data);
+            
+            // 3. Pros & Cons
             if (data.pros && Array.isArray(data.pros)) {
                 var prosField = document.getElementById('wpc_pros');
                 if (prosField) prosField.value = data.pros.join('\n');
             }
-            
-            // Cons
             if (data.cons && Array.isArray(data.cons)) {
                 var consField = document.getElementById('wpc_cons');
                 if (consField) consField.value = data.cons.join('\n');
             }
             
-            // Pricing Plans
-            if (data.pricing_plans && Array.isArray(data.pricing_plans)) {
-                var container = document.getElementById('wpc-plans-container');
-                if (container) {
-                    // Clear existing plans
-                    container.innerHTML = '';
-                    
-                    data.pricing_plans.forEach(function(plan, idx) {
-                        wpcAddPlan();
-                        var row = container.children[idx];
-                        if (row) {
-                            var nameInput = row.querySelector('input[name*="[name]"]');
-                            var priceInput = row.querySelector('input[name*="[price]"]');
-                            var periodInput = row.querySelector('input[name*="[period]"]');
-                            var featuresInput = row.querySelector('textarea[name*="[features]"]');
-                            var btnTextInput = row.querySelector('input[name*="[button_text]"]');
-                            
-                            if (nameInput) nameInput.value = plan.name || '';
-                            if (priceInput) priceInput.value = plan.price || '';
-                            if (periodInput) periodInput.value = plan.period || '/mo';
-                            if (featuresInput) featuresInput.value = plan.features || '';
-                            if (btnTextInput) btnTextInput.value = plan.button_text || 'Get Started';
-                            
-                            // Mark popular plan
-                            if (plan.is_popular) {
-                                var bannerCheck = row.querySelector('input[name*="[show_banner]"]');
-                                var bannerText = row.querySelector('input[name*="[banner_text]"]');
-                                if (bannerCheck) bannerCheck.checked = true;
-                                if (bannerText) bannerText.value = 'MOST POPULAR';
-                            }
-                        }
-                    });
-                }
+            // 4. SEO
+            if (data.seo) {
+                if(data.seo.brand) jQuery('input[name="wpc_brand"]').val(data.seo.brand);
+                if(data.seo.service_type) jQuery('input[name="wpc_service_type"]').val(data.seo.service_type);
+                if(data.seo.area_served) jQuery('input[name="wpc_area_served"]').val(data.seo.area_served);
+                if(data.seo.sku) jQuery('input[name="wpc_sku"]').val(data.seo.sku);
             }
-            
-            // Switch to relevant tab for review
-            wpcOpenItemTab(null, 'general');
+
+            // 5. Use Cases
+            if (data.use_cases && typeof wpcUpdateUseCasesFromData === 'function') {
+                 wpcUpdateUseCasesFromData(data.use_cases);
+            }
+
+            wpcShowAIToast('All data sections populated successfully!', false);
+            wpcOpenItemTab({currentTarget: document.querySelector('.wpc-tab-nav li')}, 'general');
         }
         
         // Toast notification
