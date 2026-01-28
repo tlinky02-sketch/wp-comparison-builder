@@ -346,7 +346,7 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
                 'monthly_label' => get_post_meta($id, '_wpc_monthly_label', true) ?: 'Pay monthly',
                 'yearly_label' => get_post_meta($id, '_wpc_yearly_label', true) ?: 'Pay yearly (save 25%)*',
                 'default_billing' => get_post_meta($id, '_wpc_default_billing', true) ?: 'monthly',
-                'billing_cycles' => get_post_meta($id, '_wpc_billing_cycles', true) ?: [],
+                'billing_cycles' => array_values( get_post_meta($id, '_wpc_billing_cycles', true) ?: [] ), // Force sequential array
                 'default_cycle' => get_post_meta($id, '_wpc_default_cycle', true) ?: 'monthly',
                 'billing_display_style' => get_post_meta($id, '_wpc_billing_display_style', true) ?: 'toggle',
 

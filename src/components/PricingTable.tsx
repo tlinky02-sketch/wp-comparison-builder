@@ -29,61 +29,6 @@ const PricingTable = ({
     displayContext = 'inline', // Default likely inline if not specified
     config
 }: PricingTableProps) => {
-    // 1. Legacy Data Retrieval (for Fallback)
-    const itemAny = item as any;
-    const billingMode = config?.billingMode || itemAny.billing_mode || 'monthly_only';
-    const monthlyLabel = config?.monthlyLabel || itemAny.monthly_label || 'Pay monthly';
-    const yearlyLabel = config?.yearlyLabel || itemAny.yearly_label || 'Pay yearly (save 25%)*';
-    const defaultBilling = config?.defaultBilling || itemAny.default_billing || 'monthly';
-
-    // 2. Billing Mode Logic (Dynamic)
-    let billingCycles: any[] = config?.billingCycles || (item as any).billing_cycles;
-
-    // Ensure billingCycles is an array (PHP sometimes sends {} for [])
-    if (!Array.isArray(billingCycles)) {
-        billingCycles = [];
-    }
-
-    const billingStyle = config?.billingDisplay || (item as any).billing_display_style || 'toggle';
-    // Fallback if cycles missing but legacy props exist (safety net)
-    if (billingCycles.length === 0) {
-        if (billingMode !== 'yearly_only') billingCycles.push({ slug: 'monthly', label: monthlyLabel });
-        if (billingMode !== 'monthly_only') billingCycles.push({ slug: 'yearly', label: yearlyLabel });
-    }
-
-    // Determine default cycle
-    const initialCycle = (Array.isArray(billingCycles) && billingCycles.find((c: any) => c.slug === defaultBilling))
-        ? defaultBilling
-        : (billingCycles[0]?.slug || 'monthly');
-    const [selectedCycle, setSelectedCycle] = useState<string>(initialCycle);
-
-    // 3. Plans Data Preparation
-    let plans = item.pricing_plans || [];
-
-
-    // Product Variants: Local Category State (defaults to config category, item default, or null)
-    const [localCategory, setLocalCategory] = useState<string | null>(config?.category || item.variants?.default_category || null);
-
-    // Product Variants: Filter Plans by Category (with fallback to all plans)
-    if (item.variants?.enabled && item.variants?.plans_by_category) {
-        // Use local state if set, otherwise fall back to config (if any)
-        const activeCat = localCategory;
-
-        if (activeCat) {
-            const allowedIndices = item.variants.plans_by_category[activeCat];
-            if (allowedIndices && Array.isArray(allowedIndices)) {
-                const indices = allowedIndices.map(Number);
-                const filteredPlans = plans.filter((_, idx) => indices.includes(idx));
-                // Fallback: If no plans match the category, show ALL plans instead of empty
-                if (filteredPlans.length > 0) {
-                    plans = filteredPlans;
-                }
-            }
-        }
-    }
-    const showFeatures = !item.hide_plan_features;
-
-
     // Helper to get price availability (strictly checks if price exists for cycle)
     const hasPriceForCycle = (plan: any, cycleSlug: string) => {
         // New structure check
@@ -122,6 +67,100 @@ const PricingTable = ({
 
         return result;
     };
+
+    // 1. Legacy Data Retrieval (for Fallback)
+    const itemAny = item as any;
+    const billingMode = config?.billingMode || itemAny.billing_mode || 'monthly_only';
+    const monthlyLabel = config?.monthlyLabel || itemAny.monthly_label || 'Pay monthly';
+    const yearlyLabel = config?.yearlyLabel || itemAny.yearly_label || 'Pay yearly (save 25%)*';
+    const defaultBilling = config?.defaultBilling || itemAny.default_billing || 'monthly';
+
+    // 2. Billing Mode Logic (Dynamic)
+    let billingCycles: any[] = config?.billingCycles || (item as any).billing_cycles;
+
+    // Ensure billingCycles is an array (PHP sometimes sends {} for [])
+    if (!Array.isArray(billingCycles)) {
+        if (typeof billingCycles === 'object' && billingCycles !== null) {
+            billingCycles = Object.values(billingCycles);
+        } else {
+            billingCycles = [];
+        }
+    }
+
+    const billingStyle = config?.billingDisplay || (item as any).billing_display_style || 'toggle';
+    // Fallback if cycles missing but legacy props exist (safety net)
+    if (billingCycles.length === 0) {
+        if (billingMode !== 'yearly_only') billingCycles.push({ slug: 'monthly', label: monthlyLabel });
+        if (billingMode !== 'monthly_only') billingCycles.push({ slug: 'yearly', label: yearlyLabel });
+    }
+
+    // 3. Plans Data Preparation
+    let plans = item.pricing_plans || [];
+
+    // Product Variants: Local Category State (defaults to config category, item default, or null)
+    const [localCategory, setLocalCategory] = useState<string | null>(config?.category || item.variants?.default_category || null);
+
+    // Initial Calculation of Effective Plans (for Smart Default Cycle)
+    // We need to know which plans are active *before* we pick the cycle
+    let plansToCheck = plans;
+    if (item.variants?.enabled && item.variants?.plans_by_category) {
+        const activeCat = config?.category || item.variants?.default_category || null;
+        if (activeCat) {
+            const allowedIndices = item.variants.plans_by_category[activeCat];
+            if (allowedIndices && Array.isArray(allowedIndices)) {
+                const indices = allowedIndices.map(Number);
+                const filtered = plans.filter((_, idx) => indices.includes(idx));
+                if (filtered.length > 0) plansToCheck = filtered;
+            }
+        }
+    }
+
+    // Determine default cycle (Smart Logic)
+    // If the "Configured Default" has NO visible plans, but another cycle DOES, pick the one with plans.
+    const initialCycle = (() => {
+        // 1. Try Configured Default
+        const def = (Array.isArray(billingCycles) && billingCycles.find((c: any) => c.slug === defaultBilling))
+            ? defaultBilling
+            : (billingCycles[0]?.slug || 'monthly');
+
+        // Check if default works
+        if (plansToCheck.some((p: any) => hasPriceForCycle(p, def))) {
+            return def;
+        }
+
+        // 2. If default fails, look for ANY cycle with plans
+        if (Array.isArray(billingCycles)) {
+            for (const cycle of billingCycles) {
+                if (plansToCheck.some((p: any) => hasPriceForCycle(p, cycle.slug))) {
+                    return cycle.slug;
+                }
+            }
+        }
+
+        // 3. Fallback to default
+        return def;
+    })();
+
+    const [selectedCycle, setSelectedCycle] = useState<string>(initialCycle);
+
+
+    // Product Variants: Filter Plans by Category (Real-time render logic)
+    if (item.variants?.enabled && item.variants?.plans_by_category) {
+        // Use local state if set, otherwise fall back to config (if any)
+        const activeCat = localCategory;
+        if (activeCat) {
+            const allowedIndices = item.variants.plans_by_category[activeCat];
+            if (allowedIndices && Array.isArray(allowedIndices)) {
+                const indices = allowedIndices.map(Number);
+                const filteredPlans = plans.filter((_, idx) => indices.includes(idx));
+                // Fallback: If no plans match the category, show ALL plans instead of empty
+                if (filteredPlans.length > 0) {
+                    plans = filteredPlans;
+                }
+            }
+        }
+    }
+    const showFeatures = !item.hide_plan_features;
 
     // Filter plans based on cycle availability
     // If a plan does NOT have a price for the selected cycle, it should be hidden from view.
@@ -283,6 +322,28 @@ const PricingTable = ({
         return (
             <div className="text-center py-12 bg-secondary/20 rounded-xl mb-8">
                 <p className="text-muted-foreground">{(window as any).wpcSettings?.texts?.noPlans || 'No specific pricing plans available for display.'}</p>
+            </div>
+        );
+    }
+
+    if (visiblePlans.length === 0) {
+        return (
+            <div className="text-center py-12 bg-secondary/20 rounded-xl mb-8">
+                <p className="text-muted-foreground mb-4">{(window as any).wpcSettings?.texts?.noCyclePlans || 'No plans available for this billing cycle.'}</p>
+                {/* Optional: Show available cycles for these plans? */}
+                {billingCycles.length > 1 && (
+                    <div className="flex flex-wrap gap-2 justify-center">
+                        {billingCycles.map((cycle: any) => (
+                            <button
+                                key={cycle.slug}
+                                onClick={() => setSelectedCycle(cycle.slug)}
+                                className="text-sm px-3 py-1 rounded bg-muted hover:bg-muted/80 transition-colors"
+                            >
+                                Switch to {cycle.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }

@@ -914,7 +914,7 @@ function wpc_delete_all_data() {
  * Apply Theme Preset
  */
 function wpc_get_theme_presets() {
-    return array(
+    $presets = array(
         'indigo' => array(
             'wpc_primary_color' => '#6366f1',
             'wpc_accent_color' => '#f43f5e',
@@ -1088,6 +1088,8 @@ function wpc_get_theme_presets() {
             'wpc_button_hover_color' => '#000000', // Black
         ),
     );
+
+    return apply_filters( 'wpc_theme_presets', $presets );
 }
 
 add_action( 'wp_ajax_wpc_apply_theme_preset', 'wpc_apply_theme_preset' );
@@ -1733,13 +1735,24 @@ function wpc_render_general_tab() {
                         <p class="description" style="margin-bottom: 10px;">Select a predefined theme to automatically set <strong>ALL</strong> colors (General, Card, Pricing Table, Coupons) to a professional palette.</p>
                         
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <?php $current_theme = get_option( 'wpc_current_theme_preset', 'indigo' ); ?>
+                            <?php 
+                            $current_theme = get_option( 'wpc_current_theme_preset', 'indigo' ); 
+                            $presets = wpc_get_theme_presets();
+                            // Map of nice names for built-ins
+                            $nice_names = array(
+                                'indigo' => 'Indigo Modern (Default)',
+                                'emerald' => 'Emerald Green',
+                                'sunset' => 'Sunset Orange',
+                                'ocean' => 'Ocean Blue',
+                                'minimal' => 'Minimal Slate'
+                            );
+                            ?>
                             <select id="wpc_theme_selector" style="max-width: 200px;">
-                                <option value="indigo" <?php selected( $current_theme, 'indigo' ); ?>>Indigo Modern (Default)</option>
-                                <option value="emerald" <?php selected( $current_theme, 'emerald' ); ?>>Emerald Green</option>
-                                <option value="sunset" <?php selected( $current_theme, 'sunset' ); ?>>Sunset Orange</option>
-                                <option value="ocean" <?php selected( $current_theme, 'ocean' ); ?>>Ocean Blue</option>
-                                <option value="minimal" <?php selected( $current_theme, 'minimal' ); ?>>Minimal Slate</option>
+                                <?php foreach ( $presets as $key => $data ) : 
+                                    $label = isset($nice_names[$key]) ? $nice_names[$key] : ucfirst(str_replace('_', ' ', $key));
+                                ?>
+                                    <option value="<?php echo esc_attr($key); ?>" <?php selected( $current_theme, $key ); ?>><?php echo esc_html($label); ?></option>
+                                <?php endforeach; ?>
                             </select>
                             <button type="button" id="wpc_apply_theme_btn" class="button button-secondary">Apply Theme</button>
                             <button type="button" id="wpc_reset_colors_btn" class="button" style="color: #ef4444; border-color: #fca5a5;">Reset Colors</button>
@@ -3566,25 +3579,47 @@ Return ONLY valid JSON with this structure:
 }`;
                 } else {
                     // Item Generation
-                    prompt = `Generate comparison data for "${name}".
+                    prompt = `Analyze the context and generate data for "${name}".
 ${context ? 'Context/Instructions: ' + context + '\n' : ''}
-Return ONLY valid JSON with this structure:
+
+CRITICAL: Return ONLY valid JSON.
+JSON Structure:
 {
   "title": "Product Name",
-  "public_name": "Display Name for Frontend",
-  "description": "2-3 sentence short description",
+  "public_name": "Product Name",
+  "description": "Concise summary",
   "rating": 4.5,
   "price": "$29",
   "period": "/mo"`;
   
                     if (sections.includes('pros_cons')) {
-                        prompt += `,\n  "pros": ["Pro 1", "Pro 2", "Pro 3"],\n  "cons": ["Con 1", "Con 2"]`;
+                        prompt += `,\n  "pros": ["Pro 1", "Pro 2"],\n  "cons": ["Con 1", "Con 2"]`;
                     }
                     if (sections.includes('pricing')) {
                         prompt += `,\n  "billing_cycles": [{"slug": "monthly", "label": "Monthly"}, {"slug": "yearly", "label": "Yearly"}],
   "default_cycle": "monthly",
   "billing_display_style": "toggle",
-  "pricing_plans": [{"name": "Basic", "prices": {"monthly": {"amount": "$9", "period": "/mo"}, "yearly": {"amount": "$90", "period": "/yr"}}, "features": "Feature 1\\nFeature 2", "button_text": "Get Started", "link": "https://example.com"}]`;
+  "pricing_plans": [
+    {
+      "name": "Plan Name",
+      "prices": {
+         "monthly": { "amount": "$9", "period": "/mo" },
+         "yearly": { "amount": "$90", "period": "/yr" }
+      },
+      "features": ["Feature 1", "Feature 2"],
+      "button_text": "Get Started",
+      "link": "https://example.com"
+    }
+  ]`;
+                        // Close JSON first, then add text instructions
+                        prompt += `\n}\n\nPRICING INSTRUCTIONS:\n1. Extract ALL plans found in the text.\n2. Extract ALL billing cycles (Monthly, Yearly, 3-Year, etc).\n3. Populate "billing_cycles" array.\n4. For EACH plan, fill "prices" object with keys matching the cycle slugs (e.g. "monthly": {...}).`;
+                    } else {
+                        // If no pricing, we still need to close the JSON object
+                        if (!prompt.endsWith('}')) {
+                            // Check if we need to close the last property if needed, but here we are appending to the main object
+                            // The previous lines used commas, so if we are here and not pricing, we ended with either "period" or "cons"
+                            prompt += `\n}`;
+                        }
                     }
                     if (sections.includes('best_use_cases')) {
                         prompt += `,\n  "best_use_cases": [{"name": "Best for Beginners", "desc": "Easy setup and intuitive interface", "icon": "fa-solid fa-rocket"}, {"name": "Great for Small Business", "desc": "Affordable plans with essential features", "icon": "fa-solid fa-briefcase"}, {"name": "Ideal for Bloggers", "desc": "Content-focused tools and SEO features", "icon": "fa-solid fa-pen-nib"}, {"name": "Perfect for E-commerce", "desc": "Shopping cart and payment integrations", "icon": "fa-solid fa-shopping-cart"}]`;

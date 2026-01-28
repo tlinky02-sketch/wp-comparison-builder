@@ -36,24 +36,7 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   const tickColor = colors.tick || '#10b981';
   const crossColor = colors.cross || '#94a3b8';
 
-  // Billing Cycle Sync: Collect all unique billing cycles from items
-  const allCycles = React.useMemo(() => {
-    const cyclesMap = new Map<string, string>();
-    items.forEach(item => {
-      const cycles = (item as any).billing_cycles;
-      if (Array.isArray(cycles)) {
-        cycles.forEach((c: { slug: string, label: string }) => {
-          if (c.slug && !cyclesMap.has(c.slug)) {
-            cyclesMap.set(c.slug, c.label);
-          }
-        });
-      }
-    });
-    if (cyclesMap.size === 0) {
-      cyclesMap.set('monthly', 'Monthly');
-    }
-    return Array.from(cyclesMap.entries()).map(([slug, label]) => ({ slug, label }));
-  }, [items]);
+
 
   // Category / Variant Sync
   // Collect all unique variant categories
@@ -85,13 +68,16 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
   });
 
   // Helper to get price for a specific cycle AND category
-  const getPriceForCycle = (item: ComparisonItem, cycle: string): { amount: string, period: string, unavailable?: boolean } => {
+  const getPriceForCycle = (item: ComparisonItem, cycle: string, categoryOverride?: string | null): { amount: string, period: string, unavailable?: boolean } => {
     const emptyPriceText = (window as any).wpcSettings?.texts?.emptyPrice || 'Free';
     let plans = (item as any).pricing_plans || [];
 
+    // Use override if provided (including null), otherwise fall back to state
+    const activeCat = categoryOverride !== undefined ? categoryOverride : selectedCategory;
+
     // Filter plans by category if selected
-    if (selectedCategory && item.variants?.enabled && item.variants.plans_by_category) {
-      const allowedIndices = item.variants.plans_by_category[selectedCategory];
+    if (activeCat && item.variants?.enabled && item.variants.plans_by_category) {
+      const allowedIndices = item.variants.plans_by_category[activeCat];
       if (allowedIndices && Array.isArray(allowedIndices)) {
         const indices = allowedIndices.map(Number);
         const filtered = plans.filter((_: any, idx: number) => indices.includes(idx));
@@ -110,25 +96,24 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
           return { amount: p.amount, period: p.period || '' };
         }
       }
-      // Legacy fallback check (if accessing plan.price/yearly_price directly)
-      // Note: PricingTable has stricter "hasPriceForCycle". We should match that logic if possible.
-      // But typically "prices" object is the new standard.
     }
 
     // If no plans match the cycle, and a category is selected OR it's a non-default cycle
-    if (selectedCategory || (plans.length > 0 && cycle !== 'monthly')) {
+    if (activeCat || (plans.length > 0 && cycle !== 'monthly')) {
       return { amount: '', period: '', unavailable: true };
     }
 
     // Fallback to item.price only for default view (monthly + no category)
-    if (plans.length > 0 && !selectedCategory && cycle === 'monthly') {
+    // Note: If checking a specific category (activeCat), strict plans rules apply (above). 
+    // This fallback is only for GLOBAL/NO-CATEGORY view.
+    if (plans.length > 0 && !activeCat && cycle === 'monthly') {
       if (item.price && item.price !== '0') {
         return { amount: item.price, period: item.moSuffix || getText('moSuffix', '/mo') };
       }
     }
 
     // Default fallback (Free) - strictly for cases where we don't want to hide
-    if (!selectedCategory && cycle === 'monthly' && plans.length === 0) {
+    if (!activeCat && cycle === 'monthly' && plans.length === 0) {
       return { amount: emptyPriceText, period: '' };
     }
 
@@ -193,10 +178,70 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
     });
   }, [items, selectedCategory, selectedCycle]);
 
+  // Billing Cycle Sync: Collect unique billing cycles ONLY if they have valid prices for current category
+  const allCycles = React.useMemo(() => {
+    const cyclesMap = new Map<string, string>();
+
+    // 1. First Pass: Collect ALL potential cycles from items that belong to the current category
+    const relevantItems = items.filter(item => {
+      if (!selectedCategory) return true;
+      // Check if item belongs to category
+      if (item.variants?.enabled && item.variants.plans_by_category) {
+        const allowed = item.variants.plans_by_category[selectedCategory];
+        return allowed && Array.isArray(allowed) && allowed.length > 0;
+      }
+      return true; // If no variants, it belongs to global
+    });
+
+    relevantItems.forEach(item => {
+      // Ensure we treat the billing_cycles safely (Object format fix repeated here just in case)
+      let cycles = (item as any).billing_cycles;
+      if (!Array.isArray(cycles) && typeof cycles === 'object' && cycles !== null) {
+        cycles = Object.values(cycles);
+      }
+
+      if (Array.isArray(cycles)) {
+        cycles.forEach((c: { slug: string, label: string }) => {
+          if (c.slug && !cyclesMap.has(c.slug)) {
+            // CRITICAL CHECK: Does this item ACTUALLY have a price for this cycle in the selected category?
+            const price = getPriceForCycle(item, c.slug, selectedCategory);
+            if (!price.unavailable) {
+              cyclesMap.set(c.slug, c.label);
+            }
+          }
+        });
+      }
+    });
+
+    // Fallback logic
+    if (cyclesMap.size === 0) {
+      // If empty, check if we have monthly prices at least?
+      // cyclesMap.set('monthly', 'Monthly'); 
+      // Better: Don't force 'monthly' if strictly no data. 
+      // But to avoid UI collapse if data is malformed:
+      // cyclesMap.set('monthly', 'Monthly');
+    }
+
+    return Array.from(cyclesMap.entries()).map(([slug, label]) => ({ slug, label }));
+  }, [items, selectedCategory]); // Removed 'selectedCycle' dependency to avoid circular logic logic
+
+  // Effect: Validate Selected Cycle
+  // If the currently selected cycle is no longer in 'allCycles', switch to the first available one!
+  useEffect(() => {
+    if (allCycles.length > 0) {
+      const exists = allCycles.find(c => c.slug === selectedCycle);
+      if (!exists) {
+        setSelectedCycle(allCycles[0].slug);
+      }
+    }
+  }, [allCycles, selectedCycle]);
+
+
   const showScroll = visibleItems.length > 4;
   // Calculate width based on 20% increments (Feature + 4 Items = 100%)
   const minTableWidth = showScroll ? `${(visibleItems.length + 1) * 20}%` : '100%';
   const columnWidth = showScroll ? `${100 / (visibleItems.length + 1)}%` : '20%';
+
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
@@ -448,32 +493,45 @@ const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTablePro
           >
             {(window as any).wpcSettings?.texts?.allPlans || 'All Plans'}
           </div>
-          {allCategories.list.map(catSlug => {
-            const pretty = catSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-            const isActive = selectedCategory === catSlug;
-            return (
-              <div
-                key={catSlug}
-                onClick={() => setSelectedCategory(catSlug)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
-                  ? "shadow-sm"
-                  : "bg-transparent text-muted-foreground border-border hover:bg-muted"
-                  }`}
-                style={isActive ? {
-                  backgroundColor: primaryColor,
-                  color: 'var(--wpc-btn-text, #ffffff) !important',
-                  borderColor: primaryColor
-                } : {}}
-              >
-                {pretty}
-              </div>
-            );
-          })}
+          {allCategories.list
+            .filter(catSlug => {
+              // Only show category if at least one item has visible plans for it (in current cycle)
+              return items.some(item => {
+                // 1. Variant check
+                const allowed = item.variants?.plans_by_category?.[catSlug];
+                if (!allowed || !Array.isArray(allowed) || allowed.length === 0) return false;
+
+                // 2. Price check (using new override)
+                const price = getPriceForCycle(item, selectedCycle, catSlug);
+                return !price.unavailable;
+              });
+            })
+            .map(catSlug => {
+              const pretty = catSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+              const isActive = selectedCategory === catSlug;
+              return (
+                <div
+                  key={catSlug}
+                  onClick={() => setSelectedCategory(catSlug)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
+                    ? "shadow-sm"
+                    : "bg-transparent text-muted-foreground border-border hover:bg-muted"
+                    }`}
+                  style={isActive ? {
+                    backgroundColor: primaryColor,
+                    color: 'var(--wpc-btn-text, #ffffff) !important',
+                    borderColor: primaryColor
+                  } : {}}
+                >
+                  {pretty}
+                </div>
+              );
+            })}
         </div>
       )}
 
-      {/* Billing Cycle Toggle (only if multiple cycles available) */}
-      {allCycles.length > 1 && (
+      {/* Billing Cycle Toggle (Show even if single, so user knows the period, e.g. "10 Years") */}
+      {allCycles.length > 0 && (
         <div className="flex items-center justify-center gap-2 p-4 border-b border-border bg-muted/20">
           <span className="text-sm text-muted-foreground mr-2">{getText('billingCycle', 'Billing:')}</span>
           {allCycles.map((cycle) => (
