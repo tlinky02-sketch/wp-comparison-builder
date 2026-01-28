@@ -79,15 +79,14 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             return config.initialItems;
         }
 
-        // Priority 2: Global preloaded data (WP Localization)
+        // Priority 2: Global preloaded data (Legacy/Fallback)
         if (preloadedData?.items) return preloadedData.items;
-        if (preloadedData?.providers) return preloadedData.providers; // Legacy
 
         return [];
     });
-    const [categories, setCategories] = useState<string[]>(() => preloadedData?.categories || []);
-    const [filterableFeatures, setFilterableFeatures] = useState<string[]>(() => preloadedData?.filterableFeatures || []);
-    const [loading, setLoading] = useState(() => !preloadedData);
+    const [categories, setCategories] = useState<string[]>(() => config.categories || preloadedData?.categories || []);
+    const [filterableFeatures, setFilterableFeatures] = useState<string[]>(() => config.filterableFeatures || preloadedData?.filterableFeatures || []);
+    const [loading, setLoading] = useState(() => !config.initialItems && !preloadedData);
 
     // Derived Display Lists (for Custom Filters)
     const displayedCategories = useMemo(() => {
@@ -133,6 +132,54 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     const comparisonRef = useRef<HTMLDivElement>(null);
 
     const MAX_COMPARE = 4;
+
+    // Lazy Loading State
+    // Initial items are now ultra-thin cards, so they are NOT hydrated by default.
+    // They will be hydrated when a detailed view (popup/compare) is requested.
+    const [hydratedIds, setHydratedIds] = useState<Set<string>>(new Set());
+    const [isHydrating, setIsHydrating] = useState(false);
+
+    const hydrateItems = async (ids: string[]) => {
+        const idsToFetch = ids.filter(id => !hydratedIds.has(String(id)));
+        if (idsToFetch.length === 0) return;
+
+        setIsHydrating(true);
+        try {
+            const settings = (window as any).wpcSettings || (window as any).ecommerceGuiderSettings;
+            const apiUrl = settings?.apiUrl || '/wp-json/wpc/v1/items';
+            const connector = apiUrl.includes('?') ? '&' : '?';
+            const url = `${apiUrl}${connector}ids=${idsToFetch.join(',')}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+            const newItems = data.items || data.providers || [];
+
+            if (newItems.length > 0) {
+                setItems((prev) => {
+                    const next = [...prev];
+                    newItems.forEach((fresh: ComparisonItem) => {
+                        const idx = next.findIndex(p => String(p.id) === String(fresh.id));
+                        if (idx !== -1) {
+                            next[idx] = { ...next[idx], ...fresh };
+                        } else {
+                            next.push(fresh);
+                        }
+                    });
+                    return next;
+                });
+
+                setHydratedIds(prev => {
+                    const next = new Set(prev);
+                    idsToFetch.forEach(id => next.add(String(id)));
+                    return next;
+                });
+            }
+        } catch (error) {
+            console.error("Hydration failed", error);
+        } finally {
+            setIsHydrating(false);
+        }
+    };
 
     // Get filter style early for loading state
     const globalFilterStyle = (window as any).wpcSettings?.filterStyle || 'top';
@@ -478,7 +525,43 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     }, [items, selectedCategories, selectedFeatures, searchQuery, searchSelectedItems, sortOption]);
 
     const displayedItems = filteredItems.slice(0, visibleCount);
-    const hasMore = filteredItems.length > visibleCount;
+    const hasMore = (config.ids && Array.isArray(config.ids) && config.ids.length > visibleCount) || filteredItems.length > visibleCount;
+
+    // Trigger hydration ONLY for missing items (items not in state at all)
+    // We do NOT auto-hydrate thin items to keep the initial load perfect.
+    useEffect(() => {
+        if (loading || !config.ids || !Array.isArray(config.ids)) return;
+
+        // Current IDs in state
+        const itemIdsInState = new Set(items.map(item => String(item.id)));
+
+        // Find IDs that should be visible but aren't EVEN in state (not even thin)
+        const missingFromState = config.ids
+            .slice(0, visibleCount)
+            .filter(id => !itemIdsInState.has(String(id)))
+            .map(id => String(id));
+
+        if (missingFromState.length > 0) {
+            hydrateItems(missingFromState);
+        }
+    }, [visibleCount, loading, config.ids, items]);
+
+    // Hydrate everything in the comparison table when it's opened
+    useEffect(() => {
+        if (showComparison && selectedItems.length > 0) {
+            const needsHydration = selectedItems.filter(id => !hydratedIds.has(String(id)));
+            if (needsHydration.length > 0) {
+                hydrateItems(needsHydration);
+            }
+        }
+    }, [showComparison, selectedItems, hydratedIds]);
+
+    // Hydrate specific item when opened for details
+    useEffect(() => {
+        if (selectedItemForDetails && !hydratedIds.has(String(selectedItemForDetails))) {
+            hydrateItems([String(selectedItemForDetails)]);
+        }
+    }, [selectedItemForDetails, hydratedIds]);
 
     // Handle item selection/deselection
     const handleSelectItem = (id: string) => {
@@ -1060,18 +1143,25 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                         {/* Show More Card - Inside Grid Flow */}
                                         {hasNextPage && (
                                             <div
-                                                onClick={() => setVisibleCount(filteredItems.length)}
+                                                onClick={() => {
+                                                    const totalCount = config.ids?.length || filteredItems.length;
+                                                    setVisibleCount(totalCount);
+                                                }}
                                                 className={cn(
                                                     "bg-card rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group",
                                                     (config.style === 'list' || config.style === 'detailed') ? "p-4 min-h-[100px]" : "p-6 aspect-square md:aspect-auto min-h-[200px]"
                                                 )}
                                             >
                                                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                                    <ArrowDown className="w-6 h-6 text-primary" />
+                                                    {isHydrating ? (
+                                                        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                                    ) : (
+                                                        <ArrowDown className="w-6 h-6 text-primary" />
+                                                    )}
                                                 </div>
                                                 <h3 className="font-bold text-lg mb-1">{config.labels?.showAllItems || 'Show All Items'}</h3>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {config.labels?.revealMore || 'Click to reveal'} {filteredItems.length - visibleCount} more
+                                                    {config.labels?.revealMore || 'Click to reveal'} {(config.ids?.length || filteredItems.length) - visibleCount} more
                                                 </p>
                                             </div>
                                         )}
@@ -1094,7 +1184,13 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                 selectedItems.length > 0 && showComparison && (
                     <div ref={comparisonRef} className="mt-16 pt-8 border-t border-border w-full">
                         <h2 className="text-2xl font-bold mb-6 px-2">Detailed Comparison</h2>
-                        <ComparisonTable items={selectedItemObjects} onRemove={handleRemoveFromComparison} labels={config.labels} config={{ ...config, category: activeCategory }} />
+                        <ComparisonTable
+                            items={selectedItemObjects}
+                            onRemove={handleRemoveFromComparison}
+                            labels={config.labels}
+                            config={{ ...config, category: activeCategory }}
+                            onHydrate={hydrateItems} // Pass hydration
+                        />
                     </div>
                 )
             }
@@ -1102,7 +1198,13 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             {/* Pricing Popup */}
             {
                 detailsItem && (
-                    <PricingPopup item={detailsItem} onClose={handleCloseDetails} showPlanButtons={config.showPlanButtons} config={{ ...config, category: activeCategory }} />
+                    <PricingPopup
+                        item={detailsItem}
+                        onClose={handleCloseDetails}
+                        showPlanButtons={config.showPlanButtons}
+                        config={{ ...config, category: activeCategory }}
+                        onHydrate={hydrateItems} // Pass hydration
+                    />
                 )
             }
         </div >

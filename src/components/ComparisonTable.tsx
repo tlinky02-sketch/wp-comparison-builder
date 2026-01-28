@@ -9,9 +9,35 @@ interface ComparisonTableProps {
   onRemove: (id: string) => void;
   labels?: any;
   config?: any;
+  onHydrate?: (ids: string[]) => Promise<void>;
 }
 
-const ComparisonTable = ({ items, onRemove, labels, config }: ComparisonTableProps) => {
+const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: ComparisonTableProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Hydration Logic
+  useEffect(() => {
+    // Identify items needing hydration (missing content/features)
+    const idsToFetch = items.filter(item => {
+      return !item.content && (!item.pricing_plans?.[0]?.features && !item.pricing_plans?.[0]?.link);
+    }).map(i => String(i.id));
+
+    if (idsToFetch.length > 0 && onHydrate) {
+      if (!isLoading) {
+        setIsLoading(true);
+        onHydrate(idsToFetch).catch(() => setIsLoading(false));
+      }
+    }
+  }, [items]); // Re-run when items change (e.g. user adds more items)
+
+  // Clear loading when all are hydrated
+  useEffect(() => {
+    const stillNeedsHydration = items.some(item => !item.content && (!item.pricing_plans?.[0]?.features && !item.pricing_plans?.[0]?.link));
+    if (!stillNeedsHydration && isLoading) {
+      setIsLoading(false);
+    }
+  }, [items, isLoading]);
+
   const getText = (key: string, def: string) => labels?.[key] || def;
   const target = config?.targetDetails || (window as any).wpcSettings?.target_details || '_blank';
 

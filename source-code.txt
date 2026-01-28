@@ -1,0 +1,1246 @@
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US" prefix="og: https://ogp.me/ns#">
+<head><script data-no-optimize="1">var litespeed_docref=sessionStorage.getItem("litespeed_docref");litespeed_docref&&(Object.defineProperty(document,"referrer",{get:function(){return litespeed_docref}}),sessionStorage.removeItem("litespeed_docref"));</script>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- All in One SEO 4.9.3 - aioseo.com -->
+		<title>HostingGuider - Find the Perfect Web Hosting for Your Website</title>
+	<meta name="description" content="Find the Perfect Web Hosting for Your Website - Expert reviews, tutorials, and guides to help you choose and optimize your hosting. From beginners to pros." />
+	<meta name="robots" content="max-image-preview:large" />
+	<link rel="canonical" href="https://hostingguider.com/" />
+	<meta name="generator" content="All in One SEO (AIOSEO) 4.9.3" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:site_name" content="HostingGuider - Find the Perfect Web Hosting for Your Website" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="HostingGuider - Find the Perfect Web Hosting for Your Website" />
+		<meta property="og:description" content="Find the Perfect Web Hosting for Your Website - Expert reviews, tutorials, and guides to help you choose and optimize your hosting. From beginners to pros." />
+		<meta property="og:url" content="https://hostingguider.com/" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content="HostingGuider - Find the Perfect Web Hosting for Your Website" />
+		<meta name="twitter:description" content="Find the Perfect Web Hosting for Your Website - Expert reviews, tutorials, and guides to help you choose and optimize your hosting. From beginners to pros." />
+		<script type="application/ld+json" class="aioseo-schema">
+			{"@context":"https:\/\/schema.org","@graph":[{"@type":"BreadcrumbList","@id":"https:\/\/hostingguider.com\/#breadcrumblist","itemListElement":[{"@type":"ListItem","@id":"https:\/\/hostingguider.com#listItem","position":1,"name":"Home"}]},{"@type":"CollectionPage","@id":"https:\/\/hostingguider.com\/#collectionpage","url":"https:\/\/hostingguider.com\/","name":"HostingGuider - Find the Perfect Web Hosting for Your Website","description":"Find the Perfect Web Hosting for Your Website - Expert reviews, tutorials, and guides to help you choose and optimize your hosting. From beginners to pros.","inLanguage":"en-US","isPartOf":{"@id":"https:\/\/hostingguider.com\/#website"},"breadcrumb":{"@id":"https:\/\/hostingguider.com\/#breadcrumblist"},"about":{"@id":"https:\/\/hostingguider.com\/#organization"}},{"@type":"Organization","@id":"https:\/\/hostingguider.com\/#organization","name":"HostingGuider","description":"Find the Perfect Web Hosting for Your Website","url":"https:\/\/hostingguider.com\/"},{"@type":"WebSite","@id":"https:\/\/hostingguider.com\/#website","url":"https:\/\/hostingguider.com\/","name":"HostingGuider","description":"Find the Perfect Web Hosting for Your Website","inLanguage":"en-US","publisher":{"@id":"https:\/\/hostingguider.com\/#organization"}}]}
+		</script>
+		<!-- All in One SEO -->
+
+
+<link rel='dns-prefetch' href='//cdnjs.cloudflare.com' />
+<link rel="alternate" type="application/rss+xml" title="HostingGuider &raquo; Feed" href="https://hostingguider.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="HostingGuider &raquo; Comments Feed" href="https://hostingguider.com/comments/feed/" />
+<style id='wp-img-auto-sizes-contain-inline-css'>
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<link rel='stylesheet' id='wpcode-admin-bar-css-css' href='https://hostingguider.com/wp-content/plugins/insert-headers-and-footers/build/admin-bar.css?ver=c95624a69c80301272a0' media='all' />
+<link rel='stylesheet' id='dashicons-css' href='https://hostingguider.com/wp-includes/css/dashicons.min.css?ver=6.9' media='all' />
+<link rel='stylesheet' id='admin-bar-css' href='https://hostingguider.com/wp-includes/css/admin-bar.min.css?ver=6.9' media='all' />
+<style id='admin-bar-inline-css'>
+
+		@media screen { html { margin-top: 32px !important; } }
+		@media screen and ( max-width: 782px ) { html { margin-top: 46px !important; } }
+	
+@media print { #wpadminbar { display:none; } }
+/*# sourceURL=admin-bar-inline-css */
+</style>
+<style id='wp-block-image-inline-css'>
+.wp-block-image>a,.wp-block-image>figure>a{display:inline-block}.wp-block-image img{box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom}@media not (prefers-reduced-motion){.wp-block-image img.hide{visibility:hidden}.wp-block-image img.show{animation:show-content-image .4s}}.wp-block-image[style*=border-radius] img,.wp-block-image[style*=border-radius]>a{border-radius:inherit}.wp-block-image.has-custom-border img{box-sizing:border-box}.wp-block-image.aligncenter{text-align:center}.wp-block-image.alignfull>a,.wp-block-image.alignwide>a{width:100%}.wp-block-image.alignfull img,.wp-block-image.alignwide img{height:auto;width:100%}.wp-block-image .aligncenter,.wp-block-image .alignleft,.wp-block-image .alignright,.wp-block-image.aligncenter,.wp-block-image.alignleft,.wp-block-image.alignright{display:table}.wp-block-image .aligncenter>figcaption,.wp-block-image .alignleft>figcaption,.wp-block-image .alignright>figcaption,.wp-block-image.aligncenter>figcaption,.wp-block-image.alignleft>figcaption,.wp-block-image.alignright>figcaption{caption-side:bottom;display:table-caption}.wp-block-image .alignleft{float:left;margin:.5em 1em .5em 0}.wp-block-image .alignright{float:right;margin:.5em 0 .5em 1em}.wp-block-image .aligncenter{margin-left:auto;margin-right:auto}.wp-block-image :where(figcaption){margin-bottom:1em;margin-top:.5em}.wp-block-image.is-style-circle-mask img{border-radius:9999px}@supports ((-webkit-mask-image:none) or (mask-image:none)) or (-webkit-mask-image:none){.wp-block-image.is-style-circle-mask img{border-radius:0;-webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-mode:alpha;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:contain;mask-size:contain}}:root :where(.wp-block-image.is-style-rounded img,.wp-block-image .is-style-rounded img){border-radius:9999px}.wp-block-image figure{margin:0}.wp-lightbox-container{display:flex;flex-direction:column;position:relative}.wp-lightbox-container img{cursor:zoom-in}.wp-lightbox-container img:hover+button{opacity:1}.wp-lightbox-container button{align-items:center;backdrop-filter:blur(16px) saturate(180%);background-color:#5a5a5a40;border:none;border-radius:4px;cursor:zoom-in;display:flex;height:20px;justify-content:center;opacity:0;padding:0;position:absolute;right:16px;text-align:center;top:16px;width:20px;z-index:100}@media not (prefers-reduced-motion){.wp-lightbox-container button{transition:opacity .2s ease}}.wp-lightbox-container button:focus-visible{outline:3px auto #5a5a5a40;outline:3px auto -webkit-focus-ring-color;outline-offset:3px}.wp-lightbox-container button:hover{cursor:pointer;opacity:1}.wp-lightbox-container button:focus{opacity:1}.wp-lightbox-container button:focus,.wp-lightbox-container button:hover,.wp-lightbox-container button:not(:hover):not(:active):not(.has-background){background-color:#5a5a5a40;border:none}.wp-lightbox-overlay{box-sizing:border-box;cursor:zoom-out;height:100vh;left:0;overflow:hidden;position:fixed;top:0;visibility:hidden;width:100%;z-index:100000}.wp-lightbox-overlay .close-button{align-items:center;cursor:pointer;display:flex;justify-content:center;min-height:40px;min-width:40px;padding:0;position:absolute;right:calc(env(safe-area-inset-right) + 16px);top:calc(env(safe-area-inset-top) + 16px);z-index:5000000}.wp-lightbox-overlay .close-button:focus,.wp-lightbox-overlay .close-button:hover,.wp-lightbox-overlay .close-button:not(:hover):not(:active):not(.has-background){background:none;border:none}.wp-lightbox-overlay .lightbox-image-container{height:var(--wp--lightbox-container-height);left:50%;overflow:hidden;position:absolute;top:50%;transform:translate(-50%,-50%);transform-origin:top left;width:var(--wp--lightbox-container-width);z-index:9999999999}.wp-lightbox-overlay .wp-block-image{align-items:center;box-sizing:border-box;display:flex;height:100%;justify-content:center;margin:0;position:relative;transform-origin:0 0;width:100%;z-index:3000000}.wp-lightbox-overlay .wp-block-image img{height:var(--wp--lightbox-image-height);min-height:var(--wp--lightbox-image-height);min-width:var(--wp--lightbox-image-width);width:var(--wp--lightbox-image-width)}.wp-lightbox-overlay .wp-block-image figcaption{display:none}.wp-lightbox-overlay button{background:none;border:none}.wp-lightbox-overlay .scrim{background-color:#fff;height:100%;opacity:.9;position:absolute;width:100%;z-index:2000000}.wp-lightbox-overlay.active{visibility:visible}@media not (prefers-reduced-motion){.wp-lightbox-overlay.active{animation:turn-on-visibility .25s both}.wp-lightbox-overlay.active img{animation:turn-on-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active){animation:turn-off-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active) img{animation:turn-off-visibility .25s both}.wp-lightbox-overlay.zoom.active{animation:none;opacity:1;visibility:visible}.wp-lightbox-overlay.zoom.active .lightbox-image-container{animation:lightbox-zoom-in .4s}.wp-lightbox-overlay.zoom.active .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.active .scrim{animation:turn-on-visibility .4s forwards}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active){animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container{animation:lightbox-zoom-out .4s}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .scrim{animation:turn-off-visibility .4s forwards}}@keyframes show-content-image{0%{visibility:hidden}99%{visibility:hidden}to{visibility:visible}}@keyframes turn-on-visibility{0%{opacity:0}to{opacity:1}}@keyframes turn-off-visibility{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}to{opacity:0;visibility:hidden}}@keyframes lightbox-zoom-in{0%{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale))}to{transform:translate(-50%,-50%) scale(1)}}@keyframes lightbox-zoom-out{0%{transform:translate(-50%,-50%) scale(1);visibility:visible}99%{visibility:visible}to{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale));visibility:hidden}}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/image/style.min.css */
+</style>
+<style id='wp-block-image-theme-inline-css'>
+:root :where(.wp-block-image figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme :root :where(.wp-block-image figcaption){color:#ffffffa6}.wp-block-image{margin:0 0 1em}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/image/theme.min.css */
+</style>
+<style id='wp-block-paragraph-inline-css'>
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/paragraph/style.min.css */
+</style>
+<style id='wp-block-group-inline-css'>
+.wp-block-group{box-sizing:border-box}:where(.wp-block-group.wp-block-group-is-layout-constrained){position:relative}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/group/style.min.css */
+</style>
+<style id='wp-block-group-theme-inline-css'>
+:where(.wp-block-group.has-background){padding:1.25em 2.375em}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/group/theme.min.css */
+</style>
+<style id='wp-block-navigation-link-inline-css'>
+.wp-block-navigation .wp-block-navigation-item__label{overflow-wrap:break-word}.wp-block-navigation .wp-block-navigation-item__description{display:none}.link-ui-tools{outline:1px solid #f0f0f0;padding:8px}.link-ui-block-inserter{padding-top:8px}.link-ui-block-inserter__back{margin-left:8px;text-transform:uppercase}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/navigation-link/style.min.css */
+</style>
+<style id='wp-block-button-inline-css'>
+.wp-block-button__link{align-content:center;box-sizing:border-box;cursor:pointer;display:inline-block;height:100%;text-align:center;word-break:break-word}.wp-block-button__link.aligncenter{text-align:center}.wp-block-button__link.alignright{text-align:right}:where(.wp-block-button__link){border-radius:9999px;box-shadow:none;padding:calc(.667em + 2px) calc(1.333em + 2px);text-decoration:none}.wp-block-button[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons>.wp-block-button.has-custom-width{max-width:none}.wp-block-buttons>.wp-block-button.has-custom-width .wp-block-button__link{width:100%}.wp-block-buttons>.wp-block-button.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons>.wp-block-button.wp-block-button__width-25{width:calc(25% - var(--wp--style--block-gap, .5em)*.75)}.wp-block-buttons>.wp-block-button.wp-block-button__width-50{width:calc(50% - var(--wp--style--block-gap, .5em)*.5)}.wp-block-buttons>.wp-block-button.wp-block-button__width-75{width:calc(75% - var(--wp--style--block-gap, .5em)*.25)}.wp-block-buttons>.wp-block-button.wp-block-button__width-100{flex-basis:100%;width:100%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-25{width:25%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-50{width:50%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-75{width:75%}.wp-block-button.is-style-squared,.wp-block-button__link.wp-block-button.is-style-squared{border-radius:0}.wp-block-button.no-border-radius,.wp-block-button__link.no-border-radius{border-radius:0!important}:root :where(.wp-block-button .wp-block-button__link.is-style-outline),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link){border:2px solid;padding:.667em 1.333em}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-text-color)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-text-color)){color:currentColor}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-background)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-background)){background-color:initial;background-image:none}
+
+			div.is-style-swt-button-secondary .wp-element-button {
+                color: var(--wp--preset--color--body);
+				background: var(--wp--preset--color--surface);
+			}
+
+            div.is-style-swt-button-secondary .wp-element-button:hover {
+                color: var(--wp--preset--color--body);
+				background: var(--wp--preset--color--surface);
+			}
+		
+
+			div.is-style-swt-button-inverse .wp-element-button {
+                color: #1F2937;
+				background: #fff;
+			}
+
+            div.is-style-swt-button-inverse .wp-element-button:hover {
+                color: #1F2937;
+				background: #fff;
+			}
+		
+/*# sourceURL=wp-block-button-inline-css */
+</style>
+<style id='wp-block-buttons-inline-css'>
+.wp-block-buttons{box-sizing:border-box}.wp-block-buttons.is-vertical{flex-direction:column}.wp-block-buttons.is-vertical>.wp-block-button:last-child{margin-bottom:0}.wp-block-buttons>.wp-block-button{display:inline-block;margin:0}.wp-block-buttons.is-content-justification-left{justify-content:flex-start}.wp-block-buttons.is-content-justification-left.is-vertical{align-items:flex-start}.wp-block-buttons.is-content-justification-center{justify-content:center}.wp-block-buttons.is-content-justification-center.is-vertical{align-items:center}.wp-block-buttons.is-content-justification-right{justify-content:flex-end}.wp-block-buttons.is-content-justification-right.is-vertical{align-items:flex-end}.wp-block-buttons.is-content-justification-space-between{justify-content:space-between}.wp-block-buttons.aligncenter{text-align:center}.wp-block-buttons:not(.is-content-justification-space-between,.is-content-justification-right,.is-content-justification-left,.is-content-justification-center) .wp-block-button.aligncenter{margin-left:auto;margin-right:auto;width:100%}.wp-block-buttons[style*=text-decoration] .wp-block-button,.wp-block-buttons[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons .wp-block-button__link{width:100%}.wp-block-button.aligncenter{text-align:center}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/buttons/style.min.css */
+</style>
+<link rel='stylesheet' id='wp-block-navigation-css' href='https://hostingguider.com/wp-includes/blocks/navigation/style.min.css?ver=6.9' media='all' />
+<style id='wp-block-template-part-theme-inline-css'>
+:root :where(.wp-block-template-part.has-background){margin-bottom:0;margin-top:0;padding:1.25em 2.375em}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/template-part/theme.min.css */
+</style>
+<style id='wp-block-heading-inline-css'>
+h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-background,h3:where(.wp-block-heading).has-background,h4:where(.wp-block-heading).has-background,h5:where(.wp-block-heading).has-background,h6:where(.wp-block-heading).has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/heading/style.min.css */
+</style>
+<style id='wp-block-columns-inline-css'>
+.wp-block-columns{box-sizing:border-box;display:flex;flex-wrap:wrap!important}@media (min-width:782px){.wp-block-columns{flex-wrap:nowrap!important}}.wp-block-columns{align-items:normal!important}.wp-block-columns.are-vertically-aligned-top{align-items:flex-start}.wp-block-columns.are-vertically-aligned-center{align-items:center}.wp-block-columns.are-vertically-aligned-bottom{align-items:flex-end}@media (max-width:781px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:100%!important}}@media (min-width:782px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column[style*=flex-basis]{flex-grow:0}}.wp-block-columns.is-not-stacked-on-mobile{flex-wrap:nowrap!important}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column[style*=flex-basis]{flex-grow:0}:where(.wp-block-columns){margin-bottom:1.75em}:where(.wp-block-columns.has-background){padding:1.25em 2.375em}.wp-block-column{flex-grow:1;min-width:0;overflow-wrap:break-word;word-break:break-word}.wp-block-column.is-vertically-aligned-top{align-self:flex-start}.wp-block-column.is-vertically-aligned-center{align-self:center}.wp-block-column.is-vertically-aligned-bottom{align-self:flex-end}.wp-block-column.is-vertically-aligned-stretch{align-self:stretch}.wp-block-column.is-vertically-aligned-bottom,.wp-block-column.is-vertically-aligned-center,.wp-block-column.is-vertically-aligned-top{width:100%}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/columns/style.min.css */
+</style>
+<style id='wp-block-spacer-inline-css'>
+.wp-block-spacer{clear:both}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/spacer/style.min.css */
+</style>
+<style id='wp-block-categories-inline-css'>
+.wp-block-categories{box-sizing:border-box}.wp-block-categories.alignleft{margin-right:2em}.wp-block-categories.alignright{margin-left:2em}.wp-block-categories.wp-block-categories-dropdown.aligncenter{text-align:center}.wp-block-categories .wp-block-categories__label{display:block;width:100%}
+
+
+			.is-style-swt-categories-minimal {
+				padding-left: 0;
+				list-style: none;
+			}
+
+			.is-style-swt-categories-minimal .cat-item {
+				font-size: var(--wp--preset--font-size--small);
+				margin-bottom: var(--wp--preset--spacing--xx-small);
+			}
+			
+			.is-style-swt-categories-minimal.wp-block-categories-dropdown select {
+				padding-left: var(--wp--preset--spacing--x-small);
+				padding-right: var(--wp--preset--spacing--large);
+				padding-top: var(--wp--preset--spacing--x-small);
+				padding-bottom: var(--wp--preset--spacing--x-small);
+				border: 1px solid var(--wp--preset--color--outline);
+				border-radius: var(--wp--custom--border-radius--small);
+				font-weight: var(--wp--custom--font-weight--regular);
+				font-size: var(--wp--preset--font-size--small);
+				color: var(--wp--preset--color--heading);
+				background-color: var(--wp--preset--color--background);
+				width: 100%;
+				height: 60px;
+				appearance: none;
+			}
+
+			.is-style-swt-categories-minimal.wp-block-categories-dropdown select:focus-visible {
+				outline-color: var(--wp--preset--color--heading);
+			}
+
+			.is-style-swt-categories-minimal.wp-block-categories-dropdown {
+				position: relative;
+			}
+
+			.is-style-swt-categories-minimal.wp-block-categories-dropdown:after {
+				content: "\e900";
+				position: absolute;
+				font-family: "icomoon" !important;
+				font-size: var(--wp--preset--font-size--medium);
+				right: 25px;
+				top: 50%;
+				transform: translateY(-50%);
+				pointer-events: none;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+		
+/*# sourceURL=wp-block-categories-inline-css */
+</style>
+<style id='wp-block-post-featured-image-inline-css'>
+.wp-block-post-featured-image{margin-left:0;margin-right:0}.wp-block-post-featured-image a{display:block;height:100%}.wp-block-post-featured-image :where(img){box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom;width:100%}.wp-block-post-featured-image.alignfull img,.wp-block-post-featured-image.alignwide img{width:100%}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim{background-color:#000;inset:0;position:absolute}.wp-block-post-featured-image{position:relative}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-gradient{background-color:initial}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-0{opacity:0}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-10{opacity:.1}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-20{opacity:.2}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-30{opacity:.3}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-40{opacity:.4}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-50{opacity:.5}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-60{opacity:.6}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-70{opacity:.7}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-80{opacity:.8}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-90{opacity:.9}.wp-block-post-featured-image .wp-block-post-featured-image__overlay.has-background-dim-100{opacity:1}.wp-block-post-featured-image:where(.alignleft,.alignright){width:100%}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/post-featured-image/style.min.css */
+</style>
+<style id='wp-block-post-terms-inline-css'>
+.wp-block-post-terms{box-sizing:border-box}.wp-block-post-terms .wp-block-post-terms__separator{white-space:pre-wrap}
+
+			.wp-block-post-terms.is-style-swt-post-terms-pill a {
+				display: inline-block;
+				font-size: var(--wp--preset--font-size--x-small);
+				padding: 6px 12px;
+				border-radius: var(--wp--custom--border-radius--full);
+				color: var(--wp--preset--color--body);
+				background-color: var(--wp--preset--color--outline);
+				margin-right: var(--wp--preset--spacing--xx-small);
+				margin-top: var(--wp--preset--spacing--xxx-small);
+				margin-bottom: var(--wp--preset--spacing--xxx-small);
+				line-height: var(--wp--custom--line-height--initial);
+			}
+
+			.is-style-swt-post-terms-pill .wp-block-post-terms__separator {
+				display: none;
+			}
+		
+/*# sourceURL=wp-block-post-terms-inline-css */
+</style>
+<style id='wp-block-post-title-inline-css'>
+.wp-block-post-title{box-sizing:border-box;word-break:break-word}.wp-block-post-title :where(a){display:inline-block;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:inherit}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/post-title/style.min.css */
+</style>
+<style id='wp-block-post-author-inline-css'>
+.wp-block-post-author{box-sizing:border-box;display:flex;flex-wrap:wrap}.wp-block-post-author__byline{font-size:.5em;margin-bottom:0;margin-top:0;width:100%}.wp-block-post-author__avatar{margin-right:1em}.wp-block-post-author__bio{font-size:.7em;margin-bottom:.7em}.wp-block-post-author__content{flex-basis:0;flex-grow:1}.wp-block-post-author__name{margin:0}
+
+        
+        .is-style-swt-post-author-simple {
+            flex-wrap: inherit;
+        }
+
+        .is-style-swt-post-author-simple .wp-block-post-author__avatar  {
+            margin-right: 1.8em;
+        }
+
+        .is-style-swt-post-author-simple .avatar  {
+                width: 95px;
+                height: 95px;
+                object-fit: cover;
+                border-radius: var(--wp--custom--border-radius--full);
+			}
+
+            .is-style-swt-post-author-simple .wp-block-post-author__name {
+                font-size: var(--wp--preset--font-size--medium);
+                font-weight: var(--wp--custom--font-weight--semi-bold);
+                color: var(--wp--preset--color--heading);
+                line-height: var(--wp--custom--line-height--initial);
+                text-transform: capitalize;
+                width: 100%;
+			}
+
+            .is-style-swt-post-author-simple .wp-block-post-author__bio {
+                margin-top: 10px;
+                font-size: var(--wp--preset--font-size--small);
+			}
+
+            .is-style-swt-post-author-simple .wp-block-post-author__content {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                flex-direction: column;
+                justify-content: center;
+                flex-basis: inherit;
+                flex-grow: inherit;
+			}
+		
+/*# sourceURL=wp-block-post-author-inline-css */
+</style>
+<style id='wp-block-post-date-inline-css'>
+.wp-block-post-date{box-sizing:border-box}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/post-date/style.min.css */
+</style>
+<style id='wp-block-post-template-inline-css'>
+.wp-block-post-template{box-sizing:border-box;list-style:none;margin-bottom:0;margin-top:0;max-width:100%;padding:0}.wp-block-post-template.is-flex-container{display:flex;flex-direction:row;flex-wrap:wrap;gap:1.25em}.wp-block-post-template.is-flex-container>li{margin:0;width:100%}@media (min-width:600px){.wp-block-post-template.is-flex-container.is-flex-container.columns-2>li{width:calc(50% - .625em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-3>li{width:calc(33.33333% - .83333em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-4>li{width:calc(25% - .9375em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-5>li{width:calc(20% - 1em)}.wp-block-post-template.is-flex-container.is-flex-container.columns-6>li{width:calc(16.66667% - 1.04167em)}}@media (max-width:600px){.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid.wp-block-post-template-is-layout-grid{grid-template-columns:1fr}}.wp-block-post-template-is-layout-constrained>li>.alignright,.wp-block-post-template-is-layout-flow>li>.alignright{float:right;margin-inline-end:0;margin-inline-start:2em}.wp-block-post-template-is-layout-constrained>li>.alignleft,.wp-block-post-template-is-layout-flow>li>.alignleft{float:left;margin-inline-end:2em;margin-inline-start:0}.wp-block-post-template-is-layout-constrained>li>.aligncenter,.wp-block-post-template-is-layout-flow>li>.aligncenter{margin-inline-end:auto;margin-inline-start:auto}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/post-template/style.min.css */
+</style>
+<style id='wp-block-social-links-inline-css'>
+.wp-block-social-links{background:none;box-sizing:border-box;margin-left:0;padding-left:0;padding-right:0;text-indent:0}.wp-block-social-links .wp-social-link a,.wp-block-social-links .wp-social-link a:hover{border-bottom:0;box-shadow:none;text-decoration:none}.wp-block-social-links .wp-social-link svg{height:1em;width:1em}.wp-block-social-links .wp-social-link span:not(.screen-reader-text){font-size:.65em;margin-left:.5em;margin-right:.5em}.wp-block-social-links.has-small-icon-size{font-size:16px}.wp-block-social-links,.wp-block-social-links.has-normal-icon-size{font-size:24px}.wp-block-social-links.has-large-icon-size{font-size:36px}.wp-block-social-links.has-huge-icon-size{font-size:48px}.wp-block-social-links.aligncenter{display:flex;justify-content:center}.wp-block-social-links.alignright{justify-content:flex-end}.wp-block-social-link{border-radius:9999px;display:block}@media not (prefers-reduced-motion){.wp-block-social-link{transition:transform .1s ease}}.wp-block-social-link{height:auto}.wp-block-social-link a{align-items:center;display:flex;line-height:0}.wp-block-social-link:hover{transform:scale(1.1)}.wp-block-social-links .wp-block-social-link.wp-social-link{display:inline-block;margin:0;padding:0}.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor svg,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:active,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:hover,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:visited{color:currentColor;fill:currentColor}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link{background-color:#f0f0f0;color:#444}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-amazon{background-color:#f90;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bandcamp{background-color:#1ea0c3;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-behance{background-color:#0757fe;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bluesky{background-color:#0a7aff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-codepen{background-color:#1e1f26;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-deviantart{background-color:#02e49b;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-discord{background-color:#5865f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dribbble{background-color:#e94c89;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dropbox{background-color:#4280ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-etsy{background-color:#f45800;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-facebook{background-color:#0866ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-fivehundredpx{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-flickr{background-color:#0461dd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-foursquare{background-color:#e65678;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-github{background-color:#24292d;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-goodreads{background-color:#eceadd;color:#382110}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-google{background-color:#ea4434;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-gravatar{background-color:#1d4fc4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-instagram{background-color:#f00075;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-lastfm{background-color:#e21b24;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-linkedin{background-color:#0d66c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-mastodon{background-color:#3288d4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-medium{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-meetup{background-color:#f6405f;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-patreon{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pinterest{background-color:#e60122;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pocket{background-color:#ef4155;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-reddit{background-color:#ff4500;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-skype{background-color:#0478d7;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-snapchat{background-color:#fefc00;color:#fff;stroke:#000}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-soundcloud{background-color:#ff5600;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-spotify{background-color:#1bd760;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-telegram{background-color:#2aabee;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-threads{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tiktok{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tumblr{background-color:#011835;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitch{background-color:#6440a4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitter{background-color:#1da1f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vimeo{background-color:#1eb7ea;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vk{background-color:#4680c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-wordpress{background-color:#3499cd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-whatsapp{background-color:#25d366;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-x{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-yelp{background-color:#d32422;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-youtube{background-color:red;color:#fff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link{background:none}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link svg{height:1.25em;width:1.25em}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-amazon{color:#f90}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bandcamp{color:#1ea0c3}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-behance{color:#0757fe}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bluesky{color:#0a7aff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-codepen{color:#1e1f26}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-deviantart{color:#02e49b}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-discord{color:#5865f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dribbble{color:#e94c89}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dropbox{color:#4280ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-etsy{color:#f45800}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-facebook{color:#0866ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-fivehundredpx{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-flickr{color:#0461dd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-foursquare{color:#e65678}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-github{color:#24292d}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-goodreads{color:#382110}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-google{color:#ea4434}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-gravatar{color:#1d4fc4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-instagram{color:#f00075}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-lastfm{color:#e21b24}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-linkedin{color:#0d66c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-mastodon{color:#3288d4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-medium{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-meetup{color:#f6405f}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-patreon{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pinterest{color:#e60122}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pocket{color:#ef4155}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-reddit{color:#ff4500}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-skype{color:#0478d7}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-snapchat{color:#fff;stroke:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-soundcloud{color:#ff5600}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-spotify{color:#1bd760}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-telegram{color:#2aabee}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-threads{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tiktok{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tumblr{color:#011835}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitch{color:#6440a4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitter{color:#1da1f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vimeo{color:#1eb7ea}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vk{color:#4680c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-whatsapp{color:#25d366}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-wordpress{color:#3499cd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-x{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-yelp{color:#d32422}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-youtube{color:red}.wp-block-social-links.is-style-pill-shape .wp-social-link{width:auto}:root :where(.wp-block-social-links .wp-social-link a){padding:.25em}:root :where(.wp-block-social-links.is-style-logos-only .wp-social-link a){padding:0}:root :where(.wp-block-social-links.is-style-pill-shape .wp-social-link a){padding-left:.6666666667em;padding-right:.6666666667em}.wp-block-social-links:not(.has-icon-color):not(.has-icon-background-color) .wp-social-link-snapchat .wp-block-social-link-label{color:#000}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/social-links/style.min.css */
+</style>
+<style id='wp-block-site-title-inline-css'>
+.wp-block-site-title{box-sizing:border-box}.wp-block-site-title :where(a){color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit;text-decoration:inherit}
+/*# sourceURL=https://hostingguider.com/wp-includes/blocks/site-title/style.min.css */
+</style>
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id='wp-block-library-inline-css'>
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+/*# sourceURL=/wp-includes/css/dist/block-library/common.min.css */
+</style>
+<link rel='stylesheet' id='spectra-one-editor-css' href='https://hostingguider.com/wp-content/themes/spectra-one/assets/css/minified/editor.min.css?ver=1.1.7' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--primary: #10b5cb;--wp--preset--color--secondary: #08626e;--wp--preset--color--heading: #1F2937;--wp--preset--color--body: #4B5563;--wp--preset--color--background: #FFFFFF;--wp--preset--color--tertiary: #F6EBFE;--wp--preset--color--quaternary: #FFFBEB;--wp--preset--color--surface: #F8FAFC;--wp--preset--color--foreground: #6431F7;--wp--preset--color--outline: #E6E9EF;--wp--preset--color--neutral: #6E7787;--wp--preset--color--transparent: transparent;--wp--preset--color--current-color: currentColor;--wp--preset--color--inherit: inherit;--wp--preset--color--custom-primary: #10b5cb;--wp--preset--color--custom-secondary: #e8f8fa;--wp--preset--color--custom-body: #111827;--wp--preset--color--custom-heading: #000;--wp--preset--color--custom-link: #0998ab;--wp--preset--color--custom-hover: #08626e;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--gradient--primary: linear-gradient(286.83deg, #931CF0 -1.55%, #4F2CDD 100%);;--wp--preset--font-size--small: clamp(14px, 1.6vw, 16px);--wp--preset--font-size--medium: clamp(16px, 1.8vw, 18px);--wp--preset--font-size--large: clamp(20px, 2.2vw, 22px);--wp--preset--font-size--x-large: clamp(24px, 3vw, 28px);--wp--preset--font-size--x-small: clamp(12px, 1.5vw, 14px);--wp--preset--font-size--xx-large: clamp(28px, 3.6vw, 36px);--wp--preset--font-size--xxx-large: clamp(32px, 3.6vw, 44px);--wp--preset--font-size--xxxx-large: clamp(40px, 6.6vw, 56px);--wp--preset--font-size--custom-1: 38px;--wp--preset--font-size--custom-2: 32px;--wp--preset--font-size--custom-3: 26px;--wp--preset--font-size--custom-4: 22px;--wp--preset--font-size--custom-5: 18px;--wp--preset--font-size--custom-6: 16px;--wp--preset--font-family--inter: "Inter", sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--spacing--xxx-small: calc(var(--wp--preset--font-size--medium,1rem)/4);--wp--preset--spacing--xx-small: calc(var(--wp--preset--font-size--medium,1rem)/2);--wp--preset--spacing--x-small: calc(var(--wp--preset--font-size--medium,1rem));--wp--preset--spacing--small: calc(var(--wp--preset--font-size--medium,1rem)*1.5);--wp--preset--spacing--medium: calc(var(--wp--preset--font-size--medium,1rem)*2);--wp--preset--spacing--large: calc(var(--wp--preset--font-size--medium,1rem)*3);--wp--preset--spacing--x-large: calc(var(--wp--preset--font-size--medium,1rem)*4);--wp--preset--spacing--xx-large: calc(var(--wp--preset--font-size--medium,1rem)*6);--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);--wp--custom--font-weight--black: 900;--wp--custom--font-weight--extra-bold: 800;--wp--custom--font-weight--bold: 700;--wp--custom--font-weight--semi-bold: 600;--wp--custom--font-weight--medium: 500;--wp--custom--font-weight--regular: 400;--wp--custom--font-weight--light: 300;--wp--custom--font-weight--extra-light: 200;--wp--custom--font-weight--thin: 100;--wp--custom--line-height--initial: 1;--wp--custom--line-height--xx-small: 1.2;--wp--custom--line-height--x-small: 1.3;--wp--custom--line-height--small: 1.4;--wp--custom--line-height--medium: 1.45;--wp--custom--line-height--large: 1.6;--wp--custom--border-radius--xx-small: 4px;--wp--custom--border-radius--x-small: 6px;--wp--custom--border-radius--small: 8px;--wp--custom--border-radius--medium: 12px;--wp--custom--border-radius--large: 16px;--wp--custom--border-radius--x-large: 20px;--wp--custom--border-radius--xx-large: 24px;--wp--custom--border-radius--full: 999px;--wp--custom--font-family--body: var(--wp--preset--font-family--inter);}:root { --wp--style--global--content-size: 764px;--wp--style--global--wide-size: 1164px; }:where(body) { margin: 0; }.wp-site-blocks { padding-top: var(--wp--style--root--padding-top); padding-bottom: var(--wp--style--root--padding-bottom); }.has-global-padding { padding-right: var(--wp--style--root--padding-right); padding-left: var(--wp--style--root--padding-left); }.has-global-padding > .alignfull { margin-right: calc(var(--wp--style--root--padding-right) * -1); margin-left: calc(var(--wp--style--root--padding-left) * -1); }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) { padding-right: 0; padding-left: 0; }.has-global-padding :where(:not(.alignfull.is-layout-flow) > .has-global-padding:not(.wp-block-block, .alignfull)) > .alignfull { margin-left: 0; margin-right: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: var(--wp--preset--spacing--x-small); margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: var(--wp--preset--spacing--x-small); }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: var(--wp--preset--spacing--x-small);margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: var(--wp--preset--spacing--x-small);margin-block-end: 0;}:root :where(.is-layout-flex){gap: var(--wp--preset--spacing--x-small);}:root :where(.is-layout-grid){gap: var(--wp--preset--spacing--x-small);}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{background-color: var(--wp--preset--color--background);color: var(--wp--preset--color--heading);font-family: var(--wp--custom--font-family--body);font-size: var(--wp--preset--font-size--medium);font-style: normal;font-weight: 400;line-height: var(--wp--custom--line-height--large);--wp--style--root--padding-top: 0px;--wp--style--root--padding-right: 0px;--wp--style--root--padding-bottom: 0px;--wp--style--root--padding-left: 0px;}a:where(:not(.wp-element-button)){color: var(--wp--preset--color--custom-link);text-decoration: none;}:root :where(a:where(:not(.wp-element-button)):hover){color: var(--wp--preset--color--custom-hover);}h1, h2, h3, h4, h5, h6{color: var(--wp--preset--color--heading);font-style: normal;font-weight: 600;}h1{font-size: var(--wp--preset--font-size--custom-1);font-style: normal;font-weight: 600;letter-spacing: -2px;line-height: var(--wp--custom--line-height--xx-small);margin-bottom: var(--wp--preset--spacing--small);}h2{font-size: var(--wp--preset--font-size--custom-2);font-style: normal;font-weight: 600;letter-spacing: -1px;line-height: var(--wp--custom--line-height--xx-small);margin-top: var(--wp--preset--spacing--medium);margin-bottom: var(--wp--preset--spacing--x-small);}h3{font-size: var(--wp--preset--font-size--custom-3);font-style: normal;font-weight: 600;letter-spacing: -0.5px;line-height: var(--wp--custom--line-height--x-small);margin-top: var(--wp--preset--spacing--medium);margin-bottom: var(--wp--preset--spacing--x-small);}h4{font-size: var(--wp--preset--font-size--custom-4);font-style: normal;font-weight: 600;letter-spacing: -0.25px;line-height: var(--wp--custom--line-height--x-small);margin-top: var(--wp--preset--spacing--small);margin-bottom: var(--wp--preset--spacing--xx-small);}h5{font-size: var(--wp--preset--font-size--custom-5);font-style: normal;font-weight: 600;line-height: var(--wp--custom--line-height--medium);margin-top: var(--wp--preset--spacing--small);margin-bottom: var(--wp--preset--spacing--xx-small);}h6{font-size: var(--wp--preset--font-size--custom-6);font-style: normal;font-weight: 600;line-height: var(--wp--custom--line-height--medium);margin-top: var(--wp--preset--spacing--x-small);margin-bottom: var(--wp--preset--spacing--xx-small);}:root :where(.wp-element-button, .wp-block-button__link){background-color: var(--wp--preset--color--custom-primary);border-radius: 0.375em;border-color: var(--wp--preset--color--primary);border-width: 0;color: var(--wp--preset--color--white);font-family: inherit;font-size: var(--wp--preset--font-size--small);font-style: inherit;font-weight: var(--wp--custom--font-weight--medium);letter-spacing: inherit;line-height: var(--wp--custom--line-height--initial);padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}:root :where(.wp-element-button:hover, .wp-block-button__link:hover){background-color: var(--wp--preset--color--secondary);}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-primary-color{color: var(--wp--preset--color--primary) !important;}.has-secondary-color{color: var(--wp--preset--color--secondary) !important;}.has-heading-color{color: var(--wp--preset--color--heading) !important;}.has-body-color{color: var(--wp--preset--color--body) !important;}.has-background-color{color: var(--wp--preset--color--background) !important;}.has-tertiary-color{color: var(--wp--preset--color--tertiary) !important;}.has-quaternary-color{color: var(--wp--preset--color--quaternary) !important;}.has-surface-color{color: var(--wp--preset--color--surface) !important;}.has-foreground-color{color: var(--wp--preset--color--foreground) !important;}.has-outline-color{color: var(--wp--preset--color--outline) !important;}.has-neutral-color{color: var(--wp--preset--color--neutral) !important;}.has-transparent-color{color: var(--wp--preset--color--transparent) !important;}.has-current-color-color{color: var(--wp--preset--color--current-color) !important;}.has-inherit-color{color: var(--wp--preset--color--inherit) !important;}.has-custom-primary-color{color: var(--wp--preset--color--custom-primary) !important;}.has-custom-secondary-color{color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-body-color{color: var(--wp--preset--color--custom-body) !important;}.has-custom-heading-color{color: var(--wp--preset--color--custom-heading) !important;}.has-custom-link-color{color: var(--wp--preset--color--custom-link) !important;}.has-custom-hover-color{color: var(--wp--preset--color--custom-hover) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-primary-background-color{background-color: var(--wp--preset--color--primary) !important;}.has-secondary-background-color{background-color: var(--wp--preset--color--secondary) !important;}.has-heading-background-color{background-color: var(--wp--preset--color--heading) !important;}.has-body-background-color{background-color: var(--wp--preset--color--body) !important;}.has-background-background-color{background-color: var(--wp--preset--color--background) !important;}.has-tertiary-background-color{background-color: var(--wp--preset--color--tertiary) !important;}.has-quaternary-background-color{background-color: var(--wp--preset--color--quaternary) !important;}.has-surface-background-color{background-color: var(--wp--preset--color--surface) !important;}.has-foreground-background-color{background-color: var(--wp--preset--color--foreground) !important;}.has-outline-background-color{background-color: var(--wp--preset--color--outline) !important;}.has-neutral-background-color{background-color: var(--wp--preset--color--neutral) !important;}.has-transparent-background-color{background-color: var(--wp--preset--color--transparent) !important;}.has-current-color-background-color{background-color: var(--wp--preset--color--current-color) !important;}.has-inherit-background-color{background-color: var(--wp--preset--color--inherit) !important;}.has-custom-primary-background-color{background-color: var(--wp--preset--color--custom-primary) !important;}.has-custom-secondary-background-color{background-color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-body-background-color{background-color: var(--wp--preset--color--custom-body) !important;}.has-custom-heading-background-color{background-color: var(--wp--preset--color--custom-heading) !important;}.has-custom-link-background-color{background-color: var(--wp--preset--color--custom-link) !important;}.has-custom-hover-background-color{background-color: var(--wp--preset--color--custom-hover) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-primary-border-color{border-color: var(--wp--preset--color--primary) !important;}.has-secondary-border-color{border-color: var(--wp--preset--color--secondary) !important;}.has-heading-border-color{border-color: var(--wp--preset--color--heading) !important;}.has-body-border-color{border-color: var(--wp--preset--color--body) !important;}.has-background-border-color{border-color: var(--wp--preset--color--background) !important;}.has-tertiary-border-color{border-color: var(--wp--preset--color--tertiary) !important;}.has-quaternary-border-color{border-color: var(--wp--preset--color--quaternary) !important;}.has-surface-border-color{border-color: var(--wp--preset--color--surface) !important;}.has-foreground-border-color{border-color: var(--wp--preset--color--foreground) !important;}.has-outline-border-color{border-color: var(--wp--preset--color--outline) !important;}.has-neutral-border-color{border-color: var(--wp--preset--color--neutral) !important;}.has-transparent-border-color{border-color: var(--wp--preset--color--transparent) !important;}.has-current-color-border-color{border-color: var(--wp--preset--color--current-color) !important;}.has-inherit-border-color{border-color: var(--wp--preset--color--inherit) !important;}.has-custom-primary-border-color{border-color: var(--wp--preset--color--custom-primary) !important;}.has-custom-secondary-border-color{border-color: var(--wp--preset--color--custom-secondary) !important;}.has-custom-body-border-color{border-color: var(--wp--preset--color--custom-body) !important;}.has-custom-heading-border-color{border-color: var(--wp--preset--color--custom-heading) !important;}.has-custom-link-border-color{border-color: var(--wp--preset--color--custom-link) !important;}.has-custom-hover-border-color{border-color: var(--wp--preset--color--custom-hover) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-primary-gradient-background{background: var(--wp--preset--gradient--primary) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-x-small-font-size{font-size: var(--wp--preset--font-size--x-small) !important;}.has-xx-large-font-size{font-size: var(--wp--preset--font-size--xx-large) !important;}.has-xxx-large-font-size{font-size: var(--wp--preset--font-size--xxx-large) !important;}.has-xxxx-large-font-size{font-size: var(--wp--preset--font-size--xxxx-large) !important;}.has-custom-1-font-size{font-size: var(--wp--preset--font-size--custom-1) !important;}.has-custom-2-font-size{font-size: var(--wp--preset--font-size--custom-2) !important;}.has-custom-3-font-size{font-size: var(--wp--preset--font-size--custom-3) !important;}.has-custom-4-font-size{font-size: var(--wp--preset--font-size--custom-4) !important;}.has-custom-5-font-size{font-size: var(--wp--preset--font-size--custom-5) !important;}.has-custom-6-font-size{font-size: var(--wp--preset--font-size--custom-6) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}
+:root :where(.wp-block-site-title){font-size: var(--wp--preset--font-size--medium);font-weight: var(--wp--custom--font-weight--semi-bold);letter-spacing: 0;line-height: var(--wp--custom--line-height--large);margin-top: 0;margin-bottom: 0;}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button))){color: var(--wp--preset--color--heading);}
+:root :where(.wp-block-post-title a:where(:not(.wp-element-button)):hover){color: var(--wp--preset--color--heading);}
+:root :where(.wp-block-navigation){font-size: var(--wp--preset--font-size--small);font-weight: var(--wp--custom--font-weight--regular);letter-spacing: 0.25px;line-height: var(--wp--custom--line-height--large);}:root :where(.wp-block-navigation-is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.wp-block-navigation-is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.wp-block-navigation-is-layout-flow) > *{margin-block-start: var(--wp--preset--spacing--small);margin-block-end: 0;}:root :where(.wp-block-navigation-is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.wp-block-navigation-is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.wp-block-navigation-is-layout-constrained) > *{margin-block-start: var(--wp--preset--spacing--small);margin-block-end: 0;}:root :where(.wp-block-navigation-is-layout-flex){gap: var(--wp--preset--spacing--small);}:root :where(.wp-block-navigation-is-layout-grid){gap: var(--wp--preset--spacing--small);}
+:root :where(.wp-block-post-terms){font-size: var(--wp--preset--font-size--x-small);}
+:root :where(.wp-block-post-author){font-size: var(--wp--preset--font-size--x-small);}
+:root :where(.wp-block-post-date){font-size: var(--wp--preset--font-size--x-small);}
+:root :where(.wp-block-group){padding-right: var(--wp--preset--spacing--x-small);padding-left: var(--wp--preset--spacing--x-small);}
+:root :where(.wp-block-heading){font-family: var(--wp--preset--font-family--inter);font-size: var(--wp--preset--font-size--custom-1);}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<style id='core-block-supports-inline-css'>
+.wp-elements-227df693ee0921a557d714015c9607af a:where(:not(.wp-element-button)){color:var(--wp--preset--color--foreground);}.wp-container-content-e1bb55cb{flex-basis:50px;}.wp-elements-dc6e8b547a49c4d0e6214bd1408be39d a:where(:not(.wp-element-button)){color:var(--wp--preset--color--heading);}.wp-container-core-group-is-layout-b6b71352{flex-wrap:nowrap;}.wp-container-core-navigation-is-layout-bdf413b9{gap:var(--wp--preset--spacing--medium);justify-content:flex-end;}.wp-container-core-group-is-layout-c4f7172d{flex-wrap:nowrap;gap:var(--wp--preset--spacing--large);justify-content:flex-end;}.wp-container-core-group-is-layout-cb46ffcb{flex-wrap:nowrap;justify-content:space-between;}.wp-elements-c2a245a6f8b3b2f54e845b97b915b557 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--background);}.wp-elements-43328281b6f44a6d31939e491d155b0f a:where(:not(.wp-element-button)){color:var(--wp--preset--color--outline);}.wp-container-core-column-is-layout-8a368f38 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-column-is-layout-8a368f38 > * + *{margin-block-start:0;margin-block-end:0;}.wp-elements-2d2c6760dab8efe68a96bdba36fbd8e0 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--background);}.wp-elements-b9f83b36ef3d11e5455576753fee54ba a:where(:not(.wp-element-button)){color:var(--wp--preset--color--outline);}.wp-elements-855466dceb101bf4d5a4b7f502d21892 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--background);}.wp-elements-634789598a31edea54301713d2d06f13 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--outline);}.wp-container-core-columns-is-layout-60cbf9bb{flex-wrap:nowrap;}.wp-elements-ea5efe9e6c14f9ce3711b130972e97e5 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--custom-body);}.wp-container-core-columns-is-layout-28f84493{flex-wrap:nowrap;}.wp-elements-e8022c77b3c027f4b6b1e8cfc1ead5b8 a:where(:not(.wp-element-button)){color:var(--wp--preset--color--custom-body);}.wp-container-core-group-is-layout-9dcc9912{flex-wrap:nowrap;gap:var(--wp--preset--spacing--xx-small);}.wp-container-core-group-is-layout-6a682e4e{gap:var(--wp--preset--spacing--xx-small);flex-direction:column;align-items:flex-start;}.wp-container-core-post-template-is-layout-6d3fbd8f{grid-template-columns:repeat(3, minmax(0, 1fr));}.wp-container-core-group-is-layout-fa72c8b5 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-fa72c8b5 > * + *{margin-block-start:var(--wp--preset--spacing--large);margin-block-end:0;}.wp-container-core-buttons-is-layout-a89b3969{justify-content:center;}.wp-container-core-social-links-is-layout-5f86147d{gap:var(--wp--preset--spacing--x-small) var(--wp--preset--spacing--x-small);}.wp-container-core-navigation-is-layout-5b7fc627{gap:var(--wp--preset--spacing--xx-small);flex-direction:column;align-items:flex-start;}.wp-container-core-columns-is-layout-e0dca8c8{flex-wrap:nowrap;gap:32px 32px;}.wp-container-core-columns-is-layout-f619a8c7{flex-wrap:nowrap;gap:var(--wp--preset--spacing--medium) var(--wp--preset--spacing--medium);}.wp-container-core-group-is-layout-49f5674e{flex-wrap:nowrap;gap:var(--wp--preset--spacing--xx-small);justify-content:center;}.wp-container-core-group-is-layout-1d38c0c0 > *{margin-block-start:0;margin-block-end:0;}.wp-container-core-group-is-layout-1d38c0c0 > * + *{margin-block-start:var(--wp--preset--spacing--large);margin-block-end:0;}
+/*# sourceURL=core-block-supports-inline-css */
+</style>
+<style id='wp-block-template-skip-link-inline-css'>
+
+		.skip-link.screen-reader-text {
+			border: 0;
+			clip-path: inset(50%);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			padding: 0;
+			position: absolute !important;
+			width: 1px;
+			word-wrap: normal !important;
+		}
+
+		.skip-link.screen-reader-text:focus {
+			background-color: #eee;
+			clip-path: none;
+			color: #444;
+			display: block;
+			font-size: 1em;
+			height: auto;
+			left: 5px;
+			line-height: normal;
+			padding: 15px 23px 14px;
+			text-decoration: none;
+			top: 5px;
+			width: auto;
+			z-index: 100000;
+		}
+/*# sourceURL=wp-block-template-skip-link-inline-css */
+</style>
+<link rel='stylesheet' id='aioseo/css/src/vue/assets/scss/app/admin-bar.scss-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/admin-bar.d9a8e9bb.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='wpc-styles-css' href='https://hostingguider.com/wp-content/plugins/ecom-guider-plugin/dist/assets/wp-plugin.css?ver=1.0.3' media='all' />
+<style id='wpc-styles-inline-css'>
+ :root{--primary:238 83% 66%;--accent:349 89% 60%;--secondary:225 100% 96%;--ring:238 83% 66%;--wpc-btn-hover:#4f46e5;--wpc-font-size-body:var(--wpc-theme-p-size, inherit);} :root{--wpc-btn-text:#ffffff;--pt-btn-text:#ffffff;} .wpc-root .button:not(.wpc-filter-tag):not(.wpc-text-link), .wpc-root .btn:not(.wpc-filter-tag):not(.wpc-text-link), .wpc-root button:not(.wpc-filter-tag):not(.wpc-text-link), .button:not(.wpc-filter-tag):not(.wpc-text-link), .btn:not(.wpc-filter-tag):not(.wpc-text-link), button:not(.wpc-filter-tag):not(.wpc-text-link){color:#ffffff !important;} /* CTA buttons/links use button text color explicitly */ .wpc-cta-btn, a.wpc-cta-btn, .wpc-root .wpc-cta-btn, .wpc-root a.wpc-cta-btn{color:#ffffff !important;} .wpc-cta-btn svg, a.wpc-cta-btn svg, .wpc-root .wpc-cta-btn svg, .wpc-root a.wpc-cta-btn svg{stroke:#ffffff !important;} /* Typography Override - Complete Coverage */ .wpc-root, .wpc-root *, .wpc-comparison-wrapper, .wpc-comparison-wrapper *, .wpc-list-wrapper, .wpc-list-wrapper *, .wpc-hero, .wpc-hero *, .ecg-pricing-table-wrapper, .ecg-pricing-table-wrapper *, .wpc-compare-table, .wpc-compare-table *, .wpc-feature-table, .wpc-feature-table *, [class*='wpc-']{font-family:inherit !important;} /* Headings override */ .wpc-root h1, .wpc-root h2, .wpc-root h3, .wpc-root h4, .wpc-root h5, .wpc-comparison-wrapper h1, .wpc-comparison-wrapper h2, .wpc-comparison-wrapper h3, .wpc-list-wrapper h1, .wpc-list-wrapper h2, .wpc-list-wrapper h3, .wpc-hero h1, .wpc-hero h2, .wpc-hero h3, .font-display, [class*='wpc-'] h1, [class*='wpc-'] h2, [class*='wpc-'] h3, [class*='wpc-'] h4{font-family:inherit !important;} .wpc-root:not(button):not(a):not(.btn), .wpc-root *:not(button):not(a):not(.btn), .wpc-comparison-wrapper:not(button):not(a):not(.btn), .wpc-comparison-wrapper *:not(button):not(a):not(.btn), .wpc-list-wrapper:not(button):not(a):not(.btn), .wpc-list-wrapper *:not(button):not(a):not(.btn), .wpc-hero:not(button):not(a):not(.btn), .wpc-hero *:not(button):not(a):not(.btn), .ecg-pricing-table-wrapper:not(button):not(a):not(.btn), .ecg-pricing-table-wrapper *:not(button):not(a):not(.btn), [class*='wpc-']:not(button):not(a):not(.btn){color:#334155 !important;} :root{--primary:238 83% 66%;--ring:238 83% 66%;--muted-foreground:215 16% 46%;--foreground:215 24% 26%;--card-foreground:215 24% 26%;--popover-foreground:215 24% 26%;/* Pros/Cons Colors */ --pros-bg:#f0fdf4;--pros-text:#166534;--cons-bg:#fef2f2;--cons-text:#991b1b;/* New Injections for full UI support */ --border:214 31% 91%;--input:214 31% 91%;--card:0 0% 100%;--popover:0 0% 100%;--muted:210 40% 96.1%;/* --secondary and --accent handled by Global Settings above */ --secondary-foreground:215 24% 26%;--accent-foreground:215 24% 26%;--destructive:0 84.2% 60.2%;--destructive-foreground:210 40% 98%;--wpc-star-color:#fbbf24;--wpc-btn-text:#ffffff;--pt-btn-text:#ffffff;} .wpc-root h1, .wpc-root h2, .wpc-root h3, .wpc-root h4, .wpc-root h5, .wpc-comparison-wrapper h1, .wpc-comparison-wrapper h2, .wpc-comparison-wrapper h3, .wpc-list-wrapper h1, .wpc-list-wrapper h2, .wpc-list-wrapper h3, .wpc-hero h1, .wpc-hero h2, .wpc-hero h3, [class*='wpc-'] h1, [class*='wpc-'] h2, [class*='wpc-'] h3, [class*='wpc-'] h4{color:#0f172a !important;} .text-muted, .text-muted-foreground, .wpc-root .text-muted, .wpc-root .text-muted-foreground, [class*='wpc-'] .text-muted, [class*='wpc-'] .text-muted-foreground, [class*='wpc-'] .description, [class*='wpc-'] small{color:#64748b !important;} .wpc-root a, .wpc-comparison-wrapper a, .wpc-list-wrapper a, .wpc-hero a, [class*='wpc-'] a{color:#6366f1 !important;} /* WPC Utility Classes for Theme Inheritance */ .wpc-root, .wpc-typography-inherit, .wpc-typography-inherit *{font-family:inherit !important;color:#334155;} .wpc-text-body{color:#334155 !important;} .wpc-text-muted{color:#64748b !important;opacity:0.8;} .wpc-heading, .wpc-typography-inherit h1, .wpc-typography-inherit h2, .wpc-typography-inherit h3{font-family:inherit !important;color:#0f172a !important;} .wpc-link{color:#6366f1 !important;} .wpc-star{font-size:inherit;} .bg-card{border-color:#e0e7ff !important;}
+/*# sourceURL=wpc-styles-inline-css */
+</style>
+<link rel='stylesheet' id='fontawesome-css' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css?ver=6.5.1' media='all' />
+<link rel='stylesheet' id='font-awesome-6-css' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css?ver=6.5.0' media='all' />
+<link rel='stylesheet' id='parent-style-css' href='https://hostingguider.com/wp-content/themes/spectra-one/style.css?ver=6.9' media='all' />
+<link rel='stylesheet' id='child-style-css' href='https://hostingguider.com/wp-content/themes/hostingguider/style.css?ver=6.9' media='all' />
+<link rel='stylesheet' id='spectra-one-css' href='https://hostingguider.com/wp-content/themes/spectra-one/assets/css/minified/style.min.css?ver=1.1.7' media='all' />
+<style id='spectra-one-inline-css'>
+@media (min-width:1025px){.swt-hide-desktop{display:none !important;}}@media (min-width:768px) and (max-width:1024px){.swt-hide-tablet{display:none !important ;}}@media (max-width:767px){.swt-hide-mobile{display:none !important;}}.wp-block-navigation-item.has-child .wp-block-navigation-item.has-child{color:inherit !important;}.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content, .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item, .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container, .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-page-list{align-items:center;}.is-placeholder{position:relative;width:100%;height:auto;display:flex;align-items:center;justify-content:center;background:var(--wp--preset--color--surface);border:0;}.wp-block-post-terms a{color:inherit;}.is-style-swt-post-author-simple .wp-block-post-author__bio{display:none;}.wp-block-post-author__bio{font-size:inherit;}
+/*# sourceURL=spectra-one-inline-css */
+</style>
+<link rel='stylesheet' id='spectra-one-gutenberg-css' href='https://hostingguider.com/wp-content/themes/spectra-one/assets/css/minified/gutenberg.min.css?ver=1.1.7' media='all' />
+<link rel='stylesheet' id='litespeed-cache-css' href='https://hostingguider.com/wp-content/plugins/litespeed-cache/assets/css/litespeed.css?ver=7.7' media='all' />
+<script src="https://hostingguider.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://hostingguider.com/wp-json/" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://hostingguider.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress 6.9" />
+<script type="importmap" id="wp-importmap">
+{"imports":{"@wordpress/interactivity":"https://hostingguider.com/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=8964710565a1d258501f"}}
+</script>
+<link rel="modulepreload" href="https://hostingguider.com/wp-includes/js/dist/script-modules/interactivity/index.min.js?ver=8964710565a1d258501f" id="@wordpress/interactivity-js-modulepreload" fetchpriority="low">
+<style class="wpcode-css-snippet">/* eComGuider Fixed Global Star System */
+.eg-stars-display {
+    display: inline-flex;
+    gap: 0.1em;
+    font-size: 1em; /* Matches current text size */
+    line-height: 1;
+    vertical-align: middle;
+    color: #ffcc00; /* Main star color */
+}
+
+.eg-star-partial {
+    position: relative;
+    display: inline-block;
+}
+
+.eg-star-empty {
+    color: #f1f1f1 !important; /* The background 'empty' star color */
+}
+
+.eg-star-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #ffcc00; /* The filled part color */
+}</style><style class="wpcode-css-snippet">/* ============================================================
+   ULTIMATE FIXED CHROME-STYLE HEADER (FLUSH & CENTERED)
+   ============================================================ */
+
+/* --- 1. FORCE HAMBURGER ICON --- */
+@media (max-width: 1250px) {
+    .custom-main-header .wp-block-navigation__responsive-container-open {
+        display: flex !important;
+        visibility: visible !important;
+    }
+    .custom-main-header .wp-block-navigation__responsive-container:not(.is-menu-open) {
+        display: none !important;
+    }
+}
+
+/* --- 2. CHROME MENU BOX --- */
+.custom-main-header .wp-block-navigation__responsive-container.is-menu-open {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 72px !important; 
+    right: 20px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 260px !important;
+    height: auto !important; 
+    max-height: 80vh !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    padding: 0 !important; 
+    z-index: 999999 !important;
+    overflow-y: auto !important;
+    pointer-events: all !important; 
+    scrollbar-width: none;
+}
+
+/* --- 3. REMOVE SPACING & HIDE BUTTONS --- */
+.custom-main-header .is-menu-open .wp-block-navigation__responsive-container-content,
+.custom-main-header .is-menu-open .wp-block-navigation__container,
+.custom-main-header .is-menu-open .wp-block-navigation-item {
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+/* Specific fix: Hide any "Get Started" or Button blocks inside the mobile menu */
+.custom-main-header .is-menu-open .wp-block-buttons,
+.custom-main-header .is-menu-open .wp-block-button {
+    display: none !important;
+}
+
+/* --- 4. THEME LINK COLORS & CENTERED ALIGNMENT --- */
+.custom-main-header .is-menu-open .wp-block-navigation-item a {
+    display: block !important;
+    padding: 16px 20px !important; 
+    
+    /* Apply theme variable */
+    color: var(--wp--preset--color--custom-primary) !important;
+    
+    /* Centering logic */
+    text-align: center !important;
+    
+    font-size: 15px !important;
+    font-weight: 600 !important; 
+    text-decoration: none !important;
+    line-height: 1 !important;
+    border-bottom: 1px solid #f3f3f3; 
+}
+
+/* Hover State */
+.custom-main-header .is-menu-open .wp-block-navigation-item a:hover {
+    background-color: rgba(0,0,0,0.03) !important; 
+    color: var(--wp--preset--color--custom-primary) !important;
+}
+
+/* Corner rounding */
+.custom-main-header .is-menu-open .wp-block-navigation-item:first-child a {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+.custom-main-header .is-menu-open .wp-block-navigation-item:last-child a {
+    border-bottom: none !important;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* --- 5. SUBMENU CENTERED --- */
+.custom-main-header .is-menu-open .wp-block-navigation__submenu-container {
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #fafafa !important;
+}
+
+.custom-main-header .is-menu-open .wp-block-navigation-submenu .wp-block-navigation-item a {
+    padding-left: 20px !important; /* Resetting left padding to keep it centered */
+    font-size: 14px !important;
+    color: var(--wp--preset--color--custom-primary) !important;
+}
+
+/* --- 6. PLUGIN SAFETY --- */
+.custom-main-header .wp-block-navigation__responsive-container.is-menu-open::before,
+.custom-main-header .wp-block-navigation__responsive-container.is-menu-open::after {
+    content: none !important;
+    display: none !important;
+}
+
+html.has-modal-open, 
+body.has-modal-open {
+    overflow: auto !important;
+    position: static !important;
+}
+
+.custom-main-header .wp-block-navigation__responsive-container-close { display: none !important; }</style><script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Select all category items
+    var items = document.querySelectorAll('.hosting-category li.cat-item');
+    
+    items.forEach(function(li) {
+        // Loop through contents to find the text node with the number
+        li.childNodes.forEach(function(node) {
+            // Node type 3 is a text node (the count)
+            if (node.nodeType === 3) {
+                // Replace ( and ) with empty space and trim whitespace
+                node.textContent = node.textContent.replace(/[()]/g, '').trim();
+            }
+        });
+    });
+});
+</script><style class="wpcode-css-snippet">/* =========================================
+   HOSTING ICONS CONFIGURATION
+   ========================================= */
+
+/* 1. Base Styles for All Icons */
+ul.hosting-category > li.cat-item a::before {
+  font-family: "Font Awesome 6 Free"; /* Default for solid icons */
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 1.1em;
+  
+  /* --- COLOR UPDATE --- */
+  /* Uses your WP Global Primary Color (same as eCom section) */
+  color: var(--wp--preset--color--primary, currentColor); 
+  
+  display: inline-block;
+  min-width: 20px; 
+}
+
+/* Optional: Add the same Hover Border Effect as eCom section */
+ul.hosting-category > li.cat-item:hover {
+  border-color: var(--wp--preset--color--primary, #3b82f6);
+}
+
+/* 2. Specific Icons Mapping */
+
+/* Web Hosting: Server */
+ul.hosting-category > li.cat-item-35 a::before { 
+  content: "\f233"; 
+} 
+
+/* VPS Hosting: Network / Sitemap */
+ul.hosting-category > li.cat-item-36 a::before { 
+  content: "\f0e8"; 
+} 
+
+/* Cloud Hosting: Cloud */
+ul.hosting-category > li.cat-item-37 a::before { 
+  content: "\f0c2"; 
+} 
+
+/* Dedicated: Database */
+ul.hosting-category > li.cat-item-1 a::before { 
+  content: "\f1c0"; 
+} 
+
+/* Performance: Chart Line */
+ul.hosting-category > li.cat-item-39 a::before { 
+  content: "\f201"; 
+} 
+
+/* Security: Lock */
+ul.hosting-category > li.cat-item-38 a::before { 
+  content: "\f023"; 
+} 
+
+/* 3. WordPress Specific Fix */
+ul.hosting-category > li.cat-item-40 a::before { 
+  font-family: "Font Awesome 6 Brands"; /* Switch to Brands font */
+  font-weight: 400; /* Brands require normal weight */
+  content: "\f19a"; /* Standard WordPress Logo */
+}</style><style class="wpcode-css-snippet">/* ==== 1. GRID & CARD CONTAINER ==== */
+ul.hosting-category {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+  /* Responsive columns: min 250px wide */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+ul.hosting-category > li.cat-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 160px; /* Ensures uniform height */
+  position: relative;
+  transition: all 0.3s ease;
+  
+  /* LAYOUT: Flex Wrap to push count to bottom */
+  display: flex; 
+  flex-wrap: wrap; 
+  align-content: space-between; 
+  align-items: baseline; 
+  text-align: left; /* Left-to-Right alignment */
+}
+
+/* Hover Effect */
+ul.hosting-category > li.cat-item:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  border-color: #3b82f6; 
+}
+
+/* ==== 2. TITLE & DESCRIPTIONS ==== */
+
+ul.hosting-category > li.cat-item a {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: block; 
+  width: 100%;    /* Forces title to take full width */
+  margin-bottom: 1rem; 
+}
+
+/* Description Text (Inside the Link) */
+ul.hosting-category > li.cat-item a::after {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 400;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+/* ---- UNIQUE DESCRIPTIONS ---- */
+
+/* Dedicated Hosting (cat-item-1) */
+ul.hosting-category > li.cat-item-1 a::after {
+  content: "Ultimate performance and control with single-tenant hardware.";
+}
+
+/* Existing Categories */
+ul.hosting-category > li.cat-item-35 a::after {
+  content: "Affordable shared hosting plans perfect for beginners.";
+}
+
+ul.hosting-category > li.cat-item-36 a::after {
+  content: "High-performance VPS solutions for growing businesses.";
+}
+
+ul.hosting-category > li.cat-item-37 a::after {
+  content: "Scalable cloud infrastructure designed for enterprise apps.";
+}
+
+ul.hosting-category > li.cat-item-38 a::after {
+  content: "Essential guides on SSL, firewalls, and security.";
+}
+
+ul.hosting-category > li.cat-item-39 a::after {
+  content: "Tutorials on caching, CDNs, and Core Web Vitals.";
+}
+
+ul.hosting-category > li.cat-item-40 a::after {
+  content: "Themes, plugins, and server-side WordPress tweaks.";
+}
+
+/* ==== 3. COUNT & 'ARTICLES' SUFFIX ==== */
+
+/* The number count text styling */
+ul.hosting-category > li.cat-item {
+  color: #9ca3af; 
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* The word "Articles" next to the number */
+ul.hosting-category > li.cat-item::after {
+  content: " Articles";
+  color: #9ca3af;    
+  font-size: 0.85rem;
+  margin-left: 4px;  /* Keeps them on the same line with a gap */
+}</style><style class="wpcode-css-snippet">.gradient-text {
+  /* This specific teal matches the 'Web Hosting' text in your image */
+  background: linear-gradient(135deg, #12b6cc 0%, #12b6cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* --- RESPONSIVE HERO SECTION FIX --- */
+
+/* 1. Target the Main Heading */
+.my-hero-section h1 {
+    /* Clamps font size: Min 32px, Ideal 5vw, Max 60px */
+    font-size: clamp(32px, 5vw, 60px) !important;
+    line-height: 1.1 !important;
+    padding: 0 10px; /* Prevents text touching screen edges on mobile */
+}
+
+/* 2. Target the Subtitle Paragraph */
+.my-hero-section p {
+    font-size: clamp(16px, 2vw, 20px) !important;
+    padding: 0 15px; /* breathability on mobile */
+}
+
+/* 3. Target the Stats Columns (150+, 50K, etc) */
+.my-hero-section .wp-block-columns {
+    margin-top: 40px !important;
+    gap: 20px !important; /* Adds space between columns */
+}
+
+/* 4. Target the Stats Text specifically */
+.my-hero-section h4 {
+    font-size: clamp(28px, 4vw, 35px) !important; /* Responsive stats size */
+    margin-bottom: 5px !important;
+}
+
+/* 5. Mobile Specific Adjustments (Screens smaller than 780px) */
+@media (max-width: 780px) {
+    
+    /* Reduce the massive top/bottom padding of the group */
+    .my-hero-section {
+        padding-top: 60px !important;
+        padding-bottom: 60px !important;
+    }
+
+    /* Fix the columns stacking on mobile */
+    .my-hero-section .wp-block-column {
+        margin-bottom: 30px !important; /* Adds space between stacked items */
+        flex-basis: 100% !important; /* Forces full width on mobile */
+    }
+    
+    /* Remove bottom margin from the last item so it fits snug */
+    .my-hero-section .wp-block-column:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Optional: Gradient Text Fix (if not already defined) */
+.gradient-text {
+    background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}</style><style class='wp-fonts-local'>
+@font-face{font-family:Inter;font-style:normal;font-weight:100;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-Thin.woff2') format('woff2');}
+@font-face{font-family:Inter;font-style:normal;font-weight:300;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-Light.woff2') format('woff2');}
+@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-Regular.woff2') format('woff2');}
+@font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-Medium.woff2') format('woff2');}
+@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-SemiBold.woff2') format('woff2');}
+@font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:fallback;src:url('https://hostingguider.com/wp-content/themes/spectra-one/assets/fonts/inter/Inter-Bold.woff2') format('woff2');}
+</style>
+</head>
+
+<body class="home blog logged-in admin-bar no-customize-support wp-embed-responsive wp-theme-spectra-one wp-child-theme-hostingguider">
+		<div id="wpadminbar" class="nojq nojs">
+						<div class="quicklinks" id="wp-toolbar" role="navigation" aria-label="Toolbar">
+				<ul role='menu' id='wp-admin-bar-root-default' class="ab-top-menu"><li role='group' id='wp-admin-bar-wp-logo' class="menupop"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/about.php'><span class="ab-icon" aria-hidden="true"></span><span class="screen-reader-text">About WordPress</span></a><div class="ab-sub-wrapper"><ul role='menu' aria-label='About WordPress' id='wp-admin-bar-wp-logo-default' class="ab-submenu"><li role='group' id='wp-admin-bar-about'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/about.php'>About WordPress</a></li><li role='group' id='wp-admin-bar-contribute'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/contribute.php'>Get Involved</a></li></ul><ul role='menu' aria-label='About WordPress' id='wp-admin-bar-wp-logo-external' class="ab-sub-secondary ab-submenu"><li role='group' id='wp-admin-bar-wporg'><a class='ab-item' role="menuitem" href='https://wordpress.org/'>WordPress.org</a></li><li role='group' id='wp-admin-bar-documentation'><a class='ab-item' role="menuitem" href='https://wordpress.org/documentation/'>Documentation</a></li><li role='group' id='wp-admin-bar-learn'><a class='ab-item' role="menuitem" href='https://learn.wordpress.org/'>Learn WordPress</a></li><li role='group' id='wp-admin-bar-support-forums'><a class='ab-item' role="menuitem" href='https://wordpress.org/support/forums/'>Support</a></li><li role='group' id='wp-admin-bar-feedback'><a class='ab-item' role="menuitem" href='https://wordpress.org/support/forum/requests-and-feedback'>Feedback</a></li></ul></div></li><li role='group' id='wp-admin-bar-site-name' class="menupop"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/'>HostingGuider</a><div class="ab-sub-wrapper"><ul role='menu' aria-label='HostingGuider' id='wp-admin-bar-site-name-default' class="ab-submenu"><li role='group' id='wp-admin-bar-dashboard'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/'>Dashboard</a></li><li role='group' id='wp-admin-bar-plugins'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/plugins.php'>Plugins</a></li></ul><ul role='menu' aria-label='HostingGuider' id='wp-admin-bar-appearance' class="ab-submenu"><li role='group' id='wp-admin-bar-themes'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/themes.php'>Themes</a></li></ul></div></li><li role='group' id='wp-admin-bar-site-editor'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/site-editor.php?postType=wp_template&#038;postId=hostingguider//home&#038;canvas=edit'>Edit Site</a></li><li role='group' id='wp-admin-bar-comments'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/edit-comments.php'><span class="ab-icon" aria-hidden="true"></span><span class="ab-label awaiting-mod pending-count count-0" aria-hidden="true">0</span><span class="screen-reader-text comments-in-moderation-text">0 Comments in moderation</span></a></li><li role='group' id='wp-admin-bar-new-content' class="menupop"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/post-new.php'><span class="ab-icon" aria-hidden="true"></span><span class="ab-label">New</span></a><div class="ab-sub-wrapper"><ul role='menu' aria-label='New' id='wp-admin-bar-new-content-default' class="ab-submenu"><li role='group' id='wp-admin-bar-new-post'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/post-new.php'>Post</a></li><li role='group' id='wp-admin-bar-new-media'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/media-new.php'>Media</a></li><li role='group' id='wp-admin-bar-new-page'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/post-new.php?post_type=page'>Page</a></li><li role='group' id='wp-admin-bar-new-comparison_item'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/post-new.php?post_type=comparison_item'>Comparison Item</a></li><li role='group' id='wp-admin-bar-new-comparison_list'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/post-new.php?post_type=comparison_list'>Custom List</a></li><li role='group' id='wp-admin-bar-new-comparison_review'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/post-new.php?post_type=comparison_review'>Review Page</a></li><li role='group' id='wp-admin-bar-new-user'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/user-new.php'>User</a></li></ul></div></li><li role='group' id='wp-admin-bar-swt-edit-template'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/site-editor.php?postType=wp_template&#038;postId=hostingguider//home' title='Edit template'><span class="ab-icon dashicons-edit" style="top:2px"></span>Edit template</a></li><li role='group' id='wp-admin-bar-litespeed-menu' class="menupop litespeed-top-toolbar"><a class='ab-item' tabindex="0" role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/admin.php?page=litespeed'><span class="ab-icon"></span></a><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-litespeed-menu-default' class="ab-submenu"><li role='group' id='wp-admin-bar-litespeed-purge-single'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_front'>Purge this page - LSCache</a></li><li role='group' id='wp-admin-bar-litespeed-purge-single-ucss'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_ucss'>Purge this page - UCSS</a></li><li role='group' id='wp-admin-bar-litespeed-single-action' class="menupop"><div class="ab-item ab-empty-item" tabindex="0" role="menuitem" aria-expanded="false"><span class="wp-admin-bar-arrow" aria-hidden="true"></span>Mark this page as </div><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-litespeed-single-action-default' class="ab-submenu"><li role='group' id='wp-admin-bar-litespeed-single-forced_cache'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=conf&#038;LSCWP_NONCE=48ffad4a9a&#038;litespeed_type=set&#038;set%5Bcache-force_uri%5D%5B%5D=%2F%24&#038;redirect=%2F'>Forced cacheable</a></li><li role='group' id='wp-admin-bar-litespeed-single-noncache'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=conf&#038;LSCWP_NONCE=48ffad4a9a&#038;litespeed_type=set&#038;set%5Bcache-exc%5D%5B%5D=%2F%24&#038;redirect=%2F'>Non cacheable</a></li><li role='group' id='wp-admin-bar-litespeed-single-private'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=conf&#038;LSCWP_NONCE=48ffad4a9a&#038;litespeed_type=set&#038;set%5Bcache-priv_uri%5D%5B%5D=%2F%24&#038;redirect=%2F'>Private cache</a></li><li role='group' id='wp-admin-bar-litespeed-single-nonoptimize'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=conf&#038;LSCWP_NONCE=48ffad4a9a&#038;litespeed_type=set&#038;set%5Boptm-exc%5D%5B%5D=%2F%24&#038;redirect=%2F'>No optimization</a></li><li role='group' id='wp-admin-bar-litespeed-single-more'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=litespeed-cache'>More settings</a></li></ul></div></li><li role='group' id='wp-admin-bar-litespeed-purge-all'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all&#038;_litespeed_ori=1'>Purge All</a></li><li role='group' id='wp-admin-bar-litespeed-purge-all-lscache'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_lscache&#038;_litespeed_ori=1'>Purge All - LSCache</a></li><li role='group' id='wp-admin-bar-litespeed-purge-cssjs'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_cssjs&#038;_litespeed_ori=1'>Purge All - CSS/JS Cache</a></li><li role='group' id='wp-admin-bar-litespeed-purge-object'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_object&#038;_litespeed_ori=1'>Purge All - Object Cache</a></li><li role='group' id='wp-admin-bar-litespeed-purge-opcache'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_opcache&#038;_litespeed_ori=1'>Purge All - Opcode Cache</a></li><li role='group' id='wp-admin-bar-litespeed-purge-ucss'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_ucss&#038;_litespeed_ori=1'>Purge All - UCSS</a></li><li role='group' id='wp-admin-bar-litespeed-purge-vpi'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_vpi&#038;_litespeed_ori=1'>Purge All - VPI</a></li><li role='group' id='wp-admin-bar-litespeed-purge-avatar'><a class='ab-item' tabindex="0" role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?LSCWP_CTRL=purge&#038;LSCWP_NONCE=716b13903c&#038;litespeed_type=purge_all_avatar&#038;_litespeed_ori=1'>Purge All - Gravatar Cache</a></li></ul></div></li><li role='group' id='wp-admin-bar-wpcode-admin-bar-info' class="menupop wpcode-admin-bar-info menupop"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode'>WPCode</a><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-wpcode-admin-bar-info-default' class="ab-submenu"><li role='group' id='wp-admin-bar-wpcode-description' class="wpcode-admin-bar-info-submenu wpcode-admin-bar-description"><div class="ab-item ab-empty-item" role="menuitem">Loaded on this page</div></li><li role='group' id='wp-admin-bar-wpcode-global-scripts' class="menupop wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-headers-footers'><span class="wp-admin-bar-arrow" aria-hidden="true"></span>Global Scripts (0)</a><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-wpcode-global-scripts-default' class="ab-submenu"><li role='group' id='wp-admin-bar-wpcode-global-header' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-headers-footers#wpcode-global-header'>Global Header (0)</a></li><li role='group' id='wp-admin-bar-wpcode-global-body' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-headers-footers#wpcode-global-body'>Global Body (0)</a></li><li role='group' id='wp-admin-bar-wpcode-global-footer' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-headers-footers#wpcode-global-footer'>Global Footer (0)</a></li></ul></div></li><li role='group' id='wp-admin-bar-wpcode-loaded-on-this-page' class="menupop wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode'><span class="wp-admin-bar-arrow" aria-hidden="true"></span>Code Snippets</a><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-wpcode-loaded-on-this-page-default' class="ab-submenu"><li role='group' id='wp-admin-bar-wpcode-admin-bar-info-replace' class="wpcode-admin-bar-info-submenu"><div class="ab-item ab-empty-item" role="menuitem"></div></li></ul></div></li><li role='group' id='wp-admin-bar-wpcode-admin-bar-info-add-new' class="wpcode-admin-bar-info-submenu wpcode-admin-bar-info-separator-top"><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-snippet-manager'>+ Add Snippet</a></li><li role='group' id='wp-admin-bar-wpcode-admin-bar-info-settings' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=wpcode-settings'>Settings</a></li><li role='group' id='wp-admin-bar-wpcode-admin-bar-info-help' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://wpcode.com/docs/?utm_source=liteplugin&#038;utm_medium=admin-bar&#038;utm_campaign=help' target='_blank' rel='noopener noreferrer'>Help Docs</a></li><li role='group' id='wp-admin-bar-wpcode-upgrade' class="wpcode-admin-bar-info-submenu"><a class='ab-item' role="menuitem" href='https://wpcode.com/lite/?utm_source=liteplugin&#038;utm_medium=admin-bar&#038;utm_campaign=upgrade-to-pro' target='_blank' rel='noopener noreferrer'>Upgrade to Pro</a></li></ul></div></li><li role='group' id='wp-admin-bar-aioseo-main' class="menupop"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo'><div class="ab-item aioseo-logo svg"></div><span class="text">SEO</span><div class="aioseo-menu-notification-counter aioseo-menu-notification-counter-frontend">2</div><div id="aioseo-menu-new-notifications"></div></a><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-aioseo-main-default' class="ab-submenu"><li role='group' id='wp-admin-bar-aioseo-notifications'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo&#038;notifications=true'>Notifications <div class="aioseo-menu-notification-indicator"></div></a></li><li role='group' id='wp-admin-bar-aioseo-seo-preview'><a class='ab-item' role="menuitem" href='#'>SEO Preview<span class="aioseo-menu-new-indicator">NEW!</span></a></li><li role='group' id='wp-admin-bar-aioseo-settings-main' class="menupop"><div class="ab-item ab-empty-item" role="menuitem" aria-expanded="false"><span class="wp-admin-bar-arrow" aria-hidden="true"></span>SEO Settings</div><div class="ab-sub-wrapper"><ul role='menu' id='wp-admin-bar-aioseo-settings-main-default' class="ab-submenu"><li role='group' id='wp-admin-bar-aioseo'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo'>Dashboard</a></li><li role='group' id='wp-admin-bar-aioseo-settings'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-settings'>General Settings</a></li><li role='group' id='wp-admin-bar-aioseo-search-appearance'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-search-appearance'>Search Appearance</a></li><li role='group' id='wp-admin-bar-aioseo-social-networks'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-social-networks'>Social Networks</a></li><li role='group' id='wp-admin-bar-aioseo-sitemaps'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-sitemaps'>Sitemaps</a></li><li role='group' id='wp-admin-bar-aioseo-link-assistant'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-link-assistant'>Link Assistant</a></li><li role='group' id='wp-admin-bar-aioseo-redirects'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-redirects'>Redirects</a></li><li role='group' id='wp-admin-bar-aioseo-ai-insights'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-ai-insights'>AI Insights<span class="aioseo-menu-new-indicator">&nbsp;NEW!</span></a></li><li role='group' id='wp-admin-bar-aioseo-local-seo'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-local-seo'>Local SEO</a></li><li role='group' id='wp-admin-bar-aioseo-seo-analysis'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-seo-analysis'>SEO Analysis</a></li><li role='group' id='wp-admin-bar-aioseo-search-statistics'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-search-statistics'>Search Statistics</a></li><li role='group' id='wp-admin-bar-aioseo-tools'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-tools'>Tools</a></li><li role='group' id='wp-admin-bar-aioseo-feature-manager'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-feature-manager'>Feature Manager</a></li><li role='group' id='wp-admin-bar-aioseo-about'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-about'>About Us</a></li></ul></div></li><li role='group' id='wp-admin-bar-aioseo-pro-upgrade'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/admin.php?page=aioseo-tools&#038;aioseo-redirect-upgrade-admin-bar=1' target='_blank'><span class="aioseo-menu-highlight lite">Upgrade to Pro</span></a></li></ul></div></li></ul><ul role='menu' id='wp-admin-bar-top-secondary' class="ab-top-secondary ab-top-menu"><li role='group' id='wp-admin-bar-my-account' class="menupop with-avatar"><a class='ab-item' role="menuitem" aria-expanded="false" href='https://hostingguider.com/wp-admin/profile.php'>Howdy, <span class="display-name">Ranti Dev</span><img alt='' src='https://hostingguider.com/wp-content/litespeed/avatar/3d44953a70d2c278d8c89585f5b048b6.jpg?ver=1769059464' srcset='https://hostingguider.com/wp-content/litespeed/avatar/d364a7f44fac5921268dbce6cb1585ac.jpg?ver=1769059464 2x' class='avatar avatar-26 photo' height='26' width='26' loading='lazy' decoding='async'/></a><div class="ab-sub-wrapper"><ul role='menu' aria-label='Howdy, Ranti Dev' id='wp-admin-bar-user-actions' class="ab-submenu"><li role='group' id='wp-admin-bar-user-info'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-admin/profile.php'><img alt='' src='https://hostingguider.com/wp-content/litespeed/avatar/12c4a08d9b825cb7323961bb98058f01.jpg?ver=1769059464' srcset='https://hostingguider.com/wp-content/litespeed/avatar/e219b06ebc543c43be56b2c259fca783.jpg?ver=1769059464 2x' class='avatar avatar-64 photo' height='64' width='64' loading='lazy' decoding='async'/><span class='display-name'>Ranti Dev</span><span class='username'>RantiDev</span><span class='display-name edit-profile'>Edit Profile</span></a></li><li role='group' id='wp-admin-bar-logout'><a class='ab-item' role="menuitem" href='https://hostingguider.com/wp-login.php?action=logout&#038;_wpnonce=9c573b6e3b'>Log Out</a></li></ul></div></li><li role='group' id='wp-admin-bar-search' class="admin-bar-search"><div class="ab-item ab-empty-item" tabindex="-1" role="menuitem"><form action="https://hostingguider.com/" method="get" id="adminbarsearch"><input class="adminbar-input" name="s" id="adminbar-search" type="text" value="" maxlength="150" /><label for="adminbar-search" class="screen-reader-text">Search</label><input type="submit" class="adminbar-button" value="Search" /></form></div></li></ul>			</div>
+		</div>
+
+		
+<div class="wp-site-blocks"><header class="wp-block-template-part">
+<div class="wp-block-group custom-main-header has-white-background-color has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--xx-small);padding-bottom:var(--wp--preset--spacing--xx-small)">
+<div class="wp-block-group alignwide swt-block-row has-foreground-color has-text-color has-link-color wp-elements-227df693ee0921a557d714015c9607af is-content-justification-space-between is-nowrap is-layout-flex wp-container-core-group-is-layout-cb46ffcb wp-block-group-is-layout-flex">
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-b6b71352 wp-block-group-is-layout-flex" style="padding-right:0;padding-left:0">
+<figure class="wp-block-image size-thumbnail site-logo-img is-style-default wp-container-content-e1bb55cb"><img decoding="async" width="150" height="150" src="https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2-150x150.png" alt="" class="wp-image-105" srcset="https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2-150x150.png 150w, https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2-300x300.png 300w, https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2.png 400w" sizes="(max-width: 150px) 100vw, 150px" /></figure>
+
+
+
+<p class="has-heading-color has-text-color has-link-color wp-elements-dc6e8b547a49c4d0e6214bd1408be39d"><strong>Hosting<span class="gradient-text">Guider</span></strong></p>
+</div>
+
+
+
+<div class="wp-block-group swt-block-row is-content-justification-right is-nowrap is-layout-flex wp-container-core-group-is-layout-c4f7172d wp-block-group-is-layout-flex"><nav class="has-text-color has-heading-color is-responsive items-justified-right wp-block-navigation is-content-justification-right is-layout-flex wp-container-core-navigation-is-layout-bdf413b9 wp-block-navigation-is-layout-flex" aria-label="Header menu" data-wp-interactive="core/navigation" data-wp-context='{"overlayOpenedBy":{"click":false,"hover":false,"focus":false},"type":"overlay","roleAttribute":"","ariaLabel":"Menu"}'><button aria-haspopup="dialog" aria-label="Open menu" class="wp-block-navigation__responsive-container-open" data-wp-on--click="actions.openMenuOnClick" data-wp-on--keydown="actions.handleMenuKeydown"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7.5h16v1.5H4z"></path><path d="M4 15h16v1.5H4z"></path></svg></button>
+				<div class="wp-block-navigation__responsive-container  has-text-color has-black-color" id="modal-1" data-wp-class--has-modal-open="state.isMenuOpen" data-wp-class--is-menu-open="state.isMenuOpen" data-wp-watch="callbacks.initMenu" data-wp-on--keydown="actions.handleMenuKeydown" data-wp-on--focusout="actions.handleMenuFocusout" tabindex="-1">
+					<div class="wp-block-navigation__responsive-close" tabindex="-1">
+						<div class="wp-block-navigation__responsive-dialog" data-wp-bind--aria-modal="state.ariaModal" data-wp-bind--aria-label="state.ariaLabel" data-wp-bind--role="state.roleAttribute">
+							<button aria-label="Close menu" class="wp-block-navigation__responsive-container-close" data-wp-on--click="actions.closeMenuOnClick"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"></path></svg></button>
+							<div class="wp-block-navigation__responsive-container-content" data-wp-watch="callbacks.focusFirstElement" id="modal-1-content">
+								<ul class="wp-block-navigation__container">
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Home</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Compare</span></a></li>
+<li data-wp-context='{ "submenuOpenedBy": { "click": false, "hover": false, "focus": false }, "type": "submenu", "modal": null, "previousFocus": null }' data-wp-interactive="core/navigation" data-wp-on--focusout="actions.handleMenuFocusout" data-wp-on--keydown="actions.handleMenuKeydown" data-wp-on--mouseenter="actions.openMenuOnHover" data-wp-on--mouseleave="actions.closeMenuOnHover" data-wp-watch="callbacks.initMenu" tabindex="-1" class="wp-block-navigation-item has-child open-on-hover-click wp-block-navigation-submenu">
+<a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Web Hosting</span></a><button data-wp-bind--aria-expanded="state.isMenuOpen" data-wp-on--click="actions.toggleMenuOnClick" aria-label="Web Hosting submenu" class="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle" ><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewbox="0 0 12 12" fill="none" aria-hidden="true" focusable="false"><path d="M1.50002 4L6.00002 8L10.5 4" stroke-width="1.5"></path></svg></button><ul data-wp-on--focus="actions.openMenuOnFocus" class="wp-block-navigation__submenu-container has-text-color has-black-color wp-block-navigation-submenu">
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/cloud-hosting/"><span class="wp-block-navigation-item__label">Cloud Hosting</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/dedicated/"><span class="wp-block-navigation-item__label">Dedicated</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/performance/"><span class="wp-block-navigation-item__label">Performance</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/wordpress/"><span class="wp-block-navigation-item__label">WordPress</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/vps-hosting/"><span class="wp-block-navigation-item__label">VPS Hosting</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/topics/performance/"><span class="wp-block-navigation-item__label">Performance</span></a></li>
+</ul>
+</li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">VPS</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="http://Cloud"><span class="wp-block-navigation-item__label">Cloud</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="http://WordPress"><span class="wp-block-navigation-item__label">WordPress</span></a></li>
+</ul>
+<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex swt-hide-mobile">
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" style="border-radius:6px">Get Started</a></div>
+</div>
+
+							</div>
+						</div>
+					</div>
+				</div></nav>
+</div>
+</div>
+</div>
+</header>
+
+
+<div class="wp-block-group alignwide my-hero-section has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="background:linear-gradient(135deg,rgb(18,29,48) 0%,rgb(24,73,157) 100%);margin-top:0;padding-top:var(--wp--preset--spacing--xx-large);padding-bottom:var(--wp--preset--spacing--xx-large)">
+<h1 class="wp-block-heading has-text-align-center has-white-color has-text-color" style="margin-top:0;font-size:60px;font-style:normal;font-weight:800;letter-spacing:-1px;line-height:1.3">Find the Perfect <span class="gradient-text"> Web Hosting</span> for Your Website</h1>
+
+
+
+<p class="has-text-align-center has-white-color has-text-color">Expert reviews, tutorials, and guides to help you choose and optimize your hosting. From beginners to pros.</p>
+
+
+
+<div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-60cbf9bb wp-block-columns-is-layout-flex" style="margin-top:50px">
+<div class="wp-block-column is-vertically-aligned-top is-layout-flow wp-container-core-column-is-layout-8a368f38 wp-block-column-is-layout-flow">
+<h4 class="wp-block-heading has-text-align-center has-background-color has-text-color has-link-color has-custom-4-font-size wp-elements-c2a245a6f8b3b2f54e845b97b915b557"><strong>150+</strong></h4>
+
+
+
+<p class="has-text-align-center has-outline-color has-text-color has-link-color has-custom-6-font-size wp-elements-43328281b6f44a6d31939e491d155b0f">Hosting Reviews</p>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-container-core-column-is-layout-8a368f38 wp-block-column-is-layout-flow">
+<h4 class="wp-block-heading has-text-align-center has-background-color has-text-color has-link-color has-custom-4-font-size wp-elements-2d2c6760dab8efe68a96bdba36fbd8e0"><strong>50K+</strong></h4>
+
+
+
+<p class="has-text-align-center has-outline-color has-text-color has-link-color has-custom-6-font-size wp-elements-b9f83b36ef3d11e5455576753fee54ba">Monthly Readers</p>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-container-core-column-is-layout-8a368f38 wp-block-column-is-layout-flow">
+<h4 class="wp-block-heading has-text-align-center has-background-color has-text-color has-link-color has-custom-4-font-size wp-elements-855466dceb101bf4d5a4b7f502d21892"><strong>5 Years+</strong></h4>
+
+
+
+<p class="has-text-align-center has-outline-color has-text-color has-link-color has-custom-6-font-size wp-elements-634789598a31edea54301713d2d06f13">Experience</p>
+</div>
+</div>
+</div>
+
+
+
+<div class="wp-block-group has-global-padding is-layout-constrained wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--x-large);padding-bottom:var(--wp--preset--spacing--x-large)">
+<div class="wp-block-columns alignwide is-layout-flex wp-container-core-columns-is-layout-28f84493 wp-block-columns-is-layout-flex">
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+<h2 class="wp-block-heading has-text-align-center has-custom-2-font-size"><strong>Compare Hosting Providers</strong></h2>
+
+
+
+<p class="has-text-align-center has-custom-body-color has-text-color has-link-color wp-elements-ea5efe9e6c14f9ce3711b130972e97e5">Select up to 4 hosting providers to compare features, pricing, and performance side by side</p>
+
+
+<p>    <!-- Skeleton placeholder to prevent CLS while React loads --></p>
+<div id="wpc-list-343-7990" class="wpc-root" data-config="{&quot;initialItems&quot;:[{&quot;id&quot;:&quot;338&quot;,&quot;name&quot;:&quot;Hostinger&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/hostinger-logo.webp&quot;,&quot;rating&quot;:4.7,&quot;price&quot;:&quot;$1.99&quot;,&quot;period&quot;:&quot;\/mo (48 months)&quot;,&quot;category&quot;:[&quot;Cloud Hosting&quot;,&quot;Dedicated Hosting&quot;,&quot;Managed Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;Shared Hosting&quot;,&quot;VPS Hosting&quot;,&quot;Web Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;2FA&quot;,&quot;99.9% Uptime&quot;,&quot;Backups&quot;]},{&quot;id&quot;:&quot;339&quot;,&quot;name&quot;:&quot;Liquid Web&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/liquidweb-logo.webp&quot;,&quot;rating&quot;:4.7,&quot;price&quot;:&quot;$29&quot;,&quot;period&quot;:&quot;\/mo&quot;,&quot;category&quot;:[&quot;Cloud Hosting&quot;,&quot;Dedicated Hosting&quot;,&quot;Email Hosting&quot;,&quot;Managed Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;Reseller Hosting&quot;,&quot;VPS Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;2FA&quot;,&quot;99.9% Uptime&quot;,&quot;Backups&quot;]},{&quot;id&quot;:&quot;349&quot;,&quot;name&quot;:&quot;cloudways&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/cloudways-logo.webp&quot;,&quot;rating&quot;:4.6,&quot;price&quot;:&quot;$11&quot;,&quot;period&quot;:&quot;\/mo&quot;,&quot;category&quot;:[&quot;Cloud Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;99.9% Uptime&quot;,&quot;Backups&quot;,&quot;CDN&quot;]},{&quot;id&quot;:&quot;353&quot;,&quot;name&quot;:&quot;WP Engine&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/wpengine-logo.webp&quot;,&quot;rating&quot;:4.7,&quot;price&quot;:&quot;$50&quot;,&quot;period&quot;:&quot;\/mo&quot;,&quot;category&quot;:[&quot;Managed WordPress Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;99.9% Uptime&quot;,&quot;DDoS Protection&quot;,&quot;Free Migration&quot;]},{&quot;id&quot;:&quot;357&quot;,&quot;name&quot;:&quot;UltaHost&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/ultrahost-logo.webp&quot;,&quot;rating&quot;:4.3,&quot;price&quot;:&quot;$4.50&quot;,&quot;period&quot;:&quot;\/mo&quot;,&quot;category&quot;:[&quot;Dedicated Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;Shared Hosting&quot;,&quot;VPS Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;99.9% Uptime&quot;,&quot;Caching&quot;,&quot;CDN&quot;]},{&quot;id&quot;:&quot;359&quot;,&quot;name&quot;:&quot;WordPress&quot;,&quot;logo&quot;:&quot;https:\/\/hostingguider.com\/wp-content\/uploads\/2026\/01\/wordpress-logo.webp&quot;,&quot;rating&quot;:4.5,&quot;price&quot;:&quot;$9&quot;,&quot;period&quot;:&quot;\/mo&quot;,&quot;category&quot;:[&quot;Managed WordPress Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;direct_link&quot;:&quot;&quot;,&quot;is_featured&quot;:false,&quot;features&quot;:[&quot;24\/7 Support&quot;,&quot;24\/7 Support&quot;,&quot;2FA&quot;,&quot;Backups&quot;,&quot;Caching&quot;]}],&quot;ids&quot;:[&quot;338&quot;,&quot;339&quot;,&quot;349&quot;,&quot;353&quot;,&quot;357&quot;,&quot;359&quot;,&quot;361&quot;,&quot;363&quot;,&quot;365&quot;,&quot;367&quot;,&quot;369&quot;,&quot;374&quot;,&quot;371&quot;,&quot;376&quot;,&quot;377&quot;,&quot;399&quot;,&quot;401&quot;,&quot;409&quot;,&quot;419&quot;,&quot;421&quot;,&quot;423&quot;],&quot;categories&quot;:[&quot;Cloud Hosting&quot;,&quot;Dedicated Hosting&quot;,&quot;Managed Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;Shared Hosting&quot;,&quot;VPS Hosting&quot;,&quot;Web Hosting&quot;,&quot;WooCommerce Hosting&quot;,&quot;Email Hosting&quot;,&quot;Reseller Hosting&quot;,&quot;ASP.NET Hosting&quot;,&quot;Joomla Hosting&quot;],&quot;filterableFeatures&quot;:[&quot;24\/7 Support&quot;,&quot;2FA&quot;,&quot;99.9% Uptime&quot;,&quot;Backups&quot;,&quot;Caching&quot;,&quot;CDN&quot;,&quot;DDoS Protection&quot;,&quot;Firewall&quot;,&quot;Free Domain&quot;,&quot;Free Migration&quot;,&quot;Free SSL&quot;,&quot;FTP&quot;,&quot;Malware Scanning&quot;,&quot;Money-Back Guarantee&quot;,&quot;NVMe SSD&quot;,&quot;Object Cache&quot;,&quot;One-Click Installer&quot;,&quot;SSH&quot;,&quot;Staging Environment&quot;,&quot;Unlimited Bandwidth&quot;,&quot;WAF&quot;,&quot;Daily Backups&quot;],&quot;style&quot;:&quot;grid&quot;,&quot;featured&quot;:[],&quot;compareFeatures&quot;:null,&quot;category&quot;:&quot;&quot;,&quot;limit&quot;:0,&quot;enableComparison&quot;:true,&quot;showCheckboxes&quot;:true,&quot;viewAction&quot;:&quot;link&quot;,&quot;buttonText&quot;:&quot;&quot;,&quot;filterLayout&quot;:&quot;sidebar&quot;,&quot;showFilters&quot;:true,&quot;showSearchBar&quot;:true,&quot;searchType&quot;:&quot;combobox&quot;,&quot;filterCats&quot;:[&quot;Cloud Hosting&quot;,&quot;Dedicated Hosting&quot;,&quot;Email Hosting&quot;,&quot;Managed Hosting&quot;,&quot;Managed WordPress Hosting&quot;,&quot;Reseller Hosting&quot;,&quot;Shared Hosting&quot;,&quot;VPS Hosting&quot;,&quot;Web Hosting&quot;,&quot;WooCommerce Hosting&quot;],&quot;filterFeats&quot;:[&quot;24\/7 Support&quot;,&quot;2FA&quot;,&quot;99.9% Uptime&quot;,&quot;Backups&quot;,&quot;Caching&quot;,&quot;NVMe SSD&quot;,&quot;SSH&quot;,&quot;Staging Environment&quot;],&quot;badge_texts&quot;:[],&quot;badge_colors&quot;:[],&quot;categoriesLabel&quot;:&quot;Hosting Type&quot;,&quot;featuresLabel&quot;:&quot;Features&quot;,&quot;showPlanButtons&quot;:true,&quot;showAllEnabled&quot;:true,&quot;initialVisible&quot;:6,&quot;badgeStyle&quot;:&quot;floating&quot;,&quot;showRating&quot;:true,&quot;showPrice&quot;:true,&quot;colorsOverride&quot;:null,&quot;ptVisuals&quot;:{&quot;wpc_pt_btn_pos_table&quot;:&quot;default&quot;,&quot;wpc_pt_btn_pos_popup&quot;:&quot;after_price&quot;},&quot;visualsOverride&quot;:{&quot;wpc_pt_btn_pos_table&quot;:&quot;default&quot;,&quot;wpc_pt_btn_pos_popup&quot;:&quot;after_price&quot;},&quot;ptBtnPosTable&quot;:&quot;after_price&quot;,&quot;ptBtnPosPopup&quot;:&quot;after_price&quot;,&quot;showSelectTable&quot;:true,&quot;showSelectPopup&quot;:true,&quot;showFooterTable&quot;:true,&quot;showFooterPopup&quot;:false,&quot;hideFeatures&quot;:false,&quot;targetDetails&quot;:&quot;_blank&quot;,&quot;targetDirect&quot;:&quot;_blank&quot;,&quot;targetPricing&quot;:&quot;_blank&quot;,&quot;labels&quot;:{&quot;viewDetails&quot;:&quot;View Details&quot;,&quot;compareAlternatives&quot;:&quot;Compare Alternatives&quot;,&quot;compareNow&quot;:&quot;Compare Now&quot;,&quot;readReview&quot;:&quot;Read Review&quot;,&quot;backToReviews&quot;:&quot;Back to Reviews&quot;,&quot;filters&quot;:&quot;Filters&quot;,&quot;searchPlaceholder&quot;:&quot;Search &amp; Select...&quot;,&quot;categoryLabel&quot;:&quot;Hosting Type&quot;,&quot;featuresLabel&quot;:&quot;Features&quot;,&quot;itemsFound&quot;:&quot;items found&quot;,&quot;selected&quot;:&quot;Selected:&quot;,&quot;clearAll&quot;:&quot;Clear all&quot;,&quot;compareBtn&quot;:&quot;Compare (%s) Items&quot;,&quot;visitSite&quot;:&quot;Visit Site&quot;,&quot;visitPlat&quot;:&quot;Visit %s&quot;,&quot;about&quot;:&quot;About&quot;,&quot;comparisonHeader&quot;:&quot;Detailed Comparison&quot;,&quot;selectToCompare&quot;:&quot;Select to Compare&quot;,&quot;copied&quot;:&quot;Copied!&quot;,&quot;noResults&quot;:&quot;No items match your filters.&quot;,&quot;activeFilters&quot;:&quot;Active filters:&quot;,&quot;sortDefault&quot;:&quot;Sort: Default&quot;,&quot;sortNameAsc&quot;:&quot;Name (A-Z)&quot;,&quot;sortNameDesc&quot;:&quot;Name (Z-A)&quot;,&quot;sortRating&quot;:&quot;Highest Rated&quot;,&quot;sortPrice&quot;:&quot;Lowest Price&quot;,&quot;getCoupon&quot;:&quot;Get Coupon:&quot;,&quot;featuredBadge&quot;:&quot;Featured&quot;,&quot;featureProducts&quot;:&quot;Products&quot;,&quot;featureFees&quot;:&quot;Trans. Fees&quot;,&quot;featureChannels&quot;:&quot;Sales Channels&quot;,&quot;featureSsl&quot;:&quot;Free SSL&quot;,&quot;featureSupport&quot;:&quot;Support&quot;,&quot;featureHeader&quot;:&quot;Feature&quot;,&quot;prosLabel&quot;:&quot;Pros&quot;,&quot;consLabel&quot;:&quot;Cons&quot;,&quot;priceLabel&quot;:&quot;Price&quot;,&quot;ratingLabel&quot;:&quot;Rating&quot;,&quot;moSuffix&quot;:&quot;\/mo&quot;,&quot;noItemsToCompare&quot;:&quot;Select up to 4 items to compare&quot;,&quot;remove&quot;:&quot;Remove&quot;,&quot;logoLabel&quot;:&quot;Logo&quot;,&quot;analysisBase&quot;:&quot;(Based on our analysis)&quot;,&quot;startingPrice&quot;:&quot;Starting Price&quot;,&quot;dashboardPreview&quot;:&quot;Dashboard Preview&quot;,&quot;resetFilters&quot;:&quot;Reset Filters&quot;,&quot;select&quot;:&quot;Select %s&quot;,&quot;clear&quot;:&quot;Clear&quot;,&quot;selectProvider&quot;:&quot;Select provider...&quot;,&quot;noItemFound&quot;:&quot;No item found.&quot;,&quot;more&quot;:&quot;more&quot;,&quot;showAllItems&quot;:&quot;Show All Items&quot;,&quot;revealMore&quot;:&quot;Click to reveal&quot;,&quot;noLogo&quot;:&quot;No Logo&quot;,&quot;selectPlan&quot;:&quot;Select&quot;,&quot;ptPlan&quot;:&quot;Plan&quot;,&quot;ptPrice&quot;:&quot;Price&quot;,&quot;ptFeatures&quot;:&quot;Features&quot;},&quot;colors&quot;:{&quot;primary&quot;:&quot;#6366f1&quot;,&quot;btnText&quot;:&quot;#ffffff&quot;,&quot;hoverButton&quot;:&quot;#4f46e5&quot;,&quot;stars&quot;:&quot;#fbbf24&quot;,&quot;textHeading&quot;:&quot;#0f172a&quot;,&quot;textBody&quot;:&quot;#334155&quot;,&quot;textMuted&quot;:&quot;#64748b&quot;,&quot;prosBg&quot;:&quot;#f0fdf4&quot;,&quot;prosText&quot;:&quot;#166534&quot;,&quot;consBg&quot;:&quot;#fef2f2&quot;,&quot;consText&quot;:&quot;#991b1b&quot;,&quot;couponBg&quot;:&quot;#fef3c7&quot;,&quot;couponText&quot;:&quot;#92400e&quot;,&quot;couponHover&quot;:&quot;#fde68a&quot;,&quot;copied&quot;:&quot;#10b981&quot;,&quot;tick&quot;:&quot;#10b981&quot;,&quot;cross&quot;:&quot;#ef4444&quot;,&quot;category&quot;:&quot;&quot;}}" style="min-height: 600px;">
+<div class="wpc-skeleton" style="padding: 1rem;">
+<div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+<div style="flex: 1; height: 40px; background: #f3f4f6; border-radius: 8px;"></div>
+<div style="width: 120px; height: 40px; background: #f3f4f6; border-radius: 8px;"></div>
+</p></div>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+<div style="height: 280px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb;"></div>
+</p></div>
+</p></div>
+</p></div>
+</div>
+</div>
+
+
+
+<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
+
+
+
+<h2 class="wp-block-heading has-text-align-center has-custom-2-font-size"><strong>Explore by Category</strong></h2>
+
+
+
+<p class="has-text-align-center has-custom-body-color has-text-color has-link-color wp-elements-e8022c77b3c027f4b6b1e8cfc1ead5b8">Find the perfect hosting solution with our comprehensive guides organized by topic</p>
+
+
+
+<div style="height:30px" aria-hidden="true" class="wp-block-spacer"></div>
+
+
+<ul class="wp-block-categories-list alignwide hosting-category wp-block-categories">	<li class="cat-item cat-item-37"><a href="https://hostingguider.com/topics/cloud-hosting/">Cloud Hosting</a> (0)
+</li>
+	<li class="cat-item cat-item-1"><a href="https://hostingguider.com/topics/dedicated/">Dedicated</a> (4)
+</li>
+	<li class="cat-item cat-item-39"><a href="https://hostingguider.com/topics/performance/">Performance</a> (0)
+</li>
+	<li class="cat-item cat-item-38"><a href="https://hostingguider.com/topics/security/">Security</a> (0)
+</li>
+	<li class="cat-item cat-item-36"><a href="https://hostingguider.com/topics/vps-hosting/">VPS Hosting</a> (0)
+</li>
+	<li class="cat-item cat-item-35"><a href="https://hostingguider.com/topics/web-hosting/">Web Hosting</a> (0)
+</li>
+	<li class="cat-item cat-item-40"><a href="https://hostingguider.com/topics/wordpress/">WordPress</a> (0)
+</li>
+</ul></div>
+
+
+
+<div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-container-core-group-is-layout-fa72c8b5 wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--x-large);padding-bottom:var(--wp--preset--spacing--x-large)">
+<h2 class="wp-block-heading alignwide has-text-align-left has-heading-color has-text-color has-custom-2-font-size"><strong>Latest from the blog</strong></h2>
+
+
+
+<div class="wp-block-query alignwide is-layout-flow wp-block-query-is-layout-flow"><ul class="columns-3 wp-block-post-template is-layout-grid wp-container-core-post-template-is-layout-6d3fbd8f wp-block-post-template-is-layout-grid"><li class="wp-block-post post-327 post type-post status-publish format-standard hentry category-dedicated">
+<a href="https://hostingguider.com/blog/test/"><figure class="wp-block-image is-placeholder" style="height:400px;"><svg width="30" height="30" viewbox="0 0 40 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icon-6979ddd7970cf" data-icon="placeholder" class=" wp-block-image__placeholder-icon"><title id="icon-6979ddd7970cf">Placeholder Icon</title>
+<g opacity="0.2" clip-path="url(#clip0_601_10810)" id="mask0_601_10810" style="mask-type:luminance" maskunits="userSpaceOnUse" x="0" y="0" width="40" height="40"><path d="M40 0H0V40H40V0Z" fill="var(--wp--preset--color--surface)"></path><g mask="url(#mask0_601_10810)"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 40C31.0458 40 40 31.0458 40 20C40 8.95429 31.0458 0 20 0C8.95429 0 0 8.95429 0 20C0 31.0458 8.95429 40 20 40ZM26.1503 25.86C27.3066 25.129 28 23.9059 28 22.5969C28 20.778 26.672 19.1962 24.7885 18.7717L19.1451 17.371C18.6131 17.2511 18.4856 16.5951 18.9383 16.3065L23.3349 13.5021C25.3814 12.1967 25.9135 9.58069 24.5234 7.65898C24.3496 7.41874 24.0014 7.35629 23.7455 7.51949L13.8134 14.2191C12.6791 14.9426 12 16.1466 12 17.4341C12 19.2314 13.312 20.794 15.1731 21.2135L20.9084 22.635C21.4416 22.7552 21.568 23.4134 21.1131 23.7009L16.6841 26.5007C14.6319 27.7981 14.0883 30.4121 15.4699 32.3393C15.6426 32.5801 15.9906 32.644 16.2471 32.4817L26.1503 25.86Z" fill="var(--wp--preset--color--heading)"></path></g></g><defs><clippath id="clip0_601_10810"><rect width="40" height="40" fill="white"></rect></clippath></defs></svg></figure></a>
+
+
+
+<div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-6a682e4e wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--xx-small);padding-bottom:var(--wp--preset--spacing--medium)"><div style="font-style:normal;font-weight:500" class="taxonomy-category is-style-swt-post-terms-pill wp-block-post-terms has-x-small-font-size"><a href="https://hostingguider.com/topics/dedicated/" rel="tag">Dedicated</a></div>
+
+<h4 style="margin-top:var(--wp--preset--spacing--xx-small);margin-bottom:var(--wp--preset--spacing--xx-small);" class="wp-block-post-title has-text-color has-heading-color"><a href="https://hostingguider.com/blog/test/" target="_self" >test</a></h4>
+
+
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-9dcc9912 wp-block-group-is-layout-flex"><div class="wp-block-post-author has-x-small-font-size"><div class="wp-block-post-author__content"><p class="wp-block-post-author__name">Editorial Staff</p></div></div>
+
+
+<p class="has-x-small-font-size">·</p>
+
+
+<div class="wp-block-post-date has-x-small-font-size"><time datetime="2026-01-14T12:47:07+00:00">Jan 14, 2026</time></div></div>
+</div>
+
+</li><li class="wp-block-post post-299 post type-post status-publish format-standard hentry category-dedicated">
+<a href="https://hostingguider.com/blog/liquid-web/"><figure class="wp-block-image is-placeholder" style="height:400px;"><svg width="30" height="30" viewbox="0 0 40 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icon-6979ddd797eab" data-icon="placeholder" class=" wp-block-image__placeholder-icon"><title id="icon-6979ddd797eab">Placeholder Icon</title>
+<g opacity="0.2" clip-path="url(#clip0_601_10810)" id="mask0_601_10810" style="mask-type:luminance" maskunits="userSpaceOnUse" x="0" y="0" width="40" height="40"><path d="M40 0H0V40H40V0Z" fill="var(--wp--preset--color--surface)"></path><g mask="url(#mask0_601_10810)"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 40C31.0458 40 40 31.0458 40 20C40 8.95429 31.0458 0 20 0C8.95429 0 0 8.95429 0 20C0 31.0458 8.95429 40 20 40ZM26.1503 25.86C27.3066 25.129 28 23.9059 28 22.5969C28 20.778 26.672 19.1962 24.7885 18.7717L19.1451 17.371C18.6131 17.2511 18.4856 16.5951 18.9383 16.3065L23.3349 13.5021C25.3814 12.1967 25.9135 9.58069 24.5234 7.65898C24.3496 7.41874 24.0014 7.35629 23.7455 7.51949L13.8134 14.2191C12.6791 14.9426 12 16.1466 12 17.4341C12 19.2314 13.312 20.794 15.1731 21.2135L20.9084 22.635C21.4416 22.7552 21.568 23.4134 21.1131 23.7009L16.6841 26.5007C14.6319 27.7981 14.0883 30.4121 15.4699 32.3393C15.6426 32.5801 15.9906 32.644 16.2471 32.4817L26.1503 25.86Z" fill="var(--wp--preset--color--heading)"></path></g></g><defs><clippath id="clip0_601_10810"><rect width="40" height="40" fill="white"></rect></clippath></defs></svg></figure></a>
+
+
+
+<div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-6a682e4e wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--xx-small);padding-bottom:var(--wp--preset--spacing--medium)"><div style="font-style:normal;font-weight:500" class="taxonomy-category is-style-swt-post-terms-pill wp-block-post-terms has-x-small-font-size"><a href="https://hostingguider.com/topics/dedicated/" rel="tag">Dedicated</a></div>
+
+<h4 style="margin-top:var(--wp--preset--spacing--xx-small);margin-bottom:var(--wp--preset--spacing--xx-small);" class="wp-block-post-title has-text-color has-heading-color"><a href="https://hostingguider.com/blog/liquid-web/" target="_self" >Liquid Web</a></h4>
+
+
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-9dcc9912 wp-block-group-is-layout-flex"><div class="wp-block-post-author has-x-small-font-size"><div class="wp-block-post-author__content"><p class="wp-block-post-author__name">Editorial Staff</p></div></div>
+
+
+<p class="has-x-small-font-size">·</p>
+
+
+<div class="wp-block-post-date has-x-small-font-size"><time datetime="2026-01-14T10:09:03+00:00">Jan 14, 2026</time></div></div>
+</div>
+
+</li><li class="wp-block-post post-291 post type-post status-publish format-standard hentry category-dedicated">
+<a href="https://hostingguider.com/blog/reviews/"><figure class="wp-block-image is-placeholder" style="height:400px;"><svg width="30" height="30" viewbox="0 0 40 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icon-6979ddd798b00" data-icon="placeholder" class=" wp-block-image__placeholder-icon"><title id="icon-6979ddd798b00">Placeholder Icon</title>
+<g opacity="0.2" clip-path="url(#clip0_601_10810)" id="mask0_601_10810" style="mask-type:luminance" maskunits="userSpaceOnUse" x="0" y="0" width="40" height="40"><path d="M40 0H0V40H40V0Z" fill="var(--wp--preset--color--surface)"></path><g mask="url(#mask0_601_10810)"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 40C31.0458 40 40 31.0458 40 20C40 8.95429 31.0458 0 20 0C8.95429 0 0 8.95429 0 20C0 31.0458 8.95429 40 20 40ZM26.1503 25.86C27.3066 25.129 28 23.9059 28 22.5969C28 20.778 26.672 19.1962 24.7885 18.7717L19.1451 17.371C18.6131 17.2511 18.4856 16.5951 18.9383 16.3065L23.3349 13.5021C25.3814 12.1967 25.9135 9.58069 24.5234 7.65898C24.3496 7.41874 24.0014 7.35629 23.7455 7.51949L13.8134 14.2191C12.6791 14.9426 12 16.1466 12 17.4341C12 19.2314 13.312 20.794 15.1731 21.2135L20.9084 22.635C21.4416 22.7552 21.568 23.4134 21.1131 23.7009L16.6841 26.5007C14.6319 27.7981 14.0883 30.4121 15.4699 32.3393C15.6426 32.5801 15.9906 32.644 16.2471 32.4817L26.1503 25.86Z" fill="var(--wp--preset--color--heading)"></path></g></g><defs><clippath id="clip0_601_10810"><rect width="40" height="40" fill="white"></rect></clippath></defs></svg></figure></a>
+
+
+
+<div class="wp-block-group is-vertical is-layout-flex wp-container-core-group-is-layout-6a682e4e wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--xx-small);padding-bottom:var(--wp--preset--spacing--medium)"><div style="font-style:normal;font-weight:500" class="taxonomy-category is-style-swt-post-terms-pill wp-block-post-terms has-x-small-font-size"><a href="https://hostingguider.com/topics/dedicated/" rel="tag">Dedicated</a></div>
+
+<h4 style="margin-top:var(--wp--preset--spacing--xx-small);margin-bottom:var(--wp--preset--spacing--xx-small);" class="wp-block-post-title has-text-color has-heading-color"><a href="https://hostingguider.com/blog/reviews/" target="_self" >Reviews</a></h4>
+
+
+<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-is-layout-9dcc9912 wp-block-group-is-layout-flex"><div class="wp-block-post-author has-x-small-font-size"><div class="wp-block-post-author__content"><p class="wp-block-post-author__name">Ranti Dev</p></div></div>
+
+
+<p class="has-x-small-font-size">·</p>
+
+
+<div class="wp-block-post-date has-x-small-font-size"><time datetime="2026-01-13T16:41:17+00:00">Jan 13, 2026</time></div></div>
+</div>
+
+</li></ul>
+
+</div>
+</div>
+
+
+
+<div class="wp-block-group has-background is-layout-flow wp-block-group-is-layout-flow" style="background:linear-gradient(172deg,rgb(23,33,51) -1%,rgb(47,64,84) 100%);padding-top:var(--wp--preset--spacing--x-large);padding-right:var(--wp--preset--spacing--x-large);padding-bottom:var(--wp--preset--spacing--x-large);padding-left:var(--wp--preset--spacing--x-large)">
+<h2 class="wp-block-heading has-text-align-center has-white-color has-text-color has-custom-2-font-size" style="letter-spacing:-1px"><strong>Ready to Launch Your Website?</strong></h2>
+
+
+
+<p class="has-text-align-center has-white-color has-text-color">Get step‑by‑step guides and expert tips to choose, set up, and optimize your hosting.</p>
+
+
+
+<div class="wp-block-buttons is-content-justification-center is-layout-flex wp-container-core-buttons-is-layout-a89b3969 wp-block-buttons-is-layout-flex">
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" style="border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-left-radius:8px;border-bottom-right-radius:8px">Browse Hosting Guides</a></div>
+</div>
+</div>
+
+
+<footer class="wp-block-template-part">
+<div class="wp-block-group has-global-padding is-layout-constrained wp-container-core-group-is-layout-1d38c0c0 wp-block-group-is-layout-constrained" style="padding-top:var(--wp--preset--spacing--x-large);padding-bottom:var(--wp--preset--spacing--medium)">
+<div class="wp-block-columns alignwide is-layout-flex wp-container-core-columns-is-layout-f619a8c7 wp-block-columns-is-layout-flex">
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="padding-bottom:var(--wp--preset--spacing--xx-small);flex-basis:25%">
+<figure class="wp-block-image size-full is-resized swt-duotone-secondary site-logo-img"><img loading="lazy" decoding="async" width="400" height="400" src="https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2.png" alt="" class="wp-image-105" style="width:60px" srcset="https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2.png 400w, https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2-300x300.png 300w, https://hostingguider.com/wp-content/uploads/2025/12/Gemini_Generated_Image_4bfxnl4bfxnl4bfx-Photoroom-2-150x150.png 150w" sizes="auto, (max-width: 400px) 100vw, 400px" /></figure>
+
+
+
+<p class="has-small-font-size" style="padding-right:var(--wp--preset--spacing--medium)">Your trusted source for expert hosting reviews, tutorials, and guides designed to help you make informed decisions.</p>
+
+
+
+<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only is-layout-flex wp-container-core-social-links-is-layout-5f86147d wp-block-social-links-is-layout-flex"><li style="color:var(--wp--preset--color--heading);" class="wp-social-link wp-social-link-facebook has-heading-color wp-block-social-link"><a rel="noopener nofollow" target="_blank" href="#" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M12 2C6.5 2 2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7C18.3 21.1 22 17 22 12c0-5.5-4.5-10-10-10z"></path></svg><span class="wp-block-social-link-label screen-reader-text">Facebook</span></a></li>
+
+<li style="color:var(--wp--preset--color--heading);" class="wp-social-link wp-social-link-twitter has-heading-color wp-block-social-link"><a rel="noopener nofollow" target="_blank" href="#" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M22.23,5.924c-0.736,0.326-1.527,0.547-2.357,0.646c0.847-0.508,1.498-1.312,1.804-2.27 c-0.793,0.47-1.671,0.812-2.606,0.996C18.324,4.498,17.257,4,16.077,4c-2.266,0-4.103,1.837-4.103,4.103 c0,0.322,0.036,0.635,0.106,0.935C8.67,8.867,5.647,7.234,3.623,4.751C3.27,5.357,3.067,6.062,3.067,6.814 c0,1.424,0.724,2.679,1.825,3.415c-0.673-0.021-1.305-0.206-1.859-0.513c0,0.017,0,0.034,0,0.052c0,1.988,1.414,3.647,3.292,4.023 c-0.344,0.094-0.707,0.144-1.081,0.144c-0.264,0-0.521-0.026-0.772-0.074c0.522,1.63,2.038,2.816,3.833,2.85 c-1.404,1.1-3.174,1.756-5.096,1.756c-0.331,0-0.658-0.019-0.979-0.057c1.816,1.164,3.973,1.843,6.29,1.843 c7.547,0,11.675-6.252,11.675-11.675c0-0.178-0.004-0.355-0.012-0.531C20.985,7.47,21.68,6.747,22.23,5.924z"></path></svg><span class="wp-block-social-link-label screen-reader-text">Twitter</span></a></li>
+
+<li style="color:var(--wp--preset--color--heading);" class="wp-social-link wp-social-link-youtube has-heading-color wp-block-social-link"><a rel="noopener nofollow" target="_blank" href="#" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M21.8,8.001c0,0-0.195-1.378-0.795-1.985c-0.76-0.797-1.613-0.801-2.004-0.847c-2.799-0.202-6.997-0.202-6.997-0.202 h-0.009c0,0-4.198,0-6.997,0.202C4.608,5.216,3.756,5.22,2.995,6.016C2.395,6.623,2.2,8.001,2.2,8.001S2,9.62,2,11.238v1.517 c0,1.618,0.2,3.237,0.2,3.237s0.195,1.378,0.795,1.985c0.761,0.797,1.76,0.771,2.205,0.855c1.6,0.153,6.8,0.201,6.8,0.201 s4.203-0.006,7.001-0.209c0.391-0.047,1.243-0.051,2.004-0.847c0.6-0.607,0.795-1.985,0.795-1.985s0.2-1.618,0.2-3.237v-1.517 C22,9.62,21.8,8.001,21.8,8.001z M9.935,14.594l-0.001-5.62l5.404,2.82L9.935,14.594z"></path></svg><span class="wp-block-social-link-label screen-reader-text">YouTube</span></a></li>
+
+<li style="color:var(--wp--preset--color--heading);" class="wp-social-link wp-social-link-linkedin has-heading-color wp-block-social-link"><a rel="noopener nofollow" target="_blank" href="#" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M19.7,3H4.3C3.582,3,3,3.582,3,4.3v15.4C3,20.418,3.582,21,4.3,21h15.4c0.718,0,1.3-0.582,1.3-1.3V4.3 C21,3.582,20.418,3,19.7,3z M8.339,18.338H5.667v-8.59h2.672V18.338z M7.004,8.574c-0.857,0-1.549-0.694-1.549-1.548 c0-0.855,0.691-1.548,1.549-1.548c0.854,0,1.547,0.694,1.547,1.548C8.551,7.881,7.858,8.574,7.004,8.574z M18.339,18.338h-2.669 v-4.177c0-0.996-0.017-2.278-1.387-2.278c-1.389,0-1.601,1.086-1.601,2.206v4.249h-2.667v-8.59h2.559v1.174h0.037 c0.356-0.675,1.227-1.387,2.526-1.387c2.703,0,3.203,1.779,3.203,4.092V18.338z"></path></svg><span class="wp-block-social-link-label screen-reader-text">LinkedIn</span></a></li></ul>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+<p class="has-heading-color has-text-color has-x-small-font-size" style="font-style:normal;font-weight:500;letter-spacing:1px;text-transform:uppercase">Hosting</p>
+
+
+<ul class="wp-block-categories-list is-style-swt-categories-minimal wp-block-categories has-custom-6-font-size">	<li class="cat-item cat-item-37"><a href="https://hostingguider.com/topics/cloud-hosting/">Cloud Hosting</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://hostingguider.com/topics/dedicated/">Dedicated</a>
+</li>
+	<li class="cat-item cat-item-39"><a href="https://hostingguider.com/topics/performance/">Performance</a>
+</li>
+	<li class="cat-item cat-item-38"><a href="https://hostingguider.com/topics/security/">Security</a>
+</li>
+	<li class="cat-item cat-item-36"><a href="https://hostingguider.com/topics/vps-hosting/">VPS Hosting</a>
+</li>
+	<li class="cat-item cat-item-35"><a href="https://hostingguider.com/topics/web-hosting/">Web Hosting</a>
+</li>
+	<li class="cat-item cat-item-40"><a href="https://hostingguider.com/topics/wordpress/">WordPress</a>
+</li>
+</ul></div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="padding-bottom:var(--wp--preset--spacing--xx-small);flex-basis:50%">
+<div class="wp-block-columns is-not-stacked-on-mobile is-layout-flex wp-container-core-columns-is-layout-e0dca8c8 wp-block-columns-is-layout-flex">
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+<p class="has-heading-color has-text-color has-x-small-font-size" style="font-style:normal;font-weight:500;letter-spacing:1px;text-transform:uppercase">Resources</p>
+
+
+<nav class="items-justified-left is-vertical wp-block-navigation is-content-justification-left is-layout-flex wp-container-core-navigation-is-layout-5b7fc627 wp-block-navigation-is-layout-flex" aria-label="Footer menu"><ul class="wp-block-navigation__container">
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Blog</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Tutorials</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Reviews</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="#"><span class="wp-block-navigation-item__label">Comparisons</span></a></li>
+</ul></nav>
+</div>
+
+
+
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow">
+<p class="has-heading-color has-text-color has-x-small-font-size" style="font-style:normal;font-weight:500;letter-spacing:1px;text-transform:uppercase">Company</p>
+
+
+<nav class="items-justified-left is-vertical wp-block-navigation is-content-justification-left is-layout-flex wp-container-core-navigation-is-layout-5b7fc627 wp-block-navigation-is-layout-flex" aria-label="Footer menu 2"><ul class="wp-block-navigation__container">
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/about-us/"><span class="wp-block-navigation-item__label">About Us</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/contact/"><span class="wp-block-navigation-item__label">Contact Us</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/privacy-policy/"><span class="wp-block-navigation-item__label">Privacy Policy</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/terms-of-service/"><span class="wp-block-navigation-item__label">Terms of Service</span></a></li>
+<li class=" wp-block-navigation-item wp-block-navigation-link"><a class="wp-block-navigation-item__content" href="https://hostingguider.com/partner-with-us/"><span class="wp-block-navigation-item__label">Partner With Us</span></a></li>
+</ul></nav>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div class="wp-block-group alignwide is-content-justification-center is-nowrap is-layout-flex wp-container-core-group-is-layout-49f5674e wp-block-group-is-layout-flex">
+<p class="has-text-align-center has-x-small-font-size">© 2025 ·</p>
+
+
+<h1 style="font-style:normal;font-weight:400;" class="wp-block-site-title has-x-small-font-size"><a href="https://hostingguider.com" target="_self" rel="home" aria-current="page">HostingGuider</a></h1>
+
+
+<p class="has-text-align-center has-x-small-font-size">· All rights reserved</p>
+</div>
+</div>
+</footer></div>
+<script type="module" src="https://hostingguider.com/wp-includes/js/dist/script-modules/block-library/navigation/view.min.js?ver=b0f909c3ec791c383210" id="@wordpress/block-library/navigation/view-js-module" fetchpriority="low" data-wp-router-options="{&quot;loadOnClientNavigation&quot;:true}"></script>
+<script>document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.custom-main-header');
+    if (!header) return; 
+
+    const closeMenu = () => {
+        const closeBtn = header.querySelector('.wp-block-navigation__responsive-container-close');
+        const isOpen = header.querySelector('.wp-block-navigation__responsive-container.is-menu-open');
+        if (isOpen && closeBtn) {
+            closeBtn.click();
+            document.body.classList.remove('has-modal-open');
+        }
+    };
+
+    // --- SUBMENU TOGGLE FEATURE ---
+    header.addEventListener('click', function(e) {
+        // Look for the parent item that contains a submenu
+        const parentItem = e.target.closest('.has-child');
+        if (parentItem) {
+            const submenu = parentItem.querySelector('.wp-block-navigation__submenu-container');
+            
+            // Check if the actual link was clicked and the submenu is currently hidden
+            if (submenu && window.getComputedStyle(submenu).display === 'none') {
+                e.preventDefault(); // Stop page jump
+                e.stopPropagation();
+                submenu.style.setProperty('display', 'block', 'important');
+            }
+        }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(event) {
+        const menuContainer = header.querySelector('.wp-block-navigation__responsive-container.is-menu-open');
+        if (!menuContainer) return;
+        const toggleButton = header.querySelector('.wp-block-navigation__responsive-container-open');
+        if (!menuContainer.contains(event.target) && (!toggleButton || !toggleButton.contains(event.target))) {
+            closeMenu();
+        }
+    });
+
+    window.addEventListener('scroll', closeMenu, { passive: true });
+});</script>		<script>
+			var wpcode_admin_bar_info = [{"label":"Run Everywhere (2)","location_id":"everywhere","snippets":[{"id":388,"title":"Rating System PHP","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=388"},{"id":75,"title":"Load Font Awesome","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=75"}],"href":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode&#038;location=everywhere&#038;filter_action=filter","count":2},{"label":"Site Wide Header (6)","location_id":"site_wide_header","snippets":[{"id":387,"title":"Rating system CSS","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=387"},{"id":224,"title":"Header CSS","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=224"},{"id":82,"title":"Category article count bracket remove","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=82"},{"id":78,"title":"Icon for Categories","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=78"},{"id":76,"title":"Category CSS","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=76"},{"id":23,"title":"Homepage CSS","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=23"}],"href":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode&#038;location=site_wide_header&#038;filter_action=filter","count":6},{"label":"Site Wide Footer (1)","location_id":"site_wide_footer","snippets":[{"id":230,"title":"Header JS","edit_link":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode-snippet-manager&snippet_id=230"}],"href":"https:\/\/hostingguider.com\/wp-admin\/admin.php?page=wpcode&#038;location=site_wide_footer&#038;filter_action=filter","count":1}];
+			var wpcode_admin_bar_info_count = 9;
+		</script>
+		<link rel='stylesheet' id='aioseo/css/css/Button.2bf1deff.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Button.2bf1deff.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/Tabs.efb9a8da.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Tabs.efb9a8da.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/Index.98ff9b0b.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Index.98ff9b0b.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/FacebookPreview.a19706d8.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/FacebookPreview.a19706d8.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/GoogleSearchPreview.49ea6dbd.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/GoogleSearchPreview.49ea6dbd.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/Index.74bb20a6.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Index.74bb20a6.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/TwitterPreview.171ce642.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/TwitterPreview.171ce642.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/ProBadge.6500bcec.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/ProBadge.6500bcec.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/seo-preview.900b96de.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/seo-preview.900b96de.css?ver=4.9.3' media='all' />
+<link rel='stylesheet' id='aioseo/css/css/app.8d402f56.css-css' href='https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/app.8d402f56.css?ver=4.9.3' media='all' />
+<script src="https://hostingguider.com/wp-content/plugins/insert-headers-and-footers/build/admin-bar.js?ver=c95624a69c80301272a0" id="wpcode-admin-bar-js-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/hoverintent-js.min.js?ver=2.2.1" id="hoverintent-js-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/admin-bar.min.js?ver=6.9" id="admin-bar-js"></script>
+<script id="wp-block-template-skip-link-js-after">
+	( function() {
+		var skipLinkTarget = document.querySelector( 'main' ),
+			sibling,
+			skipLinkTargetID,
+			skipLink;
+
+		// Early exit if a skip-link target can't be located.
+		if ( ! skipLinkTarget ) {
+			return;
+		}
+
+		/*
+		 * Get the site wrapper.
+		 * The skip-link will be injected in the beginning of it.
+		 */
+		sibling = document.querySelector( '.wp-site-blocks' );
+
+		// Early exit if the root element was not found.
+		if ( ! sibling ) {
+			return;
+		}
+
+		// Get the skip-link target's ID, and generate one if it doesn't exist.
+		skipLinkTargetID = skipLinkTarget.id;
+		if ( ! skipLinkTargetID ) {
+			skipLinkTargetID = 'wp--skip-link--target';
+			skipLinkTarget.id = skipLinkTargetID;
+		}
+
+		// Create the skip link.
+		skipLink = document.createElement( 'a' );
+		skipLink.classList.add( 'skip-link', 'screen-reader-text' );
+		skipLink.id = 'wp-skip-link';
+		skipLink.href = '#' + skipLinkTargetID;
+		skipLink.innerText = 'Skip to content';
+
+		// Inject the skip link.
+		sibling.parentElement.insertBefore( skipLink, sibling );
+	}() );
+	
+//# sourceURL=wp-block-template-skip-link-js-after
+</script>
+<script id="betterlinks-app-js-extra">
+var betterLinksApp = {"betterlinks_nonce":"05236d0220","ajaxurl":"https://hostingguider.com/wp-admin/admin-ajax.php","site_url":"https://hostingguider.com","rest_url":"https://hostingguider.com/wp-json/","nonce":"cc2a9e64ab","betterlinkspro_version":null};
+//# sourceURL=betterlinks-app-js-extra
+</script>
+<script src="https://hostingguider.com/wp-content/plugins/betterlinks/assets/js/betterlinks.app.core.min.js?ver=82f05e9a0c750678d3cc" id="betterlinks-app-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/dist/vendor/react.min.js?ver=18.3.1.1" id="react-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/dist/vendor/react-dom.min.js?ver=18.3.1.1" id="react-dom-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/dist/escape-html.min.js?ver=6561a406d2d232a6fbd2" id="wp-escape-html-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/dist/element.min.js?ver=6a582b0c827fa25df3dd" id="wp-element-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/underscore.min.js?ver=1.13.7" id="underscore-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/backbone.min.js?ver=1.6.0" id="backbone-js"></script>
+<script id="wp-api-request-js-extra">
+var wpApiSettings = {"root":"https://hostingguider.com/wp-json/","nonce":"cc2a9e64ab","versionString":"wp/v2/"};
+//# sourceURL=wp-api-request-js-extra
+</script>
+<script src="https://hostingguider.com/wp-includes/js/api-request.min.js?ver=6.9" id="wp-api-request-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/wp-api.min.js?ver=6.9" id="wp-api-js"></script>
+<script id="wpc-app-js-extra">
+var wpcSettings = {"apiUrl":"https://hostingguider.com/wp-json/wpc/v1/items","nonce":"cc2a9e64ab","colors":{"primary":"#6366f1","accent":"#f43f5e","secondary":"#eef2ff","featured":"#6366f1","banner":"#4f46e5","hoverButton":"#4f46e5","prosBg":"#f0fdf4","prosText":"#166534","consBg":"#fef2f2","consText":"#991b1b","couponBg":"#fef3c7","couponText":"#92400e","couponHover":"#fde68a","copied":"#10b981","stars":"#fbbf24","usecaseIcon":"#6366f1","tick":"#10b981","cross":"#ef4444","btnText":"#ffffff","textBody":"#334155","textHeading":"#0f172a","textMuted":"#64748b","textLink":"#6366f1"},"typography":{"h1":"","h2":"","h3":"","h4":"","h5":"","h6":"","subheading":"","body":"","small":"","btn":"","price":"","code":""},"texts":{"viewDetails":"","visit":"","compareAlternatives":"","compareNow":"","reviews":"","backToReviews":"","filters":"","searchPlaceholder":"","sortDefault":"","categoryLabel":"","featuresLabel":"","itemsCount":"","selected":"","clearAll":"","about":"","preview":"","selectPlan":"","pricingHeader":"","pricingSub":"","tablePrice":"","tableFeatures":"","close":"","noPlans":"","emptyPrice":""},"visuals":{"wpc_pt_header_bg":"#eef2ff","wpc_pt_header_text":"#3730a3","wpc_pt_btn_bg":"#4f46e5","wpc_pt_btn_text":"#ffffff","wpc_pt_btn_pos_table":"after_price","wpc_pt_btn_pos_popup":"after_price"},"showPlanButtons":"1","showFooterButtonGlobal":"1","openNewTab":"1","primary_color":"#6366f1","filterStyle":"top","searchType":"text","target_details":"_blank","target_direct":"_blank","target_pricing":"_blank","compareFeatures":["price","rating","tag_109","tag_110","tag_111","tag_112","tag_113","tag_114","tag_115","tag_116","tag_117","tag_118","tag_119","tag_120","tag_121","tag_122","pros","cons"],"compareTagTerms":[{"id":118,"key":"tag_118","name":"24/7 Support","slug":"24-7-support"},{"id":129,"key":"tag_129","name":"2FA","slug":"2fa"},{"id":109,"key":"tag_109","name":"99.9% Uptime","slug":"99-9-uptime"},{"id":117,"key":"tag_117","name":"Backups","slug":"backups"},{"id":120,"key":"tag_120","name":"Caching","slug":"caching"},{"id":123,"key":"tag_123","name":"CDN","slug":"cdn"},{"id":141,"key":"tag_141","name":"Cloud Linux","slug":"cloud-linux"},{"id":140,"key":"tag_140","name":"cPanel","slug":"cpanel"},{"id":138,"key":"tag_138","name":"Daily Backups","slug":"daily-backups"},{"id":116,"key":"tag_116","name":"DDoS Protection","slug":"ddos-protection"},{"id":139,"key":"tag_139","name":"Discounted Hosting","slug":"discounted-hosting"},{"id":121,"key":"tag_121","name":"Firewall","slug":"firewall"},{"id":111,"key":"tag_111","name":"Free Domain","slug":"free-domain"},{"id":115,"key":"tag_115","name":"Free Migration","slug":"free-migration"},{"id":110,"key":"tag_110","name":"Free SSL","slug":"free-ssl"},{"id":126,"key":"tag_126","name":"FTP","slug":"ftp"},{"id":137,"key":"tag_137","name":"Malware Protection","slug":"malware-protection"},{"id":124,"key":"tag_124","name":"Malware Scanning","slug":"malware-scanning"},{"id":119,"key":"tag_119","name":"Money-Back Guarantee","slug":"money-back-guarantee"},{"id":112,"key":"tag_112","name":"NVMe SSD","slug":"nvme-ssd"},{"id":127,"key":"tag_127","name":"Object Cache","slug":"object-cache"},{"id":113,"key":"tag_113","name":"One-Click Installer","slug":"one-click-installer"},{"id":125,"key":"tag_125","name":"SSH","slug":"ssh"},{"id":122,"key":"tag_122","name":"Staging Environment","slug":"staging-environment"},{"id":114,"key":"tag_114","name":"Unlimited Bandwidth","slug":"unlimited-bandwidth"},{"id":128,"key":"tag_128","name":"WAF","slug":"waf"}]};
+var ecommerceGuiderSettings = {"apiUrl":"https://hostingguider.com/wp-json/wpc/v1/items","nonce":"cc2a9e64ab","colors":{"primary":"#6366f1","accent":"#f43f5e","secondary":"#eef2ff","featured":"#6366f1","banner":"#4f46e5","hoverButton":"#4f46e5","prosBg":"#f0fdf4","prosText":"#166534","consBg":"#fef2f2","consText":"#991b1b","couponBg":"#fef3c7","couponText":"#92400e","couponHover":"#fde68a","copied":"#10b981","stars":"#fbbf24","usecaseIcon":"#6366f1","tick":"#10b981","cross":"#ef4444","btnText":"#ffffff","textBody":"#334155","textHeading":"#0f172a","textMuted":"#64748b","textLink":"#6366f1"},"typography":{"h1":"","h2":"","h3":"","h4":"","h5":"","h6":"","subheading":"","body":"","small":"","btn":"","price":"","code":""},"texts":{"viewDetails":"","visit":"","compareAlternatives":"","compareNow":"","reviews":"","backToReviews":"","filters":"","searchPlaceholder":"","sortDefault":"","categoryLabel":"","featuresLabel":"","itemsCount":"","selected":"","clearAll":"","about":"","preview":"","selectPlan":"","pricingHeader":"","pricingSub":"","tablePrice":"","tableFeatures":"","close":"","noPlans":"","emptyPrice":""},"visuals":{"wpc_pt_header_bg":"#eef2ff","wpc_pt_header_text":"#3730a3","wpc_pt_btn_bg":"#4f46e5","wpc_pt_btn_text":"#ffffff","wpc_pt_btn_pos_table":"after_price","wpc_pt_btn_pos_popup":"after_price"},"showPlanButtons":"1","showFooterButtonGlobal":"1","openNewTab":"1","primary_color":"#6366f1","filterStyle":"top","searchType":"text","target_details":"_blank","target_direct":"_blank","target_pricing":"_blank","compareFeatures":["price","rating","tag_109","tag_110","tag_111","tag_112","tag_113","tag_114","tag_115","tag_116","tag_117","tag_118","tag_119","tag_120","tag_121","tag_122","pros","cons"],"compareTagTerms":[{"id":118,"key":"tag_118","name":"24/7 Support","slug":"24-7-support"},{"id":129,"key":"tag_129","name":"2FA","slug":"2fa"},{"id":109,"key":"tag_109","name":"99.9% Uptime","slug":"99-9-uptime"},{"id":117,"key":"tag_117","name":"Backups","slug":"backups"},{"id":120,"key":"tag_120","name":"Caching","slug":"caching"},{"id":123,"key":"tag_123","name":"CDN","slug":"cdn"},{"id":141,"key":"tag_141","name":"Cloud Linux","slug":"cloud-linux"},{"id":140,"key":"tag_140","name":"cPanel","slug":"cpanel"},{"id":138,"key":"tag_138","name":"Daily Backups","slug":"daily-backups"},{"id":116,"key":"tag_116","name":"DDoS Protection","slug":"ddos-protection"},{"id":139,"key":"tag_139","name":"Discounted Hosting","slug":"discounted-hosting"},{"id":121,"key":"tag_121","name":"Firewall","slug":"firewall"},{"id":111,"key":"tag_111","name":"Free Domain","slug":"free-domain"},{"id":115,"key":"tag_115","name":"Free Migration","slug":"free-migration"},{"id":110,"key":"tag_110","name":"Free SSL","slug":"free-ssl"},{"id":126,"key":"tag_126","name":"FTP","slug":"ftp"},{"id":137,"key":"tag_137","name":"Malware Protection","slug":"malware-protection"},{"id":124,"key":"tag_124","name":"Malware Scanning","slug":"malware-scanning"},{"id":119,"key":"tag_119","name":"Money-Back Guarantee","slug":"money-back-guarantee"},{"id":112,"key":"tag_112","name":"NVMe SSD","slug":"nvme-ssd"},{"id":127,"key":"tag_127","name":"Object Cache","slug":"object-cache"},{"id":113,"key":"tag_113","name":"One-Click Installer","slug":"one-click-installer"},{"id":125,"key":"tag_125","name":"SSH","slug":"ssh"},{"id":122,"key":"tag_122","name":"Staging Environment","slug":"staging-environment"},{"id":114,"key":"tag_114","name":"Unlimited Bandwidth","slug":"unlimited-bandwidth"},{"id":128,"key":"tag_128","name":"WAF","slug":"waf"}]};
+//# sourceURL=wpc-app-js-extra
+</script>
+<script type="module" src="https://hostingguider.com/wp-content/plugins/ecom-guider-plugin/dist/assets/wp-plugin.js?ver=1.0.3"></script><script src="https://hostingguider.com/wp-includes/js/dist/hooks.min.js?ver=dd5603f07f9220ed27f1" id="wp-hooks-js"></script>
+<script src="https://hostingguider.com/wp-includes/js/dist/i18n.min.js?ver=c26c3dc7bed366793375" id="wp-i18n-js"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script src="https://hostingguider.com/wp-content/themes/spectra-one/assets/js/script.js?ver=1.1.7" id="spectra-one-js"></script>
+<script id="aioseo/js/src/vue/standalone/seo-preview/main.js-js-extra">
+var aioseoSeoPreview = {"editGoogleSnippetUrl":"https://hostingguider.com/wp-admin/admin.php?page=aioseo-search-appearance&aioseo-scroll=home-page-settings#/global-settings","editFacebookSnippetUrl":"https://hostingguider.com/wp-admin/admin.php?page=aioseo-social-networks#/facebook","editTwitterSnippetUrl":"https://hostingguider.com/wp-admin/admin.php?page=aioseo-social-networks#/twitter","editObjectBtnText":"","editObjectUrl":"","keyphrases":"","page_analysis":"","urls":{"home":"https://hostingguider.com","domain":"hostingguider.com","mainSiteUrl":"https://hostingguider.com"},"mainAssetCssQueue":[{"handle":"aioseo/css/css/seo-preview.900b96de.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/seo-preview.900b96de.css"},{"handle":"aioseo/css/css/Button.2bf1deff.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Button.2bf1deff.css"},{"handle":"aioseo/css/css/Tabs.efb9a8da.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Tabs.efb9a8da.css"},{"handle":"aioseo/css/css/Index.98ff9b0b.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Index.98ff9b0b.css"},{"handle":"aioseo/css/css/FacebookPreview.a19706d8.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/FacebookPreview.a19706d8.css"},{"handle":"aioseo/css/css/GoogleSearchPreview.49ea6dbd.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/GoogleSearchPreview.49ea6dbd.css"},{"handle":"aioseo/css/css/Index.74bb20a6.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/Index.74bb20a6.css"},{"handle":"aioseo/css/css/TwitterPreview.171ce642.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/TwitterPreview.171ce642.css"},{"handle":"aioseo/css/css/ProBadge.6500bcec.css","url":"https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/css/ProBadge.6500bcec.css"}],"data":{"isDev":false,"siteName":"HostingGuider","usingPermalinks":true}};
+//# sourceURL=aioseo%2Fjs%2Fsrc%2Fvue%2Fstandalone%2Fseo-preview%2Fmain.js-js-extra
+</script>
+<script type="module" src="https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/seo-preview.94e7e813.js?ver=4.9.3" id="aioseo/js/src/vue/standalone/seo-preview/main.js-js"></script>
+<script id="aioseo/js/src/vue/standalone/app/main.js-js-extra">
+var aioseoTranslations = {"translations":{"":{"domain":"all-in-one-seo-pack","lang":"en_US"}}};
+//# sourceURL=aioseo%2Fjs%2Fsrc%2Fvue%2Fstandalone%2Fapp%2Fmain.js-js-extra
+</script>
+<script type="module" src="https://hostingguider.com/wp-content/plugins/all-in-one-seo-pack/dist/Lite/assets/app.50fbca1c.js?ver=4.9.3" id="aioseo/js/src/vue/standalone/app/main.js-js"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://hostingguider.com/wp-includes/js/wp-emoji-release.min.js?ver=6.9"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=https://hostingguider.com/wp-includes/js/wp-emoji-loader.min.js
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Hostinger","description":"Hostinger offers affordable, high-performance web hosting solutions tailored for beginners and professionals alike. With user-friendly features, 24/7 customer support, and a global network of servers, Hostinger ensures fast website loading times and reliable uptime.","image":"https://hostingguider.com/wp-content/uploads/2026/01/hostinger-logo.webp","review":{"@type":"Review","author":{"@type":"Organization","name":"HostingGuider"},"datePublished":"2026-01-24","reviewRating":{"@type":"Rating","ratingValue":"4.7","bestRating":5,"worstRating":1},"positiveNotes":{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Extremely affordable pricing plans"},{"@type":"ListItem","position":2,"name":"Intuitive and easy-to-use control panel"},{"@type":"ListItem","position":3,"name":"Free SSL certificates included"},{"@type":"ListItem","position":4,"name":"99.9% uptime guarantee"},{"@type":"ListItem","position":5,"name":"Global data centers for faster loading"}]},"negativeNotes":{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"No traditional cPanel, custom hPanel might take time to get used to"},{"@type":"ListItem","position":2,"name":"Limited phone support, mostly chat and tickets"},{"@type":"ListItem","position":3,"name":"Some renewal rates are higher than initial pricing"}]}},"additionalProperty":[{"@type":"PropertyValue","name":"Feature","value":"24/7 Support"},{"@type":"PropertyValue","name":"Feature","value":"2FA"},{"@type":"PropertyValue","name":"Feature","value":"99.9% Uptime"},{"@type":"PropertyValue","name":"Feature","value":"Backups"},{"@type":"PropertyValue","name":"Feature","value":"Caching"},{"@type":"PropertyValue","name":"Feature","value":"CDN"},{"@type":"PropertyValue","name":"Feature","value":"DDoS Protection"},{"@type":"PropertyValue","name":"Feature","value":"Firewall"},{"@type":"PropertyValue","name":"Feature","value":"Free Domain"},{"@type":"PropertyValue","name":"Feature","value":"Free Migration"},{"@type":"PropertyValue","name":"Feature","value":"Free SSL"},{"@type":"PropertyValue","name":"Feature","value":"FTP"},{"@type":"PropertyValue","name":"Feature","value":"Malware Scanning"},{"@type":"PropertyValue","name":"Feature","value":"Money-Back Guarantee"},{"@type":"PropertyValue","name":"Feature","value":"NVMe SSD"},{"@type":"PropertyValue","name":"Feature","value":"Object Cache"},{"@type":"PropertyValue","name":"Feature","value":"One-Click Installer"},{"@type":"PropertyValue","name":"Feature","value":"SSH"},{"@type":"PropertyValue","name":"Feature","value":"Staging Environment"},{"@type":"PropertyValue","name":"Feature","value":"Unlimited Bandwidth"},{"@type":"PropertyValue","name":"Feature","value":"WAF"}]}</script><script data-no-optimize="1">window.lazyLoadOptions=Object.assign({},{threshold:300},window.lazyLoadOptions||{});!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(t="undefined"!=typeof globalThis?globalThis:t||self).LazyLoad=e()}(this,function(){"use strict";function e(){return(e=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var n,a=arguments[e];for(n in a)Object.prototype.hasOwnProperty.call(a,n)&&(t[n]=a[n])}return t}).apply(this,arguments)}function o(t){return e({},at,t)}function l(t,e){return t.getAttribute(gt+e)}function c(t){return l(t,vt)}function s(t,e){return function(t,e,n){e=gt+e;null!==n?t.setAttribute(e,n):t.removeAttribute(e)}(t,vt,e)}function i(t){return s(t,null),0}function r(t){return null===c(t)}function u(t){return c(t)===_t}function d(t,e,n,a){t&&(void 0===a?void 0===n?t(e):t(e,n):t(e,n,a))}function f(t,e){et?t.classList.add(e):t.className+=(t.className?" ":"")+e}function _(t,e){et?t.classList.remove(e):t.className=t.className.replace(new RegExp("(^|\\s+)"+e+"(\\s+|$)")," ").replace(/^\s+/,"").replace(/\s+$/,"")}function g(t){return t.llTempImage}function v(t,e){!e||(e=e._observer)&&e.unobserve(t)}function b(t,e){t&&(t.loadingCount+=e)}function p(t,e){t&&(t.toLoadCount=e)}function n(t){for(var e,n=[],a=0;e=t.children[a];a+=1)"SOURCE"===e.tagName&&n.push(e);return n}function h(t,e){(t=t.parentNode)&&"PICTURE"===t.tagName&&n(t).forEach(e)}function a(t,e){n(t).forEach(e)}function m(t){return!!t[lt]}function E(t){return t[lt]}function I(t){return delete t[lt]}function y(e,t){var n;m(e)||(n={},t.forEach(function(t){n[t]=e.getAttribute(t)}),e[lt]=n)}function L(a,t){var o;m(a)&&(o=E(a),t.forEach(function(t){var e,n;e=a,(t=o[n=t])?e.setAttribute(n,t):e.removeAttribute(n)}))}function k(t,e,n){f(t,e.class_loading),s(t,st),n&&(b(n,1),d(e.callback_loading,t,n))}function A(t,e,n){n&&t.setAttribute(e,n)}function O(t,e){A(t,rt,l(t,e.data_sizes)),A(t,it,l(t,e.data_srcset)),A(t,ot,l(t,e.data_src))}function w(t,e,n){var a=l(t,e.data_bg_multi),o=l(t,e.data_bg_multi_hidpi);(a=nt&&o?o:a)&&(t.style.backgroundImage=a,n=n,f(t=t,(e=e).class_applied),s(t,dt),n&&(e.unobserve_completed&&v(t,e),d(e.callback_applied,t,n)))}function x(t,e){!e||0<e.loadingCount||0<e.toLoadCount||d(t.callback_finish,e)}function M(t,e,n){t.addEventListener(e,n),t.llEvLisnrs[e]=n}function N(t){return!!t.llEvLisnrs}function z(t){if(N(t)){var e,n,a=t.llEvLisnrs;for(e in a){var o=a[e];n=e,o=o,t.removeEventListener(n,o)}delete t.llEvLisnrs}}function C(t,e,n){var a;delete t.llTempImage,b(n,-1),(a=n)&&--a.toLoadCount,_(t,e.class_loading),e.unobserve_completed&&v(t,n)}function R(i,r,c){var l=g(i)||i;N(l)||function(t,e,n){N(t)||(t.llEvLisnrs={});var a="VIDEO"===t.tagName?"loadeddata":"load";M(t,a,e),M(t,"error",n)}(l,function(t){var e,n,a,o;n=r,a=c,o=u(e=i),C(e,n,a),f(e,n.class_loaded),s(e,ut),d(n.callback_loaded,e,a),o||x(n,a),z(l)},function(t){var e,n,a,o;n=r,a=c,o=u(e=i),C(e,n,a),f(e,n.class_error),s(e,ft),d(n.callback_error,e,a),o||x(n,a),z(l)})}function T(t,e,n){var a,o,i,r,c;t.llTempImage=document.createElement("IMG"),R(t,e,n),m(c=t)||(c[lt]={backgroundImage:c.style.backgroundImage}),i=n,r=l(a=t,(o=e).data_bg),c=l(a,o.data_bg_hidpi),(r=nt&&c?c:r)&&(a.style.backgroundImage='url("'.concat(r,'")'),g(a).setAttribute(ot,r),k(a,o,i)),w(t,e,n)}function G(t,e,n){var a;R(t,e,n),a=e,e=n,(t=Et[(n=t).tagName])&&(t(n,a),k(n,a,e))}function D(t,e,n){var a;a=t,(-1<It.indexOf(a.tagName)?G:T)(t,e,n)}function S(t,e,n){var a;t.setAttribute("loading","lazy"),R(t,e,n),a=e,(e=Et[(n=t).tagName])&&e(n,a),s(t,_t)}function V(t){t.removeAttribute(ot),t.removeAttribute(it),t.removeAttribute(rt)}function j(t){h(t,function(t){L(t,mt)}),L(t,mt)}function F(t){var e;(e=yt[t.tagName])?e(t):m(e=t)&&(t=E(e),e.style.backgroundImage=t.backgroundImage)}function P(t,e){var n;F(t),n=e,r(e=t)||u(e)||(_(e,n.class_entered),_(e,n.class_exited),_(e,n.class_applied),_(e,n.class_loading),_(e,n.class_loaded),_(e,n.class_error)),i(t),I(t)}function U(t,e,n,a){var o;n.cancel_on_exit&&(c(t)!==st||"IMG"===t.tagName&&(z(t),h(o=t,function(t){V(t)}),V(o),j(t),_(t,n.class_loading),b(a,-1),i(t),d(n.callback_cancel,t,e,a)))}function $(t,e,n,a){var o,i,r=(i=t,0<=bt.indexOf(c(i)));s(t,"entered"),f(t,n.class_entered),_(t,n.class_exited),o=t,i=a,n.unobserve_entered&&v(o,i),d(n.callback_enter,t,e,a),r||D(t,n,a)}function q(t){return t.use_native&&"loading"in HTMLImageElement.prototype}function H(t,o,i){t.forEach(function(t){return(a=t).isIntersecting||0<a.intersectionRatio?$(t.target,t,o,i):(e=t.target,n=t,a=o,t=i,void(r(e)||(f(e,a.class_exited),U(e,n,a,t),d(a.callback_exit,e,n,t))));var e,n,a})}function B(e,n){var t;tt&&!q(e)&&(n._observer=new IntersectionObserver(function(t){H(t,e,n)},{root:(t=e).container===document?null:t.container,rootMargin:t.thresholds||t.threshold+"px"}))}function J(t){return Array.prototype.slice.call(t)}function K(t){return t.container.querySelectorAll(t.elements_selector)}function Q(t){return c(t)===ft}function W(t,e){return e=t||K(e),J(e).filter(r)}function X(e,t){var n;(n=K(e),J(n).filter(Q)).forEach(function(t){_(t,e.class_error),i(t)}),t.update()}function t(t,e){var n,a,t=o(t);this._settings=t,this.loadingCount=0,B(t,this),n=t,a=this,Y&&window.addEventListener("online",function(){X(n,a)}),this.update(e)}var Y="undefined"!=typeof window,Z=Y&&!("onscroll"in window)||"undefined"!=typeof navigator&&/(gle|ing|ro)bot|crawl|spider/i.test(navigator.userAgent),tt=Y&&"IntersectionObserver"in window,et=Y&&"classList"in document.createElement("p"),nt=Y&&1<window.devicePixelRatio,at={elements_selector:".lazy",container:Z||Y?document:null,threshold:300,thresholds:null,data_src:"src",data_srcset:"srcset",data_sizes:"sizes",data_bg:"bg",data_bg_hidpi:"bg-hidpi",data_bg_multi:"bg-multi",data_bg_multi_hidpi:"bg-multi-hidpi",data_poster:"poster",class_applied:"applied",class_loading:"litespeed-loading",class_loaded:"litespeed-loaded",class_error:"error",class_entered:"entered",class_exited:"exited",unobserve_completed:!0,unobserve_entered:!1,cancel_on_exit:!0,callback_enter:null,callback_exit:null,callback_applied:null,callback_loading:null,callback_loaded:null,callback_error:null,callback_finish:null,callback_cancel:null,use_native:!1},ot="src",it="srcset",rt="sizes",ct="poster",lt="llOriginalAttrs",st="loading",ut="loaded",dt="applied",ft="error",_t="native",gt="data-",vt="ll-status",bt=[st,ut,dt,ft],pt=[ot],ht=[ot,ct],mt=[ot,it,rt],Et={IMG:function(t,e){h(t,function(t){y(t,mt),O(t,e)}),y(t,mt),O(t,e)},IFRAME:function(t,e){y(t,pt),A(t,ot,l(t,e.data_src))},VIDEO:function(t,e){a(t,function(t){y(t,pt),A(t,ot,l(t,e.data_src))}),y(t,ht),A(t,ct,l(t,e.data_poster)),A(t,ot,l(t,e.data_src)),t.load()}},It=["IMG","IFRAME","VIDEO"],yt={IMG:j,IFRAME:function(t){L(t,pt)},VIDEO:function(t){a(t,function(t){L(t,pt)}),L(t,ht),t.load()}},Lt=["IMG","IFRAME","VIDEO"];return t.prototype={update:function(t){var e,n,a,o=this._settings,i=W(t,o);{if(p(this,i.length),!Z&&tt)return q(o)?(e=o,n=this,i.forEach(function(t){-1!==Lt.indexOf(t.tagName)&&S(t,e,n)}),void p(n,0)):(t=this._observer,o=i,t.disconnect(),a=t,void o.forEach(function(t){a.observe(t)}));this.loadAll(i)}},destroy:function(){this._observer&&this._observer.disconnect(),K(this._settings).forEach(function(t){I(t)}),delete this._observer,delete this._settings,delete this.loadingCount,delete this.toLoadCount},loadAll:function(t){var e=this,n=this._settings;W(t,n).forEach(function(t){v(t,e),D(t,n,e)})},restoreAll:function(){var e=this._settings;K(e).forEach(function(t){P(t,e)})}},t.load=function(t,e){e=o(e);D(t,e)},t.resetStatus=function(t){i(t)},t}),function(t,e){"use strict";function n(){e.body.classList.add("litespeed_lazyloaded")}function a(){console.log("[LiteSpeed] Start Lazy Load"),o=new LazyLoad(Object.assign({},t.lazyLoadOptions||{},{elements_selector:"[data-lazyloaded]",callback_finish:n})),i=function(){o.update()},t.MutationObserver&&new MutationObserver(i).observe(e.documentElement,{childList:!0,subtree:!0,attributes:!0})}var o,i;t.addEventListener?t.addEventListener("load",a,!1):t.attachEvent("onload",a)}(window,document);</script></body>
+</html>
+
+
+<!-- Page cached by LiteSpeed Cache 7.7 on 2026-01-28 09:58:47 -->

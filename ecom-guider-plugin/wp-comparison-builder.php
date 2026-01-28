@@ -247,7 +247,6 @@ function wpc_register_scripts() {
         'target_pricing' => get_option( 'wpc_target_pricing', '_blank' ),
         'compareFeatures' => get_option( 'wpc_compare_features', array() ),
         'compareTagTerms' => wpc_get_compare_tag_terms(),
-        'initialData' => $initial_data // <--- INJECTED HERE
     );
 
     // Pass settings to wpcSettings global
@@ -703,6 +702,11 @@ function wpc_register_scripts() {
     if ( ! empty( $border_color ) ) {
         $custom_css .= " .bg-card { border-color: " . esc_attr($border_color) . " !important; }";
     }
+
+    // Minify CSS to reduce source code bloat
+    $custom_css = str_replace(array("\r", "\n", "\t"), '', $custom_css);
+    $custom_css = preg_replace('/\s+/', ' ', $custom_css); // Collapse multiple spaces
+    $custom_css = str_replace([': ', ' {', '{ ', '; '], [':', '{', '{', ';'], $custom_css); // Trim around separators
     
     wp_add_inline_style( 'wpc-styles', $custom_css );
 
@@ -1716,9 +1720,69 @@ function wpc_list_shortcode( $atts ) {
         }
     }
 
+    // Collect unique cats/features for filters (before we slice)
+    $all_filter_cats = [];
+    $all_filter_feats = [];
+    foreach ($items as $item) {
+        if (!empty($item['category'])) {
+            foreach ((array)$item['category'] as $c) $all_filter_cats[$c] = true;
+        }
+        if (!empty($item['features'])) {
+            foreach ((array)$item['features'] as $f) {
+                // If it's a term object (legacy), get name, otherwise it's just a string
+                $f_name = is_array($f) ? ($f['name'] ?? '') : (is_object($f) ? ($f->name ?? '') : $f);
+                if ($f_name && is_string($f_name)) $all_filter_feats[$f_name] = true;
+            }
+        }
+    }
+
+    // ULTARA-AGGRESSIVE STRIPPING FOR INITIAL PAYLOAD
+    // Only keep Name, Logo, Rating, Price, Category, and max 5 Features
+    $visible_count_val = intval($initial_visible) ?: 10;
+    $initial_items_sliced = array_slice($items, 0, $visible_count_val);
+
+    $optimized_initial = array_map( function( $item ) {
+        $clean = [
+            'id'       => $item['id'],
+            'name'     => $item['name'] ?? '',
+            'logo'     => $item['logo'] ?? '',
+            'rating'   => $item['rating'] ?? 0,
+            'price'    => $item['price'] ?? '',
+            'period'   => $item['period'] ?? '',
+            'category' => $item['category'] ?? [],
+            'direct_link' => $item['direct_link'] ?? '',
+            'is_featured' => !empty($item['is_featured']),
+        ];
+
+        // FEATURES (Max 5 string labels)
+        if (!empty($item['features'])) {
+            $f_count = 0;
+            $clean_features = [];
+            foreach ((array)$item['features'] as $f) {
+                if ($f_count >= 5) break;
+                $f_name = is_array($f) ? ($f['name'] ?? '') : (is_object($f) ? ($f->name ?? '') : $f);
+                if ($f_name && is_string($f_name)) {
+                    $clean_features[] = $f_name;
+                    $f_count++;
+                }
+            }
+            $clean['features'] = $clean_features;
+        }
+
+        // BADGES
+        if (!empty($item['badge_text'])) {
+            $clean['badge_text'] = $item['badge_text'];
+            $clean['badge_color'] = $item['badge_color'] ?? '';
+        }
+
+        return $clean;
+    }, $initial_items_sliced );
+
     $config = array(
-        'initialItems' => array_values($items), // Pass the heavily filtered items to frontend
+        'initialItems' => $optimized_initial, // Ultra-stripped
         'ids'      => $sorted_ids,
+        'categories' => array_keys($all_filter_cats),
+        'filterableFeatures' => array_keys($all_filter_feats),
         'style'    => $final_style, // Pass resolved style
         'featured' => !empty($featured_str) ? array_map('trim', explode(',', $featured_str)) : [],
         // Pass Override Features if enabled

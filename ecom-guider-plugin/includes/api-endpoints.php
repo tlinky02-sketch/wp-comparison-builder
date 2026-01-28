@@ -471,8 +471,24 @@ function wpc_fetch_items_data( $specific_ids = array(), $limit = -1 ) {
 /**
  * Get Items (API Callback)
  */
-function wpc_get_items() {
-    return wpc_fetch_items_data();
+function wpc_get_items( $request = null ) {
+    $specific_ids = array();
+
+    if ( $request instanceof WP_REST_Request ) {
+        $ids = $request->get_param('ids');
+        
+        if ( ! empty( $ids ) ) {
+            // Handle both comma-separated string and array
+            if ( is_string( $ids ) ) {
+                $specific_ids = explode( ',', $ids );
+            } elseif ( is_array( $ids ) ) {
+                $specific_ids = $ids;
+            }
+            $specific_ids = array_map( 'intval', $specific_ids );
+        }
+    }
+
+    return wpc_fetch_items_data( $specific_ids );
 }
 
 /**

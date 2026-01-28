@@ -8,10 +8,34 @@ interface PricingPopupProps {
     onClose: () => void;
     showPlanButtons?: boolean;
     config?: any;
+    onHydrate?: (ids: string[]) => Promise<void>;
 }
 
-const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupProps) => {
-    // Product Variants: Local Category State (Handled by PricingTable now)
+const PricingPopup = ({ item, onClose, showPlanButtons, config, onHydrate }: PricingPopupProps) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Hydration Logic
+    useEffect(() => {
+        // Check if we have the "light" version (stripped by PHP optimization)
+        // We know we stripped 'content' and 'product_details' and detailed 'pricing_plans'
+        const isLightVersion = !item.content && (!item.pricing_plans?.[0]?.features && !item.pricing_plans?.[0]?.link);
+
+        if (isLightVersion && onHydrate) {
+            if (!isLoading) {
+                console.log('Hydrating item:', item.id);
+                setIsLoading(true);
+                onHydrate([item.id]).catch(() => setIsLoading(false));
+            }
+        }
+    }, [item.id]); // Run when item ID changes (or mount)
+
+    // Watch for item updates to clear loading
+    useEffect(() => {
+        const isLightVersion = !item.content && (!item.pricing_plans?.[0]?.features);
+        if (!isLightVersion && isLoading) {
+            setIsLoading(false);
+        }
+    }, [item, isLoading]);
 
     // Lock body scroll when popup is open
     useEffect(() => {
@@ -22,24 +46,18 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
     }, []);
 
     // Color Priority Logic:
-    // - Custom List context (config exists): List colors (if set) > Global (item overrides ALWAYS IGNORED)
-    // - Item context (no config): item.design_overrides (if enabled) > Global
-
-    // Detect if we're in a list context (config passed means we're in a list shortcode)
+    // ... (rest of color logic)
     const isListContext = !!config;
     const listHasColors = !!(config?.colors?.primary || config?.colorsOverride?.primary);
     const isItemOverrideEnabled = (item.design_overrides?.enabled === true || item.design_overrides?.enabled === '1');
 
     const getPrimaryColor = () => {
         if (isListContext) {
-            // Custom List context: Use list colors if set, otherwise use global (IGNORE item overrides)
             if (listHasColors) {
                 return config?.colors?.primary || config?.colorsOverride?.primary;
             }
-            // List has no colors, use global
             return (window as any).wpcSettings?.colors?.primary || '#6366f1';
         }
-        // Item context (not in a list): Item overrides (if enabled) > Global
         if (isItemOverrideEnabled && item.design_overrides?.primary) {
             return item.design_overrides.primary;
         }
@@ -50,7 +68,7 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
 
     return (
         <div className="wpc-root fixed inset-0 z-[10000] bg-background/95 backdrop-blur-sm overflow-y-auto p-4 md:p-8 flex items-start justify-center pt-8 md:pt-16">
-            <div className="relative bg-card w-full max-w-6xl rounded-2xl shadow-2xl border border-border p-6 md:p-10 mb-8 flex flex-col">
+            <div className="relative bg-card w-full max-w-6xl rounded-2xl shadow-2xl border border-border p-6 md:p-10 mb-8 flex flex-col min-h-[400px]">
                 <button
                     onClick={onClose}
                     aria-label={(window as any).wpcSettings?.texts?.close || 'Close'}
@@ -73,13 +91,20 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config }: PricingPopupPr
                     <X className="w-6 h-6" />
                 </button>
 
-                <PricingTable
-                    item={item}
-                    showPlanButtons={showPlanButtons}
-                    showHeaders={true}
-                    displayContext="popup"
-                    config={config}
-                />
+                {isLoading ? (
+                    <div className="flex-1 flex flex-col items-center justify-center min-h-[300px]">
+                        <div className="w-12 h-12 border-4 border-muted border-t-primary rounded-full animate-spin mb-4" style={{ borderTopColor: primaryColor }}></div>
+                        <p className="text-muted-foreground animate-pulse">Loading details...</p>
+                    </div>
+                ) : (
+                    <PricingTable
+                        item={item}
+                        showPlanButtons={showPlanButtons}
+                        showHeaders={true}
+                        displayContext="popup"
+                        config={config}
+                    />
+                )}
             </div>
         </div>
     );
