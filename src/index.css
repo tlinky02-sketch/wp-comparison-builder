@@ -16,6 +16,25 @@
   opacity: 1 !important;
 }
 
+/* ============================================
+   WORDPRESS OVERRIDE PROTECTION
+   Prevent WP theme CSS from interfering with card styles
+   IMPORTANT: Only target card elements specifically to avoid breaking layout
+   ============================================ */
+
+/* Reset WordPress preset margins on headings within CARDS only */
+.wpc-card h3,
+.wpc-comparison-wrapper [data-wpc-card] h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Protect card header flexbox alignment specifically */
+.wpc-card .items-center,
+.wpc-comparison-wrapper [data-wpc-card] .items-center {
+  align-items: center !important;
+}
+
 @layer base {
   :root {
     --background: 210 20% 98%;

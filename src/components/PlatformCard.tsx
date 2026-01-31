@@ -228,7 +228,7 @@ const PlatformCard = ({
                 }
             }}
             className={cn(
-                "relative bg-card rounded-2xl p-5 transition-all duration-300 group flex flex-col h-full",
+                "wpc-card relative bg-card rounded-2xl p-5 transition-all duration-300 group flex flex-col h-full",
                 // Pointer only if selectable
                 isComparisonEnabled ? "cursor-pointer" : "cursor-default",
 

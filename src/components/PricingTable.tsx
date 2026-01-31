@@ -429,9 +429,33 @@ const PricingTable = ({
             )}
 
             {/* Billing Cycle Toggle/Tabs (Dynamic for N items) */}
-            {billingCycles.length > 1 && billingStyle !== 'none' && (
+            {billingStyle !== 'none' && billingCycles.length > 0 && (
                 <div className="flex justify-center mb-4 w-full">
-                    {billingStyle === 'tabs' ? (
+                    {billingCycles.length === 1 ? (
+                        /* Single cycle: show as static label */
+                        <div
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/30"
+                            style={{ fontSize: 'var(--wpc-font-size-base)' }}
+                        >
+                            <span className="text-muted-foreground">{(window as any).wpcSettings?.texts?.billingCycle || 'Billing:'}</span>
+                            <span
+                                className="font-medium px-3 py-1 rounded-md"
+                                style={{
+                                    backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
+                                    color: (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff',
+                                }}
+                                ref={(el) => {
+                                    if (!el) return;
+                                    const bg = useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1');
+                                    const btnTextColor = (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff';
+                                    el.style.setProperty('background-color', bg, 'important');
+                                    el.style.setProperty('color', btnTextColor, 'important');
+                                }}
+                            >
+                                {billingCycles[0].label}
+                            </span>
+                        </div>
+                    ) : billingStyle === 'tabs' ? (
                         <div className="flex border-b border-border w-full justify-center gap-x-8" style={{ borderColor: 'var(--pt-border)' }}>
                             {billingCycles.map((cycle: any) => (
                                 <button
