@@ -84,7 +84,7 @@ const StarRating: React.FC<StarRatingProps> = ({
                 })}
             </div>
             {showLabel && (
-                <span className="font-bold text-sm" style={{ color: fillColor }}>{rating}/{maxStars}</span>
+                <span className="font-bold text-sm text-muted-foreground">{rating}/{maxStars}</span>
             )}
         </div>
     );

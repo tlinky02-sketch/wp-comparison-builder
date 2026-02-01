@@ -473,7 +473,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
         return (
           <div className="flex items-center gap-1 justify-center">
             <Star className="w-3 h-3 md:w-4 md:h-4" style={{ fill: starColor, stroke: starColor }} />
-            <span className="text-xs md:text-base" style={{ color: starColor }}>{item.rating}</span>
+            <span className="text-xs md:text-base text-muted-foreground">{item.rating}</span>
           </div>
         );
       case "ssl":
@@ -661,7 +661,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                               className="w-3 h-3 md:w-4 md:h-4"
                               style={{ fill: colors.stars || 'var(--wpc-star-color, #fbbf24)', stroke: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}
                             />
-                            <span className="font-medium text-xs md:text-base" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>{item.rating}</span>
+                            <span className="font-medium text-xs md:text-base text-muted-foreground">{item.rating}</span>
                           </div>
                           {(() => {
                             const priceInfo = getPriceForCycle(item, selectedCycle);
@@ -925,7 +925,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                     className="w-4 h-4"
                     style={{ fill: colors.stars || 'var(--wpc-star-color, #fbbf24)', stroke: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}
                   />
-                  <span className="text-sm font-medium" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>{activeItem.rating}</span>
+                  <span className="text-sm font-medium text-muted-foreground">{activeItem.rating}</span>
                 </div>
                 {(() => {
                   const priceInfo = getPriceForCycle(activeItem, selectedCycle);

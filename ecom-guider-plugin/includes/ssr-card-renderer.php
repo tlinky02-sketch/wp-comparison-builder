@@ -187,7 +187,7 @@ function wpc_render_card_ssr($item, $config = array())
                     </div>
                 <?php endfor; ?>
                 <span class="wpc-text-muted"
-                    style="margin-left: 0.25rem; font-weight: bold; color: <?php echo esc_attr($star_color); ?>;"><?php echo number_format($rating, 1); ?>/5</span>
+                    style="margin-left: 0.25rem; font-weight: bold;"><?php echo number_format($rating, 1); ?>/5</span>
             </div>
         <?php endif; ?>
 
