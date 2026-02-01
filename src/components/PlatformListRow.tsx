@@ -2,6 +2,7 @@ import React from 'react';
 import { ComparisonItem } from './PlatformCard';
 import { Check, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import StarRating from './StarRating';
 
 interface PlatformListRowProps {
     item: ComparisonItem;
@@ -180,14 +181,12 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
 
                     {/* Rating */}
                     {showRating && (
-                        <div className="flex items-center justify-center md:justify-start gap-1">
-                            <div className="flex text-yellow-400 text-sm">
-                                {[...Array(5)].map((_, i) => (
-                                    <span key={i}>{i < Math.floor(item.rating) ? '★' : '☆'}</span>
-                                ))}
-                            </div>
-                            <span className="text-xs text-muted-foreground font-medium">({item.rating})</span>
-                        </div>
+                        <StarRating
+                            rating={item.rating || 0}
+                            size={14}
+                            color={(window as any).wpcSettings?.colors?.stars || '#fbbf24'}
+                            showLabel={true}
+                        />
                     )}
                 </div>
 

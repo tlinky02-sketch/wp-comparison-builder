@@ -23,7 +23,7 @@ const StarRating: React.FC<StarRatingProps> = ({
     const emptyColor = '#e2e8f0'; // Gray-200 for empty part
 
     return (
-        <div className={cn("flex items-center gap-2", className)}>
+        <div className={cn("wpc-star-rating flex items-center gap-2", className)}>
             <div className="flex relative">
                 {[...Array(maxStars)].map((_, index) => {
                     const starIndex = index + 1;
@@ -33,7 +33,11 @@ const StarRating: React.FC<StarRatingProps> = ({
                     if (rating >= starIndex) {
                         fillPercentage = 100;
                     } else if (rating > index) {
-                        fillPercentage = (rating - index) * 100;
+                        const rawPercent = (rating - index) * 100;
+                        // Visual Correction: Account for SVG internal padding (approx 2px on each side of 24px viewbox)
+                        // Map 0-100% logic to 8.33-91.67% visual range so 10% rating actually shows some fill.
+                        fillPercentage = 8.33 + (rawPercent * 0.8334);
+                        fillPercentage = Math.min(100, Math.max(0, fillPercentage));
                     }
 
                     return (
@@ -45,13 +49,15 @@ const StarRating: React.FC<StarRatingProps> = ({
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="none"
-                                className="absolute top-0 left-0"
+                                className="wpc-star-icon absolute top-0 left-0"
+                                style={{ display: 'block' }}
                             >
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill={emptyColor} />
                             </svg>
 
                             {/* Filled Star Overlay (Clipped) */}
                             <div
+                                className="wpc-star-fill"
                                 style={{
                                     width: `${fillPercentage}%`,
                                     overflow: 'hidden',
@@ -67,6 +73,8 @@ const StarRating: React.FC<StarRatingProps> = ({
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="none"
+                                    className="wpc-star-icon"
+                                    style={{ display: 'block' }}
                                 >
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill={fillColor} />
                                 </svg>
@@ -76,7 +84,7 @@ const StarRating: React.FC<StarRatingProps> = ({
                 })}
             </div>
             {showLabel && (
-                <span className="font-bold text-foreground text-sm">{rating}/{maxStars}</span>
+                <span className="font-bold text-sm" style={{ color: fillColor }}>{rating}/{maxStars}</span>
             )}
         </div>
     );

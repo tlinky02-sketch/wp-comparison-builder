@@ -686,7 +686,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             }}
                         >
                             <h3
-                                className="font-semibold mb-4 flex items-center gap-2"
+                                className="wpc-pros-cons-title font-semibold mb-4 flex items-center gap-2"
                                 style={{ color: prosText, fontFamily: 'var(--wpc-font-heading, inherit)' }}
                                 ref={(el) => { if (el) el.style.setProperty('color', prosText, 'important'); }}
                             >
@@ -716,7 +716,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             }}
                         >
                             <h3
-                                className="font-semibold mb-4 flex items-center gap-2"
+                                className="wpc-pros-cons-title font-semibold mb-4 flex items-center gap-2"
                                 style={{ color: consText, fontFamily: 'var(--wpc-font-heading, inherit)' }}
                                 ref={(el) => { if (el) el.style.setProperty('color', consText, 'important'); }}
                             >
@@ -847,7 +847,12 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                         }}
                                     >
                                         {p.name}
-                                        <button onClick={() => handleRemoveFromComparison(p.id)} aria-label="Remove from comparison">
+                                        <button
+                                            onClick={() => handleRemoveFromComparison(p.id)}
+                                            aria-label="Remove from comparison"
+                                            className="wpc-text-link wpc-btn-remove-custom bg-transparent p-0 border-none"
+                                            style={{ color: 'inherit' }}
+                                        >
                                             <X className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -972,7 +977,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                     ))}
                                     <button
                                         onClick={() => { setSelectedCategories([]); setSelectedFeatures([]); }}
-                                        className="wpc-text-link text-sm underline ml-2 transition-colors"
+                                        className="wpc-text-link wpc-btn-remove-custom text-sm underline ml-2 transition-colors"
                                         style={{ color: getColor('textMuted') }}
                                     >
                                         {getText('clearAll', 'Clear all')}
@@ -1242,9 +1247,7 @@ roots.forEach((el) => {
         root.setAttribute('data-react-mounted', 'true');
         const config = root.dataset.config ? JSON.parse(root.dataset.config) : {};
         ReactDOM.createRoot(root).render(
-            <React.StrictMode>
-                <ComparisonBuilderApp initialConfig={config} />
-            </React.StrictMode>
+            <ComparisonBuilderApp initialConfig={config} />
         );
     }
 });
@@ -1261,9 +1264,7 @@ try {
 
                 // Static Render
                 ReactDOM.createRoot(root).render(
-                    <React.StrictMode>
-                        <PlatformHeroWrapper itemId={config.itemId || config.providerId} />
-                    </React.StrictMode>
+                    <PlatformHeroWrapper itemId={config.itemId || config.providerId} />
                 );
             }
         }
@@ -1281,9 +1282,7 @@ useCasesRoots.forEach((el) => {
 
         import('./components/BestUseCases').then(({ default: BestUseCases }) => {
             ReactDOM.createRoot(root).render(
-                <React.StrictMode>
-                    <BestUseCases {...config} />
-                </React.StrictMode>
+                <BestUseCases {...config} />
             );
         });
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import { ComparisonItem } from './PlatformCard';
 import { Check, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import StarRating from './StarRating';
 
 interface PlatformDetailedRowProps {
     item: ComparisonItem;
@@ -174,12 +175,12 @@ const PlatformDetailedRow: React.FC<PlatformDetailedRowProps> = ({
             <div className="md:col-span-4 text-center md:text-left space-y-1">
                 <h3 className="font-bold text-lg leading-tight">{item.name}</h3>
                 {showRating && (
-                    <div className="flex items-center justify-center md:justify-start text-yellow-400 text-sm">
-                        {[...Array(5)].map((_, i) => (
-                            <span key={i}>{i < Math.floor(item.rating) ? '★' : '☆'}</span>
-                        ))}
-                        <span className="ml-1 text-xs text-muted-foreground font-medium">({item.rating})</span>
-                    </div>
+                    <StarRating
+                        rating={item.rating || 0}
+                        size={14}
+                        color={(window as any).wpcSettings?.colors?.stars || '#fbbf24'}
+                        showLabel={true}
+                    />
                 )}
 
                 {/* Categories */}

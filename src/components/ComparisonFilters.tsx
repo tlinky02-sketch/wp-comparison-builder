@@ -57,10 +57,12 @@ const ComparisonFilters = ({
           </div>
           {hasFilters && (
             <Button
-              variant="link"
               onClick={onClearFilters}
-              className="px-0 text-xs text-muted-foreground hover:text-primary h-auto mt-1 mb-1 block"
-              style={{ color: mutedColor }}
+              className="h-8 px-3 text-xs font-medium mt-1 mb-1"
+              style={{
+                backgroundColor: accentColor,
+                color: 'white'
+              }}
             >
               {labels?.resetFilters || "Reset Filters"}
             </Button>
@@ -319,9 +321,12 @@ const ComparisonFilters = ({
       {/* Clear All Button */}
       {hasFilters && (
         <Button
-          variant="ghost"
           onClick={onClearFilters}
-          className="h-9 px-2 lg:px-3 text-muted-foreground hover:text-foreground"
+          className="h-9 px-4 font-medium"
+          style={{
+            backgroundColor: accentColor,
+            color: 'white'
+          }}
         >
           {labels?.resetFilters || "Reset Filters"}
         </Button>

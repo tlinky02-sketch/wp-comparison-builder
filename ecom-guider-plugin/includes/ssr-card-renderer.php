@@ -35,6 +35,7 @@ function wpc_render_card_ssr($item, $config = array())
     $star_color = get_option('wpc_star_rating_color', '#fbbf24');
     $border_color = get_option('wpc_border_color', '#e2e8f0');
     $featured_color = get_option('wpc_featured_color', '#6366f1');
+    $btn_text_color = get_option('wpc_button_text_color', '#ffffff');
 
     // Item data
     $id = $item['id'];
@@ -49,11 +50,6 @@ function wpc_render_card_ssr($item, $config = array())
     $categories = isset($item['category']) ? (array) $item['category'] : array();
     $features = isset($item['features']) ? (array) $item['features'] : array();
     $is_featured = !empty($item['is_featured']);
-
-    // Star rating
-    $full_stars = floor($rating);
-    $has_half = ($rating - $full_stars) >= 0.5;
-    $empty_stars = 5 - $full_stars - ($has_half ? 1 : 0);
 
     // Badge styling
     $badge_bg = $config['badge_color'] ?: $featured_color;
@@ -89,7 +85,7 @@ function wpc_render_card_ssr($item, $config = array())
         data-wpc-feats="<?php echo $feat_data; ?>" style="
             background: hsl(var(--card));
             border-radius: 1rem;
-            border: 2px solid <?php echo esc_attr($is_featured ? $featured_color : 'hsl(var(--border))'); ?>;
+            border: 2px solid <?php echo esc_attr($is_featured ? $featured_color : $border_color); ?>;
             box-shadow: <?php echo $is_featured ? '0 4px 12px rgba(99,102,241,0.15)' : '0 1px 3px rgba(0,0,0,0.05)'; ?>;
             padding: 1.25rem;
             display: flex;
@@ -99,12 +95,12 @@ function wpc_render_card_ssr($item, $config = array())
         ">
         <?php if (!empty($badge) && $config['show_badge'] && $config['badge_style'] === 'floating'): ?>
             <!-- Floating Badge -->
-            <div style="
+            <div class="wpc-badge-fixed" style="
             position: absolute;
             top: -0.5rem;
             right: 1rem;
             background: <?php echo esc_attr($badge_bg); ?>;
-            color: #fff;
+            color: <?php echo esc_attr($btn_text_color); ?> !important;
             font-size: 0.75rem;
             font-weight: 600;
             padding: 0.25rem 0.75rem;
@@ -132,10 +128,11 @@ function wpc_render_card_ssr($item, $config = array())
             <?php endif; ?>
             <div style="flex: 1; min-width: 0;">
                 <h3 class="wpc-heading" style="font-weight: 600; margin: 0; font-size: var(--wpc-font-size-h3);">
-                    <?php echo $name; ?></h3>
+                    <?php echo $name; ?>
+                </h3>
 
                 <?php if (!empty($badge) && $config['badge_style'] === 'inline'): ?>
-                    <span style="
+                    <span class="wpc-badge-fixed" style="
                     display: inline-block;
                     margin-top: 0.25rem;
                     background: <?php echo esc_attr($badge_bg); ?>20;
@@ -149,45 +146,55 @@ function wpc_render_card_ssr($item, $config = array())
         </div>
 
         <?php if ($config['show_rating'] && $rating > 0): ?>
-            <!-- Rating -->
-            <div style="display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.75rem;">
-                <?php for ($i = 0; $i < $full_stars; $i++): ?>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="<?php echo esc_attr($star_color); ?>"
-                        stroke="<?php echo esc_attr($star_color); ?>" stroke-width="1">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                        </polygon>
-                    </svg>
-                <?php endfor; ?>
-                <?php if ($has_half): ?>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr($star_color); ?>"
-                        stroke-width="1">
-                        <defs>
-                            <linearGradient id="half-<?php echo $id; ?>">
-                                <stop offset="50%" stop-color="<?php echo esc_attr($star_color); ?>" />
-                                <stop offset="50%" stop-color="transparent" />
-                            </linearGradient>
-                        </defs>
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                            fill="url(#half-<?php echo $id; ?>)"></polygon>
-                    </svg>
-                <?php endif; ?>
-                <?php for ($i = 0; $i < $empty_stars; $i++): ?>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                        </polygon>
-                    </svg>
+            <!-- Rating (same partial fill logic as React StarRating component) -->
+            <div class="wpc-star-rating" style="display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.75rem;">
+                <?php
+                $star_size = 14;
+                $empty_color = '#e2e8f0';
+                for ($i = 0; $i < 5; $i++):
+                    $star_index = $i + 1;
+                    // Calculate fill percentage for this specific star (same as React)
+                    if ($rating >= $star_index) {
+                        $fill_percentage = 100;
+                    } elseif ($rating > $i) {
+                        $raw_percent = ($rating - $i) * 100;
+                        // Visual Correction: Account for SVG padding (same as React component)
+                        $fill_percentage = 8.33 + ($raw_percent * 0.8334);
+                        $fill_percentage = min(100, max(0, $fill_percentage));
+                    } else {
+                        $fill_percentage = 0;
+                    }
+                    ?>
+                    <div class="wpc-star-container"
+                        style="position: relative; width: <?php echo $star_size; ?>px; height: <?php echo $star_size; ?>px;">
+                        <!-- Empty Star Background -->
+                        <svg class="wpc-star-icon" width="<?php echo $star_size; ?>" height="<?php echo $star_size; ?>"
+                            viewBox="0 0 24 24" fill="none" stroke="none"
+                            style="display: block; position: absolute; top: 0; left: 0;">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                fill="<?php echo esc_attr($empty_color); ?>"></path>
+                        </svg>
+                        <!-- Filled Star Overlay (Clipped) -->
+                        <div class="wpc-star-fill"
+                            style="width: <?php echo $fill_percentage; ?>%; overflow: hidden; position: absolute; top: 0; left: 0; height: 100%;">
+                            <svg class="wpc-star-icon" width="<?php echo $star_size; ?>" height="<?php echo $star_size; ?>"
+                                viewBox="0 0 24 24" fill="none" stroke="none" style="display: block;">
+                                <path
+                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                    fill="<?php echo esc_attr($star_color); ?>"></path>
+                            </svg>
+                        </div>
+                    </div>
                 <?php endfor; ?>
                 <span class="wpc-text-muted"
-                    style="margin-left: 0.25rem; color: hsl(var(--muted-foreground));"><?php echo number_format($rating, 1); ?></span>
+                    style="margin-left: 0.25rem; font-weight: bold; color: <?php echo esc_attr($star_color); ?>;"><?php echo number_format($rating, 1); ?>/5</span>
             </div>
         <?php endif; ?>
 
         <?php if ($config['show_price'] && !empty($price)): ?>
             <!-- Price -->
-            <div style="margin-bottom: 1rem; padding: 0.75rem; background: hsl(var(--muted) / 0.3); border-radius: 0.5rem; text-align: center;">
+            <div
+                style="margin-bottom: 1rem; padding: 0.75rem; background: hsl(var(--muted) / 0.3); border-radius: 0.5rem; text-align: center;">
                 <span class="wpc-text-body wpc-card-price"
                     style="font-weight: 700; color: <?php echo esc_attr($primary_color); ?>; font-size: 1.875rem;"><?php echo $price; ?></span>
                 <?php if (!empty($price_period)): ?>
@@ -243,16 +250,16 @@ function wpc_render_card_ssr($item, $config = array())
                     width: 100%;
                     text-align: center;
                     padding: 0.625rem 1rem;
-                    background: hsl(var(--primary));
-                    color: var(--wpc-btn-text, #fff);
+                    background: <?php echo esc_attr($primary_color); ?>;
+                    color: <?php echo esc_attr($btn_text_color); ?>;
                     font-size: var(--wpc-font-size-btn, 1rem);
                     font-weight: 500;
                     border-radius: 0.5rem;
                     border: none;
                     cursor: pointer;
                     transition: background 0.2s;
-                " onmouseover="this.style.opacity='0.9';"
-                    onmouseout="this.style.opacity='1';"><?php echo esc_html($config['button_text'] ?: $config['txt_visit']); ?></button>
+                " onmouseover="this.style.backgroundColor='<?php echo esc_js($hover_color); ?>';"
+                    onmouseout="this.style.backgroundColor='<?php echo esc_js($primary_color); ?>';"><?php echo esc_html($config['button_text'] ?: $config['txt_visit']); ?></button>
             <?php endif; ?>
         </div>
     </div>

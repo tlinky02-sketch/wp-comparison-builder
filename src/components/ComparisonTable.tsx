@@ -472,8 +472,8 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
         const starColor = colors.stars || 'var(--wpc-star-color, #fbbf24)';
         return (
           <div className="flex items-center gap-1 justify-center">
-            <Star className="w-3 h-3 md:w-4 md:h-4" style={{ fill: starColor, color: starColor }} />
-            <span className="text-xs md:text-base">{item.rating}</span>
+            <Star className="w-3 h-3 md:w-4 md:h-4" style={{ fill: starColor, stroke: starColor }} />
+            <span className="text-xs md:text-base" style={{ color: starColor }}>{item.rating}</span>
           </div>
         );
       case "ssl":
@@ -512,12 +512,11 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
           <div
             onClick={() => setSelectedCategory(null)}
             className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${!selectedCategory
-              ? "shadow-sm"
+              ? "shadow-sm wpc-filter-pill-fixed"
               : "bg-transparent text-muted-foreground border-border hover:bg-muted"
               }`}
             style={!selectedCategory ? {
               backgroundColor: primaryColor,
-              color: 'var(--wpc-btn-text, #ffffff) !important',
               borderColor: primaryColor
             } : {}}
           >
@@ -544,12 +543,11 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                   key={catSlug}
                   onClick={() => setSelectedCategory(catSlug)}
                   className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
-                    ? "shadow-sm"
+                    ? "shadow-sm wpc-filter-pill-fixed"
                     : "bg-transparent text-muted-foreground border-border hover:bg-muted"
                     }`}
                   style={isActive ? {
                     backgroundColor: primaryColor,
-                    color: 'var(--wpc-btn-text, #ffffff) !important',
                     borderColor: primaryColor
                   } : {}}
                 >
@@ -658,9 +656,12 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                         </div>
                         <div className="w-full">
                           <h3 className="font-bold text-foreground text-sm md:text-lg mb-1 min-h-[1.75rem] flex items-center justify-center">{item.name}</h3>
-                          <div className="flex items-center justify-center gap-1 mb-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
-                            <Star className="w-3 h-3 md:w-4 md:h-4 fill-current" />
-                            <span className="font-medium text-xs md:text-base">{item.rating}</span>
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Star
+                              className="w-3 h-3 md:w-4 md:h-4"
+                              style={{ fill: colors.stars || 'var(--wpc-star-color, #fbbf24)', stroke: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}
+                            />
+                            <span className="font-medium text-xs md:text-base" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>{item.rating}</span>
                           </div>
                           {(() => {
                             const priceInfo = getPriceForCycle(item, selectedCycle);
@@ -776,7 +777,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                           {!config?.hideRemoveButton && (
                             <button
                               onClick={() => onRemove(item.id)}
-                              className="wpc-text-link mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
+                              className="wpc-text-link wpc-btn-remove-custom mt-2 text-xs flex items-center justify-center gap-1 w-full opacity-70 hover:opacity-100 transition-opacity"
                               style={{ color: mutedTextColor }}
                             >
                               <X className="w-3 h-3" /> {getText('remove', 'Remove')}
@@ -919,9 +920,12 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg mb-1">{activeItem.name}</h3>
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-1" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>
-                  <Star className="w-4 h-4 fill-current" />
-                  <span className="text-sm font-medium">{activeItem.rating}</span>
+                <div className="flex items-center gap-1">
+                  <Star
+                    className="w-4 h-4"
+                    style={{ fill: colors.stars || 'var(--wpc-star-color, #fbbf24)', stroke: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}
+                  />
+                  <span className="text-sm font-medium" style={{ color: colors.stars || 'var(--wpc-star-color, #fbbf24)' }}>{activeItem.rating}</span>
                 </div>
                 {(() => {
                   const priceInfo = getPriceForCycle(activeItem, selectedCycle);
@@ -961,7 +965,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
             {!config?.hideRemoveButton && (
               <button
                 onClick={() => onRemove(activeItem.id)}
-                className="p-1 opacity-70 hover:opacity-100 transition-opacity"
+                className="wpc-btn-remove-custom p-1 opacity-70 hover:opacity-100 transition-opacity"
                 style={{ color: mutedTextColor }}
               >
                 <X className="w-5 h-5" />

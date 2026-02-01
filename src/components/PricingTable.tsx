@@ -384,13 +384,12 @@ const PricingTable = ({
                     <div
                         onClick={() => setLocalCategory(null)}
                         className={`px-4 py-2 rounded-full text-sm font-bold transition-all border cursor-pointer ${!localCategory
-                            ? "text-white shadow-md scale-105"
+                            ? "shadow-md scale-105 wpc-filter-pill-fixed"
                             : "bg-transparent text-muted-foreground border-border hover:bg-muted"
                             }`}
                         style={!localCategory ? {
                             backgroundColor: primaryColor,
                             borderColor: primaryColor,
-                            color: 'var(--wpc-btn-text, #ffffff) !important',
                         } : {
                             color: 'var(--muted-foreground)'
                         }}
@@ -410,13 +409,12 @@ const PricingTable = ({
                                 key={catSlug}
                                 onClick={() => setLocalCategory(catSlug)}
                                 className={`px-4 py-2 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
-                                    ? "shadow-md scale-105"
+                                    ? "shadow-md scale-105 wpc-filter-pill-fixed"
                                     : "bg-transparent text-muted-foreground border-border hover:bg-muted"
                                     }`}
                                 style={isActive ? {
                                     backgroundColor: primaryColor,
                                     borderColor: primaryColor,
-                                    color: 'var(--wpc-btn-text, #ffffff) !important',
                                 } : {
                                     color: 'var(--muted-foreground)'
                                 }}

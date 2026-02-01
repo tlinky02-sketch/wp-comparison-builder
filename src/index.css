@@ -1,41 +1,23 @@
 /* Google Fonts are loaded dynamically by PHP based on typography settings */
 /* DO NOT add hardcoded font imports here - they come from wp-comparison-builder.php */
 
+/* 
+   Tailwind Layers:
+   - base: CSS variables and scoped resets (Preflight is DISABLED in config)
+   - components: Component classes
+   - utilities: Utility classes
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* FOUC Prevention: Hide comparison wrapper until CSS loads, then fade in */
-.wpc-comparison-wrapper {
-  opacity: 1;
-  transition: opacity 0.15s ease-out;
-}
-
-/* Before CSS loads, the container is hidden via inline style in PHP */
-.wpc-comparison-wrapper[data-loaded="true"] {
-  opacity: 1 !important;
-}
-
 /* ============================================
-   WORDPRESS OVERRIDE PROTECTION
-   Prevent WP theme CSS from interfering with card styles
-   IMPORTANT: Only target card elements specifically to avoid breaking layout
+   SCOPED BASE LAYER
+   These apply ONLY inside .wpc-root
    ============================================ */
-
-/* Reset WordPress preset margins on headings within CARDS only */
-.wpc-card h3,
-.wpc-comparison-wrapper [data-wpc-card] h3 {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* Protect card header flexbox alignment specifically */
-.wpc-card .items-center,
-.wpc-comparison-wrapper [data-wpc-card] .items-center {
-  align-items: center !important;
-}
-
 @layer base {
+
+  /* CSS Variables - Applied to :root for availability */
   :root {
     --background: 210 20% 98%;
     --foreground: 222 47% 11%;
@@ -74,7 +56,7 @@
     --navy: 222 47% 11%;
     --navy-light: 215 25% 27%;
 
-    /* Renamed Teal -> Emerald tokens */
+    /* Emerald tokens */
     --emerald: 160 84% 39%;
     --emerald-light: 160 84% 45%;
     --emerald-dark: 160 84% 30%;
@@ -89,8 +71,6 @@
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
-
-    /* Default Button Hover (Emerald Dark equivalent) - serves as fallback if no custom color set */
     --wpc-btn-hover: hsl(160 84% 30%);
     --shadow-md: 0 4px 6px -1px hsl(222 47% 11% / 0.08), 0 2px 4px -2px hsl(222 47% 11% / 0.05);
     --shadow-lg: 0 10px 15px -3px hsl(222 47% 11% / 0.1), 0 4px 6px -4px hsl(222 47% 11% / 0.05);
@@ -114,60 +94,122 @@
     --wpc-link-color: inherit;
   }
 
-  .dark {
+  /* Dark mode variables */
+  .wpc-root.dark {
     --background: 222 47% 8%;
     --foreground: 210 40% 98%;
-
     --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 260 52% 60%;
-    /* Lighter purple for dark mode */
     --primary-foreground: 0 0% 100%;
-
     --secondary: 215 25% 27%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-
     --accent: 160 84% 39%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217 33% 17%;
     --input: 217 33% 17%;
     --ring: 260 52% 60%;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  /* SCOPED Preflight-like reset ONLY inside .wpc-root */
+  .wpc-root *,
+  .wpc-root *::before,
+  .wpc-root *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: hsl(var(--border));
   }
 
-  body {
-    @apply bg-background text-foreground antialiased;
+  /* Scoped base typography */
+  .wpc-root {
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-family: var(--wpc-font-family, inherit);
     color: var(--wpc-text-color, inherit);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  .wpc-root h1,
+  .wpc-root h2,
+  .wpc-root h3,
+  .wpc-root h4,
+  .wpc-root h5,
+  .wpc-root h6 {
     font-family: var(--wpc-font-heading, inherit);
     color: var(--wpc-heading-color, inherit);
   }
+
+  /* Scoped form element normalization - use plugin typography settings */
+  .wpc-root button,
+  .wpc-root input,
+  .wpc-root select,
+  .wpc-root textarea {
+    font-family: inherit;
+    font-size: var(--wpc-font-size-body, inherit);
+    line-height: inherit;
+    margin: 0;
+  }
+
+  /* Keep cursor pointer for buttons */
+  .wpc-root button {
+    cursor: pointer;
+  }
+
+  /* Note: Radix UI Select uses custom button, not native select - no appearance rule needed */
+
+  .wpc-root img,
+  .wpc-root video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* SVG default - allow inline SVGs to maintain their sizing */
+  .wpc-root svg {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* Exception for absolutely positioned SVGs (e.g., StarRating component) */
+  .wpc-root svg.absolute,
+  .wpc-root .absolute svg,
+  .wpc-root .wpc-star-icon,
+  .wpc-root .wpc-star-rating svg {
+    display: block !important;
+  }
+
+  /* Prevent any transition on star ratings that could cause hover blink */
+  .wpc-root .wpc-star-rating,
+  .wpc-root .wpc-star-rating *,
+  .wpc-root .wpc-star-fill,
+  .wpc-root .wpc-star-icon {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .wpc-root a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  .wpc-root ul,
+  .wpc-root ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 }
 
+/* ============================================
+   UTILITY LAYER EXTENSIONS
+   ============================================ */
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
@@ -201,4 +243,66 @@
       transform: translateY(-10px);
     }
   }
+}
+
+/* ============================================
+   WORDPRESS OVERRIDE PROTECTION (High Specificity)
+   These MUST come after utilities to win specificity battles
+   ============================================ */
+
+/* FOUC Prevention */
+.wpc-comparison-wrapper {
+  opacity: 1;
+  transition: opacity 0.15s ease-out;
+}
+
+.wpc-comparison-wrapper[data-loaded="true"] {
+  opacity: 1 !important;
+}
+
+/* Reset WordPress preset margins on headings within CARDS only */
+.wpc-card h3,
+.wpc-comparison-wrapper [data-wpc-card] h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  font-size: var(--wpc-font-heading, 1.25rem) !important;
+  line-height: 1.4 !important;
+}
+
+/* Pros/Cons Title Fix */
+.wpc-pros-cons-title {
+  margin-top: 0 !important;
+  margin-bottom: 1rem !important;
+  line-height: normal !important;
+}
+
+/* Protect card header flexbox alignment */
+.wpc-card .items-center,
+.wpc-comparison-wrapper [data-wpc-card] .items-center {
+  align-items: center !important;
+}
+
+/* Badge Text Override */
+html body .wpc-root .wpc-card .wpc-badge-fixed {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Filter Pill Active Text Override */
+html body .wpc-root .wpc-filter-pill-fixed {
+  color: var(--wpc-btn-text, #ffffff) !important;
+}
+
+/* Specific 'Remove' buttons - transparent backgrounds, no borders */
+html body .wpc-root .wpc-btn-remove-custom,
+html body .wpc-root button.wpc-btn-remove-custom {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
+/* Filter tags - ensure proper background and no shadow */
+html body .wpc-root .wpc-filter-tag {
+  box-shadow: none !important;
 }

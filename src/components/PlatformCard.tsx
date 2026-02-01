@@ -260,9 +260,18 @@ const PlatformCard = ({
             {/* Custom Badge (Overrides Featured if present, or stacks) */}
             {hasCustomBadge ? (
                 <div className={cn(
-                    "absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm z-10 border",
+                    "wpc-badge-fixed absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm z-10 border",
                     badgeStyleInfo
-                )}>
+                )}
+                    style={{
+                        color: (window as any).wpcSettings?.colors?.btnText ? `${(window as any).wpcSettings?.colors?.btnText} !important` : undefined
+                    }}
+                    ref={(el) => {
+                        if (el && (window as any).wpcSettings?.colors?.btnText) {
+                            el.style.setProperty('color', (window as any).wpcSettings?.colors?.btnText, 'important');
+                        }
+                    }}
+                >
                     {item.badge?.text}
                 </div>
             ) : (
@@ -279,8 +288,16 @@ const PlatformCard = ({
                         </div>
                     ) : (
                         <div
-                            className="absolute -top-3 -right-3 px-3 py-1 bg-primary text-primary-foreground rounded-full text-xs font-bold shadow-lg z-10"
-                            style={{ backgroundColor: featuredColor }}
+                            className="wpc-badge-fixed absolute -top-3 -right-3 px-3 py-1 bg-primary text-primary-foreground rounded-full text-xs font-bold shadow-lg z-10"
+                            style={{
+                                backgroundColor: featuredColor,
+                                color: (window as any).wpcSettings?.colors?.btnText ? `${(window as any).wpcSettings?.colors?.btnText} !important` : undefined
+                            }}
+                            ref={(el) => {
+                                if (el && (window as any).wpcSettings?.colors?.btnText) {
+                                    el.style.setProperty('color', (window as any).wpcSettings?.colors?.btnText, 'important');
+                                }
+                            }}
                         >
                             {featuredText}
                         </div>
