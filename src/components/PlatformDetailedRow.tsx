@@ -224,23 +224,23 @@ const PlatformDetailedRow: React.FC<PlatformDetailedRowProps> = ({
                 {/* Product Details & Custom Fields */}
                 {(item.product_details || (item.custom_fields && item.custom_fields.length > 0)) && (
                     <div className="mt-3 space-y-1 text-xs text-muted-foreground hidden md:block">
-                        {item.product_details?.brand && <div><strong className="font-medium text-foreground/80">Brand:</strong> {item.product_details.brand}</div>}
-                        {item.product_details?.sku && <div><strong className="font-medium text-foreground/80">SKU:</strong> {item.product_details.sku}</div>}
+                        {item.product_details?.brand && <div><strong className="font-medium text-muted-foreground">Brand:</strong> {item.product_details.brand}</div>}
+                        {item.product_details?.sku && <div><strong className="font-medium text-muted-foreground">SKU:</strong> {item.product_details.sku}</div>}
                         {item.product_details?.condition && item.product_details.condition !== 'NewCondition' && (
-                            <div><strong className="font-medium text-foreground/80">Condition:</strong> {item.product_details.condition.replace(/Condition$/, '')}</div>
+                            <div><strong className="font-medium text-muted-foreground">Condition:</strong> {item.product_details.condition.replace(/Condition$/, '')}</div>
                         )}
                         {item.product_details?.availability && item.product_details.availability !== 'InStock' && (
-                            <div><strong className="font-medium text-foreground/80">Status:</strong> {item.product_details.availability.replace(/([A-Z])/g, ' $1').trim()}</div>
+                            <div><strong className="font-medium text-muted-foreground">Status:</strong> {item.product_details.availability.replace(/([A-Z])/g, ' $1').trim()}</div>
                         )}
                         {item.product_details?.duration && (
-                            <div><strong className="font-medium text-foreground/80">Duration:</strong> {item.product_details.duration.replace('PT', '').replace('H', 'h ').replace('M', 'm')}</div>
+                            <div><strong className="font-medium text-muted-foreground">Duration:</strong> {item.product_details.duration.replace('PT', '').replace('H', 'h ').replace('M', 'm')}</div>
                         )}
                         {item.product_details?.service_type && (
-                            <div><strong className="font-medium text-foreground/80">Type:</strong> {item.product_details.service_type}</div>
+                            <div><strong className="font-medium text-muted-foreground">Type:</strong> {item.product_details.service_type}</div>
                         )}
 
                         {item.custom_fields?.map((cf, idx) => (
-                            <div key={idx}><strong className="font-medium text-foreground/80">{cf.name}:</strong> {cf.value}</div>
+                            <div key={idx}><strong className="font-medium text-muted-foreground">{cf.name}:</strong> {cf.value}</div>
                         ))}
                     </div>
                 )}

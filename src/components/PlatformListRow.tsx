@@ -232,7 +232,7 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
                 <ul className="space-y-1 mb-2 hidden md:block">
                     {item.raw_features && item.raw_features.length > 0 ? (
                         item.raw_features.slice(0, 3).map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-foreground/80">
+                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Check className="w-4 h-4 text-primary flex-shrink-0" />
                                 <span className="truncate">{feature}</span>
                             </li>
@@ -240,13 +240,13 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
                     ) : (
                         <>
                             {item.features?.products && (
-                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <li className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Tag className="w-4 h-4 text-primary flex-shrink-0" />
                                     <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
                                 </li>
                             )}
                             {item.features?.fees && (
-                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <li className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Check className="w-4 h-4 text-primary flex-shrink-0" />
                                     <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
                                 </li>

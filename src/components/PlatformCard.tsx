@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Check, Star, ShoppingCart, Tag } from "lucide-react";
 import StarRating from "./StarRating";
 import { cn } from "@/lib/utils";
@@ -235,7 +235,7 @@ const PlatformCard = ({
                 // Active State (Selected) vs Default State (Normal + Hover)
                 // Hover effects should applied ALWAYS for visual feedback, even if selection is disabled via master switch
                 (isComparisonEnabled && isSelected)
-                    ? "shadow-lg ring-2 scale-[1.02]" // Colors handled via style
+                    ? "shadow-lg ring-2 scale-[1.02] transform-gpu backface-hidden" // Colors handled via style
                     : "hover:shadow-xl hover:-translate-y-1", // Border color handled via style
 
                 disabled && !isSelected && "opacity-50 cursor-not-allowed",
@@ -504,7 +504,7 @@ const PlatformCard = ({
 
                     if (toShow.length > 0) {
                         return toShow.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-foreground/80">
+                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Check className="w-4 h-4 text-primary shrink-0"
                                     style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }}
                                 />
@@ -517,21 +517,21 @@ const PlatformCard = ({
                     return (
                         <>
                             {item.features?.products && (
-                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <li className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Tag className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
                                     <span className="truncate">{item.features.products} {labels?.featureProducts || "Products"}</span>
                                 </li>
                             )}
                             {item.features?.fees && (
-                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <li className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Check className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
                                     <span className="truncate">{item.features.fees} {labels?.featureFees || "Trans. Fees"}</span>
                                 </li>
                             )}
                             {item.features?.support && (
-                                <li className="flex items-center gap-2 text-sm text-foreground/80">
+                                <li className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Check className="w-4 h-4 text-primary shrink-0"
                                         style={{ color: (window as any).wpcSettings?.colors?.primary || undefined }} />
                                     <span className="truncate">{item.features.support} {labels?.featureSupport || "Support"}</span>

@@ -22,7 +22,6 @@ const PricingPopup = ({ item, onClose, showPlanButtons, config, onHydrate }: Pri
 
         if (isLightVersion && onHydrate) {
             if (!isLoading) {
-                console.log('Hydrating item:', item.id);
                 setIsLoading(true);
                 onHydrate([item.id]).catch(() => setIsLoading(false));
             }

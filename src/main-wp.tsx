@@ -31,9 +31,6 @@ declare global {
 
 const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) => {
     const config = initialConfig;
-    console.log('AG_DEBUG: Config:', config);
-    console.log('AG_DEBUG: EnableComparison:', config.enableComparison, typeof config.enableComparison);
-
     // Helper to get text with global setting override
     const getText = (key: string, defaultText: string) => {
         // 1. Check Config Labels (List Specific)
@@ -187,11 +184,6 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
 
     // Fetch Data on Load
     useEffect(() => {
-        // Debug Config
-        if ((window as any).wpcSettings?.debug || process.env.NODE_ENV === 'development') {
-            console.log('WPC Final Config:', config);
-        }
-
         const fetchData = async () => {
             // Check for preloaded data (try new name first, then old)
             // Check for preloaded data (try new name first, then old)

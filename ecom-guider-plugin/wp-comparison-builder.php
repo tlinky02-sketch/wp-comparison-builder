@@ -16,6 +16,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Prevent fatal errors if another version of this plugin is already active
+if (defined('WPC_VERSION')) {
+    add_action('admin_notices', function() {
+        echo '<div class="notice notice-error"><p><strong>WP Comparison Builder:</strong> Activation blocked to prevent a fatal error because another copy of this plugin is currently active. Please deactivate the old version first.</p></div>';
+    });
+    // Return early to prevent redefining constants and functions
+    return;
+}
+
 // Define Plugin Constants
 define('WPC_VERSION', '1.0.5');
 define('WPC_PLUGIN_DIR', plugin_dir_path(__FILE__));
