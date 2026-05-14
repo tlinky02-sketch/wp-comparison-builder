@@ -89,8 +89,90 @@ function hosting_guider_render_meta_box( $post ) {
         <div class="hg-row">
             <div class="hg-col">
                 <label class="hg-label"><?php _e( 'Details Page Link (URL)', 'hosting-guider' ); ?></label>
-                <input type="text" name="hosting_details_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_hosting_details_link', true ) ); ?>" class="hg-input" placeholder="https://example.com/review-page" />
-                <p class="description"><?php _e( 'Where the "View Details" button should link to.', 'hosting-guider' ); ?></p>
+                <input type="text" id="hosting_details_link_input" name="hosting_details_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_hosting_details_link', true ) ); ?>" class="hg-input" placeholder="https://example.com/review-page" />
+                <?php
+                $public_post_types = get_post_types( array( 'public' => true ), 'objects' );
+                ?>
+                <div class="hg-custom-post-selector" style="position: relative; margin-top: 8px;">
+                    <input type="text" id="hosting_details_link_search" class="hg-input" placeholder="🔍 Search & select post/page..." autocomplete="off" style="font-size: 12px; padding: 6px 10px; border-color: #cbd5e1; background: #f8fafc;" onkeyup="hgFilterCustomLinkList(this.value)" onfocus="document.getElementById('hosting_custom_link_list').style.display='block'" />
+                    
+                    <div id="hosting_custom_link_list" style="display: none; position: absolute; left: 0; right: 0; top: 100%; border: 1px solid #cbd5e1; max-height: 280px; overflow-y: auto; background: #fff; border-radius: 0 0 4px 4px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-top: -1px; z-index: 99999;">
+                        <?php
+                        foreach ( $public_post_types as $pt ) {
+                            $pt_posts = get_posts( array(
+                                'post_type'      => $pt->name,
+                                'posts_per_page' => 500,
+                                'post_status'    => 'publish',
+                                'orderby'        => 'title',
+                                'order'          => 'ASC',
+                            ) );
+                            
+                            if ( ! empty( $pt_posts ) ) {
+                                echo '<div class="hg-link-optgroup" style="padding: 6px 10px; font-weight: bold; background: #f1f5f9; color: #475569; font-size: 11px; border-bottom: 1px solid #e2e8f0;">' . esc_html( $pt->label ) . '</div>';
+                                foreach ( $pt_posts as $p ) {
+                                    $rel_url = wp_make_link_relative( get_permalink( $p->ID ) );
+                                    $title = get_the_title( $p->ID );
+                                    if ( empty( $title ) ) {
+                                        $title = __( '(No title)', 'hosting-guider' ) . ' #' . $p->ID;
+                                    }
+                                    $search_str = esc_attr( strtolower( $title . ' ' . $rel_url ) );
+                                    echo '<div class="hg-link-option" data-search="' . $search_str . '" data-url="' . esc_attr( $rel_url ) . '" style="padding: 6px 10px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f8fafc; color: #334155; transition: background 0.1s;" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'#fff\'" onclick="document.getElementById(\'hosting_details_link_input\').value=this.dataset.url; document.getElementById(\'hosting_custom_link_list\').style.display=\'none\'; document.getElementById(\'hosting_details_link_search\').value=\'\';">' . esc_html( $title ) . ' <span style="color:#94a3b8; font-size:10px;">(' . esc_html( $rel_url ) . ')</span></div>';
+                                }
+                            }
+                        }
+                        ?>
+                        <div id="hg_link_no_results" style="display: none; padding: 10px; color: #94a3b8; font-size: 12px; text-align: center;">No matching posts found.</div>
+                    </div>
+                </div>
+                
+                <script>
+                document.addEventListener('click', function(e) {
+                    var list = document.getElementById('hosting_custom_link_list');
+                    var searchInput = document.getElementById('hosting_details_link_search');
+                    if (list && searchInput && !list.contains(e.target) && e.target !== searchInput) {
+                        list.style.display = 'none';
+                    }
+                });
+
+                function hgFilterCustomLinkList(query) {
+                    query = query.toLowerCase();
+                    var list = document.getElementById('hosting_custom_link_list');
+                    if (!list) return;
+                    list.style.display = 'block';
+                    
+                    var options = list.getElementsByClassName('hg-link-option');
+                    var visibleCount = 0;
+                    for (var i = 0; i < options.length; i++) {
+                        var txt = options[i].getAttribute('data-search');
+                        if (txt && txt.indexOf(query) > -1) {
+                            options[i].style.display = '';
+                            visibleCount++;
+                        } else {
+                            options[i].style.display = 'none';
+                        }
+                    }
+                    
+                    var optgroups = list.getElementsByClassName('hg-link-optgroup');
+                    for (var j = 0; j < optgroups.length; j++) {
+                        var nextEl = optgroups[j].nextElementSibling;
+                        var hasVisible = false;
+                        while (nextEl && nextEl.classList.contains('hg-link-option')) {
+                            if (nextEl.style.display !== 'none') {
+                                hasVisible = true;
+                                break;
+                            }
+                            nextEl = nextEl.nextElementSibling;
+                        }
+                        optgroups[j].style.display = hasVisible ? '' : 'none';
+                    }
+                    
+                    var noRes = document.getElementById('hg_link_no_results');
+                    if (noRes) {
+                        noRes.style.display = visibleCount === 0 ? 'block' : 'none';
+                    }
+                }
+                </script>
+                <p class="description"><?php _e( 'Where the "View Details" button should link to. Search to select from available content or enter custom URL.', 'hosting-guider' ); ?></p>
             </div>
             <div class="hg-col">
                 <label class="hg-label"><?php _e( 'Button Text (Popup)', 'hosting-guider' ); ?></label>
