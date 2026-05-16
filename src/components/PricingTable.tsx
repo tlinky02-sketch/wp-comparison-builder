@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Check, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
@@ -542,9 +542,9 @@ const PricingTable = ({
                                     onClick={() => scrollTable('left')}
                                     className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full shadow-lg border transition-all hover:scale-110"
                                     style={{
-                                        backgroundColor: 'var(--pt-header-bg)',
-                                        color: 'var(--pt-header-text)',
-                                        borderColor: 'var(--pt-border)',
+                                        backgroundColor: btnBg,
+                                        color: btnText,
+                                        borderColor: 'transparent',
                                         marginLeft: '0.5rem'
                                     }}
                                 >

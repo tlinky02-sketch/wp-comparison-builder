@@ -596,9 +596,9 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                 onClick={() => scrollTable('left')}
                 className="absolute left-[20%] top-24 -translate-y-1/2 z-30 p-2 rounded-full shadow-lg border transition-all hover:scale-110 active:scale-95"
                 style={{
-                  backgroundColor: 'white',
-                  color: primaryColor,
-                  borderColor: 'hsl(var(--border))',
+                  backgroundColor: primaryColor,
+                  color: btnTextColor,
+                  borderColor: 'transparent',
                   marginLeft: '0.5rem'
                 }}
               >
