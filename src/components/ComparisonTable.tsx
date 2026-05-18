@@ -41,6 +41,21 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
   const getText = (key: string, def: string) => labels?.[key] || def;
   const target = config?.targetDetails || (window as any).wpcSettings?.target_details || '_blank';
 
+  const getLinkProps = (hasNewTabSetting: boolean | undefined, hasNofollowSetting: boolean | undefined, defaultTarget: string) => {
+    const finalTarget = hasNewTabSetting !== undefined ? (hasNewTabSetting ? '_blank' : '_self') : defaultTarget;
+    const rels = [];
+    if (hasNofollowSetting) {
+      rels.push('nofollow');
+    }
+    if (finalTarget === '_blank') {
+      rels.push('noopener', 'noreferrer');
+    }
+    return {
+      target: finalTarget,
+      rel: rels.length > 0 ? rels.join(' ') : undefined
+    };
+  };
+
   // Merge global colors with config-specific overrides (config wins for specific keys)
   const globalColors = (window as any).wpcSettings?.colors || {};
   const colors = { ...globalColors, ...(config?.colors || {}) };
@@ -507,7 +522,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
   return (
     <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
       {/* Category Tabs (Only if categories exist AND not pre-selected via shortcode) */}
-      {!config?.category && allCategories.list.length > 0 && (
+      {!(config?.isCategoryPreselected ?? !!config?.category) && allCategories.list.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-2 p-4 border-b border-border bg-muted/20 pb-2">
           <div
             onClick={() => setSelectedCategory(null)}
@@ -560,14 +575,14 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
 
       {/* Billing Cycle Toggle (Show even if single, so user knows the period, e.g. "10 Years") */}
       {allCycles.length > 0 && (
-        <div className="flex items-center justify-center gap-2 p-4 border-b border-border bg-muted/20">
-          <span className="text-sm text-muted-foreground mr-2">{getText('billingCycle', 'Billing:')}</span>
+        <div className="flex flex-wrap items-center justify-center gap-2 p-4 border-b border-border bg-muted/20">
+          <span className="text-sm text-muted-foreground mr-2 shrink-0">{getText('billingCycle', 'Billing:')}</span>
           {allCycles.map((cycle) => (
             <button
               key={cycle.slug}
               onClick={() => setSelectedCycle(cycle.slug)}
               className={cn(
-                "wpc-text-link px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
+                "whitespace-nowrap wpc-text-link px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
                 selectedCycle === cycle.slug
                   ? "shadow-sm"
                   : "bg-transparent border-border hover:bg-muted"
@@ -750,12 +765,13 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                           {/* Footer / Button Visibility Check */}
                           {(item.design_overrides?.show_footer_table !== false) && (
                             (() => {
+                              const linkProps = getLinkProps(item.details_link_new_tab, item.details_link_nofollow, target);
                               return (
                                 <a
                                   href={item.details_link || '#'}
-                                  target={target}
+                                  target={linkProps.target}
                                   className="wpc-cta-btn inline-flex items-center justify-center w-full px-3 md:h-10 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap"
-                                  rel="noreferrer"
+                                  rel={linkProps.rel || 'noreferrer'}
                                   style={{
                                     backgroundColor: primaryColor,
                                     color: btnTextColor
@@ -1015,26 +1031,31 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
 
           {/* CTA Button */}
           {(activeItem.design_overrides?.show_footer_table !== false) && (
-            <a
-              href={activeItem.details_link || '#'}
-              target={target}
-              className="wpc-cta-btn flex w-full items-center justify-center gap-2 transition-all py-3 rounded-xl font-bold text-sm shadow-lg"
-              rel="noreferrer"
-              style={{
-                backgroundColor: primaryColor,
-                color: btnTextColor,
-              }}
-              onMouseEnter={(e) => {
-                if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                else e.currentTarget.style.filter = 'brightness(90%)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = primaryColor;
-                e.currentTarget.style.filter = '';
-              }}
-            >
-              {activeItem.button_text || getText('visitSite', "Visit Site")} <ExternalLink className="w-4 h-4" style={{ stroke: btnTextColor }} />
-            </a>
+            (() => {
+              const linkProps = getLinkProps(activeItem.details_link_new_tab, activeItem.details_link_nofollow, target);
+              return (
+                <a
+                  href={activeItem.details_link || '#'}
+                  target={linkProps.target}
+                  className="wpc-cta-btn flex w-full items-center justify-center gap-2 transition-all py-3 rounded-xl font-bold text-sm shadow-lg"
+                  rel={linkProps.rel || 'noreferrer'}
+                  style={{
+                    backgroundColor: primaryColor,
+                    color: btnTextColor,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                    else e.currentTarget.style.filter = 'brightness(90%)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = primaryColor;
+                    e.currentTarget.style.filter = '';
+                  }}
+                >
+                  {activeItem.button_text || getText('visitSite', "Visit Site")} <ExternalLink className="w-4 h-4" style={{ stroke: btnTextColor }} />
+                </a>
+              );
+            })()
           )}
         </div>
       </div>

@@ -378,7 +378,11 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
 
                 'raw_features' => $feature_names,
                 'details_link' => $details_link,
+                'details_link_new_tab' => $get_val(null, '_wpc_details_link_new_tab') === '1',
+                'details_link_nofollow' => $get_val(null, '_wpc_details_link_nofollow') === '1',
                 'direct_link' => $direct_link,
+                'direct_link_new_tab' => $get_val(null, '_wpc_direct_link_new_tab') === '1',
+                'direct_link_nofollow' => $get_val(null, '_wpc_direct_link_nofollow') === '1',
                 'button_text' => $button_text,
                 'hero_button_text' => $hero_button_text,
                 'permalink' => get_permalink($id),

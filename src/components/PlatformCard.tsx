@@ -1,7 +1,7 @@
 import React from "react";
 import { Check, Star, ShoppingCart, Tag } from "lucide-react";
 import StarRating from "./StarRating";
-import { cn } from "@/lib/utils";
+import { cn, openCustomLink } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export interface PricingPlan {
@@ -43,6 +43,8 @@ export interface ComparisonItem {
     cons: string[];
     raw_features?: string[];
     details_link?: string;
+    details_link_new_tab?: boolean;
+    details_link_nofollow?: boolean;
     button_text?: string;
     hero_button_text?: string;
     permalink?: string;
@@ -59,6 +61,8 @@ export interface ComparisonItem {
     featured_badge_text?: string;
     featured_badge_color?: string;
     direct_link?: string;
+    direct_link_new_tab?: boolean;
+    direct_link_nofollow?: boolean;
     content?: string;
     hero_subtitle?: string; // New field for Hero
     analysis_label?: string; // New field for Hero
@@ -180,8 +184,11 @@ const PlatformCard = ({
         } else {
             const url = item.direct_link || item.details_link;
             if (url) {
-                const target = config?.targetDirect || (window as any).wpcSettings?.target_direct || '_blank';
-                window.open(url, target);
+                const isDirect = !!item.direct_link;
+                const isNewTab = isDirect ? item.direct_link_new_tab : item.details_link_new_tab;
+                const isNofollow = isDirect ? item.direct_link_nofollow : item.details_link_nofollow;
+                const defaultTarget = config?.targetDirect || (window as any).wpcSettings?.target_direct || '_blank';
+                openCustomLink(url, isNewTab, isNofollow, defaultTarget);
             }
         }
         handleTrackClick();

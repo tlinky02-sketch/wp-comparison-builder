@@ -763,7 +763,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             <div className="wpc-comparison-wrapper">
                 <Toaster />
                 <div className="w-full">
-                    <ComparisonTable items={filteredItems} onRemove={() => { }} config={{ ...config, category: activeCategory }} />
+                    <ComparisonTable items={filteredItems} onRemove={() => { }} config={{ ...config, isCategoryPreselected: !!initialConfig.category, category: activeCategory }} />
                 </div>
             </div>
         );
@@ -1185,7 +1185,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             items={selectedItemObjects}
                             onRemove={handleRemoveFromComparison}
                             labels={config.labels}
-                            config={{ ...config, category: activeCategory }}
+                            config={{ ...config, isCategoryPreselected: !!initialConfig.category, category: activeCategory }}
                             onHydrate={hydrateItems} // Pass hydration
                         />
                     </div>

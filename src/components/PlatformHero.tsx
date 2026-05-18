@@ -1,10 +1,10 @@
-﻿
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Star, ExternalLink, ArrowRight, X, Clock, Calendar, Check, Monitor, Shield, Zap } from "lucide-react";
 import StarRating from './StarRating';
 import { ComparisonItem } from "./PlatformCard";
-import { cn } from "@/lib/utils";
+import { cn, openCustomLink } from "@/lib/utils";
 
 interface PlatformHeroProps {
     item: ComparisonItem;
@@ -21,7 +21,8 @@ const PlatformHero: React.FC<PlatformHeroProps> = ({ item, onBack, onScrollToCom
         if (item.details_link) {
             const settings = (window as any).wpcSettings || (window as any).ecommerceGuiderSettings;
             const shouldOpenNewTab = settings?.openNewTab !== false; // Default to true
-            window.open(item.details_link, shouldOpenNewTab ? '_blank' : '_self');
+            const defaultTarget = shouldOpenNewTab ? '_blank' : '_self';
+            openCustomLink(item.details_link, item.details_link_new_tab, item.details_link_nofollow, defaultTarget);
         }
     };
 

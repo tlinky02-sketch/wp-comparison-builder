@@ -545,7 +545,10 @@ function wpc_render_meta_box( $post ) {
             <div class="wpc-row">
                 <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Details Page Link (URL)', 'wp-comparison-builder' ); ?></label>
-                    <input type="text" id="wpc_details_link_input" name="wpc_details_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_details_link', true ) ); ?>" class="wpc-input" placeholder="https://example.com/review-page" />
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <input type="text" id="wpc_details_link_input" name="wpc_details_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_details_link', true ) ); ?>" class="wpc-input" placeholder="https://example.com/review-page" style="flex: 1; margin-bottom: 0;" />
+                        <button type="button" class="button wpc-link-settings-btn" data-target="wpc_details_link_settings_modal" style="height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 10px; border-color: #cbd5e1; font-size: 16px; cursor: pointer; transition: background 0.1s;" title="<?php esc_attr_e( 'Link Settings', 'wp-comparison-builder' ); ?>" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">⚙️</button>
+                    </div>
                     <?php
                     $public_post_types = get_post_types( array( 'public' => true ), 'objects' );
                     ?>
@@ -632,7 +635,10 @@ function wpc_render_meta_box( $post ) {
                 </div>
                 <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Direct / Non-Comparison Link (URL)', 'wp-comparison-builder' ); ?></label>
-                    <input type="text" name="wpc_direct_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_direct_link', true ) ); ?>" class="wpc-input" placeholder="https://example.com/go" />
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <input type="text" name="wpc_direct_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_direct_link', true ) ); ?>" class="wpc-input" placeholder="https://example.com/go" style="flex: 1; margin-bottom: 0;" />
+                        <button type="button" class="button wpc-link-settings-btn" data-target="wpc_direct_link_settings_modal" style="height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 10px; border-color: #cbd5e1; font-size: 16px; cursor: pointer; transition: background 0.1s;" title="<?php esc_attr_e( 'Link Settings', 'wp-comparison-builder' ); ?>" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">⚙️</button>
+                    </div>
                     <p class="description"><?php _e( 'Used when comparison is disabled. Steps over the popup.', 'wp-comparison-builder' ); ?></p>
                 </div>
                 <div class="wpc-col">
@@ -645,14 +651,82 @@ function wpc_render_meta_box( $post ) {
                     <p class="description"><?php _e( 'Custom button text for hero section. Leave empty to use default.', 'wp-comparison-builder' ); ?></p>
                 </div>
             </div>
-            
-            <div class="wpc-row">
-                <div class="wpc-col">
-                    <label class="wpc-label"><?php _e( 'Direct / Non-Comparison Link (URL)', 'wp-comparison-builder' ); ?></label>
-                    <input type="text" name="wpc_direct_link" value="<?php echo esc_url( get_post_meta( $post->ID, '_wpc_direct_link', true ) ); ?>" class="wpc-input" placeholder="https://example.com/go" />
-                    <p class="description"><?php _e( 'Used when comparison is disabled. Steps over the popup.', 'wp-comparison-builder' ); ?></p>
+
+            <!-- Details Link Settings Modal -->
+            <div id="wpc_details_link_settings_modal" class="wpc-link-settings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100000; align-items: center; justify-content: center;">
+                <div style="background: #ffffff; width: 380px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border: 1px solid #e2e8f0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    <!-- Header -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                        <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">⚙️</span> <?php _e( 'Details Link Settings', 'wp-comparison-builder' ); ?>
+                        </h4>
+                        <button type="button" class="wpc-modal-close" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #94a3b8; line-height: 1; padding: 4px;" onclick="document.getElementById('wpc_details_link_settings_modal').style.display='none'">&times;</button>
+                    </div>
+                    <!-- Content -->
+                    <div style="padding: 24px 20px; display: flex; flex-direction: column; gap: 16px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0; user-select: none;">
+                            <input type="checkbox" name="wpc_details_link_new_tab" value="1" <?php checked( get_post_meta( $post->ID, '_wpc_details_link_new_tab', true ), '1' ); ?> style="margin: 0; width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;" />
+                            <span style="font-size: 13px; font-weight: 500; color: #334155;"><?php _e( 'Open link in a new tab', 'wp-comparison-builder' ); ?></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0; user-select: none;">
+                            <input type="checkbox" name="wpc_details_link_nofollow" value="1" <?php checked( get_post_meta( $post->ID, '_wpc_details_link_nofollow', true ), '1' ); ?> style="margin: 0; width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;" />
+                            <span style="font-size: 13px; font-weight: 500; color: #334155;"><?php _e( 'Add rel="nofollow" (Search engine opt-out)', 'wp-comparison-builder' ); ?></span>
+                        </label>
+                    </div>
+                    <!-- Footer -->
+                    <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end;">
+                        <button type="button" class="button button-primary" style="border-radius: 6px; padding: 0 16px; height: 32px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('wpc_details_link_settings_modal').style.display='none'"><?php _e( 'Save Settings', 'wp-comparison-builder' ); ?></button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Direct Link Settings Modal -->
+            <div id="wpc_direct_link_settings_modal" class="wpc-link-settings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100000; align-items: center; justify-content: center;">
+                <div style="background: #ffffff; width: 380px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border: 1px solid #e2e8f0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    <!-- Header -->
+                    <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                        <h4 style="margin: 0; font-size: 15px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">⚙️</span> <?php _e( 'Direct Link Settings', 'wp-comparison-builder' ); ?>
+                        </h4>
+                        <button type="button" class="wpc-modal-close" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #94a3b8; line-height: 1; padding: 4px;" onclick="document.getElementById('wpc_direct_link_settings_modal').style.display='none'">&times;</button>
+                    </div>
+                    <!-- Content -->
+                    <div style="padding: 24px 20px; display: flex; flex-direction: column; gap: 16px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0; user-select: none;">
+                            <input type="checkbox" name="wpc_direct_link_new_tab" value="1" <?php checked( get_post_meta( $post->ID, '_wpc_direct_link_new_tab', true ), '1' ); ?> style="margin: 0; width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;" />
+                            <span style="font-size: 13px; font-weight: 500; color: #334155;"><?php _e( 'Open link in a new tab', 'wp-comparison-builder' ); ?></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0; user-select: none;">
+                            <input type="checkbox" name="wpc_direct_link_nofollow" value="1" <?php checked( get_post_meta( $post->ID, '_wpc_direct_link_nofollow', true ), '1' ); ?> style="margin: 0; width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;" />
+                            <span style="font-size: 13px; font-weight: 500; color: #334155;"><?php _e( 'Add rel="nofollow" (Search engine opt-out)', 'wp-comparison-builder' ); ?></span>
+                        </label>
+                    </div>
+                    <!-- Footer -->
+                    <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end;">
+                        <button type="button" class="button button-primary" style="border-radius: 6px; padding: 0 16px; height: 32px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('wpc_direct_link_settings_modal').style.display='none'"><?php _e( 'Save Settings', 'wp-comparison-builder' ); ?></button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            jQuery(document).ready(function($) {
+                $('.wpc-link-settings-btn').on('click', function(e) {
+                    e.preventDefault();
+                    var targetModalId = $(this).attr('data-target');
+                    var modal = $('#' + targetModalId);
+                    if (modal.length) {
+                        modal.css('display', 'flex');
+                    }
+                });
+
+                // Close on overlay click
+                $('.wpc-link-settings-modal').on('click', function(e) {
+                    if ($(e.target).hasClass('wpc-link-settings-modal')) {
+                        $(this).hide();
+                    }
+                });
+            });
+            </script>
             
         </div>
 
@@ -3426,9 +3500,14 @@ function wpc_save_meta_box( $post_id ) {
     if ( isset( $_POST['wpc_details_link'] ) ) {
         update_post_meta( $post_id, '_wpc_details_link', esc_url_raw( $_POST['wpc_details_link'] ) );
     }
+    update_post_meta( $post_id, '_wpc_details_link_new_tab', isset( $_POST['wpc_details_link_new_tab'] ) ? '1' : '0' );
+    update_post_meta( $post_id, '_wpc_details_link_nofollow', isset( $_POST['wpc_details_link_nofollow'] ) ? '1' : '0' );
+
     if ( isset( $_POST['wpc_direct_link'] ) ) {
         update_post_meta( $post_id, '_wpc_direct_link', esc_url_raw( $_POST['wpc_direct_link'] ) );
     }
+    update_post_meta( $post_id, '_wpc_direct_link_new_tab', isset( $_POST['wpc_direct_link_new_tab'] ) ? '1' : '0' );
+    update_post_meta( $post_id, '_wpc_direct_link_nofollow', isset( $_POST['wpc_direct_link_nofollow'] ) ? '1' : '0' );
     if ( isset( $_POST['wpc_button_text'] ) ) {
         update_post_meta( $post_id, '_wpc_button_text', sanitize_text_field( $_POST['wpc_button_text'] ) );
     }

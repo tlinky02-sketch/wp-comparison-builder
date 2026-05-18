@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Check, ExternalLink, ChevronRight, ChevronLeft } from "lucide-react";
 import { ComparisonItem } from "./PlatformCard";
 import { Button } from "@/components/ui/button";
+import { openCustomLink } from "@/lib/utils";
 
 declare global {
     interface Window {
@@ -428,16 +429,16 @@ const PricingTable = ({
 
             {/* Billing Cycle Toggle/Tabs (Dynamic for N items) */}
             {billingStyle !== 'none' && billingCycles.length > 0 && (
-                <div className="flex justify-center mb-4 w-full">
+                <div className="flex flex-wrap justify-center mb-4 w-full">
                     {billingCycles.length === 1 ? (
                         /* Single cycle: show as static label */
                         <div
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/30"
+                            className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/30"
                             style={{ fontSize: 'var(--wpc-font-size-base)' }}
                         >
-                            <span className="text-muted-foreground">{(window as any).wpcSettings?.texts?.billingCycle || 'Billing:'}</span>
+                            <span className="text-muted-foreground shrink-0">{(window as any).wpcSettings?.texts?.billingCycle || 'Billing:'}</span>
                             <span
-                                className="font-medium px-3 py-1 rounded-md"
+                                className="whitespace-nowrap font-medium px-3 py-1 rounded-md"
                                 style={{
                                     backgroundColor: useOverrides && overrides.primary ? overrides.primary : (settings?.colors?.primary || '#6366f1'),
                                     color: (window as any).wpcSettings?.colors?.btnText || settings?.colors?.btnText || '#ffffff',
@@ -844,7 +845,16 @@ const PricingTable = ({
                                 e.currentTarget.style.backgroundColor = 'var(--pt-btn-bg)';
                                 e.currentTarget.style.filter = 'brightness(100%)';
                             }}
-                            onClick={() => window.open(item.details_link || item.direct_link, config?.targetDetails || settings?.target_details || '_blank')}
+                            onClick={() => {
+                                const url = item.details_link || item.direct_link;
+                                if (url) {
+                                    const isDirect = !item.details_link && !!item.direct_link;
+                                    const isNewTab = isDirect ? item.direct_link_new_tab : item.details_link_new_tab;
+                                    const isNofollow = isDirect ? item.direct_link_nofollow : item.details_link_nofollow;
+                                    const defaultTarget = config?.targetDetails || settings?.target_details || '_blank';
+                                    openCustomLink(url, isNewTab, isNofollow, defaultTarget);
+                                }
+                            }}
                         >
                             {footerButtonText || item.button_text || "Visit Website"} <ExternalLink className="w-4 h-4 ml-2" />
                         </Button>

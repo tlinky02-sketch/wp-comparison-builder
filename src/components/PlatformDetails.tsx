@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, Check, Star, ExternalLink, ArrowLeft, BarChart, LayoutDashboard, Search } from "lucide-react";
 import { toast } from "sonner";
+import { openCustomLink } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -150,9 +151,12 @@ const PlatformDetails = ({ item, allItems, onBack, hoverColor, primaryColor, lab
 
                         <div className="flex flex-wrap gap-4">
                             <Button size="lg" className="px-8" onClick={() => {
-                                const settings = (window as any).wpcSettings || (window as any).ecommerceGuiderSettings;
-                                const shouldOpenNewTab = settings?.openNewTab !== false;
-                                window.open(item.details_link, shouldOpenNewTab ? '_blank' : '_self');
+                                if (item.details_link) {
+                                    const settings = (window as any).wpcSettings || (window as any).ecommerceGuiderSettings;
+                                    const shouldOpenNewTab = settings?.openNewTab !== false;
+                                    const defaultTarget = shouldOpenNewTab ? '_blank' : '_self';
+                                    openCustomLink(item.details_link, item.details_link_new_tab, item.details_link_nofollow, defaultTarget);
+                                }
                             }}>
                                 {(labels?.visitPlat ? labels.visitPlat.replace('%s', item.name) : `Visit ${item.name}`)} <ExternalLink className="w-4 h-4 ml-2" />
                             </Button>

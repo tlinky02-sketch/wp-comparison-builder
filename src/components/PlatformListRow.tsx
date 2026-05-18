@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComparisonItem } from './PlatformCard';
 import { Check, Tag } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, openCustomLink } from '@/lib/utils';
 import StarRating from './StarRating';
 
 interface PlatformListRowProps {
@@ -75,8 +75,11 @@ const PlatformListRow: React.FC<PlatformListRowProps> = ({
         } else {
             const url = item.direct_link || item.details_link;
             if (url) {
-                const target = config?.targetDirect || (window as any).wpcSettings?.target_direct || '_blank';
-                window.open(url, target);
+                const isDirect = !!item.direct_link;
+                const isNewTab = isDirect ? item.direct_link_new_tab : item.details_link_new_tab;
+                const isNofollow = isDirect ? item.direct_link_nofollow : item.details_link_nofollow;
+                const defaultTarget = config?.targetDirect || (window as any).wpcSettings?.target_direct || '_blank';
+                openCustomLink(url, isNewTab, isNofollow, defaultTarget);
             }
         }
     };
