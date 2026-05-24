@@ -102,6 +102,10 @@ function wpc_render_list_meta_box($post)
     // Get filter values
     $filter_tool_cats = get_post_meta($post->ID, '_wpc_list_filter_tool_cats', true) ?: [];
     $filter_tool_tags = get_post_meta($post->ID, '_wpc_list_filter_tool_tags', true) ?: [];
+    // Comparison Item Categories chosen to appear as filters when source is tool/both
+    $filter_item_cats_for_tool = get_post_meta($post->ID, '_wpc_list_filter_item_cats_for_tool', true) ?: [];
+    // Comparison Items (titles) chosen to appear as filters when source is tool/both
+    $filter_item_titles_for_tool = get_post_meta($post->ID, '_wpc_list_filter_item_titles_for_tool', true) ?: [];
 
     // Determine Post Types
     $query_post_types = array();
@@ -439,6 +443,42 @@ function wpc_render_list_meta_box($post)
                             <?php endif; ?>
                         </div>
                     </div>
+
+                    <!-- Comparison Item Categories as extra filter buttons for Tool lists -->
+                    <?php if (!empty($all_cats) && !is_wp_error($all_cats)): ?>
+                    <div style="margin-top: 12px;">
+                        <strong style="display:block; margin-bottom:5px;">Also show Comparison Item Categories as filters:</strong>
+                        <p class="description" style="margin:0 0 6px;">Check any comparison item categories you want to appear as filter buttons on the frontend for this tool list.</p>
+                        <div style="border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto; background:#fafafa;">
+                            <?php foreach ($all_cats as $cat): ?>
+                                <label style="display:block;"><input type="checkbox" name="wpc_list_filter_item_cats_for_tool[]"
+                                        value="<?php echo esc_attr($cat->term_id); ?>" <?php checked(in_array($cat->term_id, (array)$filter_item_cats_for_tool)); ?> /> <?php echo esc_html($cat->name); ?></label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Comparison Items (Titles) as extra filter buttons for Tool lists -->
+                    <?php 
+                    $all_comparison_items_for_filters = get_posts(array(
+                        'post_type' => 'comparison_item',
+                        'posts_per_page' => -1,
+                        'post_status' => 'publish',
+                        'orderby' => 'title',
+                        'order' => 'ASC'
+                    ));
+                    if (!empty($all_comparison_items_for_filters)): ?>
+                    <div style="margin-top: 12px;">
+                        <strong style="display:block; margin-bottom:5px;">Also show Comparison Items as filters:</strong>
+                        <p class="description" style="margin:0 0 6px;">Check any comparison items whose names you want to appear as filter buttons on the frontend for this tool list.</p>
+                        <div style="border: 1px solid #ddd; padding: 10px; max-height: 150px; overflow-y: auto; background:#fafafa;">
+                            <?php foreach ($all_comparison_items_for_filters as $item_post): ?>
+                                <label style="display:block;"><input type="checkbox" name="wpc_list_filter_item_titles_for_tool[]"
+                                        value="<?php echo esc_attr($item_post->ID); ?>" <?php checked(in_array($item_post->ID, (array)$filter_item_titles_for_tool)); ?> /> <?php echo esc_html($item_post->post_title); ?></label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <script>
@@ -1918,6 +1958,21 @@ function wpc_save_list_meta($post_id)
         update_post_meta($post_id, '_wpc_list_filter_tool_tags', $tool_tags);
     } else {
         delete_post_meta($post_id, '_wpc_list_filter_tool_tags');
+    }
+
+    // Save Comparison Item Categories chosen to appear as filters in tool/both lists
+    if (isset($_POST['wpc_list_filter_item_cats_for_tool']) && is_array($_POST['wpc_list_filter_item_cats_for_tool'])) {
+        $filter_item_cats = array_map('intval', $_POST['wpc_list_filter_item_cats_for_tool']);
+        update_post_meta($post_id, '_wpc_list_filter_item_cats_for_tool', $filter_item_cats);
+    } else {
+        delete_post_meta($post_id, '_wpc_list_filter_item_cats_for_tool');
+    }
+
+    if (isset($_POST['wpc_list_filter_item_titles_for_tool']) && is_array($_POST['wpc_list_filter_item_titles_for_tool'])) {
+        $filter_item_titles = array_map('intval', $_POST['wpc_list_filter_item_titles_for_tool']);
+        update_post_meta($post_id, '_wpc_list_filter_item_titles_for_tool', $filter_item_titles);
+    } else {
+        delete_post_meta($post_id, '_wpc_list_filter_item_titles_for_tool');
     }
 
     // Save Filter Cats

@@ -1430,6 +1430,7 @@ function wpc_render_meta_box( $post ) {
                                 <label style="display:block;">
                                     <input type="checkbox" name="wpc_category[]" value="<?php echo esc_attr( $cat->term_id ); ?>" <?php checked( in_array( $cat->term_id, $current_cats ) ); ?> onchange="wpcSyncPrimaryCats(this); wpcSyncVariantCats(this);" />
                                     <?php echo esc_html( $cat->name ); ?>
+                                    <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, <?php echo esc_attr( $cat->term_id ); ?>, 'comparison_category', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span>
                                 </label>
                             <?php endforeach; ?>
                         <?php else : ?>
@@ -1471,6 +1472,7 @@ function wpc_render_meta_box( $post ) {
                                 <label style="display:block;">
                                     <input type="checkbox" name="wpc_features[]" value="<?php echo esc_attr( $feature->term_id ); ?>" <?php checked( in_array( $feature->term_id, $current_features ) ); ?> onchange="wpcSyncPrimaryFeatures(this)" />
                                     <?php echo esc_html( $feature->name ); ?>
+                                    <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, <?php echo esc_attr( $feature->term_id ); ?>, 'comparison_feature', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span>
                                 </label>
                             <?php endforeach; ?>
                         <?php else : ?>
@@ -2376,11 +2378,11 @@ function wpc_render_meta_box( $post ) {
                             var listId = taxonomy === 'comparison_category' ? 'wpc-cat-list' : 'wpc-feature-list';
                             var html = '';
                             if (taxonomy === 'comparison_category') {
-                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_category[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryCats(this)" /> ' + term.name + '</label>';
+                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_category[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryCats(this)" /> ' + term.name + ' <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, ' + term.term_id + ', \'comparison_category\', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span></label>';
                                  var primaryHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-option"><input type="checkbox" name="wpc_primary_cats[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
                                  jQuery('#wpc-primary-cat-list').append(primaryHtml);
                             } else {
-                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryFeatures(this)" /> ' + term.name + '</label>';
+                                 html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryFeatures(this)" /> ' + term.name + ' <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, ' + term.term_id + ', \'comparison_feature\', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span></label>';
                                  var primaryTagHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-feature-option"><input type="checkbox" name="wpc_primary_features[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
                                  jQuery('#wpc-primary-feature-list').append(primaryTagHtml);
                             }
@@ -2702,12 +2704,14 @@ function wpc_render_meta_box( $post ) {
                 var term = response.data;
                 var html = '';
                 if (taxonomy === 'comparison_category') {
-                     html = '<label style="display:block;"><input type="checkbox" name="wpc_category[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryCats(this)" /> ' + term.name + '</label>';
+                     html = '<label style="display:block;"><input type="checkbox" name="wpc_category[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryCats(this)" /> ' + term.name + ' <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, ' + term.term_id + ', \'comparison_category\', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span></label>';
                      // Also append to primary list (and show it because it's checked)
                      var primaryHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-option"><input type="checkbox" name="wpc_primary_cats[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
                      jQuery('#wpc-primary-cat-list').append(primaryHtml);
                 } else {
-                     html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked /> ' + term.name + '</label>';
+                     html = '<label style="display:block;"><input type="checkbox" name="wpc_features[]" value="' + term.term_id + '" checked onchange="wpcSyncPrimaryFeatures(this)" /> ' + term.name + ' <span class="wpc-delete-term" onclick="wpcDeleteTerm(event, ' + term.term_id + ', \'comparison_feature\', this)" style="color:#d63638; cursor:pointer; font-size:11px; float:right; padding: 2px;" title="Delete Term">❌</span></label>';
+                     var primaryTagHtml = '<label style="display:block;" data-term-id="' + term.term_id + '" class="wpc-primary-feature-option"><input type="checkbox" name="wpc_primary_features[]" value="' + term.term_id + '" /> ' + term.name + '</label>';
+                     jQuery('#wpc-primary-feature-list').append(primaryTagHtml);
                 }
                 
                 // If "No types/features found" exists, remove it
@@ -3409,6 +3413,29 @@ function wpc_ajax_add_term() {
     
     $term_obj = get_term($term['term_id'], $taxonomy);
     wp_send_json_success($term_obj);
+}
+
+add_action('wp_ajax_wpc_delete_term', 'wpc_ajax_delete_term');
+function wpc_ajax_delete_term() {
+    check_ajax_referer('wpc_add_term_nonce'); // Reuse the same nonce for simplicity
+    if (!current_user_can('manage_categories')) wp_send_json_error('Unauthorized');
+
+    $taxonomy = sanitize_text_field($_POST['taxonomy']);
+    $term_id = intval($_POST['term_id']);
+
+    if (!$term_id || !$taxonomy) {
+        wp_send_json_error('Invalid parameters');
+    }
+
+    $result = wp_delete_term($term_id, $taxonomy);
+    
+    if (is_wp_error($result)) {
+        wp_send_json_error($result->get_error_message());
+    } elseif ($result === false || $result === 0) {
+        wp_send_json_error('Failed to delete term');
+    }
+    
+    wp_send_json_success();
 }
 
 /**

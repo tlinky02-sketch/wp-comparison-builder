@@ -1492,6 +1492,34 @@ function wpc_list_shortcode($atts)
                     $filter_feat_names[] = $term->name;
             }
         }
+
+        // Also include any opted-in Comparison Item Categories as filter buttons
+        $filter_item_cats_for_tool = get_post_meta($post_id, '_wpc_list_filter_item_cats_for_tool', true) ?: [];
+        if (is_array($filter_item_cats_for_tool)) {
+            foreach ($filter_item_cats_for_tool as $fcid) {
+                $term = get_term($fcid, 'comparison_category');
+                if (!$term || is_wp_error($term)) {
+                    $term = get_term($fcid); // Fallback generic lookup
+                }
+                if ($term && !is_wp_error($term) && !in_array($term->name, $filter_cat_names)) {
+                    $filter_cat_names[] = $term->name;
+                }
+            }
+        }
+
+        // Also include any opted-in Comparison Items (Titles) as filter buttons
+        $filter_item_titles_for_tool = get_post_meta($post_id, '_wpc_list_filter_item_titles_for_tool', true) ?: [];
+        if (is_array($filter_item_titles_for_tool)) {
+            foreach ($filter_item_titles_for_tool as $item_id) {
+                $item_post = get_post($item_id);
+                if ($item_post) {
+                    $item_title = $item_post->post_title;
+                    if (!in_array($item_title, $filter_cat_names)) {
+                        $filter_cat_names[] = $item_title;
+                    }
+                }
+            }
+        }
     }
 
     // Normalize Badge Data for JSON
@@ -1802,6 +1830,18 @@ function wpc_list_shortcode($atts)
                 if ($f_name && is_string($f_name))
                     $all_filter_feats[$f_name] = true;
             }
+        }
+    }
+
+    // Ensure explicitly selected filters are ALWAYS present in the shortcode's category list
+    if (!empty($filter_cat_names) && is_array($filter_cat_names)) {
+        foreach ($filter_cat_names as $fcn) {
+            $all_filter_cats[$fcn] = true;
+        }
+    }
+    if (!empty($filter_feat_names) && is_array($filter_feat_names)) {
+        foreach ($filter_feat_names as $ffn) {
+            $all_filter_feats[$ffn] = true;
         }
     }
 

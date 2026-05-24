@@ -128,6 +128,42 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
                 }
             }
 
+            // For tools: also include comparison_category terms from associated comparison items
+            // AND the titles of the associated items themselves, as they are treated as categories
+            // Always include regardless of inherit_cats flag (that only controls admin sidebar display)
+            if ($post_type === 'comparison_tool') {
+                $associated_items = get_post_meta($id, '_wpc_tool_associated_item', true);
+                if (!is_array($associated_items)) {
+                    $associated_items = !empty($associated_items) ? array($associated_items) : array();
+                }
+                foreach ($associated_items as $item_id) {
+                    // Add the associated item's title as a category
+                    $assoc_item = get_post($item_id);
+                    if ($assoc_item) {
+                        $item_title = $assoc_item->post_title;
+                        if (!in_array($item_title, $category_names)) {
+                            $category_names[] = $item_title;
+                        }
+                        if (!in_array($item_title, $all_categories)) {
+                            $all_categories[] = $item_title;
+                        }
+                    }
+
+                    // Add the associated item's categories
+                    $item_cats = wp_get_post_terms($item_id, 'comparison_category');
+                    if (!is_wp_error($item_cats) && !empty($item_cats)) {
+                        foreach ($item_cats as $ic) {
+                            if (!in_array($ic->name, $category_names)) {
+                                $category_names[] = $ic->name;
+                            }
+                            if (!in_array($ic->name, $all_categories)) {
+                                $all_categories[] = $ic->name;
+                            }
+                        }
+                    }
+                }
+            }
+
             // Feature mapping logic... (reused)
             $feature_map = array(
                 'products' => '',
@@ -179,6 +215,8 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
             $dashboard_field_val = $get_val('dashboard_image', '_wpc_dashboard_image');
 
             $dashboard_img = $featured_img ?: $dashboard_field_val;
+
+            $hero_button_text = '';
 
             // Data Mapping
             if ($post_type === 'comparison_tool') {
@@ -303,6 +341,11 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
                     $term = get_term($p_id);
                     if ($term && !is_wp_error($term)) {
                         $primary_category_names[] = $term->name;
+                    } else {
+                        $post_obj = get_post($p_id);
+                        if ($post_obj && $post_obj->post_type === 'comparison_item') {
+                            $primary_category_names[] = $post_obj->post_title;
+                        }
                     }
                 }
             }
@@ -310,8 +353,9 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
 
             $primary_feature_names = array();
             if (!empty($primary_feat_ids) && is_array($primary_feat_ids)) {
+                $tax = ($post_type === 'comparison_tool') ? 'tool_tag' : 'comparison_feature';
                 foreach ($primary_feat_ids as $f_id) {
-                    $term = get_term((int) $f_id, 'comparison_feature');
+                    $term = get_term((int) $f_id, $tax);
                     if ($term && !is_wp_error($term)) {
                         $primary_feature_names[] = $term->name;
                     }
@@ -472,12 +516,33 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
         wp_reset_postdata();
     }
 
-    // Get ALL available terms for the filter list (Items + Tools)
     $all_cat_terms = get_terms(array('taxonomy' => array('comparison_category', 'tool_category'), 'hide_empty' => false));
     $all_feat_terms = get_terms(array('taxonomy' => array('comparison_feature', 'tool_tag'), 'hide_empty' => false));
 
     $all_cat_names = !is_wp_error($all_cat_terms) ? wp_list_pluck($all_cat_terms, 'name') : [];
+    // Merge with any categories we collected dynamically (like comparison item titles)
+    if (isset($all_categories) && is_array($all_categories)) {
+        $all_cat_names = array_merge($all_cat_names, $all_categories);
+    }
+    // Also include all comparison item titles as potential category names.
+    // This is needed because Custom Lists can use item titles as filter buttons,
+    // and the React frontend overwrites categories from the API response.
+    // Without this, the filter names are lost after the API fetch.
+    $comparison_item_posts = get_posts(array(
+        'post_type'      => 'comparison_item',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'fields'         => 'ids',
+    ));
+    foreach ($comparison_item_posts as $cip_id) {
+        $all_cat_names[] = get_the_title($cip_id);
+    }
+    // Remove duplicates and re-index
+    $all_cat_names = array_values(array_unique($all_cat_names));
+
     $all_feat_names = !is_wp_error($all_feat_terms) ? wp_list_pluck($all_feat_terms, 'name') : [];
+    // Remove duplicates and re-index
+    $all_feat_names = array_values(array_unique($all_feat_names));
 
     return array(
         'items' => $items,

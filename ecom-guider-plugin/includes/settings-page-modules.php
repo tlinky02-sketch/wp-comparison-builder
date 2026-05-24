@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function wpc_render_modules_tab() {
     $tools_enabled = get_option( 'wpc_enable_tools_module', false );
+    $tools_associated_items = get_option( 'wpc_enable_tools_associated_items', '1' );
     $variants_enabled = get_option( 'wpc_enable_variants_module', false );
     $variants_selector_style = get_option( 'wpc_variants_selector_style', 'tabs' );
     $variants_show_badge = get_option( 'wpc_variants_show_badge', '1' );
@@ -29,6 +30,20 @@ function wpc_render_modules_tab() {
                         <?php _e( 'Adds a "Recommended Tools" section with a central tool library, collections, and frontend display capabilities. When enabled, a new menu item will appear under Comparison Items.', 'wp-comparison-builder' ); ?>
                     </p>
                     <?php if ( $tools_enabled ) : ?>
+                    <div style="margin-top: 16px; padding: 16px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                        <h4 style="margin: 0 0 12px 0;"><?php _e( 'Recommended Tools Settings', 'wp-comparison-builder' ); ?></h4>
+                        
+                        <p style="margin: 0;">
+                            <label>
+                                <input type="checkbox" name="wpc_enable_tools_associated_items" value="1" <?php checked( '1', $tools_associated_items ); ?> />
+                                <?php _e( 'Enable Associated Comparison Items & Term Sourcing', 'wp-comparison-builder' ); ?>
+                            </label>
+                        </p>
+                        <p class="description" style="margin: 4px 0 0 0;">
+                            <?php _e( 'If enabled, tools can be linked to comparison items to display and inherit categories/tags.', 'wp-comparison-builder' ); ?>
+                        </p>
+                    </div>
+
                     <p style="margin-top: 12px;">
                         <a href="<?php echo admin_url( 'edit.php?post_type=comparison_tool' ); ?>" class="button button-secondary">
                             🔧 Manage Tools Library

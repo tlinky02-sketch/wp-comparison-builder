@@ -62,6 +62,7 @@ function wpc_register_settings() {
     // Module Toggles
     // Module Toggles
     register_setting( 'wpc_settings_group', 'wpc_enable_tools_module' );
+    register_setting( 'wpc_settings_group', 'wpc_enable_tools_associated_items' );
     register_setting( 'wpc_settings_group', 'wpc_enable_variants_module' );
     register_setting( 'wpc_settings_group', 'wpc_variants_selector_style' );
     register_setting( 'wpc_settings_group', 'wpc_variants_show_badge' );
@@ -368,6 +369,7 @@ function wpc_handle_export_data() {
             'wpc_target_details', 'wpc_target_direct', 'wpc_target_pricing',
             'wpc_pt_header_bg', 'wpc_pt_header_text', 'wpc_pt_btn_bg', 'wpc_pt_btn_text', 
             'wpc_pt_btn_pos_table', 'wpc_pt_btn_pos_popup', 'wpc_schema_settings', 'wpc_enable_tools_module',
+            'wpc_enable_tools_associated_items',
             'wpc_default_list_style',
             // Text Labels
             'wpc_text_view_details', 'wpc_text_compare_alternatives', 'wpc_text_compare_now', 
