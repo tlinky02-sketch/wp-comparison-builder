@@ -2410,7 +2410,6 @@ function wpc_pricing_table_shortcode($atts)
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
         <?php
         return ob_get_clean();
 }
