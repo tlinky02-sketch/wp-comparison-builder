@@ -1,14 +1,17 @@
 <?php
 /**
- * Plugin Name: WP Comparison Builder
- * Plugin URI:  https://example.com/
- * Description: A powerful, generic comparison builder for WordPress. Create beautiful comparison tables, lists, and hero sections for any type of item (hosting, software, products, etc.).
+ * Plugin Name: Comparison Builder
+ * Plugin URI:  https://wordpress.org/plugins/comparison-builder/
+ * Description: A powerful, flexible comparison builder for WordPress. Create beautiful comparison tables, pricing tables, pros/cons sections, hero sections, and feature tables for any type of item — software, hosting, products, services, and more.
  * Version:     1.0.5
- * Author:      Your Name
- * Author URI:  https://example.com/
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
+ * Author:      Comparison Builder
+ * Author URI:  https://wordpress.org/plugins/comparison-builder/
  * Text Domain: wp-comparison-builder
  * Domain Path: /languages
  * License:     GPL-2.0+
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // Exit if accessed directly.
@@ -19,7 +22,7 @@ if (!defined('ABSPATH')) {
 // Prevent fatal errors if another version of this plugin is already active
 if (defined('WPC_VERSION')) {
     add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p><strong>WP Comparison Builder:</strong> Activation blocked to prevent a fatal error because another copy of this plugin is currently active. Please deactivate the old version first.</p></div>';
+        echo '<div class="notice notice-error"><p><strong>Comparison Builder:</strong> Activation blocked to prevent a fatal error because another copy of this plugin is currently active. Please deactivate the old version first.</p></div>';
     });
     // Return early to prevent redefining constants and functions
     return;
@@ -29,6 +32,11 @@ if (defined('WPC_VERSION')) {
 define('WPC_VERSION', '1.0.5');
 define('WPC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WPC_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+// Load text domain for translations
+add_action( 'plugins_loaded', function() {
+    load_plugin_textdomain( 'wp-comparison-builder', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+} );
 
 // Includes
 require_once WPC_PLUGIN_DIR . 'includes/cpt-setup.php';

@@ -52,7 +52,7 @@ function wpc_create_comparison_page() {
 }
 
 // Run on plugin activation
-register_activation_hook( WPC_PLUGIN_DIR . 'wp-comparison-builder.php', 'wpc_create_comparison_page' );
+register_activation_hook( WPC_PLUGIN_DIR . 'comparison-builder.php', 'wpc_create_comparison_page' );
 
 // Also check on admin_init in case it was missed
 add_action( 'admin_init', function() {

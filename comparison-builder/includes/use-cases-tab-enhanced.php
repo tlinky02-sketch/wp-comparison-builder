@@ -1,3 +1,12 @@
+<?php
+/**
+ * Use Cases Tab (Enhanced - Category Variant Aware)
+ * Rendered as a partial inside the admin meta box.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+?>
         <!-- TAB: USE CASES -->
         <div id="wpc-tab-use_cases" class="wpc-tab-content">
             <?php

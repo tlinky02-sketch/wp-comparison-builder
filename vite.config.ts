@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    outDir: 'ecom-guider-plugin/dist',
+    outDir: 'comparison-builder/dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {

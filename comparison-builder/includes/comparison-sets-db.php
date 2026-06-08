@@ -34,7 +34,7 @@ function wpc_create_comparison_sets_table() {
 }
 
 // Run on plugin activation
-register_activation_hook( WPC_PLUGIN_DIR . 'wp-comparison-builder.php', 'wpc_create_comparison_sets_table' );
+register_activation_hook( WPC_PLUGIN_DIR . 'comparison-builder.php', 'wpc_create_comparison_sets_table' );
 
 // Run on admin_init for updates
 add_action( 'admin_init', function() {

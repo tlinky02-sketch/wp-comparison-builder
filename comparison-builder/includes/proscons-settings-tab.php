@@ -3,6 +3,9 @@
  * Pros & Cons Settings Tab
  * Global settings for pros/cons colors, icons, and text
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 function wpc_render_proscons_tab() {
     ?>

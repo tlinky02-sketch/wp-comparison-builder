@@ -86,9 +86,9 @@ class WPC_Tools_Database {
         }
         
         $post_ids = array_map( 'absint', $post_ids );
-        $ids_sql = implode( ',', $post_ids );
-        
-        $rows = $wpdb->get_results( "SELECT * FROM {$this->table_name} WHERE post_id IN ($ids_sql)" );
+        $placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+        $sql = "SELECT * FROM {$this->table_name} WHERE post_id IN ($placeholders)";
+        $rows = $wpdb->get_results( $wpdb->prepare( $sql, $post_ids ) );
         
         if ( $rows ) {
             $json_fields = [ 'features', 'pricing_plans' ];

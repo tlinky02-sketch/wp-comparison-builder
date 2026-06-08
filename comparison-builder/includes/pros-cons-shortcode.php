@@ -4,6 +4,10 @@
  * Displays the pros/cons table for a specific item inline.
  * Pure PHP SSR - No React dependency.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 function wpc_pros_cons_shortcode($atts)
 {
     // Enqueue only minimal styles (no React!)

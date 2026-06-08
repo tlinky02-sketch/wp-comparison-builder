@@ -3,6 +3,10 @@
  * Debug Shortcode: [wpc_debug_tags]
  * Displays raw feature configuration and tag terms
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 function wpc_debug_tags_shortcode() {
     if ( ! current_user_can( 'manage_options' ) ) return '';
 
