@@ -602,7 +602,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
       )}
 
       {/* Desktop Table View */}
-      <div className="hidden md:block w-full pb-4 relative group/table">
+      <div className="hidden md:block w-full relative group/table">
         {/* Scroll Arrows */}
         {showScroll && (
           <>
@@ -842,8 +842,8 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                       className="p-5 align-top break-words whitespace-normal min-w-0"
                       style={{ width: columnWidth }}
                     >
-                      <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                        style={{ backgroundColor: `${prosBg}80`, borderColor: `${prosText}20` }}>
+                      <ul className="space-y-2 text-left p-4 rounded-xl w-full min-w-0"
+                        style={{ backgroundColor: `${prosBg}80` }}>
                         {(item.pros || []).slice(0, 3).map((pro, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
                             <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: prosText }} />
@@ -870,8 +870,8 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                       className="p-5 align-top break-words whitespace-normal min-w-0"
                       style={{ width: columnWidth }}
                     >
-                      <ul className="space-y-2 text-left p-4 rounded-xl border w-full min-w-0"
-                        style={{ backgroundColor: `${consBg}80`, borderColor: `${consText}20` }}>
+                      <ul className="space-y-2 text-left p-4 rounded-xl w-full min-w-0"
+                        style={{ backgroundColor: `${consBg}80` }}>
                         {(item.cons || []).slice(0, 3).map((con, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-foreground break-words whitespace-normal">
                             <X className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: consText }} />

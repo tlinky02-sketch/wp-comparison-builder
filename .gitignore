@@ -24,4 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 
-!ecom-guider-plugin/dist
+!comparison-builder/dist
