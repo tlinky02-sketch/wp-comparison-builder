@@ -334,14 +334,28 @@ function wpc_coupon_popup_shortcode( $atts ) {
     $timer_seconds = 900; // default 15 minutes
     $timer_val = trim( strtolower( $atts['timer'] ) );
     if ( $timer_val !== 'off' ) {
-        if ( strpos( $timer_val, 'm' ) !== false ) {
-            $timer_seconds = intval( $timer_val ) * 60;
-        } elseif ( strpos( $timer_val, 'h' ) !== false ) {
-            $timer_seconds = intval( $timer_val ) * 3600;
-        } elseif ( strpos( $timer_val, 's' ) !== false ) {
-            $timer_seconds = intval( $timer_val );
+        $parsed_total = 0;
+        
+        // Match standard time formats: 1y 2mo 3d 4h 5m 6s
+        // We use (?<!m)o to differentiate mo (month) from m (minute)
+        preg_match_all('/(\d+)\s*(y|mo|d|h|m(?!o)|s)/i', $timer_val, $matches, PREG_SET_ORDER);
+        
+        if ( ! empty( $matches ) ) {
+            foreach ( $matches as $match ) {
+                $val = intval( $match[1] );
+                $unit = strtolower( $match[2] );
+                if ( $unit === 'y' ) $parsed_total += $val * 31536000;
+                elseif ( $unit === 'mo' ) $parsed_total += $val * 2592000;
+                elseif ( $unit === 'd' ) $parsed_total += $val * 86400;
+                elseif ( $unit === 'h' ) $parsed_total += $val * 3600;
+                elseif ( $unit === 'm' ) $parsed_total += $val * 60;
+                elseif ( $unit === 's' ) $parsed_total += $val;
+            }
+            if ( $parsed_total > 0 ) {
+                $timer_seconds = $parsed_total;
+            }
         } elseif ( intval( $timer_val ) > 0 ) {
-            $timer_seconds = intval( $timer_val ); // default to seconds if plain number is provided (per user request: "also we should have the option of seceond")
+            $timer_seconds = intval( $timer_val ); // plain number = seconds
         }
     }
 
@@ -398,11 +412,28 @@ function wpc_coupon_popup_shortcode( $atts ) {
                     <?php if ( $timer_val !== 'off' ) : ?>
                         <div class="wpc-coupon-timer-container">
                             <div class="wpc-coupon-timer-clock">
-                                <span class="wpc-timer-block hours">00h</span>
-                                <span class="wpc-timer-sep hours-sep">:</span>
-                                <span class="wpc-timer-block minutes">00m</span>
-                                <span class="wpc-timer-sep">:</span>
-                                <span class="wpc-timer-block seconds">00s</span>
+                                <!-- Pair A: Years & Months (hidden by default) -->
+                                <div class="wpc-timer-pair wpc-timer-pair-ym" style="display:none">
+                                    <span class="wpc-timer-block years">00y</span>
+                                    <span class="wpc-timer-sep">:</span>
+                                    <span class="wpc-timer-block months">00mo</span>
+                                </div>
+                                <!-- Between-pair separator: A↔B -->
+                                <span class="wpc-pair-sep wpc-pair-sep-ab" style="display:none">:</span>
+                                <!-- Pair B: Days & Hours (hidden by default) -->
+                                <div class="wpc-timer-pair wpc-timer-pair-dh" style="display:none">
+                                    <span class="wpc-timer-block days">00d</span>
+                                    <span class="wpc-timer-sep">:</span>
+                                    <span class="wpc-timer-block hours">00h</span>
+                                </div>
+                                <!-- Between-pair separator: B↔C -->
+                                <span class="wpc-pair-sep wpc-pair-sep-bc" style="display:none">:</span>
+                                <!-- Pair C: Minutes & Seconds (always shown) -->
+                                <div class="wpc-timer-pair wpc-timer-pair-ms">
+                                    <span class="wpc-timer-block minutes">00m</span>
+                                    <span class="wpc-timer-sep">:</span>
+                                    <span class="wpc-timer-block seconds">00s</span>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -601,6 +632,12 @@ function wpc_enqueue_coupon_popup_assets() {
         .wpc-coupon-modal-card {
             animation: wpcSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        
+        .wpc-coupon-modal-card.wpc-no-animation {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
 
         /* Close Button (Premium Circular Style) */
         .wpc-coupon-close-btn {
@@ -629,20 +666,23 @@ function wpc_enqueue_coupon_popup_assets() {
         /* Body Grid Layout */
         .wpc-coupon-body {
             display: flex;
-            gap: 40px;
+            gap: 24px;
             align-items: center;
             position: relative;
         }
 
-        /* Left Section (Logo & Timer) */
+        /* Left Section (Logo & Timer) - strict 40% column */
         .wpc-coupon-left {
-            width: 260px;
+            width: 40%;
+            max-width: 40%;
+            min-width: 0;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-right: 20px;
+            padding: 0 4px 0 0;
+            box-sizing: border-box;
         }
 
         .wpc-coupon-logo-container {
@@ -660,34 +700,60 @@ function wpc_enqueue_coupon_popup_assets() {
             object-fit: contain;
         }
 
-        /* Styled Urgent Timer Blocks matching reference card */
+        /* Styled Urgent Timer Blocks */
         .wpc-coupon-timer-container {
             text-align: center;
             width: 100%;
+            /* No overflow:hidden here — it clips the borders on first/last blocks */
         }
+        /* Desktop: all pairs in one horizontal row */
         .wpc-coupon-timer-clock {
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
+            width: 100%;
+            flex-wrap: nowrap;
+            /* Small padding so box-shadows on edge blocks are not clipped */
+            padding: 3px 2px;
+            box-sizing: border-box;
+        }
+        /* Each pair is a flex row (block : block) */
+        .wpc-timer-pair {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        /* Between-pair separator (desktop: visible inline) */
+        .wpc-pair-sep {
+            font-size: 14px;
+            font-weight: 800;
+            color: #9ca3af;
+            flex-shrink: 0;
+        }
+        /* Inner separator between two blocks in a pair */
+        .wpc-timer-pair .wpc-timer-sep {
+            font-size: 14px;
+            font-weight: 800;
+            color: #9ca3af;
+            flex-shrink: 0;
         }
         .wpc-coupon-timer-clock .wpc-timer-block {
             background: #f3f4f6;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 26px;
-            font-weight: 850;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 17px;
+            font-weight: 800;
             color: #111827;
-            min-width: 65px;
+            min-width: 46px;
             text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
             font-variant-numeric: tabular-nums;
             border: 1px solid #e5e7eb;
-        }
-        .wpc-coupon-timer-clock .wpc-timer-sep {
-            font-size: 22px;
-            font-weight: 800;
-            color: #9ca3af;
+            white-space: nowrap;
         }
 
         /* Right Section */
@@ -1044,6 +1110,7 @@ function wpc_enqueue_coupon_popup_assets() {
         }
 
         /* Responsive: mobile */
+        /* ====================== RESPONSIVE: Mobile ====================== */
         @media (max-width: 768px) {
             .wpc-coupon-popup-overlay {
                 align-items: flex-start;
@@ -1062,28 +1129,55 @@ function wpc_enqueue_coupon_popup_assets() {
                 top: 10px;
                 right: 10px;
             }
+            /* Stack body vertically on mobile */
             .wpc-coupon-body {
                 flex-direction: column;
                 gap: 16px;
                 align-items: flex-start;
             }
+            /* Left section on mobile: full width, stack logo on top, timer below */
             .wpc-coupon-left {
                 width: 100%;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 16px;
+                max-width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
                 padding-right: 0;
+                overflow: hidden;
             }
+            /* Logo on mobile: small, left-aligned */
             .wpc-coupon-logo-container {
                 width: 72px;
                 height: 60px;
                 margin-bottom: 0;
                 flex-shrink: 0;
             }
+            /* Timer on mobile: full width, pairs stack as rows (2×2 grid) */
             .wpc-coupon-timer-container {
-                width: auto;
-                flex-shrink: 0;
+                width: 100%;
+            }
+            /* On mobile: pairs stack vertically, between-pair seps hidden */
+            .wpc-coupon-timer-clock {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                justify-content: flex-start;
+            }
+            /* Each pair stays as a horizontal row on mobile */
+            .wpc-timer-pair {
+                gap: 6px;
+            }
+            .wpc-timer-pair .wpc-timer-block {
+                min-width: 56px;
+                font-size: 18px;
+                padding: 8px 10px;
+            }
+            .wpc-timer-pair .wpc-timer-sep {
+                font-size: 16px;
+            }
+            /* Hide between-pair separators on mobile (they become row breaks) */
+            .wpc-pair-sep {
+                display: none !important;
             }
             .wpc-coupon-right {
                 width: 100%;
@@ -1099,7 +1193,6 @@ function wpc_enqueue_coupon_popup_assets() {
             .wpc-coupon-mascot-container {
                 display: none;
             }
-            /* Keep the pill correctly sized on mobile */
             .wpc-coupon-btn-container {
                 max-width: 100% !important;
             }
@@ -1118,12 +1211,12 @@ function wpc_enqueue_coupon_popup_assets() {
                 border-radius: 14px;
             }
             .wpc-coupon-timer-clock .wpc-timer-block {
-                font-size: 18px;
-                padding: 6px 10px;
-                min-width: 44px;
+                font-size: 16px;
+                padding: 6px 8px;
+                min-width: 50px;
             }
             .wpc-coupon-timer-clock .wpc-timer-sep {
-                font-size: 16px;
+                font-size: 14px;
             }
             .wpc-coupon-btn-container {
                 max-width: 100% !important;
@@ -1147,7 +1240,9 @@ function wpc_enqueue_coupon_popup_assets() {
         }
 
         // Global Coupon Handlers
-        window.wpcOpenCouponPopup = function(uid, isAutoTrigger = false) {
+        window.wpcOpenCouponPopup = function(uid, isAutoTrigger = false, isExitIntent = false) {
+            let isRetrigger = false;
+            
             // Check trigger limits ONLY if this is triggered automatically (e.g. exit-intent or delay timer)
             if (isAutoTrigger) {
                 const wrapper = document.getElementById(uid);
@@ -1161,12 +1256,27 @@ function wpc_enqueue_coupon_popup_assets() {
                     return; // Blocked by local JS variable (already triggered this page load)
                 }
                 
+                // Track if this is a subsequent trigger on the same page (for aggressive exit intent logic)
+                if (window['wpc_triggered_' + uid]) {
+                    isRetrigger = true;
+                }
+                
                 // Mark local variable if it triggered this page load
                 window['wpc_triggered_' + uid] = true;
             }
 
             const overlay = document.getElementById('overlay-' + uid);
             if (overlay) {
+                const card = overlay.querySelector('.wpc-coupon-modal-card');
+                
+                // Aggressive Exit Intent Logic: If triggered by exit intent, NEVER animate. Snap instantly.
+                // Auto-Open timers will still retain animation.
+                if (isExitIntent && card) {
+                    card.classList.add('wpc-no-animation');
+                } else if (card) {
+                    card.classList.remove('wpc-no-animation');
+                }
+
                 overlay.style.display = 'flex';
                 document.body.style.overflow = 'hidden'; // Lock background scrolling
                 wpcStartTimer(uid);
@@ -1287,33 +1397,64 @@ function wpc_enqueue_coupon_popup_assets() {
             const timerEnabled = wrapper.getAttribute('data-timer-enabled') === 'true';
             if (!timerEnabled) return;
 
-            const duration = parseInt(wrapper.getAttribute('data-timer-seconds'), 10) || 900;
+            let duration = parseInt(wrapper.getAttribute('data-timer-seconds'), 10) || 900;
+            // If the user hasn't explicitly set a custom timer (or uses the default 15m), 
+            // randomize it between 15m (900s) and 30m (1800s) to look organic.
+            if (duration === 900) {
+                duration = 900 + Math.floor(Math.random() * 900);
+            }
             let timeRemaining = duration;
 
-            const hoursBlock = wrapper.querySelector('.wpc-timer-block.hours');
-            const hoursSep = wrapper.querySelector('.wpc-timer-sep.hours-sep');
+            const pairYM   = wrapper.querySelector('.wpc-timer-pair-ym');
+            const pairDH   = wrapper.querySelector('.wpc-timer-pair-dh');
+            const pairMS   = wrapper.querySelector('.wpc-timer-pair-ms');
+            const sepAB    = wrapper.querySelector('.wpc-pair-sep-ab');
+            const sepBC    = wrapper.querySelector('.wpc-pair-sep-bc');
+            const yearsBlock  = wrapper.querySelector('.wpc-timer-block.years');
+            const monthsBlock = wrapper.querySelector('.wpc-timer-block.months');
+            const daysBlock   = wrapper.querySelector('.wpc-timer-block.days');
+            const hoursBlock  = wrapper.querySelector('.wpc-timer-block.hours');
             const minutesBlock = wrapper.querySelector('.wpc-timer-block.minutes');
             const secondsBlock = wrapper.querySelector('.wpc-timer-block.seconds');
 
-            const updateClock = function() {
-                let h = Math.floor(timeRemaining / 3600);
-                let m = Math.floor((timeRemaining % 3600) / 60);
-                let s = timeRemaining % 60;
+            const show = function(el, inline) { if (el) el.style.display = inline ? 'inline' : 'flex'; };
+            const hide = function(el) { if (el) el.style.display = 'none'; };
 
-                // Format Hours dynamically: only display if hours > 0
-                if (h > 0) {
-                    if (hoursBlock) {
-                        hoursBlock.textContent = String(h).padStart(2, '0') + 'h';
-                        hoursBlock.style.display = 'block';
-                    }
-                    if (hoursSep) hoursSep.style.display = 'inline';
+            const updateClock = function() {
+                let y  = Math.floor(timeRemaining / 31536000);
+                let mo = Math.floor((timeRemaining % 31536000) / 2592000);
+                let d  = Math.floor((timeRemaining % 2592000) / 86400);
+                let h  = Math.floor((timeRemaining % 86400) / 3600);
+                let m  = Math.floor((timeRemaining % 3600) / 60);
+                let s  = timeRemaining % 60;
+
+                // --- Pair A (years + months) ---
+                const showPairYM = y > 0 || mo > 0;
+                if (showPairYM) {
+                    show(pairYM);
+                    if (yearsBlock) yearsBlock.textContent = String(y).padStart(2, '0') + 'y';
+                    if (monthsBlock) monthsBlock.textContent = String(mo).padStart(2, '0') + 'mo';
                 } else {
-                    if (hoursBlock) hoursBlock.style.display = 'none';
-                    if (hoursSep) hoursSep.style.display = 'none';
+                    hide(pairYM);
                 }
 
+                // --- Pair B (days + hours) ---
+                const showPairDH = d > 0 || h > 0 || showPairYM;
+                if (showPairDH) {
+                    show(pairDH);
+                    if (daysBlock) daysBlock.textContent = String(d).padStart(2, '0') + 'd';
+                    if (hoursBlock) hoursBlock.textContent = String(h).padStart(2, '0') + 'h';
+                } else {
+                    hide(pairDH);
+                }
+
+                // --- Pair C (minutes + seconds) always shown ---
                 if (minutesBlock) minutesBlock.textContent = String(m).padStart(2, '0') + 'm';
                 if (secondsBlock) secondsBlock.textContent = String(s).padStart(2, '0') + 's';
+
+                // --- Between-pair separators (only on desktop, CSS hides on mobile) ---
+                if (showPairYM && showPairDH) { show(sepAB, true); } else { hide(sepAB); }
+                if (showPairDH) { show(sepBC, true); } else { hide(sepBC); }
 
                 if (timeRemaining <= 0) {
                     timeRemaining = duration; // Loop/reset timer to keep urgency alive!
@@ -1364,7 +1505,7 @@ function wpc_enqueue_coupon_popup_assets() {
                 if (exitIntentEnabled) {
                     document.addEventListener('mouseleave', function(e) {
                         if (e.clientY < 20) {
-                            wpcOpenCouponPopup(uid, true); // Pass true to verify cookie gating
+                            wpcOpenCouponPopup(uid, true, true); // (uid, isAutoTrigger, isExitIntent)
                         }
                     });
                 }
