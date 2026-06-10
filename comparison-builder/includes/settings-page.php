@@ -4687,9 +4687,29 @@ function wpc_render_danger_zone_tab() {
                             
                             if (d.issues.length > 0) {
                                 html += '<strong style="color: #f59e0b;">\u26A0\uFE0F Issues Found (' + d.issues.length + '):</strong><br>';
-                                d.issues.forEach(function(issue) {
-                                    html += '\u2022 ' + issue + '<br>';
-                                });
+                                if (d.issues.length > 20) {
+                                    const visibleIssues = d.issues.slice(0, 20);
+                                    const hiddenIssues = d.issues.slice(20);
+                                    
+                                    visibleIssues.forEach(function(issue) {
+                                        html += '\u2022 ' + issue + '<br>';
+                                    });
+                                    
+                                    html += '<div id="wpc-integrity-hidden-issues" style="display: none; margin-top: 0;">';
+                                    hiddenIssues.forEach(function(issue) {
+                                        html += '\u2022 ' + issue + '<br>';
+                                    });
+                                    html += '</div>';
+                                    
+                                    html += '<div style="margin-top: 8px; font-weight: 500;">';
+                                    html += '<span id="wpc-extra-text">\u2022 ... and ' + hiddenIssues.length + ' more issues. </span>';
+                                    html += '<a href="javascript:void(0)" onclick="var el=document.getElementById(\'wpc-integrity-hidden-issues\'); var txt=document.getElementById(\'wpc-extra-text\'); if(el.style.display===\'none\'){el.style.display=\'block\'; this.innerText=\'Show less\'; txt.style.display=\'none\';}else{el.style.display=\'none\'; this.innerText=\'Show all\'; txt.style.display=\'inline\';}" style="color:#2563eb; text-decoration:underline; font-weight:600;">Show all</a>';
+                                    html += '</div>';
+                                } else {
+                                    d.issues.forEach(function(issue) {
+                                        html += '\u2022 ' + issue + '<br>';
+                                    });
+                                }
                                 showStatus('wpc-integrity-status', html, 'success');
                             } else {
                                 html += '<strong style="color: #16a34a;">\u2713 No issues found!</strong>';
@@ -5019,23 +5039,24 @@ function wpc_ajax_integrity_check() {
     // Check items
     foreach ( $items as $item ) {
         $title = $item->post_title;
+        $edit_link = admin_url( 'post.php?post=' . $item->ID . '&action=edit' );
         
         // Check for missing website URL
         $url = get_post_meta( $item->ID, '_wpc_website_url', true );
         if ( empty( $url ) ) {
-            $issues[] = "Item \"{$title}\" (ID: {$item->ID}) has no website URL";
+            $issues[] = "Item \"<a href='{$edit_link}' target='_blank' style='color: #2563eb; text-decoration: underline; font-weight: 600;'>{$title}</a>\" (ID: {$item->ID}) has no website URL";
         }
         
         // Check for missing description
         $desc = get_post_meta( $item->ID, '_wpc_short_description', true );
         if ( empty( $desc ) ) {
-            $issues[] = "Item \"{$title}\" (ID: {$item->ID}) has no description";
+            $issues[] = "Item \"<a href='{$edit_link}' target='_blank' style='color: #2563eb; text-decoration: underline; font-weight: 600;'>{$title}</a>\" (ID: {$item->ID}) has no description";
         }
         
         // Check for no categories
         $cats = wp_get_post_terms( $item->ID, 'comparison_category' );
         if ( empty( $cats ) || is_wp_error( $cats ) ) {
-            $issues[] = "Item \"{$title}\" (ID: {$item->ID}) has no categories assigned";
+            $issues[] = "Item \"<a href='{$edit_link}' target='_blank' style='color: #2563eb; text-decoration: underline; font-weight: 600;'>{$title}</a>\" (ID: {$item->ID}) has no categories assigned";
         }
     }
     
@@ -5046,18 +5067,14 @@ function wpc_ajax_integrity_check() {
             foreach ( $list_items as $list_item ) {
                 $item_id = isset( $list_item['id'] ) ? intval( $list_item['id'] ) : 0;
                 if ( $item_id && get_post_status( $item_id ) === false ) {
-                    $issues[] = "List \"{$list->post_title}\" references deleted item ID: {$item_id}";
+                    $edit_link = admin_url( 'post.php?post=' . $list->ID . '&action=edit' );
+                    $issues[] = "List \"<a href='{$edit_link}' target='_blank' style='color: #2563eb; text-decoration: underline; font-weight: 600;'>{$list->post_title}</a>\" references deleted item ID: {$item_id}";
                 }
             }
         }
     }
     
-    // Limit issues to 20 for readability
-    if ( count( $issues ) > 20 ) {
-        $total = count( $issues );
-        $issues = array_slice( $issues, 0, 20 );
-        $issues[] = "... and " . ($total - 20) . " more issues.";
-    }
+    // No limit on issues sent to frontend (handled interactively by JS expander)
     
     wp_send_json_success( array(
         'total_items' => count( $items ),
