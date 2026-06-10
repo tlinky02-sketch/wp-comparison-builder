@@ -84,13 +84,108 @@ function wpc_add_tool_meta_boxes() {
 }
 
 /**
- * Remove Default Taxonomy Meta Boxes for Tool
+ * Remove Default Taxonomy Meta Boxes for Tool and Add Submenu Pages
  */
-function wpc_remove_tool_tax_meta_boxes() {
+function wpc_manage_tool_admin_menu() {
     remove_meta_box( 'tool_categorydiv', 'comparison_tool', 'side' );
     remove_meta_box( 'tagsdiv-tool_tag', 'comparison_tool', 'side' );
+
+    if ( get_option( 'wpc_enable_tools_module', false ) ) {
+        add_submenu_page(
+            'edit.php?post_type=comparison_item',
+            __( 'Tool Categories', 'wp-comparison-builder' ),
+            __( 'Tool Categories', 'wp-comparison-builder' ),
+            'manage_options',
+            'edit-tags.php?taxonomy=tool_category&post_type=comparison_tool'
+        );
+
+        add_submenu_page(
+            'edit.php?post_type=comparison_item',
+            __( 'Tool Tags', 'wp-comparison-builder' ),
+            __( 'Tool Tags', 'wp-comparison-builder' ),
+            'manage_options',
+            'edit-tags.php?taxonomy=tool_tag&post_type=comparison_tool'
+        );
+    }
 }
-add_action( 'admin_menu', 'wpc_remove_tool_tax_meta_boxes' );
+add_action( 'admin_menu', 'wpc_manage_tool_admin_menu' );
+
+/**
+ * Reorder Comparison Item Submenu to ensure Tool Categories and Tool Tags appear after All Tools but before Settings
+ */
+function wpc_reorder_comparison_submenu() {
+    global $submenu;
+    $parent = 'edit.php?post_type=comparison_item';
+    if ( ! isset( $submenu[ $parent ] ) ) {
+        return;
+    }
+
+    $desired_order = array(
+        'edit.php?post_type=comparison_item',
+        'post-new.php?post_type=comparison_item',
+        'edit-tags.php?taxonomy=comparison_category&post_type=comparison_item',
+        'edit-tags.php?taxonomy=comparison_feature&post_type=comparison_item',
+        'edit.php?post_type=comparison_list',
+        'edit.php?post_type=comparison_review',
+        'edit.php?post_type=comparison_tool',
+        'edit-tags.php?taxonomy=tool_category&post_type=comparison_tool',
+        'edit-tags.php?taxonomy=tool_tag&post_type=comparison_tool',
+        'wpc-settings',
+        'wpc-compare-alternatives'
+    );
+
+    $ordered_submenu = array();
+
+    // First, place items matching our desired order list (insensitive to & vs &amp;)
+    foreach ( $desired_order as $desired_slug ) {
+        $normalized_desired = str_replace( '&amp;', '&', $desired_slug );
+        foreach ( $submenu[ $parent ] as $key => $item ) {
+            if ( isset( $item[2] ) ) {
+                $normalized_item_slug = str_replace( '&amp;', '&', $item[2] );
+                if ( $normalized_item_slug === $normalized_desired ) {
+                    $ordered_submenu[] = $item;
+                    unset( $submenu[ $parent ][ $key ] );
+                }
+            }
+        }
+    }
+
+    // Append any remaining items that weren't in our desired list
+    foreach ( $submenu[ $parent ] as $item ) {
+        $ordered_submenu[] = $item;
+    }
+
+    // Replace the global submenu array with our ordered array
+    $submenu[ $parent ] = $ordered_submenu;
+}
+add_action( 'admin_menu', 'wpc_reorder_comparison_submenu', 9999 );
+
+/**
+ * Fix WordPress Menu Highlight / Collapse bug for Tool Categories and Tool Tags
+ */
+function wpc_tool_menu_highlight_fix( $parent_file ) {
+    global $current_screen;
+    if ( $current_screen && isset( $current_screen->taxonomy ) ) {
+        if ( $current_screen->taxonomy === 'tool_category' || $current_screen->taxonomy === 'tool_tag' ) {
+            return 'edit.php?post_type=comparison_item';
+        }
+    }
+    return $parent_file;
+}
+add_filter( 'parent_file', 'wpc_tool_menu_highlight_fix' );
+
+function wpc_tool_submenu_highlight_fix( $submenu_file, $parent_file ) {
+    global $current_screen;
+    if ( $current_screen && isset( $current_screen->taxonomy ) ) {
+        if ( $current_screen->taxonomy === 'tool_category' ) {
+            return 'edit-tags.php?taxonomy=tool_category&post_type=comparison_tool';
+        } elseif ( $current_screen->taxonomy === 'tool_tag' ) {
+            return 'edit-tags.php?taxonomy=tool_tag&post_type=comparison_tool';
+        }
+    }
+    return $submenu_file;
+}
+add_filter( 'submenu_file', 'wpc_tool_submenu_highlight_fix', 10, 2 );
 
 /**
  * Render Tool Meta Box
