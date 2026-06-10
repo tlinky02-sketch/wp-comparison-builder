@@ -157,6 +157,34 @@ function wpc_render_meta_box( $post ) {
     function wpcShowToast(msg, isError) {
         wpcAdmin.toast(msg, isError ? 'error' : 'success');
     }
+
+    function wpcCopyShortcodeGeneric(text, btn) {
+        if (!navigator.clipboard) {
+            // Fallback
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                var originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Copied!';
+                setTimeout(function() { btn.innerHTML = originalText; }, 2000);
+            } catch (err) {
+                wpcShowToast('Copy failed. Please copy manually.', true);
+            }
+            document.body.removeChild(textArea);
+            return;
+        }
+
+        navigator.clipboard.writeText(text).then(function() {
+            var originalText = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(function() { btn.innerHTML = originalText; }, 2000);
+        }, function(err) {
+            wpcShowToast('Copy failed: ' + err, true);
+        });
+    }
     </script>
     <style>
         @keyframes wpc-slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -975,14 +1003,14 @@ function wpc_render_meta_box( $post ) {
                         <!-- All Plans -->
                         <div style="display:flex; align-items:center; gap:8px;">
                             <code style="flex:1; background:#fff; padding:6px 10px; border:1px solid #ddd; border-radius:4px; color:#059669; font-size:12px;">[wpc_pricing_table id="<?php echo $post->ID; ?>"]</code>
-                            <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_pricing_table id=<?php echo $post->ID; ?>]'); this.innerText='✓'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                            <button type="button" class="button button-small" onclick="wpcCopyShortcodeGeneric('[wpc_pricing_table id=&quot;<?php echo $post->ID; ?>&quot;]', this)">Copy</button>
                             <span style="font-size: 11px; color: #64748b;">(All)</span>
                         </div>
                         <!-- Category-Specific -->
                         <?php foreach ( $assigned_cats as $cat ) : ?>
                         <div style="display:flex; align-items:center; gap:8px;">
                             <code style="flex:1; background:#fff; padding:6px 10px; border:1px solid #ddd; border-radius:4px; color:#059669; font-size:12px;">[wpc_pricing_table id="<?php echo $post->ID; ?>" category="<?php echo esc_attr($cat->slug); ?>"]</code>
-                            <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_pricing_table id=<?php echo $post->ID; ?> category=<?php echo esc_js($cat->slug); ?>]'); this.innerText='✓'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                            <button type="button" class="button button-small" onclick="wpcCopyShortcodeGeneric('[wpc_pricing_table id=&quot;<?php echo $post->ID; ?>&quot; category=&quot;<?php echo esc_js($cat->slug); ?>&quot;]', this)">Copy</button>
                             <span style="padding: 2px 6px; background: #d1fae5; color: #065f46; border-radius: 9999px; font-size: 10px; font-weight: 600;"><?php echo esc_html($cat->name); ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -990,7 +1018,7 @@ function wpc_render_meta_box( $post ) {
                 <?php else : ?>
                     <div style="display:flex; gap:10px; align-items:center;">
                         <code style="background:#fff; padding:6px 10px; border:1px solid #ddd; border-radius:4px; color:#059669; flex:1;">[wpc_pricing_table id="<?php echo $post->ID; ?>"]</code>
-                        <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_pricing_table id=<?php echo $post->ID; ?>]'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                        <button type="button" class="button button-small" onclick="wpcCopyShortcodeGeneric('[wpc_pricing_table id=&quot;<?php echo $post->ID; ?>&quot;]', this)">Copy</button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -1729,35 +1757,7 @@ function wpc_render_meta_box( $post ) {
                 </div>
             </div>
 
-            <script>
-            function wpcCopyShortcodeGeneric(text, btn) {
-                if (!navigator.clipboard) {
-                    // Fallback
-                    var textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    try {
-                        document.execCommand('copy');
-                        var originalText = btn.innerHTML;
-                        btn.innerHTML = '✓ Copied!';
-                        setTimeout(function() { btn.innerHTML = originalText; }, 2000);
-                    } catch (err) {
-                        wpcShowToast('Copy failed. Please copy manually.', true);
-                    }
-                    document.body.removeChild(textArea);
-                    return;
-                }
 
-                navigator.clipboard.writeText(text).then(function() {
-                    var originalText = btn.innerHTML;
-                    btn.innerHTML = '✓ Copied!';
-                    setTimeout(function() { btn.innerHTML = originalText; }, 2000);
-                }, function(err) {
-                    wpcShowToast('Copy failed: ' + err, true);
-                });
-            }
-            </script>
         </div>
 
         <!-- Toast Notification Container -->
