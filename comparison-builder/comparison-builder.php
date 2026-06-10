@@ -58,6 +58,9 @@ require_once WPC_PLUGIN_DIR . 'includes/list-shortcode-ssr.php'; // SSR List Sho
 require_once WPC_PLUGIN_DIR . 'includes/compare-shortcode-ssr.php'; // SSR Compare Shortcode
 require_once WPC_PLUGIN_DIR . 'includes/comparison-sets-db.php';
 require_once WPC_PLUGIN_DIR . 'includes/compare-alternatives-admin.php';
+if ( get_option( 'wpc_enable_coupon_module', false ) ) {
+    require_once WPC_PLUGIN_DIR . 'includes/coupon-popup-shortcode.php';
+}
 
 require_once WPC_PLUGIN_DIR . 'includes/list-meta-box.php';
 require_once WPC_PLUGIN_DIR . 'includes/migration.php';

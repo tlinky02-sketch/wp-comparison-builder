@@ -97,6 +97,21 @@ function wpc_render_modules_tab() {
                     <?php endif; ?>
                 </td>
             </tr>
+            <!-- Coupon Popups Module -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_enable_coupon_module"><?php _e( 'Coupon Popups', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="wpc_enable_coupon_module" id="wpc_enable_coupon_module" value="1" <?php checked( '1', get_option( 'wpc_enable_coupon_module', false ) ); ?> />
+                        <?php _e( 'Enable Coupon Popup Module', 'wp-comparison-builder' ); ?>
+                    </label>
+                    <p class="description">
+                        <?php _e( 'Adds a "Coupon Popup" Gutenberg block to create highly customizable coupon code boxes and modals with copy-to-clipboard functionality.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
         </table>
         
         <?php submit_button(); ?>

@@ -60,13 +60,13 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_admin_layout_style' );
     
     // Module Toggles
-    // Module Toggles
     register_setting( 'wpc_settings_group', 'wpc_enable_tools_module' );
     register_setting( 'wpc_settings_group', 'wpc_enable_tools_associated_items' );
     register_setting( 'wpc_settings_group', 'wpc_enable_variants_module' );
     register_setting( 'wpc_settings_group', 'wpc_variants_selector_style' );
     register_setting( 'wpc_settings_group', 'wpc_variants_show_badge' );
     register_setting( 'wpc_settings_group', 'wpc_variants_remember_selection' );
+    register_setting( 'wpc_settings_group', 'wpc_enable_coupon_module' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );
