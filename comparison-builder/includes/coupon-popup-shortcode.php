@@ -573,9 +573,7 @@ function wpc_enqueue_coupon_popup_assets() {
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.51);
             z-index: 999999;
             display: flex;
             align-items: center;
@@ -642,20 +640,21 @@ function wpc_enqueue_coupon_popup_assets() {
         /* Close Button (Premium Circular Style) */
         .wpc-coupon-close-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 14px;
+            right: 14px;
             background: transparent;
             border: none;
             color: #94a3b8;
             cursor: pointer;
             transition: all 0.2s ease;
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             padding: 0;
+            z-index: 10;
         }
         .wpc-coupon-close-btn:hover {
             color: #0f172a;
@@ -1126,8 +1125,8 @@ function wpc_enqueue_coupon_popup_assets() {
                 overflow: hidden;
             }
             .wpc-coupon-close-btn {
-                top: 10px;
-                right: 10px;
+                top: 5px;
+                right: 5px;
             }
             /* Stack body vertically on mobile */
             .wpc-coupon-body {
