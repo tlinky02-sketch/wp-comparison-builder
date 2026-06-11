@@ -73,7 +73,8 @@
             exitIntent: { type: 'boolean', default: false },
             triggerFrequency: { type: 'string', default: 'cookie' },
             cookieExpiry: { type: 'string', default: '1' },
-            primaryColor: { type: 'string', default: '' }
+            primaryColor: { type: 'string', default: '' },
+            itemOverrides: { type: 'string', default: '{}' }
         },
 
         edit: function(props) {
@@ -84,6 +85,15 @@
             var [items, setItems] = useState([]);
             var [searchTerm, setSearchTerm] = useState('');
             var [selectedItemName, setSelectedItemName] = useState('');
+            var [activeOverrideItemId, setActiveOverrideItemId] = useState('');
+            
+            // Safe JSON parse for item overrides
+            var overridesMap = {};
+            try {
+                overridesMap = JSON.parse(attributes.itemOverrides || '{}');
+            } catch (e) {
+                overridesMap = {};
+            }
 
             // Fetch comparison items from REST API
             useEffect(function() {
@@ -109,13 +119,19 @@
                     setSelectedItemName('Manual Entry (Custom Data)');
                     return;
                 }
-                var found = items.find(function(item) {
-                    return String(item.id) === String(attributes.id);
+                var currentIds = String(attributes.id).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+                var foundNames = [];
+                currentIds.forEach(function(cid) {
+                    var found = items.find(function(item) {
+                        return String(item.id) === cid;
+                    });
+                    if (found) foundNames.push(found.name);
                 });
-                if (found) {
-                    setSelectedItemName(found.name);
+                
+                if (foundNames.length > 0) {
+                    setSelectedItemName(foundNames.join(', '));
                 } else {
-                    setSelectedItemName('Item ID: ' + attributes.id);
+                    setSelectedItemName('Item ID(s): ' + attributes.id);
                 }
             }, [attributes.id, items]);
 
@@ -123,6 +139,25 @@
             var filteredItems = items.filter(function(item) {
                 return item.name.toLowerCase().includes(searchTerm.toLowerCase());
             });
+
+            // Helpers for Per-Item Overrides
+            var currentSelectedIds = attributes.id ? String(attributes.id).split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+            var overrideOptions = [{ label: '-- Select a company to override --', value: '' }];
+            currentSelectedIds.forEach(function(cid) {
+                var found = items.find(function(i) { return String(i.id) === cid; });
+                if (found) overrideOptions.push({ label: found.name, value: cid });
+                else overrideOptions.push({ label: 'ID: ' + cid, value: cid });
+            });
+            
+            var updateOverride = function(key, val) {
+                if (!activeOverrideItemId) return;
+                var newMap = Object.assign({}, overridesMap);
+                if (!newMap[activeOverrideItemId]) newMap[activeOverrideItemId] = {};
+                newMap[activeOverrideItemId][key] = val;
+                setAttributes({ itemOverrides: JSON.stringify(newMap) });
+            };
+            
+            var activeOverrides = overridesMap[activeOverrideItemId] || {};
 
             return el(
                 'div',
@@ -162,11 +197,20 @@
                         },
                             filteredItems.length === 0 ? el('div', { style: { padding: '8px', fontSize: '12px', color: '#64748b' } }, 'No items found') :
                             filteredItems.map(function(item) {
-                                var isSelected = String(item.id) === String(attributes.id);
+                                var currentIds = attributes.id ? String(attributes.id).split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+                                var isSelected = currentIds.indexOf(String(item.id)) !== -1;
                                 return el('div', {
                                     key: item.id,
                                     onClick: function() {
-                                        setAttributes({ id: String(item.id) });
+                                        var newIds = currentIds.slice();
+                                        var itemIdStr = String(item.id);
+                                        var index = newIds.indexOf(itemIdStr);
+                                        if (index !== -1) {
+                                            newIds.splice(index, 1);
+                                        } else {
+                                            newIds.push(itemIdStr);
+                                        }
+                                        setAttributes({ id: newIds.join(',') });
                                     },
                                     style: {
                                         padding: '8px 12px',
@@ -213,7 +257,65 @@
                         })
                     ),
 
-                    // 2. Custom Brand & logo (For Manual Entry)
+                    // 1b. Per-Company Overrides
+                    el(
+                        PanelBody,
+                        { title: 'Per-Company Overrides', initialOpen: false },
+                        el(SelectControl, {
+                            label: 'Select Company to Override',
+                            value: activeOverrideItemId,
+                            options: overrideOptions,
+                            onChange: function(val) { setActiveOverrideItemId(val); }
+                        }),
+                        activeOverrideItemId ? el(
+                            'div',
+                            { style: { padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px', marginTop: '10px' } },
+                            el('p', { style: { fontSize: '12px', color: '#64748b', marginBottom: '15px' } }, 'These settings apply ONLY to the selected company.'),
+                            el(TextControl, {
+                                label: 'Custom Title',
+                                value: activeOverrides.title || '',
+                                onChange: function(val) { updateOverride('title', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Subtitle',
+                                value: activeOverrides.subtitle || '',
+                                onChange: function(val) { updateOverride('subtitle', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Timer',
+                                help: 'e.g., 24h, 15m, 1y 2mo',
+                                value: activeOverrides.timer || '',
+                                onChange: function(val) { updateOverride('timer', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Coupon Code',
+                                value: activeOverrides.couponCode || '',
+                                onChange: function(val) { updateOverride('couponCode', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Affiliate Link',
+                                value: activeOverrides.affiliateLink || '',
+                                onChange: function(val) { updateOverride('affiliateLink', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Logo URL',
+                                value: activeOverrides.logoUrl || '',
+                                onChange: function(val) { updateOverride('logoUrl', val); }
+                            }),
+                            el(TextControl, {
+                                label: 'Custom Mascot URL',
+                                value: activeOverrides.mascotUrl || '',
+                                onChange: function(val) { updateOverride('mascotUrl', val); }
+                            }),
+                            el(PanelRow, null, el('span', null, 'Primary Color')),
+                            el(ColorPalette, {
+                                value: activeOverrides.primaryColor || '',
+                                onChange: function(val) { updateOverride('primaryColor', val); }
+                            })
+                        ) : null
+                    ),
+
+                    // 2. Custom Brand & logo (For Manual Entry / Global Fallbacks)
                     el(
                         PanelBody,
                         { title: 'Brand Logo & Overrides', initialOpen: false },

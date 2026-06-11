@@ -197,9 +197,50 @@ function wpc_coupon_popup_shortcode( $atts ) {
         'exit_intent'      => '', // true/false
         'trigger_freq'     => 'cookie', // cookie | page | session | always
         'cookie_expiry'    => '1', // days
+        'itemOverrides'    => '{}', // JSON map of specific item overrides
     ), $atts );
 
-    $item_id = intval( $atts['id'] );
+    $item_id = 0;
+    if ( ! empty( $atts['id'] ) ) {
+        // Support multi-select randomizer: ID can be a comma-separated list
+        $item_ids_raw = array_filter( array_map( 'trim', explode( ',', $atts['id'] ) ) );
+        
+        // If inline layout and multiple items, render a stack instead of picking a random one
+        if ( $atts['layout'] === 'inline' && count( $item_ids_raw ) > 1 && ! isset( $atts['_wpc_is_recursive'] ) ) {
+            $output = '<div class="wpc-coupon-inline-stack" style="display: flex; flex-direction: column; gap: 24px;">';
+            foreach ( $item_ids_raw as $single_id ) {
+                $single_atts = $atts;
+                $single_atts['id'] = $single_id;
+                $single_atts['_wpc_is_recursive'] = true;
+                $output .= wpc_coupon_popup_shortcode( $single_atts );
+            }
+            $output .= '</div>';
+            return $output;
+        }
+
+        if ( ! empty( $item_ids_raw ) ) {
+            $random_key = array_rand( $item_ids_raw );
+            $item_id = intval( $item_ids_raw[ $random_key ] );
+        }
+    }
+
+    // Apply Per-Company Overrides if available
+    if ( ! empty( $atts['itemOverrides'] ) && $item_id > 0 ) {
+        $overrides_map = json_decode( $atts['itemOverrides'], true );
+        if ( is_array( $overrides_map ) && isset( $overrides_map[ (string) $item_id ] ) ) {
+            $specific = $overrides_map[ (string) $item_id ];
+            // Merge specific overrides over the global shortcode attributes
+            if ( ! empty( $specific['title'] ) ) $atts['title'] = $specific['title'];
+            if ( ! empty( $specific['subtitle'] ) ) $atts['subtitle'] = $specific['subtitle'];
+            if ( ! empty( $specific['timer'] ) ) $atts['timer'] = $specific['timer'];
+            if ( ! empty( $specific['couponCode'] ) ) $atts['coupon_code'] = $specific['couponCode'];
+            if ( ! empty( $specific['affiliateLink'] ) ) $atts['affiliate_link'] = $specific['affiliateLink'];
+            if ( ! empty( $specific['logoUrl'] ) ) $atts['logo_url'] = $specific['logoUrl'];
+            if ( ! empty( $specific['mascotUrl'] ) ) $atts['mascot_url'] = $specific['mascotUrl'];
+            if ( ! empty( $specific['primaryColor'] ) ) $atts['primary_color'] = $specific['primaryColor'];
+        }
+    }
+
     $item = null;
 
     if ( $item_id ) {
@@ -216,6 +257,7 @@ function wpc_coupon_popup_shortcode( $atts ) {
     $logo           = ! empty( $atts['logo_url'] ) ? esc_url( $atts['logo_url'] ) : ( $item ? esc_url( $item['logo'] ) : '' );
     $coupon         = ! empty( $atts['coupon_code'] ) ? esc_html( $atts['coupon_code'] ) : ( $item ? esc_html( $item['coupon_code'] ) : '' );
     $link           = ! empty( $atts['affiliate_link'] ) ? esc_url( $atts['affiliate_link'] ) : ( $item ? esc_url( $item['direct_link'] ?: $item['details_link'] ) : '#' );
+    $mascot         = ! empty( $atts['mascot_url'] ) ? esc_url( $atts['mascot_url'] ) : '';
     
     // Resolve theme inheritance color logic
     $primary_color  = ! empty( $atts['primary_color'] ) ? esc_attr( $atts['primary_color'] ) : ( ( $item && isset($item['design_overrides']['primary']) ) ? $item['design_overrides']['primary'] : get_option( 'wpc_primary_color', '#0ea5e9' ) );
@@ -322,7 +364,7 @@ function wpc_coupon_popup_shortcode( $atts ) {
     }
 
     $css = "
-        #{$uid} {
+        #{$uid}, #overlay-{$uid} {
             " . implode( "\n", $css_rules ) . "
         }
     ";
@@ -369,6 +411,104 @@ function wpc_coupon_popup_shortcode( $atts ) {
     // Check if trigger button should be shown
     $show_trigger = ( $atts['show_trigger_btn'] === true || $atts['show_trigger_btn'] === 'true' || $atts['show_trigger_btn'] === '1' || $atts['show_trigger_btn'] === 1 );
 
+    // Prepare the client-side randomizer pool (only needed if count > 1)
+    $pool_json = '';
+    if ( ! empty( $item_ids_raw ) && count( $item_ids_raw ) > 1 ) {
+        $pool_data = array();
+        if ( ! function_exists( 'wpc_fetch_items_data' ) ) {
+            require_once WPC_PLUGIN_DIR . 'includes/api-endpoints.php';
+        }
+        $all_data = wpc_fetch_items_data( $item_ids_raw );
+        $all_items = ! empty( $all_data['items'] ) ? $all_data['items'] : array();
+        $overrides_map = json_decode( $atts['itemOverrides'], true );
+        if ( ! is_array( $overrides_map ) ) $overrides_map = array();
+
+        foreach ( $item_ids_raw as $cid ) {
+            $cid_int = intval( $cid );
+            $c_item = null;
+            foreach ( $all_items as $i ) {
+                if ( $i['id'] == $cid_int ) {
+                    $c_item = $i;
+                    break;
+                }
+            }
+            
+            $c_atts = $atts;
+            // Unset the specific global override merging done earlier for the generic fallback
+            // and apply the specific ones for this cid
+            if ( isset( $overrides_map[ (string) $cid_int ] ) ) {
+                $specific = $overrides_map[ (string) $cid_int ];
+                if ( ! empty( $specific['title'] ) ) $c_atts['title'] = $specific['title'];
+                if ( ! empty( $specific['subtitle'] ) ) $c_atts['subtitle'] = $specific['subtitle'];
+                if ( ! empty( $specific['timer'] ) ) $c_atts['timer'] = $specific['timer'];
+                if ( ! empty( $specific['couponCode'] ) ) $c_atts['coupon_code'] = $specific['couponCode'];
+                if ( ! empty( $specific['affiliateLink'] ) ) $c_atts['affiliate_link'] = $specific['affiliateLink'];
+                if ( ! empty( $specific['logoUrl'] ) ) $c_atts['logo_url'] = $specific['logoUrl'];
+                if ( ! empty( $specific['mascotUrl'] ) ) $c_atts['mascot_url'] = $specific['mascotUrl'];
+                if ( ! empty( $specific['primaryColor'] ) ) $c_atts['primary_color'] = $specific['primaryColor'];
+            }
+
+            $c_name           = $c_item ? esc_html( $c_item['name'] ) : ( ! empty( $c_atts['title'] ) ? esc_html( $c_atts['title'] ) : 'Special Offer' );
+            $c_logo           = ! empty( $c_atts['logo_url'] ) ? esc_url( $c_atts['logo_url'] ) : ( $c_item ? esc_url( $c_item['logo'] ) : '' );
+            $c_coupon         = ! empty( $c_atts['coupon_code'] ) ? esc_html( $c_atts['coupon_code'] ) : ( $c_item ? esc_html( $c_item['coupon_code'] ) : '' );
+            $c_link           = ! empty( $c_atts['affiliate_link'] ) ? esc_url( $c_atts['affiliate_link'] ) : ( $c_item ? esc_url( $c_item['direct_link'] ?: $c_item['details_link'] ) : '#' );
+            $c_primary_color  = ! empty( $c_atts['primary_color'] ) ? esc_attr( $c_atts['primary_color'] ) : ( ( $c_item && isset($c_item['design_overrides']['primary']) ) ? $c_item['design_overrides']['primary'] : get_option( 'wpc_primary_color', '#0ea5e9' ) );
+            $c_headline       = ! empty( $c_atts['title'] ) ? esc_html( $c_atts['title'] ) : sprintf( __( 'Get Exclusive %s Deal', 'wp-comparison-builder' ), $c_name );
+            $c_subtitle       = ! empty( $c_atts['subtitle'] ) ? esc_html( $c_atts['subtitle'] ) : ( $c_item && ! empty( $c_item['description'] ) ? esc_html( wp_trim_words( $c_item['description'], 20, '...' ) ) : '' );
+            $c_mascot         = ! empty( $c_atts['mascot_url'] ) ? esc_url( $c_atts['mascot_url'] ) : ( $c_item && isset($c_item['design_overrides']['mascot']) ? esc_url( $c_item['design_overrides']['mascot'] ) : '' );
+            
+            $c_feature_list = array();
+            if ( ! empty( $c_atts['features'] ) ) {
+                $c_feature_list = array_map( 'trim', explode( ',', $c_atts['features'] ) );
+            } else {
+                $c_feature_list = ( $c_item && ! empty( $c_item['pros'] ) ) ? array_slice( $c_item['pros'], 0, 3 ) : array(
+                    __( '30-Day Money-back Guarantee', 'wp-comparison-builder' ),
+                    __( 'Verified Premium Provider', 'wp-comparison-builder' ),
+                    __( '24/7 Priority Support', 'wp-comparison-builder' )
+                );
+            }
+
+            // Parse timer logic
+            $c_timer_seconds = 900;
+            $c_timer_val = trim( strtolower( $c_atts['timer'] ) );
+            if ( $c_timer_val !== 'off' ) {
+                $parsed_total = 0;
+                preg_match_all('/(\d+)\s*(y|mo|d|h|m(?!o)|s)/i', $c_timer_val, $matches, PREG_SET_ORDER);
+                if ( ! empty( $matches ) ) {
+                    foreach ( $matches as $match ) {
+                        $val = intval( $match[1] );
+                        $unit = strtolower( $match[2] );
+                        if ( $unit === 'y' ) $parsed_total += $val * 31536000;
+                        elseif ( $unit === 'mo' ) $parsed_total += $val * 2592000;
+                        elseif ( $unit === 'd' ) $parsed_total += $val * 86400;
+                        elseif ( $unit === 'h' ) $parsed_total += $val * 3600;
+                        elseif ( $unit === 'm' ) $parsed_total += $val * 60;
+                        elseif ( $unit === 's' ) $parsed_total += $val;
+                    }
+                    if ( $parsed_total > 0 ) $c_timer_seconds = $parsed_total;
+                } elseif ( intval( $c_timer_val ) > 0 ) {
+                    $c_timer_seconds = intval( $c_timer_val );
+                }
+            }
+
+            $pool_data[] = array(
+                'id' => $cid_int,
+                'headline' => $c_headline,
+                'subtitle' => $c_subtitle,
+                'logo' => $c_logo,
+                'coupon' => ! empty( $c_coupon ) ? $c_coupon : 'DEAL',
+                'link' => $c_link,
+                'primary_color' => $c_primary_color,
+                'primary_rgb' => wpc_coupon_hex_to_rgb( $c_primary_color ),
+                'mascot' => $c_mascot,
+                'timer_val' => $c_timer_val,
+                'timer_seconds' => $c_timer_seconds,
+                'features' => $c_feature_list
+            );
+        }
+        $pool_json = esc_attr( wp_json_encode( $pool_data ) );
+    }
+
     ob_start();
     ?>
     <!-- WPC Coupon Instance Wrapper -->
@@ -378,7 +518,8 @@ function wpc_coupon_popup_shortcode( $atts ) {
          data-auto-open="<?php echo esc_attr( $atts['auto_open'] ); ?>"
          data-exit-intent="<?php echo esc_attr( $atts['exit_intent'] ? 'true' : 'false' ); ?>"
          data-trigger-freq="<?php echo esc_attr( $atts['trigger_freq'] ); ?>"
-         data-cookie-expiry="<?php echo esc_attr( $atts['cookie_expiry'] ); ?>">
+         data-cookie-expiry="<?php echo esc_attr( $atts['cookie_expiry'] ); ?>"
+         <?php if ( ! empty( $pool_json ) ) echo 'data-randomizer-pool="' . $pool_json . '"'; ?>>
 
         <?php if ( $atts['layout'] === 'modal' ) : ?>
             <!-- Default Trigger Button -->
@@ -403,11 +544,9 @@ function wpc_coupon_popup_shortcode( $atts ) {
             <div class="wpc-coupon-body">
                 <!-- Left Section: Logo & Countdown -->
                 <div class="wpc-coupon-left">
-                    <?php if ( ! empty( $logo ) ) : ?>
-                        <div class="wpc-coupon-logo-container">
-                            <img src="<?php echo $logo; ?>" alt="<?php echo $name; ?>" class="wpc-coupon-logo" />
-                        </div>
-                    <?php endif; ?>
+                    <div class="wpc-coupon-logo-container" style="<?php echo empty( $logo ) ? 'display: none;' : ''; ?>">
+                        <img src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $name ); ?>" class="wpc-coupon-logo" />
+                    </div>
 
                     <?php if ( $timer_val !== 'off' ) : ?>
                         <div class="wpc-coupon-timer-container">
@@ -443,9 +582,7 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 <div class="wpc-coupon-right">
                     <h3 class="wpc-coupon-title"><?php echo $headline; ?></h3>
                     
-                    <?php if ( ! empty( $subtitle ) ) : ?>
-                        <p class="wpc-coupon-subtitle"><?php echo $subtitle; ?></p>
-                    <?php endif; ?>
+                    <p class="wpc-coupon-subtitle" style="<?php echo empty( $subtitle ) ? 'display: none;' : ''; ?>"><?php echo esc_html( $subtitle ); ?></p>
 
                     <ul class="wpc-coupon-features">
                         <?php foreach ( $feature_list as $feature ) : ?>
@@ -498,11 +635,9 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 </div>
 
                 <!-- Mascot Overlay (Optional) -->
-                <?php if ( ! empty( $atts['mascot_url'] ) ) : ?>
-                    <div class="wpc-coupon-mascot-container">
-                        <img src="<?php echo esc_url( $atts['mascot_url'] ); ?>" alt="Mascot" class="wpc-coupon-mascot" />
-                    </div>
-                <?php endif; ?>
+                <div class="wpc-coupon-mascot-container" style="<?php echo empty( $mascot ) ? 'display: none;' : ''; ?>">
+                    <img src="<?php echo esc_url( $mascot ); ?>" alt="Mascot" class="wpc-coupon-mascot" />
+                </div>
             </div>
         </div>
 
@@ -1102,10 +1237,12 @@ function wpc_enqueue_coupon_popup_assets() {
             }
         }
 
-        /* Inline layout: full width */
+        /* Inline layout: perfectly centered, max-width preserved */
         .wpc-coupon-inline {
-            max-width: 100%;
+            margin: 40px auto;
+            max-width: 820px;
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
 
         /* Responsive: mobile */
@@ -1266,7 +1403,15 @@ function wpc_enqueue_coupon_popup_assets() {
 
             const overlay = document.getElementById('overlay-' + uid);
             if (overlay) {
+                // Move overlay to body to prevent CSS transform/filter containing block issues from the theme
+                if (overlay.parentNode !== document.body) {
+                    document.body.appendChild(overlay);
+                }
+
                 const card = overlay.querySelector('.wpc-coupon-modal-card');
+                
+                // Randomize immediately before showing
+                wpcInjectRandomCoupon(uid);
                 
                 // Aggressive Exit Intent Logic: If triggered by exit intent, NEVER animate. Snap instantly.
                 // Auto-Open timers will still retain animation.
@@ -1385,13 +1530,20 @@ function wpc_enqueue_coupon_popup_assets() {
         };
 
         // Timer initialization map
-        const activeTimers = {};
+        window.wpcActiveTimers = window.wpcActiveTimers || {};
 
         window.wpcStartTimer = function(uid) {
-            if (activeTimers[uid]) return; // Timer already running for this instance
+            if (window.wpcActiveTimers[uid]) return; // Timer already running for this instance
 
             const wrapper = document.getElementById(uid);
             if (!wrapper) return;
+            
+            // If the overlay exists, the card (and timer) was moved to the body inside it
+            let container = wrapper;
+            const overlay = document.getElementById('overlay-' + uid);
+            if (overlay) {
+                container = overlay;
+            }
 
             const timerEnabled = wrapper.getAttribute('data-timer-enabled') === 'true';
             if (!timerEnabled) return;
@@ -1404,17 +1556,17 @@ function wpc_enqueue_coupon_popup_assets() {
             }
             let timeRemaining = duration;
 
-            const pairYM   = wrapper.querySelector('.wpc-timer-pair-ym');
-            const pairDH   = wrapper.querySelector('.wpc-timer-pair-dh');
-            const pairMS   = wrapper.querySelector('.wpc-timer-pair-ms');
-            const sepAB    = wrapper.querySelector('.wpc-pair-sep-ab');
-            const sepBC    = wrapper.querySelector('.wpc-pair-sep-bc');
-            const yearsBlock  = wrapper.querySelector('.wpc-timer-block.years');
-            const monthsBlock = wrapper.querySelector('.wpc-timer-block.months');
-            const daysBlock   = wrapper.querySelector('.wpc-timer-block.days');
-            const hoursBlock  = wrapper.querySelector('.wpc-timer-block.hours');
-            const minutesBlock = wrapper.querySelector('.wpc-timer-block.minutes');
-            const secondsBlock = wrapper.querySelector('.wpc-timer-block.seconds');
+            const pairYM   = container.querySelector('.wpc-timer-pair-ym');
+            const pairDH   = container.querySelector('.wpc-timer-pair-dh');
+            const pairMS   = container.querySelector('.wpc-timer-pair-ms');
+            const sepAB    = container.querySelector('.wpc-pair-sep-ab');
+            const sepBC    = container.querySelector('.wpc-pair-sep-bc');
+            const yearsBlock  = container.querySelector('.wpc-timer-block.years');
+            const monthsBlock = container.querySelector('.wpc-timer-block.months');
+            const daysBlock   = container.querySelector('.wpc-timer-block.days');
+            const hoursBlock  = container.querySelector('.wpc-timer-block.hours');
+            const minutesBlock = container.querySelector('.wpc-timer-block.minutes');
+            const secondsBlock = container.querySelector('.wpc-timer-block.seconds');
 
             const show = function(el, inline) { if (el) el.style.display = inline ? 'inline' : 'flex'; };
             const hide = function(el) { if (el) el.style.display = 'none'; };
@@ -1463,7 +1615,7 @@ function wpc_enqueue_coupon_popup_assets() {
             };
 
             updateClock();
-            activeTimers[uid] = setInterval(updateClock, 1000);
+            window.wpcActiveTimers[uid] = setInterval(updateClock, 1000);
         };
 
         // Helper cookie getter
@@ -1478,6 +1630,141 @@ function wpc_enqueue_coupon_popup_assets() {
             return null;
         }
 
+        // Helper cookie setter
+        function wpcSetCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+
+        // JS Randomizer Engine
+        window._wpc_last_shown = window._wpc_last_shown || {};
+        
+        window.wpcInjectRandomCoupon = function(uid) {
+            const wrapper = document.getElementById(uid);
+            if (!wrapper) return;
+            const poolJson = wrapper.getAttribute('data-randomizer-pool');
+            if (!poolJson) return; // Not multi-select, keep static PHP
+            
+            // The card may have been moved to the body via the overlay, so we must search there
+            let container = wrapper;
+            const overlay = document.getElementById('overlay-' + uid);
+            if (overlay) {
+                container = overlay;
+            }
+            
+            try {
+                const pool = JSON.parse(poolJson);
+                if (!pool || pool.length <= 1) return; // Only 1 item, no randomization needed
+                
+                // Pick random item, ensuring it's different from the last shown item if possible
+                let availableItems = pool;
+                if (pool.length > 1 && window._wpc_last_shown[uid]) {
+                    availableItems = pool.filter(function(item) { return item.id != window._wpc_last_shown[uid]; });
+                    // Fallback just in case filter somehow empties the array (e.g. data mutation)
+                    if (availableItems.length === 0) availableItems = pool;
+                }
+                
+                const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+                window._wpc_last_shown[uid] = randomItem.id;
+                
+                // 1. Logo
+                const logoContainer = container.querySelector('.wpc-coupon-logo-container');
+                if (logoContainer) {
+                    if (randomItem.logo) {
+                        const img = logoContainer.querySelector('img');
+                        if (img) img.src = randomItem.logo;
+                        logoContainer.style.display = 'block';
+                    } else {
+                        logoContainer.style.display = 'none';
+                    }
+                }
+                
+                // 2. Texts
+                const titleEl = container.querySelector('.wpc-coupon-title');
+                if (titleEl) titleEl.innerHTML = randomItem.headline || '';
+                
+                const subtitleEl = container.querySelector('.wpc-coupon-subtitle');
+                if (subtitleEl) {
+                    if (randomItem.subtitle) {
+                        subtitleEl.innerHTML = randomItem.subtitle;
+                        subtitleEl.style.display = 'block';
+                    } else {
+                        subtitleEl.style.display = 'none';
+                    }
+                }
+                
+                // 3. Mascot
+                const mascotContainer = container.querySelector('.wpc-coupon-mascot-container');
+                if (mascotContainer) {
+                    if (randomItem.mascot) {
+                        const img = mascotContainer.querySelector('img');
+                        if (img) img.src = randomItem.mascot;
+                        mascotContainer.style.display = 'block';
+                    } else {
+                        mascotContainer.style.display = 'none';
+                    }
+                }
+                
+                // 3b. Labels
+                const exclusiveLabelEl = container.querySelector('.wpc-coupon-label-exclusive');
+                if (exclusiveLabelEl) exclusiveLabelEl.style.display = randomItem.is_exclusive ? 'inline-flex' : 'none';
+                
+                const verifiedLabelEl = container.querySelector('.wpc-coupon-label-verified');
+                if (verifiedLabelEl) verifiedLabelEl.style.display = randomItem.is_verified ? 'inline-flex' : 'none';
+                
+                // 4. Timer
+                wrapper.setAttribute('data-timer-seconds', randomItem.timer_seconds);
+                wrapper.setAttribute('data-timer-enabled', randomItem.timer_val !== 'off' ? 'true' : 'false');
+                const timerContainer = container.querySelector('.wpc-coupon-timer-container');
+                if (timerContainer) {
+                    timerContainer.style.display = randomItem.timer_val !== 'off' ? 'block' : 'none';
+                }
+                
+                // 5. Button and Reveal Box
+                const btn = container.querySelector('.wpc-coupon-showcode-btn');
+                if (btn) {
+                    btn.setAttribute('data-coupon', randomItem.coupon);
+                    btn.setAttribute('data-link', randomItem.link);
+                }
+                const revealedCode = container.querySelector('.code-revealed');
+                if (revealedCode) revealedCode.innerText = randomItem.coupon;
+                
+                // 6. Features
+                const featList = container.querySelector('.wpc-coupon-features');
+                if (featList && randomItem.features) {
+                    let html = '';
+                    randomItem.features.forEach(function(feat) {
+                        html += '<li><svg class="wpc-feat-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>' + feat + '</span></li>';
+                    });
+                    featList.innerHTML = html;
+                }
+                
+                // 7. Colors (Update CSS Variables)
+                wrapper.style.setProperty('--wpc-coupon-primary', randomItem.primary_color);
+                wrapper.style.setProperty('--wpc-coupon-primary-rgb', randomItem.primary_rgb);
+                
+                const overlayEl = document.getElementById('overlay-' + uid);
+                if (overlayEl) {
+                    overlayEl.style.setProperty('--wpc-coupon-primary', randomItem.primary_color);
+                    overlayEl.style.setProperty('--wpc-coupon-primary-rgb', randomItem.primary_rgb);
+                }
+                
+                // Ensure timer resets completely if running
+                if (window.wpcActiveTimers && window.wpcActiveTimers[uid]) {
+                    clearInterval(window.wpcActiveTimers[uid]);
+                    window.wpcActiveTimers[uid] = null;
+                }
+                
+            } catch (e) {
+                console.error('WPC Randomizer Error:', e);
+            }
+        };
+
         // Auto-initialize triggers (autoOpen / exitIntent / inline timers)
         document.addEventListener('DOMContentLoaded', function() {
             const wrappers = document.querySelectorAll('.wpc-coupon-popup-wrapper');
@@ -1489,6 +1776,7 @@ function wpc_enqueue_coupon_popup_assets() {
                 // 1. Check if it is Inline layout
                 const isInline = wrapper.querySelector('.wpc-coupon-inline') !== null;
                 if (isInline) {
+                    wpcInjectRandomCoupon(uid);
                     wpcStartTimer(uid);
                     return;
                 }
