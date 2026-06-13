@@ -112,25 +112,31 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
 
     ob_start();
     
-    // Layout Classes
-    $container_class = 'wpc-cards-container flex gap-4 w-full';
-    if ( $layout === 'horizontal' ) {
-        $container_class .= ' flex-col';
-    } elseif ( $layout === 'grid' ) {
-        $container_class .= ' flex-row flex-wrap justify-center';
-    } elseif ( $layout === 'compact' ) {
-        $container_class .= ' flex-col';
-    }
-    
     // Dynamic Styles for this block
     $block_id = 'wpc-promo-' . uniqid();
     ?>
     <style>
+        .<?php echo $block_id; ?> {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-horizontal, 
+        .<?php echo $block_id; ?>.wpc-layout-compact {
+            flex-direction: column;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-grid {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
         .<?php echo $block_id; ?> .wpc-card-item {
             background: <?php echo esc_attr($c_bg); ?>;
             border: <?php echo esc_attr($border_width); ?> solid <?php echo esc_attr($border_color); ?>;
             border-radius: 12px;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
             <?php 
             if ($shadow_type === 'none') {
                 echo 'box-shadow: none;';
@@ -161,6 +167,7 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             justify-content: center;
             font-weight: 600;
             transition: opacity 0.2s;
+            box-sizing: border-box;
         }
         .<?php echo $block_id; ?> .wpc-card-button:hover {
             opacity: 0.9;
@@ -180,25 +187,6 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             gap: 24px;
             flex-grow: 1;
         }
-        @media (max-width: 640px) {
-            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-left {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                width: 100%;
-            }
-            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-right {
-                width: 100%;
-            }
-            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-button {
-                width: 100%;
-            }
-        }
         /* Grid Layout Specifics */
         .<?php echo $block_id; ?>.wpc-layout-grid .wpc-card-item {
             display: flex;
@@ -217,6 +205,7 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             width: 100%;
             margin-top: 20px;
         }
+
         /* Compact Layout Specifics */
         .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-item {
             display: flex;
@@ -237,9 +226,34 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
         .<?php echo $block_id; ?>.wpc-layout-compact h3 {
             margin: 0 !important;
         }
+
+        /* Mobile Responsiveness for Horizontal and Compact */
+        @media (max-width: 640px) {
+            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-item,
+            .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-left,
+            .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                width: 100%;
+            }
+            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-right,
+            .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-right {
+                width: 100%;
+            }
+            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-button,
+            .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-button {
+                width: 100%;
+            }
+        }
     </style>
 
-    <div class="<?php echo esc_attr( $block_id ); ?> <?php echo esc_attr( $container_class ); ?> wpc-layout-<?php echo esc_attr( $layout ); ?>">
+    <div class="<?php echo esc_attr( $block_id ); ?> wpc-layout-<?php echo esc_attr( $layout ); ?>">
         <?php while ( $query->have_posts() ) : $query->the_post(); 
             $post_id = get_the_ID();
             
