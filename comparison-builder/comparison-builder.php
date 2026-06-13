@@ -61,6 +61,9 @@ require_once WPC_PLUGIN_DIR . 'includes/compare-alternatives-admin.php';
 if ( get_option( 'wpc_enable_coupon_module', false ) ) {
     require_once WPC_PLUGIN_DIR . 'includes/coupon-popup-shortcode.php';
 }
+if ( get_option( 'wpc_enable_cards_module', false ) ) {
+    require_once WPC_PLUGIN_DIR . 'includes/comparison-cards-block.php';
+}
 
 require_once WPC_PLUGIN_DIR . 'includes/list-meta-box.php';
 require_once WPC_PLUGIN_DIR . 'includes/migration.php';

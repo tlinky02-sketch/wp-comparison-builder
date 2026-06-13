@@ -67,6 +67,7 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_variants_show_badge' );
     register_setting( 'wpc_settings_group', 'wpc_variants_remember_selection' );
     register_setting( 'wpc_settings_group', 'wpc_enable_coupon_module' );
+    register_setting( 'wpc_settings_group', 'wpc_enable_cards_module' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );

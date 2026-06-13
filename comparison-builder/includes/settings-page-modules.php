@@ -112,6 +112,21 @@ function wpc_render_modules_tab() {
                     </p>
                 </td>
             </tr>
+            <!-- Promotion Block Module -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_enable_cards_module"><?php _e( 'Promotion Block', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="wpc_enable_cards_module" id="wpc_enable_cards_module" value="1" <?php checked( '1', get_option( 'wpc_enable_cards_module', false ) ); ?> />
+                        <?php _e( 'Enable Promotion Block Module', 'wp-comparison-builder' ); ?>
+                    </label>
+                    <p class="description">
+                        <?php _e( 'Adds a "WPC Promotion Block" Gutenberg block to display items in a responsive format with horizontal, grid, or compact layouts.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
         </table>
         
         <?php submit_button(); ?>
