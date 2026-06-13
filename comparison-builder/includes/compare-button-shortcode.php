@@ -26,11 +26,33 @@ function wpc_compare_button_shortcode( $atts ) {
         'competitors' => '', // comma-separated item IDs
         'mode'        => 'button', // button | table
         'category'    => '', // Product Variants Module
+        'disable_shadow' => '', // true | false
     ), $atts );
     
     // Category Context
     $category_slug = ! empty( $attributes['category'] ) ? sanitize_text_field( $attributes['category'] ) : '';
 
+    $is_table_mode = ( $attributes['mode'] === 'table' );
+
+    // Calculate disableShadow logic
+    $global_shadow_elements = get_option('wpc_disable_shadow_elements', []);
+    $global_disabled = false;
+    if (is_array($global_shadow_elements)) {
+        if ($is_table_mode && in_array('compare_table', $global_shadow_elements)) {
+            $global_disabled = true;
+        } elseif (!$is_table_mode && in_array('compare_button', $global_shadow_elements)) {
+            $global_disabled = true;
+        }
+    }
+
+    $disable_shadow_final = false;
+    if ($attributes['disable_shadow'] === 'true') {
+        $disable_shadow_final = true;
+    } elseif ($attributes['disable_shadow'] === 'false') {
+        $disable_shadow_final = false;
+    } else {
+        $disable_shadow_final = $global_disabled;
+    }
     $item_id = intval( $attributes['id'] );
     
     if ( empty( $item_id ) ) {
@@ -194,7 +216,7 @@ function wpc_compare_button_shortcode( $atts ) {
             <div 
                 id="<?php echo $unique_id; ?>" 
                 class="wpc-compare-dropdown"
-                style="display: none; position: absolute; top: calc(100% + 8px); left: 0; min-width: 320px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000; max-height: 400px; overflow-y: auto;"
+                style="display: none; position: absolute; top: calc(100% + 8px); left: 0; min-width: 320px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; <?php echo $disable_shadow_final ? '' : 'box-shadow: 0 10px 40px rgba(0,0,0,0.15);'; ?> z-index: 1000; max-height: 400px; overflow-y: auto;"
             >
                 <div style="padding: 12px 16px; border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--muted)); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
                     <strong style="font-size: 13px; color: #666;">Compare with...</strong>
@@ -277,7 +299,8 @@ function wpc_compare_button_shortcode( $atts ) {
         "hideRemoveButton": <?php echo ($is_table_mode && !empty($competitor_ids)) ? 'true' : 'false'; ?>,
         "showItemsInitially": <?php echo $is_table_mode ? 'true' : 'false'; ?>,
         "compareButtonMode": <?php echo $is_table_mode ? 'false' : 'true'; ?>,
-        "category": "<?php echo esc_js( $category_slug ); ?>"
+        "category": "<?php echo esc_js( $category_slug ); ?>",
+        "disableShadow": <?php echo $disable_shadow_final ? 'true' : 'false'; ?>
     }' style="display: block; width: 100%; margin-top: 12px;"></div>
     
     <style>

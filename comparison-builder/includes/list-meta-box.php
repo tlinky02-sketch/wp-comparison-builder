@@ -606,6 +606,17 @@ function wpc_render_list_meta_box($post)
                         </select>
                     </div>
 
+                    <!-- Disable Shadow Override -->
+                    <div class="wpc-flex-item">
+                        <label class="wpc-field-label">Table Box Shadow</label>
+                        <?php $disable_shadow = get_post_meta($post->ID, '_wpc_list_disable_shadow', true) ?: 'default'; ?>
+                        <select name="wpc_list_disable_shadow" style="width: 100%;">
+                            <option value="default" <?php selected($disable_shadow, 'default'); ?>>Default (As Global)</option>
+                            <option value="show" <?php selected($disable_shadow, 'show'); ?>>Force Show</option>
+                            <option value="hide" <?php selected($disable_shadow, 'hide'); ?>>Force Hide</option>
+                        </select>
+                    </div>
+
                     <!-- Element Visibility -->
                     <div class="wpc-flex-item">
                         <label class="wpc-field-label">Visible Elements</label>
@@ -1926,6 +1937,11 @@ function wpc_save_list_meta($post_id)
     // Save List Style
     if (isset($_POST['wpc_list_style'])) {
         update_post_meta($post_id, '_wpc_list_style', sanitize_text_field($_POST['wpc_list_style']));
+    }
+
+    // Save Disable Shadow Override
+    if (isset($_POST['wpc_list_disable_shadow'])) {
+        update_post_meta($post_id, '_wpc_list_disable_shadow', sanitize_text_field($_POST['wpc_list_disable_shadow']));
     }
 
     // Save Button Text

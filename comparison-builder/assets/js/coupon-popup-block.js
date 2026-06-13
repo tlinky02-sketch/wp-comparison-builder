@@ -17,7 +17,7 @@
     var ColorPalette = wp.components.ColorPalette;
     var PanelRow = wp.components.PanelRow;
     var Button = wp.components.Button;
-
+    var TextareaControl = wp.components.TextareaControl;
     registerBlockType('wp-comparison-builder/coupon-popup', {
         title: 'WPC Coupon Popup Box',
         icon: 'tickets',
@@ -271,47 +271,60 @@
                             'div',
                             { style: { padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px', marginTop: '10px' } },
                             el('p', { style: { fontSize: '12px', color: '#64748b', marginBottom: '15px' } }, 'These settings apply ONLY to the selected company.'),
-                            el(TextControl, {
-                                label: 'Custom Title',
-                                value: activeOverrides.title || '',
-                                onChange: function(val) { updateOverride('title', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Subtitle',
-                                value: activeOverrides.subtitle || '',
-                                onChange: function(val) { updateOverride('subtitle', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Timer',
-                                help: 'e.g., 24h, 15m, 1y 2mo',
-                                value: activeOverrides.timer || '',
-                                onChange: function(val) { updateOverride('timer', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Coupon Code',
-                                value: activeOverrides.couponCode || '',
-                                onChange: function(val) { updateOverride('couponCode', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Affiliate Link',
-                                value: activeOverrides.affiliateLink || '',
-                                onChange: function(val) { updateOverride('affiliateLink', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Logo URL',
-                                value: activeOverrides.logoUrl || '',
-                                onChange: function(val) { updateOverride('logoUrl', val); }
-                            }),
-                            el(TextControl, {
-                                label: 'Custom Mascot URL',
-                                value: activeOverrides.mascotUrl || '',
-                                onChange: function(val) { updateOverride('mascotUrl', val); }
-                            }),
-                            el(PanelRow, null, el('span', null, 'Primary Color')),
-                            el(ColorPalette, {
-                                value: activeOverrides.primaryColor || '',
-                                onChange: function(val) { updateOverride('primaryColor', val); }
-                            })
+                            
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Core Overrides'),
+                            el(TextControl, { label: 'Custom Title', value: activeOverrides.title || '', onChange: function(val) { updateOverride('title', val); } }),
+                            el(TextControl, { label: 'Custom Subtitle', value: activeOverrides.subtitle || '', onChange: function(val) { updateOverride('subtitle', val); } }),
+                            el(TextControl, { label: 'Custom Coupon Code', value: activeOverrides.couponCode || '', onChange: function(val) { updateOverride('couponCode', val); } }),
+                            el(TextControl, { label: 'Custom Affiliate Link', value: activeOverrides.affiliateLink || '', onChange: function(val) { updateOverride('affiliateLink', val); } }),
+                            el(TextControl, { label: 'Custom Logo URL', value: activeOverrides.logoUrl || '', onChange: function(val) { updateOverride('logoUrl', val); } }),
+                            el(TextControl, { label: 'Custom Mascot URL', value: activeOverrides.mascotUrl || '', onChange: function(val) { updateOverride('mascotUrl', val); } }),
+                            
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Titles & Colors'),
+                            el(TextControl, { label: 'Title Font Size', value: activeOverrides.titleSize || '', onChange: function(val) { updateOverride('titleSize', val); } }),
+                            el(PanelRow, null, el('span', null, 'Title Color')), el(ColorPalette, { value: activeOverrides.titleColor || '', onChange: function(val) { updateOverride('titleColor', val); } }),
+                            el(TextControl, { label: 'Subtitle Font Size', value: activeOverrides.subtitleSize || '', onChange: function(val) { updateOverride('subtitleSize', val); } }),
+                            el(PanelRow, null, el('span', null, 'Subtitle Color')), el(ColorPalette, { value: activeOverrides.subtitleColor || '', onChange: function(val) { updateOverride('subtitleColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Primary Color')), el(ColorPalette, { value: activeOverrides.primaryColor || '', onChange: function(val) { updateOverride('primaryColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Features Checklist'),
+                            el(TextareaControl, { label: 'Features (Comma separated)', value: activeOverrides.features || '', onChange: function(val) { updateOverride('features', val); } }),
+                            el(TextControl, { label: 'Features Font Size', value: activeOverrides.featuresSize || '', onChange: function(val) { updateOverride('featuresSize', val); } }),
+                            el(PanelRow, null, el('span', null, 'Features Text Color')), el(ColorPalette, { value: activeOverrides.featuresColor || '', onChange: function(val) { updateOverride('featuresColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Timer Settings'),
+                            el(TextControl, { label: 'Custom Timer (e.g. 15m, 2h)', value: activeOverrides.timer || '', onChange: function(val) { updateOverride('timer', val); } }),
+                            el(TextControl, { label: 'Timer Label (e.g. Expires in:)', value: activeOverrides.timerLabel || '', onChange: function(val) { updateOverride('timerLabel', val); } }),
+                            el(TextControl, { label: 'Timer Font Size', value: activeOverrides.timerSize || '', onChange: function(val) { updateOverride('timerSize', val); } }),
+                            el(PanelRow, null, el('span', null, 'Timer Background')), el(ColorPalette, { value: activeOverrides.timerBgColor || '', onChange: function(val) { updateOverride('timerBgColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Timer Text')), el(ColorPalette, { value: activeOverrides.timerTextColor || '', onChange: function(val) { updateOverride('timerTextColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Badges'),
+                            el(TextControl, { label: 'Exclusive Label Text', value: activeOverrides.exclusiveLabel || '', onChange: function(val) { updateOverride('exclusiveLabel', val); } }),
+                            el(PanelRow, null, el('span', null, 'Exclusive Badge BG')), el(ColorPalette, { value: activeOverrides.exclusiveBgColor || '', onChange: function(val) { updateOverride('exclusiveBgColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Exclusive Badge Text')), el(ColorPalette, { value: activeOverrides.exclusiveTextColor || '', onChange: function(val) { updateOverride('exclusiveTextColor', val); } }),
+                            el(TextControl, { label: 'Verified Label Text', value: activeOverrides.verifiedLabel || '', onChange: function(val) { updateOverride('verifiedLabel', val); } }),
+                            el(PanelRow, null, el('span', null, 'Verified Badge BG')), el(ColorPalette, { value: activeOverrides.verifiedBgColor || '', onChange: function(val) { updateOverride('verifiedBgColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Verified Badge Text')), el(ColorPalette, { value: activeOverrides.verifiedTextColor || '', onChange: function(val) { updateOverride('verifiedTextColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Button Styles & Action'),
+                            el(SelectControl, { label: 'Button Style', value: activeOverrides.buttonStyle || '', options: [ { label: 'Default', value: '' }, { label: 'Ticket Cutout (Dashed)', value: 'ticket' }, { label: 'Solid Block', value: 'solid' }, { label: 'Rounded Pill', value: 'pill' } ], onChange: function(val) { updateOverride('buttonStyle', val); } }),
+                            el(SelectControl, { label: 'Click Action', value: activeOverrides.clickAction || '', options: [ { label: 'Default', value: '' }, { label: 'Copy Code, Reveal, and Redirect', value: 'copy_reveal_redirect' }, { label: 'Copy Code and Reveal (No Redirect)', value: 'copy_reveal' }, { label: 'Redirect Only (No Code)', value: 'redirect_only' } ], onChange: function(val) { updateOverride('clickAction', val); } }),
+                            el(TextControl, { label: 'Button Text', value: activeOverrides.buttonText || '', onChange: function(val) { updateOverride('buttonText', val); } }),
+                            el(TextControl, { label: 'Masked Text (e.g. SPECIAL)', value: activeOverrides.maskText || '', onChange: function(val) { updateOverride('maskText', val); } }),
+                            el(TextControl, { label: 'Copied Text', value: activeOverrides.copiedText || '', onChange: function(val) { updateOverride('copiedText', val); } }),
+                            el(TextControl, { label: 'Button Font Size', value: activeOverrides.btnSize || '', onChange: function(val) { updateOverride('btnSize', val); } }),
+                            el(PanelRow, null, el('span', null, 'Button Background')), el(ColorPalette, { value: activeOverrides.btnBgColor || '', onChange: function(val) { updateOverride('btnBgColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Button Text Color')), el(ColorPalette, { value: activeOverrides.btnTextColor || '', onChange: function(val) { updateOverride('btnTextColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Button Hover BG')), el(ColorPalette, { value: activeOverrides.btnHoverColor || '', onChange: function(val) { updateOverride('btnHoverColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Copied BG')), el(ColorPalette, { value: activeOverrides.copiedBgColor || '', onChange: function(val) { updateOverride('copiedBgColor', val); } }),
+                            el(PanelRow, null, el('span', null, 'Copied Text')), el(ColorPalette, { value: activeOverrides.copiedTextColor || '', onChange: function(val) { updateOverride('copiedTextColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Card Styling'),
+                            el(SelectControl, { label: 'Card Shadow', value: activeOverrides.cardShadow || '', options: [ { label: 'Default', value: '' }, { label: 'Heavy Default', value: 'heavy' }, { label: 'Soft Shadow', value: 'soft' }, { label: 'No Shadow', value: 'none' } ], onChange: function(val) { updateOverride('cardShadow', val); } }),
+                            el(SelectControl, { label: 'Border Style', value: activeOverrides.cardBorderStyle || '', options: [ { label: 'Default', value: '' }, { label: 'None', value: 'none' }, { label: 'Solid', value: 'solid' }, { label: 'Dashed', value: 'dashed' }, { label: 'Dotted', value: 'dotted' } ], onChange: function(val) { updateOverride('cardBorderStyle', val); } }),
+                            el(TextControl, { label: 'Border Width', value: activeOverrides.cardBorderWidth || '', onChange: function(val) { updateOverride('cardBorderWidth', val); } }),
+                            el(PanelRow, null, el('span', null, 'Border Color')), el(ColorPalette, { value: activeOverrides.cardBorderColor || '', onChange: function(val) { updateOverride('cardBorderColor', val); } })
                         ) : null
                     ),
 

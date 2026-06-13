@@ -78,6 +78,15 @@ function wpc_register_settings() {
 
     // List Style Global Default
     register_setting( 'wpc_settings_group', 'wpc_default_list_style' );
+    
+    // Disable Table Box Shadow globally
+    register_setting( 'wpc_settings_group', 'wpc_disable_shadow_elements', [
+        'type' => 'array',
+        'default' => [],
+        'sanitize_callback' => function($input) {
+            return is_array($input) ? array_map('sanitize_text_field', $input) : [];
+        }
+    ]);
 
     // Pricing Table Visuals
     register_setting( 'wpc_settings_group', 'wpc_pt_header_bg' );
@@ -370,7 +379,7 @@ function wpc_handle_export_data() {
             'wpc_pt_header_bg', 'wpc_pt_header_text', 'wpc_pt_btn_bg', 'wpc_pt_btn_text', 
             'wpc_pt_btn_pos_table', 'wpc_pt_btn_pos_popup', 'wpc_schema_settings', 'wpc_enable_tools_module',
             'wpc_enable_tools_associated_items',
-            'wpc_default_list_style',
+            'wpc_default_list_style', 'wpc_disable_shadow_elements',
             // Text Labels
             'wpc_text_view_details', 'wpc_text_compare_alternatives', 'wpc_text_compare_now', 
             'wpc_text_reviews', 'wpc_text_back_to_reviews', 'wpc_text_filters', 'wpc_text_search_placeholder',
@@ -1597,7 +1606,32 @@ function wpc_render_general_tab() {
                     </p>
                 </td>
             </tr>
-        </table>
+        <tr valign="top">
+            <th scope="row">
+                <label for="wpc_disable_table_shadow"><?php _e( 'Disable Table Shadows', 'wp-comparison-builder' ); ?></label>
+            </th>
+            <td>
+                <?php 
+                $disabled_elements = get_option('wpc_disable_shadow_elements', []); 
+                if (!is_array($disabled_elements)) $disabled_elements = [];
+                ?>
+                <fieldset>
+                    <label style="display: block; margin-bottom: 5px;">
+                        <input type="checkbox" name="wpc_disable_shadow_elements[]" value="custom_list" <?php checked(in_array('custom_list', $disabled_elements)); ?> />
+                        Custom Lists
+                    </label>
+                    <label style="display: block; margin-bottom: 5px;">
+                        <input type="checkbox" name="wpc_disable_shadow_elements[]" value="compare_table" <?php checked(in_array('compare_table', $disabled_elements)); ?> />
+                        Compare Tables (Table Mode)
+                    </label>
+                    <label style="display: block; margin-bottom: 5px;">
+                        <input type="checkbox" name="wpc_disable_shadow_elements[]" value="compare_button" <?php checked(in_array('compare_button', $disabled_elements)); ?> />
+                        Compare Buttons (Dropdown Mode)
+                    </label>
+                </fieldset>
+                <p class="description"><?php _e( 'Select which components should have their floating drop-shadow effect removed globally.', 'wp-comparison-builder' ); ?></p>
+        </tr>
+    </table>
 
         <h2><?php _e( 'Visual Style', 'wp-comparison-builder' ); ?></h2>
         <p><?php _e( 'Customize the look and feel of the comparison tool. These colors will override the defaults.', 'wp-comparison-builder' ); ?></p>

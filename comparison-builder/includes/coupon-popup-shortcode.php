@@ -191,6 +191,10 @@ function wpc_coupon_popup_shortcode( $atts ) {
         'copied_bg_color'  => '',
         'copied_text_color'=> '',
         'button_style'     => 'ticket', // ticket | solid | outline | glow
+        'btn_size'         => '',
+        'btn_bg_color'     => '',
+        'btn_text_color'   => '',
+        'btn_hover_color'  => '',
         'click_action'     => 'copy_reveal_redirect', // copy_reveal_redirect | copy_reveal_only | redirect_only
         'primary_color'    => '',
         'auto_open'        => '', // delay in seconds, e.g. 5
@@ -231,13 +235,52 @@ function wpc_coupon_popup_shortcode( $atts ) {
             $specific = $overrides_map[ (string) $item_id ];
             // Merge specific overrides over the global shortcode attributes
             if ( ! empty( $specific['title'] ) ) $atts['title'] = $specific['title'];
+            if ( ! empty( $specific['titleColor'] ) ) $atts['title_color'] = $specific['titleColor'];
+            if ( ! empty( $specific['titleSize'] ) ) $atts['title_size'] = $specific['titleSize'];
             if ( ! empty( $specific['subtitle'] ) ) $atts['subtitle'] = $specific['subtitle'];
+            if ( ! empty( $specific['subtitleColor'] ) ) $atts['subtitle_color'] = $specific['subtitleColor'];
+            if ( ! empty( $specific['subtitleSize'] ) ) $atts['subtitle_size'] = $specific['subtitleSize'];
+            
             if ( ! empty( $specific['timer'] ) ) $atts['timer'] = $specific['timer'];
+            if ( ! empty( $specific['timerLabel'] ) ) $atts['timer_label'] = $specific['timerLabel'];
+            if ( ! empty( $specific['timerBgColor'] ) ) $atts['timer_bg_color'] = $specific['timerBgColor'];
+            if ( ! empty( $specific['timerTextColor'] ) ) $atts['timer_text_color'] = $specific['timerTextColor'];
+            if ( ! empty( $specific['timerSize'] ) ) $atts['timer_size'] = $specific['timerSize'];
+            
             if ( ! empty( $specific['couponCode'] ) ) $atts['coupon_code'] = $specific['couponCode'];
             if ( ! empty( $specific['affiliateLink'] ) ) $atts['affiliate_link'] = $specific['affiliateLink'];
             if ( ! empty( $specific['logoUrl'] ) ) $atts['logo_url'] = $specific['logoUrl'];
             if ( ! empty( $specific['mascotUrl'] ) ) $atts['mascot_url'] = $specific['mascotUrl'];
             if ( ! empty( $specific['primaryColor'] ) ) $atts['primary_color'] = $specific['primaryColor'];
+            
+            if ( ! empty( $specific['features'] ) ) $atts['features'] = $specific['features'];
+            if ( ! empty( $specific['featuresColor'] ) ) $atts['features_color'] = $specific['featuresColor'];
+            if ( ! empty( $specific['featuresSize'] ) ) $atts['features_size'] = $specific['featuresSize'];
+            
+            if ( ! empty( $specific['exclusiveLabel'] ) ) $atts['exclusive_label'] = $specific['exclusiveLabel'];
+            if ( ! empty( $specific['exclusiveBgColor'] ) ) $atts['exclusive_bg_color'] = $specific['exclusiveBgColor'];
+            if ( ! empty( $specific['exclusiveTextColor'] ) ) $atts['exclusive_text_color'] = $specific['exclusiveTextColor'];
+            
+            if ( ! empty( $specific['verifiedLabel'] ) ) $atts['verified_label'] = $specific['verifiedLabel'];
+            if ( ! empty( $specific['verifiedBgColor'] ) ) $atts['verified_bg_color'] = $specific['verifiedBgColor'];
+            if ( ! empty( $specific['verifiedTextColor'] ) ) $atts['verified_text_color'] = $specific['verifiedTextColor'];
+            
+            if ( ! empty( $specific['buttonStyle'] ) ) $atts['button_style'] = $specific['buttonStyle'];
+            if ( ! empty( $specific['clickAction'] ) ) $atts['click_action'] = $specific['clickAction'];
+            if ( ! empty( $specific['buttonText'] ) ) $atts['button_text'] = $specific['buttonText'];
+            if ( ! empty( $specific['maskText'] ) ) $atts['mask_text'] = $specific['maskText'];
+            if ( ! empty( $specific['copiedText'] ) ) $atts['copied_text'] = $specific['copiedText'];
+            if ( ! empty( $specific['btnSize'] ) ) $atts['btn_size'] = $specific['btnSize'];
+            if ( ! empty( $specific['btnBgColor'] ) ) $atts['btn_bg_color'] = $specific['btnBgColor'];
+            if ( ! empty( $specific['btnTextColor'] ) ) $atts['btn_text_color'] = $specific['btnTextColor'];
+            if ( ! empty( $specific['btnHoverColor'] ) ) $atts['btn_hover_color'] = $specific['btnHoverColor'];
+            if ( ! empty( $specific['copiedBgColor'] ) ) $atts['copied_bg_color'] = $specific['copiedBgColor'];
+            if ( ! empty( $specific['copiedTextColor'] ) ) $atts['copied_text_color'] = $specific['copiedTextColor'];
+            
+            if ( ! empty( $specific['cardShadow'] ) ) $atts['card_shadow'] = $specific['cardShadow'];
+            if ( ! empty( $specific['cardBorderStyle'] ) ) $atts['card_border_style'] = $specific['cardBorderStyle'];
+            if ( ! empty( $specific['cardBorderColor'] ) ) $atts['card_border_color'] = $specific['cardBorderColor'];
+            if ( ! empty( $specific['cardBorderWidth'] ) ) $atts['card_border_width'] = $specific['cardBorderWidth'];
         }
     }
 
@@ -439,13 +482,52 @@ function wpc_coupon_popup_shortcode( $atts ) {
             if ( isset( $overrides_map[ (string) $cid_int ] ) ) {
                 $specific = $overrides_map[ (string) $cid_int ];
                 if ( ! empty( $specific['title'] ) ) $c_atts['title'] = $specific['title'];
+                if ( ! empty( $specific['titleColor'] ) ) $c_atts['title_color'] = $specific['titleColor'];
+                if ( ! empty( $specific['titleSize'] ) ) $c_atts['title_size'] = $specific['titleSize'];
                 if ( ! empty( $specific['subtitle'] ) ) $c_atts['subtitle'] = $specific['subtitle'];
+                if ( ! empty( $specific['subtitleColor'] ) ) $c_atts['subtitle_color'] = $specific['subtitleColor'];
+                if ( ! empty( $specific['subtitleSize'] ) ) $c_atts['subtitle_size'] = $specific['subtitleSize'];
+                
                 if ( ! empty( $specific['timer'] ) ) $c_atts['timer'] = $specific['timer'];
+                if ( ! empty( $specific['timerLabel'] ) ) $c_atts['timer_label'] = $specific['timerLabel'];
+                if ( ! empty( $specific['timerBgColor'] ) ) $c_atts['timer_bg_color'] = $specific['timerBgColor'];
+                if ( ! empty( $specific['timerTextColor'] ) ) $c_atts['timer_text_color'] = $specific['timerTextColor'];
+                if ( ! empty( $specific['timerSize'] ) ) $c_atts['timer_size'] = $specific['timerSize'];
+                
                 if ( ! empty( $specific['couponCode'] ) ) $c_atts['coupon_code'] = $specific['couponCode'];
                 if ( ! empty( $specific['affiliateLink'] ) ) $c_atts['affiliate_link'] = $specific['affiliateLink'];
                 if ( ! empty( $specific['logoUrl'] ) ) $c_atts['logo_url'] = $specific['logoUrl'];
                 if ( ! empty( $specific['mascotUrl'] ) ) $c_atts['mascot_url'] = $specific['mascotUrl'];
                 if ( ! empty( $specific['primaryColor'] ) ) $c_atts['primary_color'] = $specific['primaryColor'];
+                
+                if ( ! empty( $specific['features'] ) ) $c_atts['features'] = $specific['features'];
+                if ( ! empty( $specific['featuresColor'] ) ) $c_atts['features_color'] = $specific['featuresColor'];
+                if ( ! empty( $specific['featuresSize'] ) ) $c_atts['features_size'] = $specific['featuresSize'];
+                
+                if ( ! empty( $specific['exclusiveLabel'] ) ) $c_atts['exclusive_label'] = $specific['exclusiveLabel'];
+                if ( ! empty( $specific['exclusiveBgColor'] ) ) $c_atts['exclusive_bg_color'] = $specific['exclusiveBgColor'];
+                if ( ! empty( $specific['exclusiveTextColor'] ) ) $c_atts['exclusive_text_color'] = $specific['exclusiveTextColor'];
+                
+                if ( ! empty( $specific['verifiedLabel'] ) ) $c_atts['verified_label'] = $specific['verifiedLabel'];
+                if ( ! empty( $specific['verifiedBgColor'] ) ) $c_atts['verified_bg_color'] = $specific['verifiedBgColor'];
+                if ( ! empty( $specific['verifiedTextColor'] ) ) $c_atts['verified_text_color'] = $specific['verifiedTextColor'];
+                
+                if ( ! empty( $specific['buttonStyle'] ) ) $c_atts['button_style'] = $specific['buttonStyle'];
+                if ( ! empty( $specific['clickAction'] ) ) $c_atts['click_action'] = $specific['clickAction'];
+                if ( ! empty( $specific['buttonText'] ) ) $c_atts['button_text'] = $specific['buttonText'];
+                if ( ! empty( $specific['maskText'] ) ) $c_atts['mask_text'] = $specific['maskText'];
+                if ( ! empty( $specific['copiedText'] ) ) $c_atts['copied_text'] = $specific['copiedText'];
+                if ( ! empty( $specific['btnSize'] ) ) $c_atts['btn_size'] = $specific['btnSize'];
+                if ( ! empty( $specific['btnBgColor'] ) ) $c_atts['btn_bg_color'] = $specific['btnBgColor'];
+                if ( ! empty( $specific['btnTextColor'] ) ) $c_atts['btn_text_color'] = $specific['btnTextColor'];
+                if ( ! empty( $specific['btnHoverColor'] ) ) $c_atts['btn_hover_color'] = $specific['btnHoverColor'];
+                if ( ! empty( $specific['copiedBgColor'] ) ) $c_atts['copied_bg_color'] = $specific['copiedBgColor'];
+                if ( ! empty( $specific['copiedTextColor'] ) ) $c_atts['copied_text_color'] = $specific['copiedTextColor'];
+                
+                if ( ! empty( $specific['cardShadow'] ) ) $c_atts['card_shadow'] = $specific['cardShadow'];
+                if ( ! empty( $specific['cardBorderStyle'] ) ) $c_atts['card_border_style'] = $specific['cardBorderStyle'];
+                if ( ! empty( $specific['cardBorderColor'] ) ) $c_atts['card_border_color'] = $specific['cardBorderColor'];
+                if ( ! empty( $specific['cardBorderWidth'] ) ) $c_atts['card_border_width'] = $specific['cardBorderWidth'];
             }
 
             $c_name           = $c_item ? esc_html( $c_item['name'] ) : ( ! empty( $c_atts['title'] ) ? esc_html( $c_atts['title'] ) : 'Special Offer' );
@@ -503,7 +585,49 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 'mascot' => $c_mascot,
                 'timer_val' => $c_timer_val,
                 'timer_seconds' => $c_timer_seconds,
-                'features' => $c_feature_list
+                'features' => $c_feature_list,
+                
+                // New Overrides
+                'title_color' => $c_atts['title_color'],
+                'title_size' => $c_atts['title_size'],
+                'subtitle_color' => $c_atts['subtitle_color'],
+                'subtitle_size' => $c_atts['subtitle_size'],
+                
+                'timer_label' => $c_atts['timer_label'],
+                'timer_bg_color' => $c_atts['timer_bg_color'],
+                'timer_text_color' => $c_atts['timer_text_color'],
+                'timer_size' => $c_atts['timer_size'],
+                
+                'is_exclusive' => ( $c_item && ! empty( $c_item['is_exclusive'] ) ) ? true : false,
+                'exclusive_label' => $c_atts['exclusive_label'],
+                'exclusive_bg_color' => $c_atts['exclusive_bg_color'],
+                'exclusive_text_color' => $c_atts['exclusive_text_color'],
+                
+                'is_verified' => ( $c_item && ! empty( $c_item['is_verified'] ) ) ? true : false,
+                'verified_label' => $c_atts['verified_label'],
+                'verified_bg_color' => $c_atts['verified_bg_color'],
+                'verified_text_color' => $c_atts['verified_text_color'],
+                
+                'button_style' => $c_atts['button_style'],
+                'click_action' => $c_atts['click_action'],
+                'button_text' => $c_atts['button_text'],
+                'mask_text' => $c_atts['mask_text'],
+                'copied_text' => $c_atts['copied_text'],
+                'btn_size' => $c_atts['btn_size'],
+                'btn_bg_color' => $c_atts['btn_bg_color'],
+                'btn_bg_rgb' => ! empty( $c_atts['btn_bg_color'] ) ? wpc_coupon_hex_to_rgb( $c_atts['btn_bg_color'] ) : '',
+                'btn_text_color' => $c_atts['btn_text_color'],
+                'btn_hover_color' => $c_atts['btn_hover_color'],
+                'copied_bg_color' => $c_atts['copied_bg_color'],
+                'copied_text_color' => $c_atts['copied_text_color'],
+                
+                'features_color' => $c_atts['features_color'],
+                'features_size' => $c_atts['features_size'],
+                
+                'card_shadow' => $c_atts['card_shadow'],
+                'card_border_style' => $c_atts['card_border_style'],
+                'card_border_color' => $c_atts['card_border_color'],
+                'card_border_width' => $c_atts['card_border_width']
             );
         }
         $pool_json = esc_attr( wp_json_encode( $pool_data ) );
@@ -1726,13 +1850,33 @@ function wpc_enqueue_coupon_popup_assets() {
                 }
                 
                 // 5. Button and Reveal Box
+                const btnContainer = container.querySelector('.wpc-coupon-btn-container');
                 const btn = container.querySelector('.wpc-coupon-showcode-btn');
+                
+                // If the style changed, update classes
+                if (btnContainer && btn && randomItem.button_style) {
+                    btnContainer.className = 'wpc-coupon-btn-container preset-' + randomItem.button_style;
+                    btn.className = 'wpc-coupon-showcode-btn preset-' + randomItem.button_style;
+                }
+                
                 if (btn) {
                     btn.setAttribute('data-coupon', randomItem.coupon);
                     btn.setAttribute('data-link', randomItem.link);
+                    if (randomItem.button_text) btn.setAttribute('data-button-text', randomItem.button_text);
+                    if (randomItem.copied_text) btn.setAttribute('data-copied-text', randomItem.copied_text);
+                    if (randomItem.click_action) btn.setAttribute('data-click-action', randomItem.click_action);
+                    if (randomItem.copied_bg_color) btn.setAttribute('data-copied-bg', randomItem.copied_bg_color);
+                    if (randomItem.copied_text_color) btn.setAttribute('data-copied-text-color', randomItem.copied_text_color);
+                    
+                    const btnLabel = btn.querySelector('.btn-text-label');
+                    if (btnLabel && randomItem.button_text) btnLabel.innerText = randomItem.button_text;
                 }
+                
                 const revealedCode = container.querySelector('.code-revealed');
                 if (revealedCode) revealedCode.innerText = randomItem.coupon;
+                
+                const maskedCode = container.querySelector('.code-masked');
+                if (maskedCode && randomItem.mask_text) maskedCode.innerText = randomItem.mask_text;
                 
                 // 6. Features
                 const featList = container.querySelector('.wpc-coupon-features');
@@ -1744,15 +1888,60 @@ function wpc_enqueue_coupon_popup_assets() {
                     featList.innerHTML = html;
                 }
                 
-                // 7. Colors (Update CSS Variables)
-                wrapper.style.setProperty('--wpc-coupon-primary', randomItem.primary_color);
-                wrapper.style.setProperty('--wpc-coupon-primary-rgb', randomItem.primary_rgb);
-                
+                // 7. Colors & Overrides (Update CSS Variables)
                 const overlayEl = document.getElementById('overlay-' + uid);
-                if (overlayEl) {
-                    overlayEl.style.setProperty('--wpc-coupon-primary', randomItem.primary_color);
-                    overlayEl.style.setProperty('--wpc-coupon-primary-rgb', randomItem.primary_rgb);
-                }
+                const targets = [wrapper];
+                if (overlayEl) targets.push(overlayEl);
+                
+                targets.forEach(function(t) {
+                    if (randomItem.primary_color) t.style.setProperty('--wpc-coupon-primary', randomItem.primary_color);
+                    if (randomItem.primary_rgb) t.style.setProperty('--wpc-coupon-primary-rgb', randomItem.primary_rgb);
+                    
+                    if (randomItem.title_color) t.style.setProperty('--wpc-coupon-title-color', randomItem.title_color);
+                    if (randomItem.title_size) t.style.setProperty('--wpc-coupon-title-size', randomItem.title_size);
+                    if (randomItem.subtitle_color) t.style.setProperty('--wpc-coupon-subtitle-color', randomItem.subtitle_color);
+                    if (randomItem.subtitle_size) t.style.setProperty('--wpc-coupon-subtitle-size', randomItem.subtitle_size);
+                    
+                    if (randomItem.timer_bg_color) t.style.setProperty('--wpc-coupon-timer-bg', randomItem.timer_bg_color);
+                    if (randomItem.timer_text_color) t.style.setProperty('--wpc-coupon-timer-color', randomItem.timer_text_color);
+                    if (randomItem.timer_size) t.style.setProperty('--wpc-coupon-timer-size', randomItem.timer_size);
+                    
+                    if (randomItem.exclusive_bg_color) t.style.setProperty('--wpc-badge-exclusive-bg', randomItem.exclusive_bg_color);
+                    if (randomItem.exclusive_text_color) t.style.setProperty('--wpc-badge-exclusive-text', randomItem.exclusive_text_color);
+                    
+                    if (randomItem.verified_bg_color) t.style.setProperty('--wpc-badge-verified-bg', randomItem.verified_bg_color);
+                    if (randomItem.verified_text_color) t.style.setProperty('--wpc-badge-verified-text', randomItem.verified_text_color);
+                    
+                    if (randomItem.btn_bg_color) {
+                        t.style.setProperty('--wpc-btn-bg', randomItem.btn_bg_color);
+                        if (randomItem.btn_bg_rgb) t.style.setProperty('--wpc-btn-bg-rgb', randomItem.btn_bg_rgb);
+                    }
+                    if (randomItem.btn_text_color) t.style.setProperty('--wpc-btn-text', randomItem.btn_text_color);
+                    if (randomItem.btn_hover_color) t.style.setProperty('--wpc-btn-hover', randomItem.btn_hover_color);
+                    if (randomItem.btn_size) t.style.setProperty('--wpc-btn-size', randomItem.btn_size);
+                    
+                    if (randomItem.copied_bg_color) t.style.setProperty('--wpc-copied-bg', randomItem.copied_bg_color);
+                    if (randomItem.copied_text_color) t.style.setProperty('--wpc-copied-text', randomItem.copied_text_color);
+                    
+                    if (randomItem.features_color) t.style.setProperty('--wpc-coupon-features-color', randomItem.features_color);
+                    if (randomItem.features_size) t.style.setProperty('--wpc-coupon-features-size', randomItem.features_size);
+                    
+                    if (randomItem.card_shadow) {
+                        if (randomItem.card_shadow === 'none') t.style.setProperty('--wpc-coupon-card-shadow', 'none');
+                        else if (randomItem.card_shadow === 'soft') t.style.setProperty('--wpc-coupon-card-shadow', '0 10px 25px -5px rgba(15, 23, 42, 0.1)');
+                        else t.style.setProperty('--wpc-coupon-card-shadow', '0 30px 60px -15px rgba(15, 23, 42, 0.25)');
+                    }
+                    if (randomItem.card_border_style) {
+                        if (randomItem.card_border_style === 'none') {
+                            t.style.setProperty('--wpc-coupon-card-border', 'none');
+                        } else {
+                            const width = randomItem.card_border_width || '2px';
+                            const style = randomItem.card_border_style || 'solid';
+                            const color = randomItem.card_border_color || randomItem.primary_color;
+                            t.style.setProperty('--wpc-coupon-card-border', width + ' ' + style + ' ' + color);
+                        }
+                    }
+                });
                 
                 // Ensure timer resets completely if running
                 if (window.wpcActiveTimers && window.wpcActiveTimers[uid]) {

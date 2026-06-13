@@ -1226,6 +1226,7 @@ function wpc_list_shortcode($atts)
         'id' => '',
         'style' => '',
         'category' => '', // Product Variants Module
+        'disable_shadow' => '', // true | false
     ), $atts);
 
     // Category Context
@@ -1899,6 +1900,21 @@ function wpc_list_shortcode($atts)
         return $clean;
     }, $initial_items_sliced);
 
+    // Calculate disableShadow logic
+    $list_disable_shadow = get_post_meta($post_id, '_wpc_list_disable_shadow', true) ?: 'default';
+    if (isset($attributes['disable_shadow']) && $attributes['disable_shadow'] === 'true') {
+        $disable_shadow_final = true;
+    } elseif (isset($attributes['disable_shadow']) && $attributes['disable_shadow'] === 'false') {
+        $disable_shadow_final = false;
+    } elseif ($list_disable_shadow === 'hide') {
+        $disable_shadow_final = true;
+    } elseif ($list_disable_shadow === 'show') {
+        $disable_shadow_final = false;
+    } else {
+        $global_shadow_elements = get_option('wpc_disable_shadow_elements', []);
+        $disable_shadow_final = is_array($global_shadow_elements) && in_array('custom_list', $global_shadow_elements);
+    }
+
     $config = array(
         'initialItems' => $optimized_initial, // Ultra-stripped
         'ids' => $sorted_ids,
@@ -1938,6 +1954,10 @@ function wpc_list_shortcode($atts)
         'ptBtnPosTable' => ($l_btn = get_post_meta($post_id, '_wpc_list_pt_btn_pos_table', true)) && $l_btn !== 'default' ? $l_btn : get_option('wpc_pt_btn_pos_table', 'after_price'),
         'ptBtnPosPopup' => ($l_btn_p = get_post_meta($post_id, '_wpc_list_pt_btn_pos_popup', true)) && $l_btn_p !== 'default' ? $l_btn_p : get_option('wpc_pt_btn_pos_popup', 'after_price'),
 
+        // Disable Shadow Override Logic
+        // Priority: Shortcode attribute > List Meta > Global Option
+        // Handled directly via $disable_shadow_final calculated below
+
         // Button Visibility (List > Item > Global)
         'showSelectTable' => wpc_resolve_bool_setting($post_id, '_wpc_list_show_select_table', null, 'wpc_show_select_table', true),
         'showSelectPopup' => wpc_resolve_bool_setting($post_id, '_wpc_list_show_select_popup', null, 'wpc_show_select_popup', true),
@@ -1972,8 +1992,9 @@ function wpc_list_shortcode($atts)
             'copied' => get_post_meta($post_id, '_wpc_list_color_copied', true) ?: get_option('wpc_color_copied', '#10b981'),
             'tick' => (get_post_meta($post_id, '_wpc_list_use_tick', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_tick', true) : '') ?: get_option('wpc_color_tick', '#10b981'),
             'cross' => (get_post_meta($post_id, '_wpc_list_use_cross', true) == '1' ? get_post_meta($post_id, '_wpc_list_color_cross', true) : '') ?: get_option('wpc_color_cross', '#94a3b8'),
-            'category' => $category_slug, // Product Variants Module
         ],
+        'category' => $category_slug, // Product Variants Module
+        'disableShadow' => $disable_shadow_final,
     );
 
     $config_json = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');

@@ -56,6 +56,9 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
     };
   };
 
+  // Centralized toggle to disable shadows
+  const hideShadow = config?.disableShadow === true;
+
   // Merge global colors with config-specific overrides (config wins for specific keys)
   const globalColors = (window as any).wpcSettings?.colors || {};
   const colors = { ...globalColors, ...(config?.colors || {}) };
@@ -520,14 +523,14 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
   };
 
   return (
-    <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+    <div className={cn("bg-card rounded-2xl border border-border overflow-hidden", hideShadow ? "" : "shadow-2xl")}>
       {/* Category Tabs (Only if categories exist AND not pre-selected via shortcode) */}
       {!(config?.isCategoryPreselected ?? !!config?.category) && allCategories.list.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-2 p-4 border-b border-border bg-muted/20 pb-2">
           <div
             onClick={() => setSelectedCategory(null)}
             className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${!selectedCategory
-              ? "shadow-sm wpc-filter-pill-fixed"
+              ? (hideShadow ? "wpc-filter-pill-fixed" : "shadow-sm wpc-filter-pill-fixed")
               : "bg-transparent text-muted-foreground border-border hover:bg-muted"
               }`}
             style={!selectedCategory ? {
@@ -558,7 +561,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
                   key={catSlug}
                   onClick={() => setSelectedCategory(catSlug)}
                   className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${isActive
-                    ? "shadow-sm wpc-filter-pill-fixed"
+                    ? (hideShadow ? "wpc-filter-pill-fixed" : "shadow-sm wpc-filter-pill-fixed")
                     : "bg-transparent text-muted-foreground border-border hover:bg-muted"
                     }`}
                   style={isActive ? {
@@ -584,7 +587,7 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
               className={cn(
                 "whitespace-nowrap wpc-text-link px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
                 selectedCycle === cycle.slug
-                  ? "shadow-sm"
+                  ? (hideShadow ? "" : "shadow-sm")
                   : "bg-transparent border-border hover:bg-muted"
               )}
               style={selectedCycle === cycle.slug ? {
