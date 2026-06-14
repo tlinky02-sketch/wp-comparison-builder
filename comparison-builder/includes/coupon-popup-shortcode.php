@@ -65,7 +65,35 @@ function wpc_register_coupon_popup_block() {
             'exitIntent'       => array( 'type' => 'boolean', 'default' => false ),
             'triggerFrequency' => array( 'type' => 'string', 'default' => 'cookie' ),
             'cookieExpiry'     => array( 'type' => 'string', 'default' => '1' ),
-            'primaryColor'     => array( 'type' => 'string', 'default' => '' )
+            'primaryColor'     => array( 'type' => 'string', 'default' => '' ),
+            'cardBgColor'      => array( 'type' => 'string', 'default' => '#ffffff' ),
+            'cardPadding'      => array( 'type' => 'string', 'default' => '36px 30px' ),
+            'cardBorderRadius' => array( 'type' => 'string', 'default' => '24px' ),
+            'leftWidth'        => array( 'type' => 'string', 'default' => '40%' ),
+            'leftBgColor'      => array( 'type' => 'string', 'default' => 'transparent' ),
+            'leftPadding'      => array( 'type' => 'string', 'default' => '0 4px 0 0' ),
+            'dividerShow'      => array( 'type' => 'boolean', 'default' => false ),
+            'dividerStyle'     => array( 'type' => 'string', 'default' => 'dashed' ),
+            'dividerColor'     => array( 'type' => 'string', 'default' => '#e2e8f0' ),
+            'dividerWidth'     => array( 'type' => 'string', 'default' => '1px' ),
+            'mascotWidth'      => array( 'type' => 'string', 'default' => '160px' ),
+            'mascotBottom'     => array( 'type' => 'string', 'default' => '-5px' ),
+            'mascotPosition'   => array( 'type' => 'string', 'default' => 'right' ),
+            'mascotOffset'     => array( 'type' => 'string', 'default' => '25px' ),
+            'mascotBehind'     => array( 'type' => 'boolean', 'default' => true ),
+            'mascotOpacity'    => array( 'type' => 'string', 'default' => '1' ),
+            'timerBlockRadius' => array( 'type' => 'string', 'default' => '6px' ),
+            'timerBlockBorderWidth' => array( 'type' => 'string', 'default' => '1px' ),
+            'timerBlockBorderColor' => array( 'type' => 'string', 'default' => '#e5e7eb' ),
+            'timerBlockPadding'=> array( 'type' => 'string', 'default' => '8px 10px' ),
+            'timerBlockShadow' => array( 'type' => 'string', 'default' => 'light' ),
+            'badgeRadius'      => array( 'type' => 'string', 'default' => '9999px' ),
+            'badgeBorderWidth' => array( 'type' => 'string', 'default' => '1px' ),
+            'badgePadding'     => array( 'type' => 'string', 'default' => '4px 10px' ),
+            'closeBtnBg'       => array( 'type' => 'string', 'default' => 'transparent' ),
+            'closeBtnColor'    => array( 'type' => 'string', 'default' => '#94a3b8' ),
+            'closeBtnHoverBg'  => array( 'type' => 'string', 'default' => '#f1f5f9' ),
+            'closeBtnHoverColor'=>array( 'type' => 'string', 'default' => '#0f172a' )
         )
     ));
 }
@@ -126,7 +154,35 @@ function wpc_coupon_popup_block_render_callback( $attributes ) {
         'exit_intent'      => $attributes['exitIntent'] ?? false,
         'trigger_freq'     => $attributes['triggerFrequency'] ?? 'cookie',
         'cookie_expiry'    => $attributes['cookieExpiry'] ?? '1',
-        'primary_color'    => $attributes['primaryColor'] ?? ''
+        'primary_color'    => $attributes['primaryColor'] ?? '',
+        'card_bg_color'      => $attributes['cardBgColor'] ?? '#ffffff',
+        'card_padding'      => $attributes['cardPadding'] ?? '36px 30px',
+        'card_border_radius' => $attributes['cardBorderRadius'] ?? '24px',
+        'left_width'        => $attributes['leftWidth'] ?? '40%',
+        'left_bg_color'      => $attributes['leftBgColor'] ?? 'transparent',
+        'left_padding'      => $attributes['leftPadding'] ?? '0 4px 0 0',
+        'divider_show'      => $attributes['dividerShow'] ?? false,
+        'divider_style'     => $attributes['dividerStyle'] ?? 'dashed',
+        'divider_color'     => $attributes['dividerColor'] ?? '#e2e8f0',
+        'divider_width'     => $attributes['dividerWidth'] ?? '1px',
+        'mascot_width'      => $attributes['mascotWidth'] ?? '160px',
+        'mascot_bottom'     => $attributes['mascotBottom'] ?? '-5px',
+        'mascot_position'   => $attributes['mascotPosition'] ?? 'right',
+        'mascot_offset'     => $attributes['mascotOffset'] ?? '25px',
+        'mascot_behind'     => $attributes['mascotBehind'] ?? true,
+        'mascot_opacity'    => $attributes['mascotOpacity'] ?? '1',
+        'timer_block_radius' => $attributes['timerBlockRadius'] ?? '6px',
+        'timer_block_border_width' => $attributes['timerBlockBorderWidth'] ?? '1px',
+        'timer_block_border_color' => $attributes['timerBlockBorderColor'] ?? '#e5e7eb',
+        'timer_block_padding'=> $attributes['timerBlockPadding'] ?? '8px 10px',
+        'timer_block_shadow' => $attributes['timerBlockShadow'] ?? 'light',
+        'badge_radius'      => $attributes['badgeRadius'] ?? '9999px',
+        'badge_border_width' => $attributes['badgeBorderWidth'] ?? '1px',
+        'badge_padding'     => $attributes['badgePadding'] ?? '4px 10px',
+        'close_btn_bg'       => $attributes['closeBtnBg'] ?? 'transparent',
+        'close_btn_color'    => $attributes['closeBtnColor'] ?? '#94a3b8',
+        'close_btn_hover_bg'  => $attributes['closeBtnHoverBg'] ?? '#f1f5f9',
+        'close_btn_hover_color'=> $attributes['closeBtnHoverColor'] ?? '#0f172a'
     );
 
     return wpc_coupon_popup_shortcode( $mapped_atts );
@@ -202,6 +258,34 @@ function wpc_coupon_popup_shortcode( $atts ) {
         'trigger_freq'     => 'cookie', // cookie | page | session | always
         'cookie_expiry'    => '1', // days
         'itemOverrides'    => '{}', // JSON map of specific item overrides
+        'card_bg_color'      => '#ffffff',
+        'card_padding'      => '36px 30px',
+        'card_border_radius' => '24px',
+        'left_width'        => '40%',
+        'left_bg_color'      => 'transparent',
+        'left_padding'      => '0 4px 0 0',
+        'divider_show'      => false,
+        'divider_style'     => 'dashed',
+        'divider_color'     => '#e2e8f0',
+        'divider_width'     => '1px',
+        'mascot_width'      => '160px',
+        'mascot_bottom'     => '-5px',
+        'mascot_position'   => 'right',
+        'mascot_offset'     => '25px',
+        'mascot_behind'     => true,
+        'mascot_opacity'    => '1',
+        'timer_block_radius' => '6px',
+        'timer_block_border_width' => '1px',
+        'timer_block_border_color' => '#e5e7eb',
+        'timer_block_padding'=> '8px 10px',
+        'timer_block_shadow' => 'light',
+        'badge_radius'      => '9999px',
+        'badge_border_width' => '1px',
+        'badge_padding'     => '4px 10px',
+        'close_btn_bg'       => 'transparent',
+        'close_btn_color'    => '#94a3b8',
+        'close_btn_hover_bg'  => '#f1f5f9',
+        'close_btn_hover_color'=> '#0f172a',
     ), $atts );
 
     $item_id = 0;
@@ -281,6 +365,35 @@ function wpc_coupon_popup_shortcode( $atts ) {
             if ( ! empty( $specific['cardBorderStyle'] ) ) $atts['card_border_style'] = $specific['cardBorderStyle'];
             if ( ! empty( $specific['cardBorderColor'] ) ) $atts['card_border_color'] = $specific['cardBorderColor'];
             if ( ! empty( $specific['cardBorderWidth'] ) ) $atts['card_border_width'] = $specific['cardBorderWidth'];
+
+            if ( ! empty( $specific['cardBgColor'] ) ) $atts['card_bg_color'] = $specific['cardBgColor'];
+            if ( ! empty( $specific['cardPadding'] ) ) $atts['card_padding'] = $specific['cardPadding'];
+            if ( ! empty( $specific['cardBorderRadius'] ) ) $atts['card_border_radius'] = $specific['cardBorderRadius'];
+            if ( ! empty( $specific['leftWidth'] ) ) $atts['left_width'] = $specific['leftWidth'];
+            if ( ! empty( $specific['leftBgColor'] ) ) $atts['left_bg_color'] = $specific['leftBgColor'];
+            if ( ! empty( $specific['leftPadding'] ) ) $atts['left_padding'] = $specific['leftPadding'];
+            if ( isset( $specific['dividerShow'] ) ) $atts['divider_show'] = $specific['dividerShow'];
+            if ( ! empty( $specific['dividerStyle'] ) ) $atts['divider_style'] = $specific['dividerStyle'];
+            if ( ! empty( $specific['dividerColor'] ) ) $atts['divider_color'] = $specific['dividerColor'];
+            if ( ! empty( $specific['dividerWidth'] ) ) $atts['divider_width'] = $specific['dividerWidth'];
+            if ( ! empty( $specific['mascotWidth'] ) ) $atts['mascot_width'] = $specific['mascotWidth'];
+            if ( ! empty( $specific['mascotBottom'] ) ) $atts['mascot_bottom'] = $specific['mascotBottom'];
+            if ( ! empty( $specific['mascotPosition'] ) ) $atts['mascot_position'] = $specific['mascotPosition'];
+            if ( ! empty( $specific['mascotOffset'] ) ) $atts['mascot_offset'] = $specific['mascotOffset'];
+            if ( isset( $specific['mascotBehind'] ) ) $atts['mascot_behind'] = $specific['mascotBehind'];
+            if ( ! empty( $specific['mascotOpacity'] ) ) $atts['mascot_opacity'] = $specific['mascotOpacity'];
+            if ( ! empty( $specific['timerBlockRadius'] ) ) $atts['timer_block_radius'] = $specific['timerBlockRadius'];
+            if ( ! empty( $specific['timerBlockBorderWidth'] ) ) $atts['timer_block_border_width'] = $specific['timerBlockBorderWidth'];
+            if ( ! empty( $specific['timerBlockBorderColor'] ) ) $atts['timer_block_border_color'] = $specific['timerBlockBorderColor'];
+            if ( ! empty( $specific['timerBlockPadding'] ) ) $atts['timer_block_padding'] = $specific['timerBlockPadding'];
+            if ( ! empty( $specific['timerBlockShadow'] ) ) $atts['timer_block_shadow'] = $specific['timerBlockShadow'];
+            if ( ! empty( $specific['badgeRadius'] ) ) $atts['badge_radius'] = $specific['badgeRadius'];
+            if ( ! empty( $specific['badgeBorderWidth'] ) ) $atts['badge_border_width'] = $specific['badgeBorderWidth'];
+            if ( ! empty( $specific['badgePadding'] ) ) $atts['badge_padding'] = $specific['badgePadding'];
+            if ( ! empty( $specific['closeBtnBg'] ) ) $atts['close_btn_bg'] = $specific['closeBtnBg'];
+            if ( ! empty( $specific['closeBtnColor'] ) ) $atts['close_btn_color'] = $specific['closeBtnColor'];
+            if ( ! empty( $specific['closeBtnHoverBg'] ) ) $atts['close_btn_hover_bg'] = $specific['closeBtnHoverBg'];
+            if ( ! empty( $specific['closeBtnHoverColor'] ) ) $atts['close_btn_hover_color'] = $specific['closeBtnHoverColor'];
         }
     }
 
@@ -406,9 +519,131 @@ function wpc_coupon_popup_shortcode( $atts ) {
         $css_rules[] = "--wpc-coupon-card-border: none;";
     }
 
+    // Advanced Design Customization Variables
+    $card_bg = ! empty( $atts['card_bg_color'] ) ? esc_attr( $atts['card_bg_color'] ) : '#ffffff';
+    $card_pad = ! empty( $atts['card_padding'] ) ? esc_attr( $atts['card_padding'] ) : '36px 30px';
+    $card_radius = ! empty( $atts['card_border_radius'] ) ? esc_attr( $atts['card_border_radius'] ) : '24px';
+    $left_w = ! empty( $atts['left_width'] ) ? esc_attr( $atts['left_width'] ) : '40%';
+    $left_bg = ! empty( $atts['left_bg_color'] ) ? esc_attr( $atts['left_bg_color'] ) : 'transparent';
+    $left_pad = ! empty( $atts['left_padding'] ) ? esc_attr( $atts['left_padding'] ) : '0 4px 0 0';
+
+    $divider_style = ! empty( $atts['divider_style'] ) ? esc_attr( $atts['divider_style'] ) : 'dashed';
+    $divider_color = ! empty( $atts['divider_color'] ) ? esc_attr( $atts['divider_color'] ) : '#e2e8f0';
+    $divider_width = ! empty( $atts['divider_width'] ) ? esc_attr( $atts['divider_width'] ) : '1px';
+    $divider_css = ( $atts['divider_show'] === true || $atts['divider_show'] === 'true' || $atts['divider_show'] === '1' || $atts['divider_show'] === 1 )
+        ? "border-right: {$divider_width} {$divider_style} {$divider_color} !important;" 
+        : "border-right: none !important;";
+
+    // Mascot
+    $masc_width = ! empty( $atts['mascot_width'] ) ? esc_attr( $atts['mascot_width'] ) : '160px';
+    $masc_bottom = ! empty( $atts['mascot_bottom'] ) ? esc_attr( $atts['mascot_bottom'] ) : '-5px';
+    $masc_offset = ! empty( $atts['mascot_offset'] ) ? esc_attr( $atts['mascot_offset'] ) : '25px';
+    $masc_pos = ! empty( $atts['mascot_position'] ) ? esc_attr( $atts['mascot_position'] ) : 'right';
+    $masc_behind_val = ( $atts['mascot_behind'] === true || $atts['mascot_behind'] === 'true' || $atts['mascot_behind'] === '1' || $atts['mascot_behind'] === 1 || ! isset($atts['mascot_behind']) );
+    $masc_z = $masc_behind_val ? '1' : '10';
+    $masc_opacity = ! empty( $atts['mascot_opacity'] ) ? esc_attr( $atts['mascot_opacity'] ) : '1';
+    $masc_pos_css = ( $masc_pos === 'left' )
+        ? "left: {$masc_offset} !important; right: auto !important;"
+        : "right: {$masc_offset} !important; left: auto !important;";
+
+    // Timer blocks style
+    $timer_radius = ! empty( $atts['timer_block_radius'] ) ? esc_attr( $atts['timer_block_radius'] ) : '6px';
+    $timer_b_width = ! empty( $atts['timer_block_border_width'] ) ? esc_attr( $atts['timer_block_border_width'] ) : '1px';
+    $timer_b_color = ! empty( $atts['timer_block_border_color'] ) ? esc_attr( $atts['timer_block_border_color'] ) : '#e5e7eb';
+    $timer_padding = ! empty( $atts['timer_block_padding'] ) ? esc_attr( $atts['timer_block_padding'] ) : '8px 10px';
+    $timer_shadow_val = ! empty( $atts['timer_block_shadow'] ) ? esc_attr( $atts['timer_block_shadow'] ) : 'light';
+    $timer_shadow = '0 2px 4px rgba(0,0,0,0.06)';
+    if ( $timer_shadow_val === 'none' ) $timer_shadow = 'none';
+    elseif ( $timer_shadow_val === 'medium' ) $timer_shadow = '0 4px 10px rgba(0,0,0,0.1)';
+    elseif ( $timer_shadow_val === 'heavy' ) $timer_shadow = '0 8px 20px rgba(0,0,0,0.15)';
+
+    // Badges style
+    $badge_rad = ! empty( $atts['badge_radius'] ) ? esc_attr( $atts['badge_radius'] ) : '9999px';
+    $badge_b_width = ! empty( $atts['badge_border_width'] ) ? esc_attr( $atts['badge_border_width'] ) : '1px';
+    $badge_pad = ! empty( $atts['badge_padding'] ) ? esc_attr( $atts['badge_padding'] ) : '4px 10px';
+
+    // Close button style
+    $close_bg = ! empty( $atts['close_btn_bg'] ) ? esc_attr( $atts['close_btn_bg'] ) : 'transparent';
+    $close_color = ! empty( $atts['close_btn_color'] ) ? esc_attr( $atts['close_btn_color'] ) : '#94a3b8';
+    $close_h_bg = ! empty( $atts['close_btn_hover_bg'] ) ? esc_attr( $atts['close_btn_hover_bg'] ) : '#f1f5f9';
+    $close_h_color = ! empty( $atts['close_btn_hover_color'] ) ? esc_attr( $atts['close_btn_hover_color'] ) : '#0f172a';
+
     $css = "
         #{$uid}, #overlay-{$uid} {
             " . implode( "\n", $css_rules ) . "
+        }
+        #{$uid} .wpc-coupon-card, #overlay-{$uid} .wpc-coupon-card {
+            background: {$card_bg} !important;
+            padding: {$card_pad} !important;
+            border-radius: {$card_radius} !important;
+        }
+        #{$uid} .wpc-coupon-left, #overlay-{$uid} .wpc-coupon-left {
+            width: {$left_w} !important;
+            max-width: {$left_w} !important;
+            background: {$left_bg} !important;
+            padding: {$left_pad} !important;
+            {$divider_css}
+            position: relative !important;
+            z-index: 2 !important;
+        }
+        #{$uid} .wpc-coupon-right, #overlay-{$uid} .wpc-coupon-right {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+        #{$uid} .wpc-coupon-mascot-container, #overlay-{$uid} .wpc-coupon-mascot-container {
+            width: {$masc_width} !important;
+            bottom: {$masc_bottom} !important;
+            z-index: {$masc_z} !important;
+            opacity: {$masc_opacity} !important;
+            {$masc_pos_css}
+        }
+        #{$uid} .wpc-coupon-timer-clock .wpc-timer-block, #overlay-{$uid} .wpc-coupon-timer-clock .wpc-timer-block {
+            border-radius: {$timer_radius} !important;
+            border: {$timer_b_width} solid {$timer_b_color} !important;
+            padding: {$timer_padding} !important;
+            box-shadow: {$timer_shadow} !important;
+        }
+        #{$uid} .wpc-coupon-badge, #overlay-{$uid} .wpc-coupon-badge {
+            border-radius: {$badge_rad} !important;
+            border-width: {$badge_b_width} !important;
+            padding: {$badge_pad} !important;
+        }
+        #{$uid} .wpc-coupon-close-btn, #overlay-{$uid} .wpc-coupon-close-btn {
+            background: {$close_bg} !important;
+            color: {$close_color} !important;
+        }
+        #{$uid} .wpc-coupon-close-btn:hover, #overlay-{$uid} .wpc-coupon-close-btn:hover {
+            background: {$close_h_bg} !important;
+            color: {$close_h_color} !important;
+        }
+        /* Absolute centering fixes for WooCommerce logo and timer in any theme */
+        #{$uid} .wpc-coupon-logo-container, #overlay-{$uid} .wpc-coupon-logo-container {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        #{$uid} .wpc-coupon-logo, #overlay-{$uid} .wpc-coupon-logo {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+        #{$uid} .wpc-coupon-timer-container, #overlay-{$uid} .wpc-coupon-timer-container {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        #{$uid} .wpc-coupon-timer-clock, #overlay-{$uid} .wpc-coupon-timer-clock {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
     ";
     wp_register_style( 'wpc-coupon-popup-styles', false );
@@ -528,6 +763,35 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 if ( ! empty( $specific['cardBorderStyle'] ) ) $c_atts['card_border_style'] = $specific['cardBorderStyle'];
                 if ( ! empty( $specific['cardBorderColor'] ) ) $c_atts['card_border_color'] = $specific['cardBorderColor'];
                 if ( ! empty( $specific['cardBorderWidth'] ) ) $c_atts['card_border_width'] = $specific['cardBorderWidth'];
+
+                if ( ! empty( $specific['cardBgColor'] ) ) $c_atts['card_bg_color'] = $specific['cardBgColor'];
+                if ( ! empty( $specific['cardPadding'] ) ) $c_atts['card_padding'] = $specific['cardPadding'];
+                if ( ! empty( $specific['cardBorderRadius'] ) ) $c_atts['card_border_radius'] = $specific['cardBorderRadius'];
+                if ( ! empty( $specific['leftWidth'] ) ) $c_atts['left_width'] = $specific['leftWidth'];
+                if ( ! empty( $specific['leftBgColor'] ) ) $c_atts['left_bg_color'] = $specific['leftBgColor'];
+                if ( ! empty( $specific['leftPadding'] ) ) $c_atts['left_padding'] = $specific['leftPadding'];
+                if ( isset( $specific['dividerShow'] ) ) $c_atts['divider_show'] = $specific['dividerShow'];
+                if ( ! empty( $specific['dividerStyle'] ) ) $c_atts['divider_style'] = $specific['dividerStyle'];
+                if ( ! empty( $specific['dividerColor'] ) ) $c_atts['divider_color'] = $specific['dividerColor'];
+                if ( ! empty( $specific['dividerWidth'] ) ) $c_atts['divider_width'] = $specific['dividerWidth'];
+                if ( ! empty( $specific['mascotWidth'] ) ) $c_atts['mascot_width'] = $specific['mascotWidth'];
+                if ( ! empty( $specific['mascotBottom'] ) ) $c_atts['mascot_bottom'] = $specific['mascotBottom'];
+                if ( ! empty( $specific['mascotPosition'] ) ) $c_atts['mascot_position'] = $specific['mascotPosition'];
+                if ( ! empty( $specific['mascotOffset'] ) ) $c_atts['mascot_offset'] = $specific['mascotOffset'];
+                if ( isset( $specific['mascotBehind'] ) ) $c_atts['mascot_behind'] = $specific['mascotBehind'];
+                if ( ! empty( $specific['mascotOpacity'] ) ) $c_atts['mascot_opacity'] = $specific['mascotOpacity'];
+                if ( ! empty( $specific['timerBlockRadius'] ) ) $c_atts['timer_block_radius'] = $specific['timerBlockRadius'];
+                if ( ! empty( $specific['timerBlockBorderWidth'] ) ) $c_atts['timer_block_border_width'] = $specific['timerBlockBorderWidth'];
+                if ( ! empty( $specific['timerBlockBorderColor'] ) ) $c_atts['timer_block_border_color'] = $specific['timerBlockBorderColor'];
+                if ( ! empty( $specific['timerBlockPadding'] ) ) $c_atts['timer_block_padding'] = $specific['timerBlockPadding'];
+                if ( ! empty( $specific['timerBlockShadow'] ) ) $c_atts['timer_block_shadow'] = $specific['timerBlockShadow'];
+                if ( ! empty( $specific['badgeRadius'] ) ) $c_atts['badge_radius'] = $specific['badgeRadius'];
+                if ( ! empty( $specific['badgeBorderWidth'] ) ) $c_atts['badge_border_width'] = $specific['badgeBorderWidth'];
+                if ( ! empty( $specific['badgePadding'] ) ) $c_atts['badge_padding'] = $specific['badgePadding'];
+                if ( ! empty( $specific['closeBtnBg'] ) ) $c_atts['close_btn_bg'] = $specific['closeBtnBg'];
+                if ( ! empty( $specific['closeBtnColor'] ) ) $c_atts['close_btn_color'] = $specific['closeBtnColor'];
+                if ( ! empty( $specific['closeBtnHoverBg'] ) ) $c_atts['close_btn_hover_bg'] = $specific['closeBtnHoverBg'];
+                if ( ! empty( $specific['closeBtnHoverColor'] ) ) $c_atts['close_btn_hover_color'] = $specific['closeBtnHoverColor'];
             }
 
             $c_name           = $c_item ? esc_html( $c_item['name'] ) : ( ! empty( $c_atts['title'] ) ? esc_html( $c_atts['title'] ) : 'Special Offer' );
@@ -627,7 +891,36 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 'card_shadow' => $c_atts['card_shadow'],
                 'card_border_style' => $c_atts['card_border_style'],
                 'card_border_color' => $c_atts['card_border_color'],
-                'card_border_width' => $c_atts['card_border_width']
+                'card_border_width' => $c_atts['card_border_width'],
+
+                'card_bg_color'      => $c_atts['card_bg_color'],
+                'card_padding'      => $c_atts['card_padding'],
+                'card_border_radius' => $c_atts['card_border_radius'],
+                'left_width'        => $c_atts['left_width'],
+                'left_bg_color'      => $c_atts['left_bg_color'],
+                'left_padding'      => $c_atts['left_padding'],
+                'divider_show'      => $c_atts['divider_show'],
+                'divider_style'     => $c_atts['divider_style'],
+                'divider_color'     => $c_atts['divider_color'],
+                'divider_width'     => $c_atts['divider_width'],
+                'mascot_width'      => $c_atts['mascot_width'],
+                'mascot_bottom'     => $c_atts['mascot_bottom'],
+                'mascot_position'   => $c_atts['mascot_position'],
+                'mascot_offset'     => $c_atts['mascot_offset'],
+                'mascot_behind'     => $c_atts['mascot_behind'],
+                'mascot_opacity'    => $c_atts['mascot_opacity'] ?? '1',
+                'timer_block_radius' => $c_atts['timer_block_radius'],
+                'timer_block_border_width' => $c_atts['timer_block_border_width'],
+                'timer_block_border_color' => $c_atts['timer_block_border_color'],
+                'timer_block_padding'=> $c_atts['timer_block_padding'],
+                'timer_block_shadow' => $c_atts['timer_block_shadow'],
+                'badge_radius'      => $c_atts['badge_radius'],
+                'badge_border_width' => $c_atts['badge_border_width'],
+                'badge_padding'     => $c_atts['badge_padding'],
+                'close_btn_bg'       => $c_atts['close_btn_bg'],
+                'close_btn_color'    => $c_atts['close_btn_color'],
+                'close_btn_hover_bg'  => $c_atts['close_btn_hover_bg'],
+                'close_btn_hover_color'=> $c_atts['close_btn_hover_color']
             );
         }
         $pool_json = esc_attr( wp_json_encode( $pool_data ) );
@@ -1162,6 +1455,59 @@ function wpc_enqueue_coupon_popup_assets() {
             border-bottom-left-radius: 4px;
             z-index: 6;
             clip-path: polygon(0 0, 100% 100%, 0 100%);
+        }
+
+        /* 1b. DASHED TICKET STYLE — rectangular dashed border */
+        .wpc-coupon-btn-container.preset-dashed_ticket {
+            position: relative;
+            width: 280px;
+            max-width: 100%;
+            height: 48px;
+            border: 2px solid rgba(var(--wpc-coupon-primary-rgb), 0.16);
+            background: #ffffff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: block;
+        }
+        .wpc-coupon-btn-container.preset-dashed_ticket .wpc-coupon-code-reveal {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: 1;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 18px;
+        }
+        .wpc-coupon-showcode-btn.preset-dashed_ticket {
+            position: absolute;
+            top: 2px; left: 2px; bottom: 2px;
+            z-index: 2;
+            width: calc(100% - 50px);
+            background-color: var(--wpc-btn-bg, var(--wpc-coupon-primary, #0ea5e9));
+            color: var(--wpc-btn-text, #ffffff);
+            font-size: var(--wpc-btn-size, 14px);
+            border: 2px dashed rgba(255, 255, 255, 0.8) !important;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+            padding: 0;
+        }
+        .wpc-coupon-btn-container.preset-dashed_ticket:hover .wpc-coupon-showcode-btn {
+            width: calc(100% - 90px);
+            background-color: var(--wpc-btn-hover, var(--wpc-coupon-primary, #0ea5e9));
+            opacity: 0.95;
         }
 
         /* 2. SOLID ROUNDED PILL STYLE */
@@ -1939,6 +2285,103 @@ function wpc_enqueue_coupon_popup_assets() {
                             const style = randomItem.card_border_style || 'solid';
                             const color = randomItem.card_border_color || randomItem.primary_color;
                             t.style.setProperty('--wpc-coupon-card-border', width + ' ' + style + ' ' + color);
+                        }
+                    }
+
+                    if (randomItem.card_bg_color) {
+                        const cardEl = t.querySelector('.wpc-coupon-card');
+                        if (cardEl) cardEl.style.setProperty('background', randomItem.card_bg_color, 'important');
+                    }
+                    if (randomItem.card_padding) {
+                        const cardEl = t.querySelector('.wpc-coupon-card');
+                        if (cardEl) cardEl.style.setProperty('padding', randomItem.card_padding, 'important');
+                    }
+                    if (randomItem.card_border_radius) {
+                        const cardEl = t.querySelector('.wpc-coupon-card');
+                        if (cardEl) cardEl.style.setProperty('border-radius', randomItem.card_border_radius, 'important');
+                    }
+                    if (randomItem.left_width) {
+                        const leftEl = t.querySelector('.wpc-coupon-left');
+                        if (leftEl) {
+                            leftEl.style.setProperty('width', randomItem.left_width, 'important');
+                            leftEl.style.setProperty('max-width', randomItem.left_width, 'important');
+                        }
+                    }
+                    if (randomItem.left_bg_color) {
+                        const leftEl = t.querySelector('.wpc-coupon-left');
+                        if (leftEl) leftEl.style.setProperty('background', randomItem.left_bg_color, 'important');
+                    }
+                    if (randomItem.left_padding) {
+                        const leftEl = t.querySelector('.wpc-coupon-left');
+                        if (leftEl) leftEl.style.setProperty('padding', randomItem.left_padding, 'important');
+                    }
+                    if (randomItem.divider_show !== undefined) {
+                        const leftEl = t.querySelector('.wpc-coupon-left');
+                        if (leftEl) {
+                            const showDiv = randomItem.divider_show === true || randomItem.divider_show === 'true' || randomItem.divider_show === 1 || randomItem.divider_show === '1';
+                            if (showDiv) {
+                                const w = randomItem.divider_width || '1px';
+                                const s = randomItem.divider_style || 'dashed';
+                                const c = randomItem.divider_color || '#e2e8f0';
+                                leftEl.style.setProperty('border-right', w + ' ' + s + ' ' + c, 'important');
+                            } else {
+                                leftEl.style.setProperty('border-right', 'none', 'important');
+                            }
+                        }
+                    }
+                    if (randomItem.mascot_width || randomItem.mascot_bottom || randomItem.mascot_position || randomItem.mascot_offset || randomItem.mascot_behind !== undefined || randomItem.mascot_opacity !== undefined) {
+                        const mascEl = t.querySelector('.wpc-coupon-mascot-container');
+                        if (mascEl) {
+                            if (randomItem.mascot_width) mascEl.style.setProperty('width', randomItem.mascot_width, 'important');
+                            if (randomItem.mascot_bottom) mascEl.style.setProperty('bottom', randomItem.mascot_bottom, 'important');
+                            if (randomItem.mascot_opacity !== undefined) mascEl.style.setProperty('opacity', randomItem.mascot_opacity, 'important');
+                            if (randomItem.mascot_behind !== undefined) {
+                                const behind = randomItem.mascot_behind === true || randomItem.mascot_behind === 'true' || randomItem.mascot_behind === 1 || randomItem.mascot_behind === '1';
+                                mascEl.style.setProperty('z-index', behind ? '1' : '10', 'important');
+                            }
+                            const pos = randomItem.mascot_position || 'right';
+                            const offset = randomItem.mascot_offset || '25px';
+                            if (pos === 'left') {
+                                mascEl.style.setProperty('left', offset, 'important');
+                                mascEl.style.setProperty('right', 'auto', 'important');
+                            } else {
+                                mascEl.style.setProperty('right', offset, 'important');
+                                mascEl.style.setProperty('left', 'auto', 'important');
+                            }
+                        }
+                    }
+                    if (randomItem.timer_block_radius || randomItem.timer_block_border_width || randomItem.timer_block_border_color || randomItem.timer_block_padding || randomItem.timer_block_shadow) {
+                        const blocks = t.querySelectorAll('.wpc-coupon-timer-clock .wpc-timer-block');
+                        blocks.forEach(function(b) {
+                            if (randomItem.timer_block_radius) b.style.setProperty('border-radius', randomItem.timer_block_radius, 'important');
+                            if (randomItem.timer_block_border_width || randomItem.timer_block_border_color) {
+                                const w = randomItem.timer_block_border_width || '1px';
+                                const c = randomItem.timer_block_border_color || '#e5e7eb';
+                                b.style.setProperty('border', w + ' solid ' + c, 'important');
+                            }
+                            if (randomItem.timer_block_padding) b.style.setProperty('padding', randomItem.timer_block_padding, 'important');
+                            if (randomItem.timer_block_shadow) {
+                                let sh = '0 2px 4px rgba(0,0,0,0.06)';
+                                if (randomItem.timer_block_shadow === 'none') sh = 'none';
+                                else if (randomItem.timer_block_shadow === 'medium') sh = '0 4px 10px rgba(0,0,0,0.1)';
+                                else if (randomItem.timer_block_shadow === 'heavy') sh = '0 8px 20px rgba(0,0,0,0.15)';
+                                b.style.setProperty('box-shadow', sh, 'important');
+                            }
+                        });
+                    }
+                    if (randomItem.badge_radius || randomItem.badge_border_width || randomItem.badge_padding) {
+                        const badges = t.querySelectorAll('.wpc-coupon-badge');
+                        badges.forEach(function(b) {
+                            if (randomItem.badge_radius) b.style.setProperty('border-radius', randomItem.badge_radius, 'important');
+                            if (randomItem.badge_border_width) b.style.setProperty('border-width', randomItem.badge_border_width, 'important');
+                            if (randomItem.badge_padding) b.style.setProperty('padding', randomItem.badge_padding, 'important');
+                        });
+                    }
+                    if (randomItem.close_btn_bg || randomItem.close_btn_color) {
+                        const close = t.querySelector('.wpc-coupon-close-btn');
+                        if (close) {
+                            if (randomItem.close_btn_bg) close.style.setProperty('background', randomItem.close_btn_bg, 'important');
+                            if (randomItem.close_btn_color) close.style.setProperty('color', randomItem.close_btn_color, 'important');
                         }
                     }
                 });

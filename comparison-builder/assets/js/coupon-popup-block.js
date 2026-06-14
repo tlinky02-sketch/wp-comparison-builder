@@ -18,6 +18,7 @@
     var PanelRow = wp.components.PanelRow;
     var Button = wp.components.Button;
     var TextareaControl = wp.components.TextareaControl;
+    var RangeControl = wp.components.RangeControl;
     registerBlockType('wp-comparison-builder/coupon-popup', {
         title: 'WPC Coupon Popup Box',
         icon: 'tickets',
@@ -74,6 +75,34 @@
             triggerFrequency: { type: 'string', default: 'cookie' },
             cookieExpiry: { type: 'string', default: '1' },
             primaryColor: { type: 'string', default: '' },
+            cardBgColor: { type: 'string', default: '#ffffff' },
+            cardPadding: { type: 'string', default: '36px 30px' },
+            cardBorderRadius: { type: 'string', default: '24px' },
+            leftWidth: { type: 'string', default: '40%' },
+            leftBgColor: { type: 'string', default: 'transparent' },
+            leftPadding: { type: 'string', default: '0 4px 0 0' },
+            dividerShow: { type: 'boolean', default: false },
+            dividerStyle: { type: 'string', default: 'dashed' },
+            dividerColor: { type: 'string', default: '#e2e8f0' },
+            dividerWidth: { type: 'string', default: '1px' },
+            mascotWidth: { type: 'string', default: '160px' },
+            mascotBottom: { type: 'string', default: '-5px' },
+            mascotPosition: { type: 'string', default: 'right' },
+            mascotOffset: { type: 'string', default: '25px' },
+            mascotBehind: { type: 'boolean', default: true },
+            mascotOpacity: { type: 'string', default: '1' },
+            timerBlockRadius: { type: 'string', default: '6px' },
+            timerBlockBorderWidth: { type: 'string', default: '1px' },
+            timerBlockBorderColor: { type: 'string', default: '#e5e7eb' },
+            timerBlockPadding: { type: 'string', default: '8px 10px' },
+            timerBlockShadow: { type: 'string', default: 'light' },
+            badgeRadius: { type: 'string', default: '9999px' },
+            badgeBorderWidth: { type: 'string', default: '1px' },
+            badgePadding: { type: 'string', default: '4px 10px' },
+            closeBtnBg: { type: 'string', default: 'transparent' },
+            closeBtnColor: { type: 'string', default: '#94a3b8' },
+            closeBtnHoverBg: { type: 'string', default: '#f1f5f9' },
+            closeBtnHoverColor: { type: 'string', default: '#0f172a' },
             itemOverrides: { type: 'string', default: '{}' }
         },
 
@@ -156,8 +185,251 @@
                 newMap[activeOverrideItemId][key] = val;
                 setAttributes({ itemOverrides: JSON.stringify(newMap) });
             };
+
+            var handleElementClick = function(panelTitle, fieldLabel) {
+                var targetPanel = panelTitle;
+                if (activeOverrideItemId) {
+                    targetPanel = 'Per-Company Overrides';
+                }
+
+                // Find panel toggle button and click it if collapsed
+                var buttons = document.querySelectorAll('.components-panel__body-title button, .components-panel__body h2 button');
+                var foundBtn = null;
+                for (var i = 0; i < buttons.length; i++) {
+                    var btn = buttons[i];
+                    var text = btn.textContent.trim().toLowerCase();
+                    if (text.indexOf(targetPanel.toLowerCase()) !== -1) {
+                        foundBtn = btn;
+                        break;
+                    }
+                }
+
+                if (foundBtn) {
+                    if (foundBtn.getAttribute('aria-expanded') === 'false') {
+                        foundBtn.click();
+                    }
+                    foundBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                // Focus/scroll to input matching fieldLabel
+                if (fieldLabel) {
+                    setTimeout(function() {
+                        var labels = document.querySelectorAll('.components-base-control__label, .components-panel__body label, .components-panel__body h4');
+                        var foundLabel = null;
+                        for (var j = 0; j < labels.length; j++) {
+                            var label = labels[j];
+                            var labelText = label.textContent.trim().toLowerCase();
+                            if (labelText.indexOf(fieldLabel.toLowerCase()) !== -1) {
+                                foundLabel = label;
+                                break;
+                            }
+                        }
+
+                        if (foundLabel) {
+                            var inputId = foundLabel.getAttribute('for');
+                            if (inputId) {
+                                var input = document.getElementById(inputId);
+                                if (input) {
+                                    input.focus();
+                                    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    return;
+                                }
+                            }
+                            foundLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 250);
+                }
+            };
             
-            var activeOverrides = overridesMap[activeOverrideItemId] || {};
+            var activeOverride = overridesMap[activeOverrideItemId] || {};
+            
+            // Cascading lookup for active values (considering selected data source or overrides manually set)
+            
+            // Determine active preview item if any
+            var previewItemId = activeOverrideItemId;
+            if (!previewItemId && attributes.id) {
+                var ids = String(attributes.id).split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+                if (ids.length > 0) {
+                    previewItemId = ids[0];
+                }
+            }
+            var previewItem = items.find(function(item) {
+                return String(item.id) === String(previewItemId);
+            });
+            
+            var getVal = function(attrKey, overrideKey, itemKey, defaultVal) {
+                var ok = overrideKey || attrKey;
+                var ik = itemKey || attrKey;
+                // 1. Check manual override
+                if (activeOverride[ok] !== undefined && activeOverride[ok] !== '') {
+                    return activeOverride[ok];
+                }
+                // 2. Check previewItem design overrides or standard fields
+                if (previewItem) {
+                    var designOverrides = previewItem.design_overrides || {};
+                    // Map camelCase to snake_case equivalent just in case
+                    var snakeKey = ik.replace(/([A-Z])/g, "_$1").toLowerCase();
+                    if (designOverrides[ik] !== undefined && designOverrides[ik] !== '') {
+                        return designOverrides[ik];
+                    }
+                    if (designOverrides[snakeKey] !== undefined && designOverrides[snakeKey] !== '') {
+                        return designOverrides[snakeKey];
+                    }
+                    if (previewItem[ik] !== undefined && previewItem[ik] !== '') {
+                        return previewItem[ik];
+                    }
+                }
+                // 3. Fallback to attributes
+                return attributes[attrKey] !== undefined && attributes[attrKey] !== '' ? attributes[attrKey] : defaultVal;
+            };
+
+            var activeLogo = getVal('logoUrl', 'logoUrl', 'logo', '');
+            var activeTitleName = previewItem ? previewItem.name : 'WooCommerce';
+            var activeTitle = activeOverride.title || attributes.title || ('Get Exclusive ' + activeTitleName + ' Deal');
+            
+            // Subtitle / Description
+            var rawDesc = (previewItem && previewItem.description) ? previewItem.description : '';
+            var trimmedDesc = rawDesc ? (rawDesc.split(' ').slice(0, 20).join(' ') + (rawDesc.split(' ').length > 20 ? '...' : '')) : '';
+            var activeSubtitle = activeOverride.description || trimmedDesc || attributes.subtitle || 'Copy this exclusive coupon and save big today on all plugin extensions.';
+            
+            // Mascot Options
+            var activeMascotUrl = getVal('mascotUrl', 'mascotUrl', 'mascot', '');
+            var activeMascotWidth = getVal('mascotWidth', 'mascotWidth', 'mascotWidth', '160px');
+            var activeMascotBottom = getVal('mascotBottom', 'mascotBottom', 'mascotBottom', '-5px');
+            var activeMascotPosition = getVal('mascotPosition', 'mascotPosition', 'mascotPosition', 'right');
+            var activeMascotOffset = getVal('mascotOffset', 'mascotOffset', 'mascotOffset', '25px');
+            var activeMascotBehind = (function() {
+                var val = getVal('mascotBehind', 'mascotBehind', 'masc_behind', null);
+                if (val === null) return true;
+                return val === true || val === 'true' || val === 1 || val === '1';
+            })();
+            var activeMascotOpacity = getVal('mascotOpacity', 'mascotOpacity', 'mascotOpacity', '1');
+            
+            // Global Layout Styling Cascading Lookup
+            var activeCardBgColor = getVal('cardBgColor', 'cardBgColor', 'cardBgColor', '#ffffff');
+            var activeCardPadding = getVal('cardPadding', 'cardPadding', 'cardPadding', '36px 30px');
+            var activeCardBorderRadius = getVal('cardBorderRadius', 'cardBorderRadius', 'cardBorderRadius', '24px');
+            var activeLeftWidth = getVal('leftWidth', 'leftWidth', 'leftWidth', '40%');
+            var activeLeftBgColor = getVal('leftBgColor', 'leftBgColor', 'leftBgColor', 'transparent');
+            var activeLeftPadding = getVal('leftPadding', 'leftPadding', 'leftPadding', '0 4px 0 0');
+            
+            var activeDividerShow = (function() {
+                var val = getVal('dividerShow', 'dividerShow', 'divider_show', null);
+                if (val === null) return false;
+                return val === true || val === 'true' || val === 1 || val === '1';
+            })();
+            var activeDividerStyle = getVal('dividerStyle', 'dividerStyle', 'dividerStyle', 'dashed');
+            var activeDividerColor = getVal('dividerColor', 'dividerColor', 'dividerColor', '#e2e8f0');
+            var activeDividerWidth = getVal('dividerWidth', 'dividerWidth', 'dividerWidth', '1px');
+            
+            var activeTimerBlockRadius = getVal('timerBlockRadius', 'timerBlockRadius', 'timerBlockRadius', '6px');
+            var activeTimerBlockBorderWidth = getVal('timerBlockBorderWidth', 'timerBlockBorderWidth', 'timerBlockBorderWidth', '1px');
+            var activeTimerBlockBorderColor = getVal('timerBlockBorderColor', 'timerBlockBorderColor', 'timerBlockBorderColor', '#e5e7eb');
+            var activeTimerBlockPadding = getVal('timerBlockPadding', 'timerBlockPadding', 'timerBlockPadding', '8px 10px');
+            var activeTimerBlockShadow = getVal('timerBlockShadow', 'timerBlockShadow', 'timerBlockShadow', 'light');
+            var activeTimerBgColor = getVal('timerBgColor', 'timerBgColor', 'timerBgColor', '#f8fafc');
+            var activeTimerTextColor = getVal('timerTextColor', 'timerTextColor', 'timerTextColor', '#0f172a');
+            
+            var activeBadgeRadius = getVal('badgeRadius', 'badgeRadius', 'badgeRadius', '9999px');
+            var activeBadgeBorderWidth = getVal('badgeBorderWidth', 'badgeBorderWidth', 'badgeBorderWidth', '1px');
+            var activeBadgePadding = getVal('badgePadding', 'badgePadding', 'badgePadding', '4px 10px');
+            
+            var activeCloseBtnBg = getVal('closeBtnBg', 'closeBtnBg', 'closeBtnBg', 'transparent');
+            var activeCloseBtnColor = getVal('closeBtnColor', 'closeBtnColor', 'closeBtnColor', '#94a3b8');
+            
+            var activeExclusiveLabel = getVal('exclusiveLabel', 'exclusiveLabel', 'exclusiveLabel', 'Exclusive Deal');
+            var activeExclusiveBgColor = getVal('exclusiveBgColor', 'exclusiveBgColor', 'exclusiveBgColor', '#fef3c7');
+            var activeExclusiveTextColor = getVal('exclusiveTextColor', 'exclusiveTextColor', 'exclusiveTextColor', '#d97706');
+            
+            var activeVerifiedLabel = getVal('verifiedLabel', 'verifiedLabel', 'verifiedLabel', 'Verified');
+            var activeVerifiedBgColor = getVal('verifiedBgColor', 'verifiedBgColor', 'verifiedBgColor', '#dcfce7');
+            var activeVerifiedTextColor = getVal('verifiedTextColor', 'verifiedTextColor', 'verifiedTextColor', '#15803d');
+            
+            var activeButtonStyle = getVal('buttonStyle', 'buttonStyle', 'buttonStyle', 'ticket');
+            var activeBtnBgColor = getVal('btnBgColor', 'btnBgColor', 'primary', '#2563eb');
+            var activeBtnTextColor = getVal('btnTextColor', 'btnTextColor', 'btnTextColor', '#ffffff');
+            var activeBtnSize = getVal('btnSize', 'btnSize', 'btnSize', '13px');
+            var activeButtonText = getVal('buttonText', 'buttonText', 'buttonText', 'Show Code');
+            
+            var activePrimaryColor = getVal('primaryColor', 'primaryColor', 'primaryColor', '#0f172a');
+            var activeCardShadow = getVal('cardShadow', 'cardShadow', 'cardShadow', 'heavy');
+            var activeCardBorderStyle = getVal('cardBorderStyle', 'cardBorderStyle', 'cardBorderStyle', 'none');
+            var activeCardBorderColor = getVal('cardBorderColor', 'cardBorderColor', 'cardBorderColor', '#e2e8f0');
+            var activeCardBorderWidth = getVal('cardBorderWidth', 'cardBorderWidth', 'cardBorderWidth', '2px');
+
+            // Features Checklist lookups
+            var activeFeaturesColor = getVal('featuresColor', 'featuresColor', 'featuresColor', '');
+            var activeFeaturesSize = getVal('featuresSize', 'featuresSize', 'featuresSize', '11px');
+            var activeFeatures = (function() {
+                if (activeOverride.features !== undefined && activeOverride.features !== '') {
+                    return activeOverride.features;
+                }
+                if (previewItem && previewItem.pros) {
+                    if (Array.isArray(previewItem.pros)) {
+                        return previewItem.pros.join(', ');
+                    }
+                    if (typeof previewItem.pros === 'string') {
+                        return previewItem.pros;
+                    }
+                }
+                if (attributes.features !== undefined && attributes.features !== '') {
+                    return attributes.features;
+                }
+                return '30-Day Money-back Guarantee, Verified Premium Provider, 24/7 Priority Support';
+            })();
+            var featuresArray = activeFeatures.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+
+            // Timer display values parser
+            var activeTimer = getVal('timer', 'timer', 'timer', '15m');
+            var timerDisplay = (function() {
+                var timerVal = String(activeTimer).trim().toLowerCase();
+                if (timerVal === 'off') return null;
+                
+                var seconds = 900; // default 15m
+                var regex = /(\d+)\s*(y|mo|d|h|m|s)/g;
+                var matches = [];
+                var match;
+                while ((match = regex.exec(timerVal)) !== null) {
+                    matches.push(match);
+                }
+                
+                if (matches.length > 0) {
+                    var total = 0;
+                    matches.forEach(function(m) {
+                        var val = parseInt(m[1], 10);
+                        var unit = m[2];
+                        if (unit === 'y') total += val * 31536000;
+                        else if (unit === 'mo') total += val * 2592000;
+                        else if (unit === 'd') total += val * 86400;
+                        else if (unit === 'h') total += val * 3600;
+                        else if (unit === 'm') total += val * 60;
+                        else if (unit === 's') total += val;
+                    });
+                    if (total > 0) seconds = total;
+                } else {
+                    var valInt = parseInt(timerVal, 10);
+                    if (!isNaN(valInt) && valInt > 0) {
+                        seconds = valInt;
+                    }
+                }
+                
+                var days = Math.floor(seconds / 86400);
+                var hours = Math.floor((seconds % 86400) / 3600);
+                var minutes = Math.floor((seconds % 3600) / 60);
+                var secs = seconds % 60;
+                
+                var blocks = [];
+                if (days > 0) {
+                    blocks.push({ label: 'd', val: String(days).padStart(2, '0') });
+                }
+                if (hours > 0 || days > 0) {
+                    blocks.push({ label: 'h', val: String(hours).padStart(2, '0') });
+                }
+                blocks.push({ label: 'm', val: String(minutes).padStart(2, '0') });
+                blocks.push({ label: 's', val: String(secs).padStart(2, '0') });
+                
+                return blocks;
+            })();
 
             return el(
                 'div',
@@ -324,7 +596,48 @@
                             el(SelectControl, { label: 'Card Shadow', value: activeOverrides.cardShadow || '', options: [ { label: 'Default', value: '' }, { label: 'Heavy Default', value: 'heavy' }, { label: 'Soft Shadow', value: 'soft' }, { label: 'No Shadow', value: 'none' } ], onChange: function(val) { updateOverride('cardShadow', val); } }),
                             el(SelectControl, { label: 'Border Style', value: activeOverrides.cardBorderStyle || '', options: [ { label: 'Default', value: '' }, { label: 'None', value: 'none' }, { label: 'Solid', value: 'solid' }, { label: 'Dashed', value: 'dashed' }, { label: 'Dotted', value: 'dotted' } ], onChange: function(val) { updateOverride('cardBorderStyle', val); } }),
                             el(TextControl, { label: 'Border Width', value: activeOverrides.cardBorderWidth || '', onChange: function(val) { updateOverride('cardBorderWidth', val); } }),
-                            el(PanelRow, null, el('span', null, 'Border Color')), el(ColorPalette, { value: activeOverrides.cardBorderColor || '', onChange: function(val) { updateOverride('cardBorderColor', val); } })
+                            el(PanelRow, null, el('span', null, 'Border Color')), el(ColorPalette, { value: activeOverrides.cardBorderColor || '', onChange: function(val) { updateOverride('cardBorderColor', val); } }),
+
+                            el('h4', { style: { marginTop: '15px', marginBottom: '10px', borderBottom: '1px solid #ccc', paddingBottom: '5px' } }, 'Advanced Design Overrides'),
+                            el(PanelRow, null, el('span', null, 'Card BG Color')), el(ColorPalette, { value: activeOverrides.cardBgColor || '', onChange: function(val) { updateOverride('cardBgColor', val); } }),
+                            el(TextControl, { label: 'Card Padding', value: activeOverrides.cardPadding || '', onChange: function(val) { updateOverride('cardPadding', val); } }),
+                            el(TextControl, { label: 'Card Border Radius', value: activeOverrides.cardBorderRadius || '', onChange: function(val) { updateOverride('cardBorderRadius', val); } }),
+                            
+                            el(TextControl, { label: 'Left Column Width (e.g. 40%)', value: activeOverrides.leftWidth || '', onChange: function(val) { updateOverride('leftWidth', val); } }),
+                            el(PanelRow, null, el('span', null, 'Left Column BG')), el(ColorPalette, { value: activeOverrides.leftBgColor || '', onChange: function(val) { updateOverride('leftBgColor', val); } }),
+                            el(TextControl, { label: 'Left Column Padding', value: activeOverrides.leftPadding || '', onChange: function(val) { updateOverride('leftPadding', val); } }),
+                            
+                            el(ToggleControl, { label: 'Show Divider Line', checked: activeOverrides.dividerShow || false, onChange: function(val) { updateOverride('dividerShow', val); } }),
+                            el(SelectControl, { label: 'Divider Line Style', value: activeOverrides.dividerStyle || 'dashed', options: [ { label: 'Solid', value: 'solid' }, { label: 'Dashed', value: 'dashed' }, { label: 'Dotted', value: 'dotted' } ], onChange: function(val) { updateOverride('dividerStyle', val); } }),
+                            el(PanelRow, null, el('span', null, 'Divider Color')), el(ColorPalette, { value: activeOverrides.dividerColor || '', onChange: function(val) { updateOverride('dividerColor', val); } }),
+                            el(TextControl, { label: 'Divider Width', value: activeOverrides.dividerWidth || '', onChange: function(val) { updateOverride('dividerWidth', val); } }),
+                            
+                            el(TextControl, { label: 'Mascot Width', value: activeOverrides.mascotWidth || '', onChange: function(val) { updateOverride('mascotWidth', val); } }),
+                            el(TextControl, { label: 'Mascot Bottom Offset', value: activeOverrides.mascotBottom || '', onChange: function(val) { updateOverride('mascotBottom', val); } }),
+                            el(SelectControl, { label: 'Mascot Position', value: activeOverrides.mascotPosition || 'right', options: [ { label: 'Right Corner', value: 'right' }, { label: 'Left Corner', value: 'left' } ], onChange: function(val) { updateOverride('mascotPosition', val); } }),
+                            el(TextControl, { label: 'Mascot Left/Right Offset', value: activeOverrides.mascotOffset || '', onChange: function(val) { updateOverride('mascotOffset', val); } }),
+                            el(ToggleControl, { label: 'Mascot Behind Text', checked: activeOverrides.mascotBehind !== undefined ? activeOverrides.mascotBehind : true, onChange: function(val) { updateOverride('mascotBehind', val); } }),
+                            el(RangeControl, {
+                                label: 'Mascot Opacity Override',
+                                value: activeOverrides.mascotOpacity !== undefined ? parseFloat(activeOverrides.mascotOpacity) : 1,
+                                min: 0,
+                                max: 1,
+                                step: 0.1,
+                                onChange: function(val) { updateOverride('mascotOpacity', String(val)); }
+                            }),
+                            
+                            el(TextControl, { label: 'Timer Block Border Radius', value: activeOverrides.timerBlockRadius || '', onChange: function(val) { updateOverride('timerBlockRadius', val); } }),
+                            el(TextControl, { label: 'Timer Block Border Width', value: activeOverrides.timerBlockBorderWidth || '', onChange: function(val) { updateOverride('timerBlockBorderWidth', val); } }),
+                            el(PanelRow, null, el('span', null, 'Timer Block Border Color')), el(ColorPalette, { value: activeOverrides.timerBlockBorderColor || '', onChange: function(val) { updateOverride('timerBlockBorderColor', val); } }),
+                            el(TextControl, { label: 'Timer Block Padding', value: activeOverrides.timerBlockPadding || '', onChange: function(val) { updateOverride('timerBlockPadding', val); } }),
+                            el(SelectControl, { label: 'Timer Block Shadow', value: activeOverrides.timerBlockShadow || 'light', options: [ { label: 'None', value: 'none' }, { label: 'Light', value: 'light' }, { label: 'Medium', value: 'medium' }, { label: 'Heavy', value: 'heavy' } ], onChange: function(val) { updateOverride('timerBlockShadow', val); } }),
+                            
+                            el(TextControl, { label: 'Badge Border Radius', value: activeOverrides.badgeRadius || '', onChange: function(val) { updateOverride('badgeRadius', val); } }),
+                            el(TextControl, { label: 'Badge Border Width', value: activeOverrides.badgeBorderWidth || '', onChange: function(val) { updateOverride('badgeBorderWidth', val); } }),
+                            el(TextControl, { label: 'Badge Padding', value: activeOverrides.badgePadding || '', onChange: function(val) { updateOverride('badgePadding', val); } }),
+                            
+                            el(PanelRow, null, el('span', null, 'Close Button BG')), el(ColorPalette, { value: activeOverrides.closeBtnBg || '', onChange: function(val) { updateOverride('closeBtnBg', val); } }),
+                            el(PanelRow, null, el('span', null, 'Close Button Color')), el(ColorPalette, { value: activeOverrides.closeBtnColor || '', onChange: function(val) { updateOverride('closeBtnColor', val); } })
                         ) : null
                     ),
 
@@ -633,6 +946,183 @@
                         )
                     ),
 
+                    // 8b. Global Design Customizer (Figma-like controls)
+                    el(
+                        PanelBody,
+                        { title: 'Global Design Customizer', initialOpen: false },
+                        el('h4', { style: { marginBottom: '10px', fontWeight: 'bold' } }, 'Card Container'),
+                        el(PanelRow, null, el('span', null, 'Card Background Color')),
+                        el(ColorPalette, {
+                            value: attributes.cardBgColor,
+                            onChange: function(val) { setAttributes({ cardBgColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Card Padding',
+                            value: attributes.cardPadding,
+                            placeholder: 'e.g. 36px 30px',
+                            onChange: function(val) { setAttributes({ cardPadding: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Card Border Radius',
+                            value: attributes.cardBorderRadius,
+                            placeholder: 'e.g. 24px',
+                            onChange: function(val) { setAttributes({ cardBorderRadius: val }); }
+                        }),
+
+                        el('h4', { style: { marginTop: '15px', marginBottom: '10px', fontWeight: 'bold', borderTop: '1px solid #eee', paddingTop: '10px' } }, 'Left Column & Vertical Divider'),
+                        el(TextControl, {
+                            label: 'Left Column Width (e.g. 40%)',
+                            value: attributes.leftWidth,
+                            onChange: function(val) { setAttributes({ leftWidth: val }); }
+                        }),
+                        el(PanelRow, null, el('span', null, 'Left Column BG')),
+                        el(ColorPalette, {
+                            value: attributes.leftBgColor,
+                            onChange: function(val) { setAttributes({ leftBgColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Left Column Padding',
+                            value: attributes.leftPadding,
+                            onChange: function(val) { setAttributes({ leftPadding: val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Show Divider Line',
+                            checked: attributes.dividerShow,
+                            onChange: function(val) { setAttributes({ dividerShow: val }); }
+                        }),
+                        attributes.dividerShow && el(SelectControl, {
+                            label: 'Divider Line Style',
+                            value: attributes.dividerStyle,
+                            options: [
+                                { label: 'Solid', value: 'solid' },
+                                { label: 'Dashed', value: 'dashed' },
+                                { label: 'Dotted', value: 'dotted' }
+                            ],
+                            onChange: function(val) { setAttributes({ dividerStyle: val }); }
+                        }),
+                        attributes.dividerShow && el(PanelRow, null, el('span', null, 'Divider Color')),
+                        attributes.dividerShow && el(ColorPalette, {
+                            value: attributes.dividerColor,
+                            onChange: function(val) { setAttributes({ dividerColor: val }); }
+                        }),
+                        attributes.dividerShow && el(TextControl, {
+                            label: 'Divider Width',
+                            value: attributes.dividerWidth,
+                            onChange: function(val) { setAttributes({ dividerWidth: val }); }
+                        }),
+
+                        el('h4', { style: { marginTop: '15px', marginBottom: '10px', fontWeight: 'bold', borderTop: '1px solid #eee', paddingTop: '10px' } }, 'Mascot Layout'),
+                        el(TextControl, {
+                            label: 'Mascot Custom Width (e.g. 160px)',
+                            value: attributes.mascotWidth,
+                            onChange: function(val) { setAttributes({ mascotWidth: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Mascot Bottom Offset (e.g. -5px)',
+                            value: attributes.mascotBottom,
+                            onChange: function(val) { setAttributes({ mascotBottom: val }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Mascot Side Position',
+                            value: attributes.mascotPosition,
+                            options: [
+                                { label: 'Right Side', value: 'right' },
+                                { label: 'Left Side', value: 'left' }
+                            ],
+                            onChange: function(val) { setAttributes({ mascotPosition: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Mascot Left/Right Offset',
+                            value: attributes.mascotOffset,
+                            onChange: function(val) { setAttributes({ mascotOffset: val }); }
+                        }),
+                        el(ToggleControl, {
+                            label: 'Mascot Behind Text',
+                            checked: attributes.mascotBehind,
+                            onChange: function(val) { setAttributes({ mascotBehind: val }); }
+                        }),
+                        el(RangeControl, {
+                            label: 'Mascot Opacity',
+                            value: parseFloat(attributes.mascotOpacity || '1'),
+                            min: 0,
+                            max: 1,
+                            step: 0.1,
+                            onChange: function(val) { setAttributes({ mascotOpacity: String(val) }); }
+                        }),
+
+                        el('h4', { style: { marginTop: '15px', marginBottom: '10px', fontWeight: 'bold', borderTop: '1px solid #eee', paddingTop: '10px' } }, 'Timer Blocks'),
+                        el(TextControl, {
+                            label: 'Block Border Radius',
+                            value: attributes.timerBlockRadius,
+                            onChange: function(val) { setAttributes({ timerBlockRadius: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Block Border Width',
+                            value: attributes.timerBlockBorderWidth,
+                            onChange: function(val) { setAttributes({ timerBlockBorderWidth: val }); }
+                        }),
+                        el(PanelRow, null, el('span', null, 'Block Border Color')),
+                        el(ColorPalette, {
+                            value: attributes.timerBlockBorderColor,
+                            onChange: function(val) { setAttributes({ timerBlockBorderColor: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Block Padding',
+                            value: attributes.timerBlockPadding,
+                            onChange: function(val) { setAttributes({ timerBlockPadding: val }); }
+                        }),
+                        el(SelectControl, {
+                            label: 'Block Box Shadow',
+                            value: attributes.timerBlockShadow,
+                            options: [
+                                { label: 'None', value: 'none' },
+                                { label: 'Light', value: 'light' },
+                                { label: 'Medium', value: 'medium' },
+                                { label: 'Heavy', value: 'heavy' }
+                            ],
+                            onChange: function(val) { setAttributes({ timerBlockShadow: val }); }
+                        }),
+
+                        el('h4', { style: { marginTop: '15px', marginBottom: '10px', fontWeight: 'bold', borderTop: '1px solid #eee', paddingTop: '10px' } }, 'Badges styling'),
+                        el(TextControl, {
+                            label: 'Badge Border Radius',
+                            value: attributes.badgeRadius,
+                            onChange: function(val) { setAttributes({ badgeRadius: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Badge Border Width',
+                            value: attributes.badgeBorderWidth,
+                            onChange: function(val) { setAttributes({ badgeBorderWidth: val }); }
+                        }),
+                        el(TextControl, {
+                            label: 'Badge Padding',
+                            value: attributes.badgePadding,
+                            onChange: function(val) { setAttributes({ badgePadding: val }); }
+                        }),
+
+                        el('h4', { style: { marginTop: '15px', marginBottom: '10px', fontWeight: 'bold', borderTop: '1px solid #eee', paddingTop: '10px' } }, 'Close Button'),
+                        el(PanelRow, null, el('span', null, 'Close Button Background')),
+                        el(ColorPalette, {
+                            value: attributes.closeBtnBg,
+                            onChange: function(val) { setAttributes({ closeBtnBg: val }); }
+                        }),
+                        el(PanelRow, null, el('span', null, 'Close Button Color')),
+                        el(ColorPalette, {
+                            value: attributes.closeBtnColor,
+                            onChange: function(val) { setAttributes({ closeBtnColor: val }); }
+                        }),
+                        el(PanelRow, null, el('span', null, 'Close Button Hover Background')),
+                        el(ColorPalette, {
+                            value: attributes.closeBtnHoverBg,
+                            onChange: function(val) { setAttributes({ closeBtnHoverBg: val }); }
+                        }),
+                        el(PanelRow, null, el('span', null, 'Close Button Hover Color')),
+                        el(ColorPalette, {
+                            value: attributes.closeBtnHoverColor,
+                            onChange: function(val) { setAttributes({ closeBtnHoverColor: val }); }
+                        })
+                    ),
+
                     // 9. Popup Trigger Settings (Only for Modal Layout)
                     attributes.layout === 'modal' && el(
                         PanelBody,
@@ -693,22 +1183,361 @@
                     )
                 ),
 
-                // Canvas Editor Preview Box
-                el('div', { style: { fontWeight: 'bold', fontSize: '14px', marginBottom: '8px', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '6px' } }, 
-                    el('span', { style: { fontSize: '18px' } }, '🎟️'),
-                    el('span', null, 'WPC Coupon Popup Box Settings')
-                ),
-                el('div', { style: { padding: '12px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' } }, 
-                    el('div', { style: { fontSize: '13px', fontWeight: 'bold', color: '#1e293b' } }, 
-                        'Source: ' + selectedItemName
+                // Canvas Editor Preview Box (Visual Card Customizer)
+                el('div', { style: { marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' } },
+                    el('div', { style: { fontWeight: '600', fontSize: '13px', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' } }, 
+                        el('span', null, '🎨 Live Customizer Editor Preview')
                     ),
-                    el('div', { style: { fontSize: '12px', color: '#64748b', marginTop: '4px' } }, 
-                        'Layout: ' + attributes.layout + 
-                        ' | Button Style: ' + attributes.buttonStyle + 
-                        ' | Click Action: ' + attributes.clickAction
+                    attributes.layout === 'modal' && el('div', { style: { fontSize: '11px', color: '#0369a1', background: '#e0f2fe', padding: '8px 12px', borderRadius: '6px', border: '1px solid #bae6fd', fontWeight: '500' } },
+                        'ℹ️ Modal layout design preview. On the front-end page, this will appear as a popup overlay.'
                     ),
-                    !attributes.showTriggerBtn && attributes.layout === 'modal' && el('div', { style: { fontSize: '11px', color: '#b91c1c', marginTop: '4px', fontWeight: '500' } },
+                    !attributes.showTriggerBtn && attributes.layout === 'modal' && el('div', { style: { fontSize: '11px', color: '#b91c1c', background: '#fee2e2', padding: '8px 12px', borderRadius: '6px', border: '1px solid #fca5a5', fontWeight: '500' } },
                         '⚠️ Trigger button is hidden on page. Modal will show via Auto-Open/Exit-Intent/Selector.'
+                    ),
+                    el('div', {
+                        className: 'wpc-interactive-element',
+                        onClick: function(e) {
+                            e.stopPropagation();
+                            handleElementClick('Global Design Customizer', 'Card');
+                        },
+                        style: {
+                            position: 'relative',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'stretch',
+                            background: activeCardBgColor,
+                            padding: activeCardPadding,
+                            borderRadius: activeCardBorderRadius,
+                            boxShadow: activeCardShadow === 'none' ? 'none' : (activeCardShadow === 'soft' ? '0 4px 20px rgba(0,0,0,0.05)' : (activeCardShadow === 'heavy' ? '0 20px 40px rgba(0,0,0,0.15)' : '0 10px 30px rgba(0,0,0,0.08)')),
+                            border: activeCardBorderStyle && activeCardBorderStyle !== 'none' ? (activeCardBorderWidth || '1px') + ' ' + activeCardBorderStyle + ' ' + (activeCardBorderColor || '#e2e8f0') : 'none',
+                            minHeight: '220px',
+                            overflow: 'hidden',
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                        }
+                    },
+                        // Style Injector for Customizer Highlights
+                        el('style', null,
+                            '.wpc-interactive-element { cursor: pointer; transition: all 0.2s ease; border: 1.5px dashed transparent !important; position: relative; }\n' +
+                            '.wpc-interactive-element:hover { border: 1.5px dashed #3b82f6 !important; background: rgba(59, 130, 246, 0.04) !important; outline: 3px solid rgba(59, 130, 246, 0.15); }\n' +
+                            '.wpc-interactive-element::after { content: "✏️"; position: absolute; top: -8px; right: -8px; font-size: 10px; background: #3b82f6; color: white; padding: 2px; border-radius: 50%; opacity: 0; transition: opacity 0.2s ease; line-height: 1; z-index: 100; }\n' +
+                            '.wpc-interactive-element:hover::after { opacity: 1; }\n'
+                        ),
+
+                        // Close Button Preview
+                        el('button', {
+                            style: {
+                                position: 'absolute',
+                                top: '15px',
+                                right: '15px',
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: activeCloseBtnBg,
+                                color: activeCloseBtnColor,
+                                fontSize: '16px',
+                                cursor: 'default',
+                                zIndex: '10'
+                            }
+                        }, '×'),
+
+                        // Left Column
+                        el('div', {
+                            className: 'wpc-interactive-element',
+                            onClick: function(e) {
+                                e.stopPropagation();
+                                handleElementClick('Brand Logo & Overrides', 'Logo');
+                            },
+                            style: {
+                                width: activeLeftWidth,
+                                backgroundColor: activeLeftBgColor,
+                                padding: activeLeftPadding,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                position: 'relative',
+                                zIndex: '2'
+                            }
+                        },
+                            activeLogo ? el('img', {
+                                src: activeLogo,
+                                style: { maxWidth: '100%', maxHeight: '60px', objectFit: 'contain', margin: '0 auto', display: 'block' }
+                            }) : el('div', {
+                                style: { width: '80px', height: '80px', borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#64748b', margin: '0 auto' }
+                            }, 'Woo Logo'),
+                            el('div', { style: { marginTop: '8px', fontSize: '13px', fontWeight: 'bold', color: activePrimaryColor } }, activeTitleName)
+                        ),
+
+                        // Divider Line (if dividerShow is true)
+                        activeDividerShow && el('div', {
+                            style: {
+                                borderLeftWidth: activeDividerWidth,
+                                borderLeftStyle: activeDividerStyle,
+                                borderLeftColor: activeDividerColor,
+                                margin: '0 15px',
+                                zIndex: '2'
+                            }
+                        }),
+
+                        // Right Column
+                        el('div', {
+                            style: {
+                                flex: '1',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                paddingLeft: '15px',
+                                position: 'relative',
+                                zIndex: '2'
+                            }
+                        },
+                            // Badge
+                            el('div', {
+                                className: 'wpc-interactive-element',
+                                onClick: function(e) {
+                                    e.stopPropagation();
+                                    handleElementClick('Badges', 'Exclusive');
+                                },
+                                style: { display: 'flex', gap: '6px', marginBottom: '8px', padding: '4px', borderRadius: '4px', width: 'fit-content' }
+                            },
+                                el('span', {
+                                    style: {
+                                        background: activeExclusiveBgColor,
+                                        color: activeExclusiveTextColor,
+                                        fontSize: '10px',
+                                        fontWeight: '700',
+                                        textTransform: 'uppercase',
+                                        padding: activeBadgePadding,
+                                        border: activeBadgeBorderWidth ? activeBadgeBorderWidth + ' solid ' + activeExclusiveTextColor : 'none',
+                                        borderRadius: activeBadgeRadius,
+                                        letterSpacing: '0.05em'
+                                    }
+                                }, activeExclusiveLabel),
+                                el('span', {
+                                    style: {
+                                        background: activeVerifiedBgColor,
+                                        color: activeVerifiedTextColor,
+                                        fontSize: '10px',
+                                        fontWeight: '700',
+                                        textTransform: 'uppercase',
+                                        padding: activeBadgePadding,
+                                        border: activeBadgeBorderWidth ? activeBadgeBorderWidth + ' solid ' + activeVerifiedTextColor : 'none',
+                                        borderRadius: activeBadgeRadius,
+                                        letterSpacing: '0.05em'
+                                    }
+                                }, activeVerifiedLabel)
+                            ),
+
+                            // Heading & Description
+                            el('div', {
+                                className: 'wpc-interactive-element',
+                                onClick: function(e) {
+                                    e.stopPropagation();
+                                    handleElementClick('Titles & Colors', 'Title');
+                                },
+                                style: { padding: '4px', borderRadius: '4px', marginBottom: '8px' }
+                            },
+                                el('div', { style: { fontSize: '18px', fontWeight: 'bold', color: activePrimaryColor, marginBottom: '4px' } }, activeTitle),
+                                el('div', { style: { fontSize: '12px', color: '#475569' } }, activeSubtitle)
+                            ),
+
+                            // Features Checklist Preview
+                            featuresArray.length > 0 && el('div', {
+                                className: 'wpc-interactive-element',
+                                onClick: function(e) {
+                                    e.stopPropagation();
+                                    handleElementClick('Titles & Colors', 'Features');
+                                },
+                                style: { padding: '4px', borderRadius: '4px', marginBottom: '12px' }
+                            },
+                                el('ul', {
+                                    className: 'wpc-coupon-features',
+                                    style: {
+                                        listStyle: 'none',
+                                        padding: '0',
+                                        margin: '0',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '6px'
+                                    }
+                                },
+                                    featuresArray.map(function(feature, idx) {
+                                        return el('li', {
+                                            key: idx,
+                                            style: {
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                fontSize: activeFeaturesSize,
+                                                color: activeFeaturesColor || '#475569'
+                                            }
+                                        },
+                                            el('svg', {
+                                                width: '12',
+                                                height: '12',
+                                                viewBox: '0 0 24 24',
+                                                fill: 'none',
+                                                stroke: activePrimaryColor,
+                                                strokeWidth: '3',
+                                                style: { flexShrink: 0 }
+                                            },
+                                                el('polyline', { points: '20 6 9 17 4 12' })
+                                            ),
+                                            el('span', null, feature)
+                                        );
+                                    })
+                                )
+                            ),
+
+                            // Timer Blocks Preview
+                            timerDisplay && el('div', {
+                                className: 'wpc-interactive-element',
+                                onClick: function(e) {
+                                    e.stopPropagation();
+                                    handleElementClick('Timer Settings', 'Timer');
+                                },
+                                style: { display: 'flex', gap: '8px', marginBottom: '15px', padding: '4px', borderRadius: '4px', width: 'fit-content' }
+                            },
+                                timerDisplay.map(function(block, idx) {
+                                    var shadowValue = 'none';
+                                    if (activeTimerBlockShadow === 'light') shadowValue = '0 1px 2px rgba(0,0,0,0.05)';
+                                    else if (activeTimerBlockShadow === 'medium') shadowValue = '0 4px 6px rgba(0,0,0,0.08)';
+                                    else if (activeTimerBlockShadow === 'heavy') shadowValue = '0 10px 15px rgba(0,0,0,0.12)';
+                                    
+                                    return el('div', {
+                                        key: idx,
+                                        style: {
+                                            background: activeTimerBgColor,
+                                            color: activeTimerTextColor,
+                                            padding: activeTimerBlockPadding,
+                                            borderRadius: activeTimerBlockRadius,
+                                            border: (activeTimerBlockBorderWidth || '1px') + ' solid ' + (activeTimerBlockBorderColor || '#e5e7eb'),
+                                            boxShadow: shadowValue,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            minWidth: '36px'
+                                        }
+                                    },
+                                        el('span', { style: { fontSize: '13px', fontWeight: 'bold' } }, block.val),
+                                        el('span', { style: { fontSize: '8px', color: '#64748b', textTransform: 'uppercase', marginTop: '2px' } }, block.label)
+                                    );
+                                })
+                            ),
+
+                            // Claim Button Preview
+                            el('div', {
+                                className: 'wpc-interactive-element',
+                                onClick: function(e) {
+                                    e.stopPropagation();
+                                    handleElementClick('Button Styles & Action', 'Button');
+                                },
+                                style: { display: 'flex', alignItems: 'center', marginTop: '10px', width: 'fit-content' }
+                            },
+                                el('div', {
+                                    style: {
+                                        position: 'relative',
+                                        width: '280px',
+                                        maxWidth: '100%',
+                                        height: '42px',
+                                        border: '1px solid rgba(15, 23, 42, 0.12)',
+                                        background: '#f8fafc',
+                                        borderRadius: activeButtonStyle === 'dashed_ticket' ? '6px' : '9999px',
+                                        boxSizing: 'border-box',
+                                        overflow: 'hidden',
+                                        display: 'block'
+                                    }
+                                },
+                                    el('div', {
+                                        style: {
+                                            position: 'absolute',
+                                            top: '0', right: '0', bottom: '0', left: '0',
+                                            zIndex: '1',
+                                            color: '#64748b',
+                                            fontWeight: '700',
+                                            fontSize: '13px',
+                                            letterSpacing: '0.05em',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end',
+                                            paddingRight: '15px'
+                                        }
+                                    }, attributes.maskText || 'SPECIAL'),
+                                    
+                                    el('div', {
+                                        style: {
+                                            position: 'absolute',
+                                            top: '2px', left: '2px', bottom: '2px',
+                                            zIndex: '2',
+                                            width: 'calc(100% - 50px)',
+                                            backgroundColor: activeBtnBgColor || activePrimaryColor,
+                                            color: activeBtnTextColor || '#ffffff',
+                                            fontSize: activeBtnSize || '13px',
+                                            border: activeButtonStyle === 'dashed_ticket' ? '2px dashed rgba(255, 255, 255, 0.8)' : 'none',
+                                            fontWeight: '700',
+                                            borderRadius: activeButtonStyle === 'dashed_ticket' ? '4px' : (activeButtonStyle === 'ticket' ? '9999px 0 0 9999px' : '9999px'),
+                                            clipPath: activeButtonStyle === 'ticket' ? 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)' : 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px',
+                                            fontFamily: 'inherit',
+                                            whiteSpace: 'nowrap'
+                                        }
+                                    },
+                                        el('svg', {
+                                            width: '12',
+                                            height: '12',
+                                            viewBox: '0 0 24 24',
+                                            fill: 'none',
+                                            stroke: 'currentColor',
+                                            strokeWidth: '2.5'
+                                        },
+                                            el('path', { d: 'M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16' }),
+                                            el('path', { d: 'M12 10a2 2 0 0 0 0-4 2 2 0 0 0 0 4z' }),
+                                            el('path', { d: 'M12 12v3' })
+                                        ),
+                                        el('span', null, activeButtonText)
+                                    )
+                                )
+                            )
+                        ),
+
+                        // Mascot Preview
+                        activeMascotUrl && el('div', {
+                            className: 'wpc-interactive-element',
+                            onClick: function(e) {
+                                e.stopPropagation();
+                                handleElementClick('Mascot Options', 'Mascot');
+                            },
+                            style: (function() {
+                                var base = {
+                                    position: 'absolute',
+                                    bottom: activeMascotBottom,
+                                    width: activeMascotWidth,
+                                    zIndex: activeMascotBehind ? '1' : '3',
+                                    opacity: activeMascotOpacity
+                                };
+                                if (activeMascotPosition === 'left') {
+                                    base.left = activeMascotOffset;
+                                } else {
+                                    base.right = activeMascotOffset;
+                                }
+                                return base;
+                            })()
+                        },
+                            el('img', {
+                                src: activeMascotUrl,
+                                style: { width: '100%', height: 'auto', display: 'block', pointerEvents: 'none' }
+                            })
+                        )
                     )
                 )
             );
