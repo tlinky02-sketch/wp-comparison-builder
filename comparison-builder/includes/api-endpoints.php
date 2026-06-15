@@ -395,6 +395,7 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
                 'hide_plan_features' => $hide_plan_features,
                 'show_plan_links' => $show_plan_links,
                 'show_coupon' => $show_coupon,
+                'promo_banner_text' => get_post_meta($id, '_wpc_promo_banner_text', true) ?: '',
 
                 // Billing Mode Settings
                 'billing_mode' => get_post_meta($id, '_wpc_billing_mode', true) ?: 'monthly_only',

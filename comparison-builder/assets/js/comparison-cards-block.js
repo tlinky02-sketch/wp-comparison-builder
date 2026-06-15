@@ -39,6 +39,10 @@
             cardBorderColor: { type: 'string', default: '' },
             cardBorderWidth: { type: 'string', default: '' },
             cardShadow: { type: 'string', default: 'default' },
+            // Promo Banner Global
+            promoBannerText: { type: 'string', default: '' },
+            promoBannerBg: { type: 'string', default: '#fee2e2' },
+            promoBannerColor: { type: 'string', default: '#b91c1c' },
         },
         edit: function(props) {
             var attributes = props.attributes;
@@ -158,6 +162,12 @@
                                     value: over.buttonText,
                                     placeholder: 'e.g. Claim Offer',
                                     onChange: function(val) { updateOverride(id, 'buttonText', val); }
+                                }),
+                                el(TextControl, {
+                                    label: 'Custom Promo Banner Text',
+                                    value: over.promoBannerText,
+                                    placeholder: 'e.g. Claim 50% OFF Now',
+                                    onChange: function(val) { updateOverride(id, 'promoBannerText', val); }
                                 })
                             );
                         })
@@ -179,6 +189,26 @@
                             label: 'Button Font Size (e.g. 15px)',
                             value: attributes.btnSize,
                             onChange: function(val) { setAttributes({ btnSize: val }); }
+                        })
+                    ),
+                    el(
+                        PanelBody,
+                        { title: 'Promo Banner (Global)', initialOpen: false },
+                        el(TextControl, {
+                            label: 'Global Promo Banner Text',
+                            value: attributes.promoBannerText,
+                            help: 'Fallback text if an item has no AI-generated banner and no specific override.',
+                            onChange: function(val) { setAttributes({ promoBannerText: val }); }
+                        }),
+                        attributes.promoBannerText && el(PanelRow, null, el('span', null, 'Banner Background')),
+                        attributes.promoBannerText && el(ColorPalette, {
+                            value: attributes.promoBannerBg,
+                            onChange: function(val) { setAttributes({ promoBannerBg: val }); }
+                        }),
+                        attributes.promoBannerText && el(PanelRow, null, el('span', null, 'Banner Text Color')),
+                        attributes.promoBannerText && el(ColorPalette, {
+                            value: attributes.promoBannerColor,
+                            onChange: function(val) { setAttributes({ promoBannerColor: val }); }
                         })
                     ),
                     el(
@@ -271,7 +301,14 @@
                                 attributes.itemIds.map(function(id) {
                                     var found = availableItems.find(function(item) { return item.value === id; });
                                     var label = found ? found.label : 'Loading...';
-                                    return el('li', { key: id, style: { marginBottom: '4px' } }, label);
+                                    var over = attributes.itemOverrides[id] || {};
+                                    var overridesText = [];
+                                    if (over.rating) overridesText.push('⭐ ' + over.rating);
+                                    if (over.buttonText) overridesText.push('🔘 ' + over.buttonText);
+                                    if (over.promoBannerText) overridesText.push('📢 ' + over.promoBannerText);
+                                    
+                                    var suffix = overridesText.length > 0 ? ' (Overrides: ' + overridesText.join(', ') + ')' : '';
+                                    return el('li', { key: id, style: { marginBottom: '4px' } }, label + suffix);
                                 })
                             )
                         )

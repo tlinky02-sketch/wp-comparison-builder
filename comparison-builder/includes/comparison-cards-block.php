@@ -39,6 +39,9 @@ function wpc_register_comparison_cards_block() {
             'cardBorderColor' => array('type' => 'string', 'default' => ''),
             'cardBorderWidth' => array('type' => 'string', 'default' => ''),
             'cardShadow'      => array('type' => 'string', 'default' => 'default'),
+            'promoBannerText' => array('type' => 'string', 'default' => ''),
+            'promoBannerBg'   => array('type' => 'string', 'default' => '#fee2e2'),
+            'promoBannerColor'=> array('type' => 'string', 'default' => '#b91c1c'),
         ),
     ) );
 }
@@ -137,6 +140,8 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             border-radius: 12px;
             transition: transform 0.2s, box-shadow 0.2s;
             box-sizing: border-box;
+            position: relative;
+            margin-top: 15px; /* Space for the banner */
             <?php 
             if ($shadow_type === 'none') {
                 echo 'box-shadow: none;';
@@ -148,6 +153,23 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
                 echo 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);';
             }
             ?>
+        }
+        .<?php echo $block_id; ?> .wpc-promo-banner {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: <?php echo esc_attr($c_btn_bg); ?>;
+            color: <?php echo esc_attr($c_btn_text); ?>;
+            padding: 4px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .<?php echo $block_id; ?> .wpc-card-item:hover {
             <?php if ($shadow_type !== 'none') : ?>
@@ -269,6 +291,14 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             $score = !empty($item_override['rating']) ? $item_override['rating'] : get_post_meta( $post_id, '_wpc_rating', true );
             if ( ! $score || ! is_numeric( $score ) ) $score = '5.0';
             
+            $promo_banner_text = !empty($item_override['promoBannerText']) ? $item_override['promoBannerText'] : get_post_meta( $post_id, '_wpc_promo_banner_text', true );
+            if ( empty($promo_banner_text) && !empty($attributes['promoBannerText']) ) {
+                $promo_banner_text = $attributes['promoBannerText'];
+            }
+            
+            $pb_bg = !empty($attributes['promoBannerBg']) ? $attributes['promoBannerBg'] : '#fee2e2';
+            $pb_color = !empty($attributes['promoBannerColor']) ? $attributes['promoBannerColor'] : '#b91c1c';
+
             $total_reviews = get_post_meta( $post_id, '_wpc_total_reviews', true );
             
             // Link Data
@@ -293,6 +323,9 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             $star_percent  = min(100, max(0, ($numeric_score / 5) * 100));
         ?>
             <div class="wpc-card-item">
+                <?php if ( ! empty( $promo_banner_text ) ) : ?>
+                    <div class="wpc-promo-banner" style="background-color: <?php echo esc_attr($pb_bg); ?>; color: <?php echo esc_attr($pb_color); ?>;"><?php echo esc_html( $promo_banner_text ); ?></div>
+                <?php endif; ?>
                 <div class="wpc-card-left">
                     <?php if ( $logo_url ) : ?>
                     <div class="wpc-card-logo-wrap" style="width: 100px; display: flex; justify-content: <?php echo $layout === 'grid' ? 'center' : 'flex-start'; ?>;">

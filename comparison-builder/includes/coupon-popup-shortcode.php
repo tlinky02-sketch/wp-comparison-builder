@@ -93,7 +93,9 @@ function wpc_register_coupon_popup_block() {
             'closeBtnBg'       => array( 'type' => 'string', 'default' => 'transparent' ),
             'closeBtnColor'    => array( 'type' => 'string', 'default' => '#94a3b8' ),
             'closeBtnHoverBg'  => array( 'type' => 'string', 'default' => '#f1f5f9' ),
-            'closeBtnHoverColor'=>array( 'type' => 'string', 'default' => '#0f172a' )
+            'closeBtnHoverColor'=> array( 'type' => 'string', 'default' => '#0f172a' ),
+            'groupKey'          => array( 'type' => 'string', 'default' => '' ),
+            'groupMode'         => array( 'type' => 'string', 'default' => 'independent' )
         )
     ));
 }
@@ -182,7 +184,11 @@ function wpc_coupon_popup_block_render_callback( $attributes ) {
         'close_btn_bg'       => $attributes['closeBtnBg'] ?? 'transparent',
         'close_btn_color'    => $attributes['closeBtnColor'] ?? '#94a3b8',
         'close_btn_hover_bg'  => $attributes['closeBtnHoverBg'] ?? '#f1f5f9',
-        'close_btn_hover_color'=> $attributes['closeBtnHoverColor'] ?? '#0f172a'
+        'close_btn_hover_color'=> $attributes['closeBtnHoverColor'] ?? '#0f172a',
+        'promo_banner_text'    => $attributes['promoBannerText'] ?? '',
+        'promo_banner_bg'      => $attributes['promoBannerBg'] ?? '#fee2e2',
+        'promo_banner_color'   => $attributes['promoBannerColor'] ?? '#b91c1c',
+        'group_mode'           => $attributes['groupMode'] ?? 'independent'
     );
 
     return wpc_coupon_popup_shortcode( $mapped_atts );
@@ -286,6 +292,10 @@ function wpc_coupon_popup_shortcode( $atts ) {
         'close_btn_color'    => '#94a3b8',
         'close_btn_hover_bg'  => '#f1f5f9',
         'close_btn_hover_color'=> '#0f172a',
+        'promo_banner_text'    => '',
+        'promo_banner_bg'      => '#fee2e2',
+        'promo_banner_color'   => '#b91c1c',
+        'group_mode'           => 'independent', // independent | carousel | one_random
     ), $atts );
 
     $item_id = 0;
@@ -597,6 +607,10 @@ function wpc_coupon_popup_shortcode( $atts ) {
             opacity: {$masc_opacity} !important;
             {$masc_pos_css}
         }
+        #{$uid} .wpc-promo-banner, #overlay-{$uid} .wpc-promo-banner {
+            background-color: " . ( ! empty( $atts['promo_banner_bg'] ) ? esc_attr( $atts['promo_banner_bg'] ) : '#fbbf24' ) . " !important;
+            color: " . ( ! empty( $atts['promo_banner_color'] ) ? esc_attr( $atts['promo_banner_color'] ) : '#000' ) . " !important;
+        }
         #{$uid} .wpc-coupon-timer-clock .wpc-timer-block, #overlay-{$uid} .wpc-coupon-timer-clock .wpc-timer-block {
             border-radius: {$timer_radius} !important;
             border: {$timer_b_width} solid {$timer_b_color} !important;
@@ -759,6 +773,10 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 if ( ! empty( $specific['copiedBgColor'] ) ) $c_atts['copied_bg_color'] = $specific['copiedBgColor'];
                 if ( ! empty( $specific['copiedTextColor'] ) ) $c_atts['copied_text_color'] = $specific['copiedTextColor'];
                 
+                if ( ! empty( $specific['promoBannerText'] ) ) $c_atts['promo_banner_text'] = $specific['promoBannerText'];
+                if ( ! empty( $specific['promoBannerBg'] ) ) $c_atts['promo_banner_bg'] = $specific['promoBannerBg'];
+                if ( ! empty( $specific['promoBannerColor'] ) ) $c_atts['promo_banner_color'] = $specific['promoBannerColor'];
+                
                 if ( ! empty( $specific['cardShadow'] ) ) $c_atts['card_shadow'] = $specific['cardShadow'];
                 if ( ! empty( $specific['cardBorderStyle'] ) ) $c_atts['card_border_style'] = $specific['cardBorderStyle'];
                 if ( ! empty( $specific['cardBorderColor'] ) ) $c_atts['card_border_color'] = $specific['cardBorderColor'];
@@ -837,6 +855,11 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 }
             }
 
+            // Resolve Promo Banner Text
+            if ( empty( $c_atts['promo_banner_text'] ) && $c_item ) {
+                $c_atts['promo_banner_text'] = get_post_meta( $c_item['id'], '_wpc_promo_banner_text', true );
+            }
+
             $pool_data[] = array(
                 'id' => $cid_int,
                 'headline' => $c_headline,
@@ -852,75 +875,79 @@ function wpc_coupon_popup_shortcode( $atts ) {
                 'features' => $c_feature_list,
                 
                 // New Overrides
-                'title_color' => $c_atts['title_color'],
-                'title_size' => $c_atts['title_size'],
-                'subtitle_color' => $c_atts['subtitle_color'],
-                'subtitle_size' => $c_atts['subtitle_size'],
+                'title_color' => $c_atts['title_color'] ?? '',
+                'title_size' => $c_atts['title_size'] ?? '',
+                'subtitle_color' => $c_atts['subtitle_color'] ?? '',
+                'subtitle_size' => $c_atts['subtitle_size'] ?? '',
                 
-                'timer_label' => $c_atts['timer_label'],
-                'timer_bg_color' => $c_atts['timer_bg_color'],
-                'timer_text_color' => $c_atts['timer_text_color'],
-                'timer_size' => $c_atts['timer_size'],
+                'timer_label' => $c_atts['timer_label'] ?? '',
+                'timer_bg_color' => $c_atts['timer_bg_color'] ?? '',
+                'timer_text_color' => $c_atts['timer_text_color'] ?? '',
+                'timer_size' => $c_atts['timer_size'] ?? '',
+                
+                'promo_banner_text' => $c_atts['promo_banner_text'] ?? '',
+                'promo_banner_bg' => $c_atts['promo_banner_bg'] ?? '',
+                'promo_banner_color' => $c_atts['promo_banner_color'] ?? '',
                 
                 'is_exclusive' => ( $c_item && ! empty( $c_item['is_exclusive'] ) ) ? true : false,
-                'exclusive_label' => $c_atts['exclusive_label'],
-                'exclusive_bg_color' => $c_atts['exclusive_bg_color'],
-                'exclusive_text_color' => $c_atts['exclusive_text_color'],
+                'exclusive_label' => $c_atts['exclusive_label'] ?? '',
+                'exclusive_bg_color' => $c_atts['exclusive_bg_color'] ?? '',
+                'exclusive_text_color' => $c_atts['exclusive_text_color'] ?? '',
                 
                 'is_verified' => ( $c_item && ! empty( $c_item['is_verified'] ) ) ? true : false,
-                'verified_label' => $c_atts['verified_label'],
-                'verified_bg_color' => $c_atts['verified_bg_color'],
-                'verified_text_color' => $c_atts['verified_text_color'],
+                'verified_label' => $c_atts['verified_label'] ?? '',
+                'verified_bg_color' => $c_atts['verified_bg_color'] ?? '',
+                'verified_text_color' => $c_atts['verified_text_color'] ?? '',
                 
-                'button_style' => $c_atts['button_style'],
-                'click_action' => $c_atts['click_action'],
-                'button_text' => $c_atts['button_text'],
-                'mask_text' => $c_atts['mask_text'],
-                'copied_text' => $c_atts['copied_text'],
-                'btn_size' => $c_atts['btn_size'],
-                'btn_bg_color' => $c_atts['btn_bg_color'],
+                'button_style' => $c_atts['button_style'] ?? '',
+                'click_action' => $c_atts['click_action'] ?? '',
+                'button_text' => $c_atts['button_text'] ?? '',
+                'mask_text' => $c_atts['mask_text'] ?? '',
+                'copied_text' => $c_atts['copied_text'] ?? '',
+                'btn_size' => $c_atts['btn_size'] ?? '',
+                'btn_bg_color' => $c_atts['btn_bg_color'] ?? '',
                 'btn_bg_rgb' => ! empty( $c_atts['btn_bg_color'] ) ? wpc_coupon_hex_to_rgb( $c_atts['btn_bg_color'] ) : '',
-                'btn_text_color' => $c_atts['btn_text_color'],
-                'btn_hover_color' => $c_atts['btn_hover_color'],
-                'copied_bg_color' => $c_atts['copied_bg_color'],
-                'copied_text_color' => $c_atts['copied_text_color'],
+                'btn_text_color' => $c_atts['btn_text_color'] ?? '',
+                'btn_hover_color' => $c_atts['btn_hover_color'] ?? '',
+                'copied_bg_color' => $c_atts['copied_bg_color'] ?? '',
+                'copied_text_color' => $c_atts['copied_text_color'] ?? '',
                 
-                'features_color' => $c_atts['features_color'],
-                'features_size' => $c_atts['features_size'],
+                'features_color' => $c_atts['features_color'] ?? '',
+                'features_size' => $c_atts['features_size'] ?? '',
                 
-                'card_shadow' => $c_atts['card_shadow'],
-                'card_border_style' => $c_atts['card_border_style'],
-                'card_border_color' => $c_atts['card_border_color'],
-                'card_border_width' => $c_atts['card_border_width'],
+                'card_shadow' => $c_atts['card_shadow'] ?? '',
+                'card_border_style' => $c_atts['card_border_style'] ?? '',
+                'card_border_color' => $c_atts['card_border_color'] ?? '',
+                'card_border_width' => $c_atts['card_border_width'] ?? '',
 
-                'card_bg_color'      => $c_atts['card_bg_color'],
-                'card_padding'      => $c_atts['card_padding'],
-                'card_border_radius' => $c_atts['card_border_radius'],
-                'left_width'        => $c_atts['left_width'],
-                'left_bg_color'      => $c_atts['left_bg_color'],
-                'left_padding'      => $c_atts['left_padding'],
-                'divider_show'      => $c_atts['divider_show'],
-                'divider_style'     => $c_atts['divider_style'],
-                'divider_color'     => $c_atts['divider_color'],
-                'divider_width'     => $c_atts['divider_width'],
-                'mascot_width'      => $c_atts['mascot_width'],
-                'mascot_bottom'     => $c_atts['mascot_bottom'],
-                'mascot_position'   => $c_atts['mascot_position'],
-                'mascot_offset'     => $c_atts['mascot_offset'],
-                'mascot_behind'     => $c_atts['mascot_behind'],
+                'card_bg_color'      => $c_atts['card_bg_color'] ?? '',
+                'card_padding'      => $c_atts['card_padding'] ?? '',
+                'card_border_radius' => $c_atts['card_border_radius'] ?? '',
+                'left_width'        => $c_atts['left_width'] ?? '',
+                'left_bg_color'      => $c_atts['left_bg_color'] ?? '',
+                'left_padding'      => $c_atts['left_padding'] ?? '',
+                'divider_show'      => $c_atts['divider_show'] ?? '',
+                'divider_style'     => $c_atts['divider_style'] ?? '',
+                'divider_color'     => $c_atts['divider_color'] ?? '',
+                'divider_width'     => $c_atts['divider_width'] ?? '',
+                'mascot_width'      => $c_atts['mascot_width'] ?? '',
+                'mascot_bottom'     => $c_atts['mascot_bottom'] ?? '',
+                'mascot_position'   => $c_atts['mascot_position'] ?? '',
+                'mascot_offset'     => $c_atts['mascot_offset'] ?? '',
+                'mascot_behind'     => $c_atts['mascot_behind'] ?? '',
                 'mascot_opacity'    => $c_atts['mascot_opacity'] ?? '1',
-                'timer_block_radius' => $c_atts['timer_block_radius'],
-                'timer_block_border_width' => $c_atts['timer_block_border_width'],
-                'timer_block_border_color' => $c_atts['timer_block_border_color'],
-                'timer_block_padding'=> $c_atts['timer_block_padding'],
-                'timer_block_shadow' => $c_atts['timer_block_shadow'],
-                'badge_radius'      => $c_atts['badge_radius'],
-                'badge_border_width' => $c_atts['badge_border_width'],
-                'badge_padding'     => $c_atts['badge_padding'],
-                'close_btn_bg'       => $c_atts['close_btn_bg'],
-                'close_btn_color'    => $c_atts['close_btn_color'],
-                'close_btn_hover_bg'  => $c_atts['close_btn_hover_bg'],
-                'close_btn_hover_color'=> $c_atts['close_btn_hover_color']
+                'timer_block_radius' => $c_atts['timer_block_radius'] ?? '',
+                'timer_block_border_width' => $c_atts['timer_block_border_width'] ?? '',
+                'timer_block_border_color' => $c_atts['timer_block_border_color'] ?? '',
+                'timer_block_padding'=> $c_atts['timer_block_padding'] ?? '',
+                'timer_block_shadow' => $c_atts['timer_block_shadow'] ?? '',
+                'badge_radius'      => $c_atts['badge_radius'] ?? '',
+                'badge_border_width' => $c_atts['badge_border_width'] ?? '',
+                'badge_padding'     => $c_atts['badge_padding'] ?? '',
+                'close_btn_bg'       => $c_atts['close_btn_bg'] ?? '',
+                'close_btn_color'    => $c_atts['close_btn_color'] ?? '',
+                'close_btn_hover_bg'  => $c_atts['close_btn_hover_bg'] ?? '',
+                'close_btn_hover_color'=> $c_atts['close_btn_hover_color'] ?? ''
             );
         }
         $pool_json = esc_attr( wp_json_encode( $pool_data ) );
@@ -936,6 +963,7 @@ function wpc_coupon_popup_shortcode( $atts ) {
          data-exit-intent="<?php echo esc_attr( $atts['exit_intent'] ? 'true' : 'false' ); ?>"
          data-trigger-freq="<?php echo esc_attr( $atts['trigger_freq'] ); ?>"
          data-cookie-expiry="<?php echo esc_attr( $atts['cookie_expiry'] ); ?>"
+         data-group-mode="<?php echo esc_attr( $atts['group_mode'] ); ?>"
          <?php if ( ! empty( $pool_json ) ) echo 'data-randomizer-pool="' . $pool_json . '"'; ?>>
 
         <?php if ( $atts['layout'] === 'modal' ) : ?>
@@ -997,6 +1025,11 @@ function wpc_coupon_popup_shortcode( $atts ) {
 
                 <!-- Right Section: Details & Coupon Copy Button -->
                 <div class="wpc-coupon-right">
+                    <?php if ( ! empty( $atts['promo_banner_text'] ) ) : ?>
+                        <div class="wpc-promo-banner" style="display:inline-block; padding:4px 12px; border-radius:4px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px;">
+                            <?php echo esc_html( $atts['promo_banner_text'] ); ?>
+                        </div>
+                    <?php endif; ?>
                     <h3 class="wpc-coupon-title"><?php echo $headline; ?></h3>
                     
                     <p class="wpc-coupon-subtitle" style="<?php echo empty( $subtitle ) ? 'display: none;' : ''; ?>"><?php echo esc_html( $subtitle ); ?></p>
@@ -1898,17 +1931,63 @@ function wpc_enqueue_coupon_popup_assets() {
         };
 
         window.wpcCloseCouponPopup = function(uid) {
+            // Close the specific popup
             const overlay = document.getElementById('overlay-' + uid);
+            let wasCarousel = false;
+            let wrapper = document.getElementById(uid);
+            
             if (overlay) {
                 overlay.style.display = 'none';
-                document.body.style.overflow = ''; // Restore scrolling
-                
-                // Set cookie so it doesn't reopen automatically on future exit-intent/delays
-                const wrapper = document.getElementById(uid);
-                const cookieExpiry = wrapper ? parseFloat(wrapper.getAttribute('data-cookie-expiry')) : 1;
-                if (cookieExpiry > 0) {
-                    wpcSetCookie('wpc_closed_' + uid, '1', cookieExpiry);
+                if (wrapper) {
+                    const groupMode = wrapper.getAttribute('data-group-mode');
+                    if (groupMode === 'carousel') wasCarousel = true;
+                    
+                    const cookieExpiry = parseFloat(wrapper.getAttribute('data-cookie-expiry'));
+                    if (cookieExpiry > 0) {
+                        wpcSetCookie('wpc_closed_' + uid, '1', cookieExpiry);
+                    }
                 }
+            }
+
+            // "Only one cross/close is okay" -> Also close any other currently visible popups unless mode is strictly 'independent'
+            const groupMode = wrapper ? wrapper.getAttribute('data-group-mode') : 'stacked';
+            if (groupMode !== 'independent') {
+                const allOverlays = document.querySelectorAll('.wpc-coupon-popup-overlay');
+                allOverlays.forEach(function(otherOverlay) {
+                    if (otherOverlay.style.display !== 'none' && otherOverlay.style.display !== '') {
+                        otherOverlay.style.display = 'none';
+                        const otherUid = otherOverlay.getAttribute('id').replace('overlay-', '');
+                        const otherWrapper = document.getElementById(otherUid);
+                        if (otherWrapper) {
+                            const ce = parseFloat(otherWrapper.getAttribute('data-cookie-expiry'));
+                            if (ce > 0) {
+                                wpcSetCookie('wpc_closed_' + otherUid, '1', ce);
+                            }
+                        }
+                    }
+                });
+            }
+
+            document.body.style.overflow = ''; // Restore scrolling
+
+            // Group Carousel: after closing, open the next popup in the group
+            if (wasCarousel) {
+                wpcOpenNextInGroup(uid);
+            }
+        };
+
+        // Open the next popup in a carousel sequence after the given uid was closed
+        window.wpcOpenNextInGroup = function(closedUid) {
+            const allWrappers = Array.from(document.querySelectorAll('.wpc-coupon-popup-wrapper'));
+            const group = allWrappers.filter(function(w) {
+                return w.getAttribute('data-group-mode') === 'carousel';
+            });
+            const closedIndex = group.findIndex(function(w) { return w.getAttribute('id') === closedUid; });
+            const next = group[closedIndex + 1];
+            if (next) {
+                const nextUid = next.getAttribute('id');
+                // Small delay so the close animation finishes first
+                setTimeout(function() { wpcOpenCouponPopup(nextUid, false, false); }, 300);
             }
         };
 
@@ -2168,6 +2247,19 @@ function wpc_enqueue_coupon_popup_assets() {
                     }
                 }
                 
+                // 2.5 Promo Banner Text
+                const promoBannerEl = container.querySelector('.wpc-promo-banner');
+                if (promoBannerEl) {
+                    if (randomItem.promo_banner_text) {
+                        promoBannerEl.innerHTML = randomItem.promo_banner_text;
+                        if (randomItem.promo_banner_bg) promoBannerEl.style.backgroundColor = randomItem.promo_banner_bg;
+                        if (randomItem.promo_banner_color) promoBannerEl.style.color = randomItem.promo_banner_color;
+                        promoBannerEl.style.display = 'inline-block';
+                    } else {
+                        promoBannerEl.style.display = 'none';
+                    }
+                }
+                
                 // 3. Mascot
                 const mascotContainer = container.querySelector('.wpc-coupon-mascot-container');
                 if (mascotContainer) {
@@ -2399,12 +2491,39 @@ function wpc_enqueue_coupon_popup_assets() {
 
         // Auto-initialize triggers (autoOpen / exitIntent / inline timers)
         document.addEventListener('DOMContentLoaded', function() {
-            const wrappers = document.querySelectorAll('.wpc-coupon-popup-wrapper');
+            const wrappers = Array.from(document.querySelectorAll('.wpc-coupon-popup-wrapper'));
+
+            // --- Page-Level Group Mode Processing ---
+            // Group all popups on the page by their multiBehavior mode (carousel or one_random)
+            const carouselUids = [];
+            const randomUids = [];
+            
+            wrappers.forEach(function(wrapper) {
+                const mode = wrapper.getAttribute('data-group-mode');
+                if (mode === 'carousel') carouselUids.push(wrapper.getAttribute('id'));
+                if (mode === 'one_random') randomUids.push(wrapper.getAttribute('id'));
+            });
+
+            const suppressed = new Set();
+            
+            // Random Mode: pick one, suppress the rest
+            if (randomUids.length > 1) {
+                const chosen = randomUids[Math.floor(Math.random() * randomUids.length)];
+                randomUids.forEach(function(u) { if (u !== chosen) suppressed.add(u); });
+            }
+            
+            // Carousel Mode: only the FIRST carousel popup triggers automatically;
+            // subsequent ones are suppressed (opened by wpcOpenNextInGroup on close)
+            if (carouselUids.length > 1) {
+                carouselUids.slice(1).forEach(function(u) { suppressed.add(u); });
+            }
+            // ---
+
             wrappers.forEach(function(wrapper) {
                 const uid = wrapper.getAttribute('id');
                 const autoOpenDelay = wrapper.getAttribute('data-auto-open');
                 const exitIntentEnabled = wrapper.getAttribute('data-exit-intent') === 'true';
-                
+
                 // 1. Check if it is Inline layout
                 const isInline = wrapper.querySelector('.wpc-coupon-inline') !== null;
                 if (isInline) {
@@ -2412,6 +2531,9 @@ function wpc_enqueue_coupon_popup_assets() {
                     wpcStartTimer(uid);
                     return;
                 }
+
+                // Skip auto-triggers for suppressed popups
+                if (suppressed.has(uid)) return;
 
                 // 2. Handle Auto Open Trigger (delayed popup)
                 if (autoOpenDelay !== null && autoOpenDelay !== '' && !isNaN(autoOpenDelay)) {

@@ -101,9 +101,12 @@
             badgePadding: { type: 'string', default: '4px 10px' },
             closeBtnBg: { type: 'string', default: 'transparent' },
             closeBtnColor: { type: 'string', default: '#94a3b8' },
-            closeBtnHoverBg: { type: 'string', default: '#f1f5f9' },
             closeBtnHoverColor: { type: 'string', default: '#0f172a' },
-            itemOverrides: { type: 'string', default: '{}' }
+            itemOverrides: { type: 'string', default: '{}' },
+            promoBannerText: { type: 'string', default: '' },
+            promoBannerBg: { type: 'string', default: '#fee2e2' },
+            promoBannerColor: { type: 'string', default: '#b91c1c' },
+            groupMode: { type: 'string', default: 'independent' }
         },
 
         edit: function(props) {
@@ -684,6 +687,22 @@
                         PanelBody,
                         { title: 'Titles & Colors', initialOpen: false },
                         el(TextControl, {
+                            label: 'Promo Banner Text',
+                            value: attributes.promoBannerText,
+                            help: 'Optional text box above the title (e.g. Claim 50% OFF Now). Leave empty to hide.',
+                            onChange: function(val) { setAttributes({ promoBannerText: val }); }
+                        }),
+                        attributes.promoBannerText && el(PanelRow, null, el('span', null, 'Promo Banner Background')),
+                        attributes.promoBannerText && el(ColorPalette, {
+                            value: attributes.promoBannerBg,
+                            onChange: function(val) { setAttributes({ promoBannerBg: val }); }
+                        }),
+                        attributes.promoBannerText && el(PanelRow, null, el('span', null, 'Promo Banner Text Color')),
+                        attributes.promoBannerText && el(ColorPalette, {
+                            value: attributes.promoBannerColor,
+                            onChange: function(val) { setAttributes({ promoBannerColor: val }); }
+                        }),
+                        el(TextControl, {
                             label: 'Headline Title Override/Manual',
                             value: attributes.title,
                             onChange: function(val) { setAttributes({ title: val }); }
@@ -1180,6 +1199,33 @@
                             help: 'Prevent popup from auto-opening again to the same user for X days.',
                             onChange: function(val) { setAttributes({ cookieExpiry: val }); }
                         })
+                    ),
+
+                    // 9b. Page-level Multi-Popup Behavior
+                    attributes.layout === 'modal' && el(
+                        PanelBody,
+                        { title: '🔗 Page-level Multi-Popup Behavior', initialOpen: false },
+                        el('p', { style: { fontSize: '12px', color: '#64748b', marginBottom: '12px', lineHeight: '1.6' } },
+                            'If you add multiple popups to this page, how should they behave?'
+                        ),
+                        el(SelectControl, {
+                            label: 'Behavior Mode',
+                            value: attributes.groupMode,
+                            options: [
+                                { label: '🟢 Stacked (Independent triggers, close all together)', value: 'stacked' },
+                                { label: '🟢 Fully Independent (Close one closes only itself)', value: 'independent' },
+                                { label: '🎠 Carousel Queue – Show one at a time; closing opens the next', value: 'carousel' },
+                                { label: '🎲 Random – Pick one randomly per page load, suppress the rest', value: 'one_random' }
+                            ],
+                            help: attributes.groupMode === 'carousel'
+                                ? 'Popups set to Carousel will queue up. The first one triggers automatically, closing it shows the next.'
+                                : attributes.groupMode === 'one_random'
+                                ? 'Only one popup set to Random will auto-trigger per page load. The others are suppressed.'
+                                : attributes.groupMode === 'stacked'
+                                ? 'Popups trigger independently but stack visually. Closing one closes all visible popups.'
+                                : 'Each popup fires independently. Closing one only closes itself.',
+                            onChange: function(val) { setAttributes({ groupMode: val }); }
+                        })
                     )
                 ),
 
@@ -1344,6 +1390,20 @@
                                 },
                                 style: { padding: '4px', borderRadius: '4px', marginBottom: '8px' }
                             },
+                                attributes.promoBannerText ? el('div', {
+                                    style: {
+                                        display: 'inline-block',
+                                        padding: '4px 12px',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                        fontWeight: '700',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        marginBottom: '12px',
+                                        backgroundColor: attributes.promoBannerBg,
+                                        color: attributes.promoBannerColor
+                                    }
+                                }, attributes.promoBannerText) : null,
                                 el('div', { style: { fontSize: '18px', fontWeight: 'bold', color: activePrimaryColor, marginBottom: '4px' } }, activeTitle),
                                 el('div', { style: { fontSize: '12px', color: '#475569' } }, activeSubtitle)
                             ),

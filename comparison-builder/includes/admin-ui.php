@@ -555,6 +555,14 @@ function wpc_render_meta_box( $post ) {
 
             <div class="wpc-row">
                 <div class="wpc-col">
+                    <label class="wpc-label"><?php _e( 'Promo Banner Text', 'wp-comparison-builder' ); ?></label>
+                    <input type="text" name="wpc_promo_banner_text" value="<?php echo esc_attr( get_post_meta( $post->ID, '_wpc_promo_banner_text', true ) ); ?>" class="wpc-input" placeholder="e.g. Claim 50% OFF Now" />
+                    <p class="description">Displays a highlighted banner text at the top of comparison cards or popups.</p>
+                </div>
+            </div>
+
+            <div class="wpc-row">
+                <div class="wpc-col">
                     <label class="wpc-label"><?php _e( 'Price (e.g. $29.00)', 'wp-comparison-builder' ); ?></label>
                     <input type="text" name="wpc_price" value="<?php echo esc_attr( $price ); ?>" class="wpc-input" />
                 </div>
@@ -1919,6 +1927,7 @@ function wpc_render_meta_box( $post ) {
                         "dashboard_image": "https://example.com/dash.jpg",
                         "badge_text": "Top Choice",
                         "badge_color": "#ff0000",
+                        "promo_banner_text": "Claim 50% OFF Now",
                         "colors": {
                             "primary": "#6366f1",
                             "accent": "#818cf8",
@@ -2073,6 +2082,7 @@ function wpc_render_meta_box( $post ) {
                     setVal('wpc_dashboard_image', data.visuals.dashboard_image);
                     setVal('wpc_featured_badge_text', data.visuals.badge_text);
                     if(data.visuals.badge_color) setVal('wpc_featured_color', data.visuals.badge_color);
+                    setVal('wpc_promo_banner_text', data.visuals.promo_banner_text);
                     setVal('wpc_hero_subtitle', data.visuals.hero_subtitle);
                     setVal('wpc_analysis_label', data.visuals.analysis_label);
 
@@ -2960,6 +2970,7 @@ Return a JSON object with this EXACT structure (for importing into a comparison 
     "dashboard_image": "",
     "badge_text": "Editor's Choice",
     "badge_color": "#10b981",
+    "promo_banner_text": "Claim 50% OFF Now",
     "hero_subtitle": "The best solution for...",
     "analysis_label": "Our Analysis",
     "colors": {
@@ -3510,6 +3521,9 @@ function wpc_save_meta_box( $post_id ) {
     }
 
     // Save Meta
+    if ( isset( $_POST['wpc_promo_banner_text'] ) ) {
+        update_post_meta( $post_id, '_wpc_promo_banner_text', sanitize_text_field( $_POST['wpc_promo_banner_text'] ) );
+    }
     if ( isset( $_POST['wpc_price'] ) ) {
         update_post_meta( $post_id, '_wpc_price', sanitize_text_field( $_POST['wpc_price'] ) );
     }
