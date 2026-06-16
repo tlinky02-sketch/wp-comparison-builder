@@ -69,6 +69,17 @@ const PricingTable = ({
         return result;
     };
 
+    // Helper to parse features list safely (handles string and array)
+    const getFeaturesList = (features: any): string[] => {
+        if (Array.isArray(features)) {
+            return features.map(f => String(f).trim()).filter(Boolean);
+        }
+        if (typeof features === 'string') {
+            return features.split('\n').map(f => f.trim()).filter(Boolean);
+        }
+        return [];
+    };
+
     // 1. Legacy Data Retrieval (for Fallback)
     const itemAny = item as any;
     const billingMode = config?.billingMode || itemAny.billing_mode || 'monthly_only';
@@ -660,13 +671,11 @@ const PricingTable = ({
                                         {visiblePlans.map((plan, idx) => (
                                             <td key={idx} className={`p-4 align-top ${idx !== visiblePlans.length - 1 ? 'border-r border-border' : ''} break-words whitespace-normal`} style={{ borderColor: 'var(--pt-border)' }}>
                                                 <ul className="space-y-2 text-left inline-block w-full min-w-0">
-                                                    {(plan.features || '').split('\n').map((feature, i) => (
-                                                        feature.trim() && (
-                                                            <li key={i} className="flex items-start gap-2 break-words whitespace-normal">
-                                                                <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
-                                                                <span className="text-muted-foreground break-words whitespace-normal min-w-0" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>{feature.trim()}</span>
-                                                            </li>
-                                                        )
+                                                    {getFeaturesList(plan.features).map((feature, i) => (
+                                                        <li key={i} className="flex items-start gap-2 break-words whitespace-normal">
+                                                            <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
+                                                            <span className="text-muted-foreground break-words whitespace-normal min-w-0" style={{ fontSize: 'var(--wpc-font-size-body, inherit)' }}>{feature}</span>
+                                                        </li>
                                                     ))}
                                                 </ul>
                                             </td>
@@ -762,7 +771,7 @@ const PricingTable = ({
                                 {plan.features && showFeatures && (
                                     <div className="p-4 border-b border-border" style={{ borderColor: 'var(--pt-border)' }}>
                                         <ul className="space-y-2">
-                                            {(plan.features || '').split('\n').filter(f => f.trim()).map((feature, i) => (
+                                            {getFeaturesList(plan.features).map((feature, i) => (
                                                 <li key={i} className="flex items-start gap-2">
                                                     <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: resolvedTickColor }} />
                                                     <span>{feature}</span>
