@@ -411,6 +411,30 @@ function wpc_render_tool_meta_box( $post ) {
         <p class="description">Main features of this tool (displayed in comparison)</p>
     </div>
 
+    <div class="wpc-tool-field">
+        <label class="wpc-tool-label">Pros (one per line)</label>
+        <?php
+        $pros_val = get_post_meta( $post->ID, '_wpc_pros', true );
+        if ( isset($tool) && is_object($tool) && !empty($tool->pros) ) {
+             $pros_val = is_array($tool->pros) ? implode("\n", $tool->pros) : $tool->pros;
+        }
+        ?>
+        <textarea name="wpc_tool_pros" class="wpc-tool-input" rows="4" placeholder="Pro 1&#10;Pro 2"><?php echo esc_textarea( $pros_val ); ?></textarea>
+        <p class="description">Positive aspects of this tool</p>
+    </div>
+
+    <div class="wpc-tool-field">
+        <label class="wpc-tool-label">Cons (one per line)</label>
+        <?php
+        $cons_val = get_post_meta( $post->ID, '_wpc_cons', true );
+        if ( isset($tool) && is_object($tool) && !empty($tool->cons) ) {
+             $cons_val = is_array($tool->cons) ? implode("\n", $tool->cons) : $tool->cons;
+        }
+        ?>
+        <textarea name="wpc_tool_cons" class="wpc-tool-input" rows="4" placeholder="Con 1&#10;Con 2"><?php echo esc_textarea( $cons_val ); ?></textarea>
+        <p class="description">Negative aspects of this tool</p>
+    </div>
+
     <input type="hidden" id="wpc_ai_tool_nonce" value="<?php echo wp_create_nonce( 'wpc_ai_nonce' ); ?>" />
     <script>
     jQuery(document).ready(function($) {
@@ -478,6 +502,8 @@ function wpc_save_tool_meta( $post_id ) {
     $short_desc = sanitize_textarea_field( $_POST['wpc_tool_short_description'] ?? '' );
     $rating = floatval( $_POST['wpc_tool_rating'] ?? 4.5 );
     $features_raw = sanitize_textarea_field( $_POST['wpc_tool_features'] ?? '' );
+    $pros_raw = sanitize_textarea_field( $_POST['wpc_tool_pros'] ?? '' );
+    $cons_raw = sanitize_textarea_field( $_POST['wpc_tool_cons'] ?? '' );
     
     // Dual-Write: Post Meta (Backup)
     update_post_meta( $post_id, '_tool_badge', $badge );
@@ -486,6 +512,8 @@ function wpc_save_tool_meta( $post_id ) {
     update_post_meta( $post_id, '_wpc_tool_short_description', $short_desc );
     update_post_meta( $post_id, '_wpc_tool_rating', $rating );
     update_post_meta( $post_id, '_wpc_tool_features', $features_raw );
+    update_post_meta( $post_id, '_wpc_pros', $pros_raw );
+    update_post_meta( $post_id, '_wpc_cons', $cons_raw );
     
     // Save pricing plans
     $plans = array();
@@ -520,7 +548,9 @@ function wpc_save_tool_meta( $post_id ) {
             'short_description' => $short_desc,
             'rating'            => $rating,
             'features'          => array_filter( array_map( 'trim', explode( "\n", $features_raw ) ) ),
-            'pricing_plans'     => $plans
+            'pricing_plans'     => $plans,
+            'pros'              => array_filter( array_map( 'trim', explode( "\n", $pros_raw ) ) ),
+            'cons'              => array_filter( array_map( 'trim', explode( "\n", $cons_raw ) ) )
         ];
         
         $db->update_tool( $post_id, $data );

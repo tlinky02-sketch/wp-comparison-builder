@@ -76,6 +76,7 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
             $query->the_post();
             $id = get_the_ID();
             $row = isset($db_data[$id]) ? $db_data[$id] : null; // Custom Table Row
+            $tool_row = isset($tools_db_data[$id]) ? $tools_db_data[$id] : null; // Custom Tools Table Row
 
             // Helper to get value: DB > WPC Meta > Legacy Meta > Default
             $get_val = function ($db_col, $meta_key, $legacy_key = '', $default = '') use ($row, $id) {
@@ -208,6 +209,11 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
             // Logic: Check overridden URL first (DB or Meta). NO FALLBACK to Featured Image for Logo anymore (per user request).
             $custom_logo = $get_val('logo_url', '_wpc_external_logo_url', '_ecommerce_external_logo_url');
             $logo_url = $custom_logo ?: '';
+
+            // For tools, fallback to the featured image for the logo
+            if (empty($logo_url) && $post_type === 'comparison_tool') {
+                $logo_url = get_the_post_thumbnail_url($id, 'medium') ?: get_the_post_thumbnail_url($id, 'full') ?: '';
+            }
 
             // Dashboard / Hero Image
             // Logic: Featured Image (Priority) > Dashboard Image Field (Fallback)
@@ -363,8 +369,13 @@ function wpc_fetch_items_data($specific_ids = array(), $limit = -1)
             }
 
             // Pros/Cons
-            $pros = ($row && !empty($row->pros)) ? $row->pros : (get_post_meta($id, '_wpc_pros', true) ? explode("\n", get_post_meta($id, '_wpc_pros', true)) : array());
-            $cons = ($row && !empty($row->cons)) ? $row->cons : (get_post_meta($id, '_wpc_cons', true) ? explode("\n", get_post_meta($id, '_wpc_cons', true)) : array());
+            if ($post_type === 'comparison_tool') {
+                $pros = ($tool_row && !empty($tool_row->pros)) ? $tool_row->pros : (get_post_meta($id, '_wpc_pros', true) ? array_filter(array_map('trim', explode("\n", get_post_meta($id, '_wpc_pros', true)))) : array());
+                $cons = ($tool_row && !empty($tool_row->cons)) ? $tool_row->cons : (get_post_meta($id, '_wpc_cons', true) ? array_filter(array_map('trim', explode("\n", get_post_meta($id, '_wpc_cons', true)))) : array());
+            } else {
+                $pros = ($row && !empty($row->pros)) ? $row->pros : (get_post_meta($id, '_wpc_pros', true) ? explode("\n", get_post_meta($id, '_wpc_pros', true)) : array());
+                $cons = ($row && !empty($row->cons)) ? $row->cons : (get_post_meta($id, '_wpc_cons', true) ? explode("\n", get_post_meta($id, '_wpc_cons', true)) : array());
+            }
 
             // Labels (JSON in DB 'text_labels' column vs individual keys in Meta)
             $labels = [];

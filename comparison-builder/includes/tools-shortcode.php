@@ -241,7 +241,9 @@ function wpc_get_tool_data( $tool_id ) {
                 'link' => $tool->link,
                 'button_text' => $tool->button_text,
                 'pricing_plans' => $tool->pricing_plans,
-                'features' => $tool->features
+                'features' => $tool->features,
+                'pros' => $tool->pros ?? [],
+                'cons' => $tool->cons ?? []
             ];
         }
     }
@@ -260,6 +262,18 @@ function wpc_get_tool_data( $tool_id ) {
         $features = ! empty( $features_text ) ? array_filter( array_map( 'trim', explode( "\n", $features_text ) ) ) : array();
     }
 
+    $pros = $data['pros'] ?? [];
+    if ( empty($pros) ) {
+        $pros_text = get_post_meta( $tool_id, '_wpc_pros', true );
+        $pros = ! empty( $pros_text ) ? array_filter( array_map( 'trim', explode( "\n", $pros_text ) ) ) : array();
+    }
+
+    $cons = $data['cons'] ?? [];
+    if ( empty($cons) ) {
+        $cons_text = get_post_meta( $tool_id, '_wpc_cons', true );
+        $cons = ! empty( $cons_text ) ? array_filter( array_map( 'trim', explode( "\n", $cons_text ) ) ) : array();
+    }
+
     $description = ! empty( $short_desc ) ? $short_desc : wp_strip_all_tags( get_the_content( null, false, $post ) );
     
     // Return in EXACT item format (matches comparison items)
@@ -274,9 +288,9 @@ function wpc_get_tool_data( $tool_id ) {
         'button_text'      => $button_text,
         'pricing_plans'    => ! empty( $pricing ) && is_array( $pricing ) ? $pricing : array(),
         'features'         => $features,
-        // Add empty fields that items have (for compatibility)
-        'pros'             => array(),
-        'cons'             => array(),
+        // Add fields that items have
+        'pros'             => $pros,
+        'cons'             => $cons,
         'price'            => '',
         'price_period'     => '',
     );

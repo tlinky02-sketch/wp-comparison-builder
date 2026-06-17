@@ -34,6 +34,8 @@ class WPC_Tools_Database {
             rating float(2,1) DEFAULT '0.0' NOT NULL,
             features longtext,
             pricing_plans longtext,
+            pros text,
+            cons text,
             clicks int(10) UNSIGNED DEFAULT 0 NOT NULL,
             PRIMARY KEY  (id),
             KEY post_id (post_id)
@@ -42,7 +44,7 @@ class WPC_Tools_Database {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
         
-        add_option( 'wpc_tools_db_version', '1.0.0' );
+        update_option( 'wpc_tools_db_version', '1.1.0' );
     }
 
     /**
@@ -58,7 +60,7 @@ class WPC_Tools_Database {
         $existing = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$this->table_name} WHERE post_id = %d", $post_id ) );
 
         // Sanitize & Format JSON fields
-        $json_fields = [ 'features', 'pricing_plans' ];
+        $json_fields = [ 'features', 'pricing_plans', 'pros', 'cons' ];
 
         foreach ( $json_fields as $field ) {
             if ( isset( $data[$field] ) && is_array( $data[$field] ) ) {
@@ -91,7 +93,7 @@ class WPC_Tools_Database {
         $rows = $wpdb->get_results( $wpdb->prepare( $sql, $post_ids ) );
         
         if ( $rows ) {
-            $json_fields = [ 'features', 'pricing_plans' ];
+            $json_fields = [ 'features', 'pricing_plans', 'pros', 'cons' ];
             foreach ( $rows as $row ) {
                 foreach ( $json_fields as $field ) {
                     if ( ! empty( $row->$field ) ) {
@@ -121,7 +123,7 @@ class WPC_Tools_Database {
         $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE post_id = %d", $post_id ) );
         
         if ( $row ) {
-            $json_fields = [ 'features', 'pricing_plans' ];
+            $json_fields = [ 'features', 'pricing_plans', 'pros', 'cons' ];
             foreach ( $json_fields as $field ) {
                 if ( ! empty( $row->$field ) ) {
                     $row->$field = json_decode( $row->$field, true );

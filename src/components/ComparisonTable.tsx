@@ -365,8 +365,11 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
   }
 
   // Dynamic features based on backend settings
+  const isToolsCompare = items.some(item => item.post_type === 'comparison_tool');
   const compareFeatures = config?.compareFeatures || (window as any).wpcSettings?.compareFeatures || {};
-  const compareTagTerms = config?.compareTagTerms || (window as any).wpcSettings?.compareTagTerms || [];
+  const compareTagTerms = isToolsCompare
+    ? ((window as any).wpcSettings?.compareToolTagTerms || [])
+    : (config?.compareTagTerms || (window as any).wpcSettings?.compareTagTerms || []);
 
   // Built-in features (price, rating)
   const builtinFeatures = [
@@ -391,7 +394,12 @@ const ComparisonTable = ({ items, onRemove, labels, config, onHydrate }: Compari
   let showPros = false;
   let showCons = false;
 
-  if (Array.isArray(compareFeatures)) {
+  if (isToolsCompare) {
+    // For tools: show price, rating, and all tool tags
+    enabledKeys = ['price', 'rating', ...tagFeatures.map(f => f.key)];
+    showPros = true;
+    showCons = true;
+  } else if (Array.isArray(compareFeatures)) {
     // NEW format: compareFeatures IS the ordered list of keys
     enabledKeys = compareFeatures;
     showPros = compareFeatures.includes('pros');

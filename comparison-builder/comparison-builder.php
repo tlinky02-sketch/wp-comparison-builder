@@ -130,6 +130,33 @@ function wpc_get_compare_tag_terms()
 }
 
 /**
+ * Get comparison tool tag terms for frontend
+ */
+function wpc_get_compare_tool_tag_terms()
+{
+    $terms = get_terms(array(
+        'taxonomy' => 'tool_tag',
+        'hide_empty' => false
+    ));
+
+    if (is_wp_error($terms) || empty($terms)) {
+        return array();
+    }
+
+    $result = array();
+    foreach ($terms as $term) {
+        $result[] = array(
+            'id' => $term->term_id,
+            'key' => 'tag_' . $term->term_id,
+            'name' => $term->name,
+            'slug' => $term->slug,
+        );
+    }
+
+    return $result;
+}
+
+/**
  * Register Scripts and Styles
  */
 function wpc_register_scripts()
@@ -273,6 +300,7 @@ function wpc_register_scripts()
         'target_pricing' => get_option('wpc_target_pricing', '_blank'),
         'compareFeatures' => get_option('wpc_compare_features', array()),
         'compareTagTerms' => wpc_get_compare_tag_terms(),
+        'compareToolTagTerms' => wpc_get_compare_tool_tag_terms(),
     );
 
     // Pass settings to wpcSettings global
