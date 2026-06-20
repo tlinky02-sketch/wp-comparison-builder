@@ -999,8 +999,22 @@ function wpc_render_meta_box( $post ) {
             <!-- Pricing Table Shortcode Display -->
             <?php
             $variants_enabled = get_post_meta( $post->ID, '_wpc_variants_enabled', true ) === '1';
-            $assigned_cats = wp_get_post_terms( $post->ID, 'comparison_category', array( 'fields' => 'all' ) );
-            $has_variants = $variants_enabled && !empty($assigned_cats);
+            $all_assigned_cats = wp_get_post_terms( $post->ID, 'comparison_category', array( 'fields' => 'all' ) );
+
+            // Filter to only the active variant categories (same as the "Active Categories" checkbox section)
+            $variant_cat_ids = get_post_meta( $post->ID, '_wpc_variant_categories', true );
+            if ( ! is_array( $variant_cat_ids ) ) $variant_cat_ids = array();
+            $variant_cat_ids = array_map( 'intval', $variant_cat_ids );
+
+            if ( $variants_enabled && ! empty( $variant_cat_ids ) ) {
+                $assigned_cats = array_values( array_filter( $all_assigned_cats, function( $cat ) use ( $variant_cat_ids ) {
+                    return in_array( (int) $cat->term_id, $variant_cat_ids, true );
+                }));
+            } else {
+                $assigned_cats = $all_assigned_cats;
+            }
+
+            $has_variants = $variants_enabled && ! empty( $assigned_cats );
             ?>
             <div style="background:#ecfdf5; border:1px solid #10b981; padding:15px; border-radius:6px; margin-bottom:20px;">
                 <strong style="color:#059669; display:block; margin-bottom:10px;">💰 Pricing Table Shortcode:</strong>

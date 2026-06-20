@@ -134,6 +134,9 @@ function wpc_use_cases_shortcode( $atts ) {
         <?php foreach ( $target_categories as $loop_cat_slug ) : 
             $is_visible = ( $loop_cat_slug === $active_cat );
             $use_cases = $all_use_cases;
+
+            // Use a safe CSS class slug (empty string produces an invalid selector)
+            $grid_slug = ! empty( $loop_cat_slug ) ? $loop_cat_slug : 'all';
             
             // Filter Use Cases per Loop Category
             if ( $variants_enabled && ! empty( $loop_cat_slug ) ) {
@@ -189,19 +192,19 @@ function wpc_use_cases_shortcode( $atts ) {
                 <?php else : ?>
                     <!-- Inline Responsive Styles per Grid (Scoped) -->
                     <style>
-                        #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($loop_cat_slug); ?> { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+                        #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(1, minmax(0, 1fr)); }
                         @media (min-width: 640px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($loop_cat_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 2); ?>, minmax(0, 1fr)); }
+                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 2); ?>, minmax(0, 1fr)); }
                         }
                         @media (min-width: 768px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($loop_cat_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 3); ?>, minmax(0, 1fr)); }
+                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 3); ?>, minmax(0, 1fr)); }
                         }
                         @media (min-width: 1024px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($loop_cat_slug); ?> { grid-template-columns: repeat(<?php echo min($count, $columns); ?>, minmax(0, 1fr)); }
+                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, $columns); ?>, minmax(0, 1fr)); }
                         }
                     </style>
 
-                    <div class="wpc-use-cases-grid <?php echo esc_attr($loop_cat_slug); ?>" style="display: grid; gap: 1.5rem;">
+                    <div class="wpc-use-cases-grid <?php echo esc_attr($grid_slug); ?>" style="display: grid; gap: 1.5rem;">
             
                         <?php foreach ( $use_cases as $case ) : 
                             $name = isset( $case['name'] ) ? esc_html( $case['name'] ) : '';

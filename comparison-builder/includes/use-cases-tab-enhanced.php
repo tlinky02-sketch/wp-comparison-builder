@@ -9,6 +9,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
         <!-- TAB: USE CASES -->
         <div id="wpc-tab-use_cases" class="wpc-tab-content">
+
+        <script>
+        function wpcCopyShortcode(text, btn) {
+            var original = btn.innerText;
+            var doFeedback = function() {
+                btn.innerText = 'Copied!';
+                btn.style.background = '#16a34a';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#16a34a';
+                setTimeout(function() {
+                    btn.innerText = original;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 1800);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(doFeedback).catch(function() {
+                    wpcCopyFallback(text, btn, doFeedback);
+                });
+            } else {
+                wpcCopyFallback(text, btn, doFeedback);
+            }
+        }
+        function wpcCopyFallback(text, btn, cb) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '-9999px';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); cb(); } catch(e) {}
+            document.body.removeChild(ta);
+        }
+        </script>
             <?php
             // Check if variants are enabled
             $variants_enabled = get_post_meta( $post->ID, '_wpc_variants_enabled', true ) === '1';
@@ -51,7 +88,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <!-- All Use Cases -->
                         <div style="display:flex; align-items:center; gap:10px;">
                             <code style="flex:1; background:#fff; padding:8px 12px; border:1px solid #ddd; border-radius:4px; color:#7c3aed;">[wpc_use_cases id="<?php echo $post->ID; ?>"]</code>
-                            <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_use_cases id=<?php echo $post->ID; ?>]'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                            <button type="button" class="button button-small" onclick="wpcCopyShortcode('[wpc_use_cases id=<?php echo $post->ID; ?>]', this)">Copy</button>
                             <span style="font-size: 11px; color: #64748b;">(All)</span>
                         </div>
                         
@@ -59,7 +96,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <?php foreach ( $assigned_cats as $cat ) : ?>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <code style="flex:1; background:#fff; padding:8px 12px; border:1px solid #ddd; border-radius:4px; color:#7c3aed;">[wpc_use_cases id="<?php echo $post->ID; ?>" category="<?php echo esc_attr($cat->slug); ?>"]</code>
-                            <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_use_cases id=<?php echo $post->ID; ?> category=<?php echo esc_js($cat->slug); ?>]'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                            <button type="button" class="button button-small" onclick="wpcCopyShortcode('[wpc_use_cases id=<?php echo $post->ID; ?> category=<?php echo esc_js($cat->slug); ?>]', this)">Copy</button>
                             <span style="padding: 2px 8px; background: #e0e7ff; color: #4f46e5; border-radius: 9999px; font-size: 11px; font-weight: 600;"><?php echo esc_html($cat->name); ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -68,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <strong style="color:#7c3aed; display:block; margin-bottom:4px;">Shortcode for this Item:</strong>
                     <div style="display:flex; gap:10px;">
                         <code style="background:#fff; padding:6px 10px; border:1px solid #ddd; border-radius:4px; color:#7c3aed; flex:1;">[wpc_use_cases id="<?php echo $post->ID; ?>"]</code>
-                        <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('[wpc_use_cases id=<?php echo $post->ID; ?>]'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500);">Copy</button>
+                        <button type="button" class="button button-small" onclick="wpcCopyShortcode('[wpc_use_cases id=<?php echo $post->ID; ?>]', this)">Copy</button>
                     </div>
                 <?php endif; ?>
             </div>
