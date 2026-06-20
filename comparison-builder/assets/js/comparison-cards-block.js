@@ -146,7 +146,7 @@
                         attributes.itemIds.map(function(id) {
                             var found = availableItems.find(function(item) { return item.value === id; });
                             var label = found ? found.label : 'Item ' + id;
-                            var over = attributes.itemOverrides[id] || { rating: '', buttonText: '' };
+                            var over = attributes.itemOverrides[id] || {};
 
                             return el(
                                 'div',
@@ -154,20 +154,26 @@
                                 el('strong', { style: { display: 'block', marginBottom: '8px' } }, label),
                                 el(TextControl, {
                                     label: 'Custom Rating (e.g. 4.8)',
-                                    value: over.rating,
+                                    value: over.rating || '',
                                     onChange: function(val) { updateOverride(id, 'rating', val); }
                                 }),
                                 el(TextControl, {
                                     label: 'Custom Button Text',
-                                    value: over.buttonText,
+                                    value: over.buttonText || '',
                                     placeholder: 'e.g. Claim Offer',
                                     onChange: function(val) { updateOverride(id, 'buttonText', val); }
                                 }),
                                 el(TextControl, {
                                     label: 'Custom Promo Banner Text',
-                                    value: over.promoBannerText,
+                                    value: over.promoBannerText || '',
                                     placeholder: 'e.g. Claim 50% OFF Now',
                                     onChange: function(val) { updateOverride(id, 'promoBannerText', val); }
+                                }),
+                                el(TextControl, {
+                                    label: 'Custom Link (URL)',
+                                    value: over.customLink || '',
+                                    placeholder: 'e.g. https://example.com/special',
+                                    onChange: function(val) { updateOverride(id, 'customLink', val); }
                                 })
                             );
                         })
@@ -306,6 +312,7 @@
                                     if (over.rating) overridesText.push('⭐ ' + over.rating);
                                     if (over.buttonText) overridesText.push('🔘 ' + over.buttonText);
                                     if (over.promoBannerText) overridesText.push('📢 ' + over.promoBannerText);
+                                    if (over.customLink) overridesText.push('🔗 ' + over.customLink);
                                     
                                     var suffix = overridesText.length > 0 ? ' (Overrides: ' + overridesText.join(', ') + ')' : '';
                                     return el('li', { key: id, style: { marginBottom: '4px' } }, label + suffix);

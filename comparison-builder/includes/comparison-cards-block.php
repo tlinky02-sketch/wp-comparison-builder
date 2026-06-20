@@ -141,7 +141,6 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             transition: transform 0.2s, box-shadow 0.2s;
             box-sizing: border-box;
             position: relative;
-            margin-top: 15px; /* Space for the banner */
             <?php 
             if ($shadow_type === 'none') {
                 echo 'box-shadow: none;';
@@ -155,21 +154,22 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             ?>
         }
         .<?php echo $block_id; ?> .wpc-promo-banner {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: <?php echo esc_attr($c_btn_bg); ?>;
-            color: <?php echo esc_attr($c_btn_text); ?>;
-            padding: 4px 16px;
-            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 12px;
+            font-size: 11px;
             font-weight: 700;
             border-radius: 20px;
-            white-space: nowrap;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            z-index: 2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            line-height: 1.3;
+            vertical-align: middle;
+            text-align: center;
+            text-decoration: none !important;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-break: break-word;
         }
         .<?php echo $block_id; ?> .wpc-card-item:hover {
             <?php if ($shadow_type !== 'none') : ?>
@@ -207,7 +207,19 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             display: flex;
             align-items: center;
             gap: 24px;
-            flex-grow: 1;
+            flex: 1;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-middle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex: 1;
         }
         /* Grid Layout Specifics */
         .<?php echo $block_id; ?>.wpc-layout-grid .wpc-card-item {
@@ -222,6 +234,14 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
         }
         .<?php echo $block_id; ?>.wpc-layout-grid .wpc-card-logo-wrap {
             margin-bottom: 16px;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-grid .wpc-card-middle {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
         .<?php echo $block_id; ?>.wpc-layout-grid .wpc-card-button {
             width: 100%;
@@ -244,6 +264,19 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             display: flex;
             align-items: center;
             gap: 16px;
+            flex: 1;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-middle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex: 1;
         }
         .<?php echo $block_id; ?>.wpc-layout-compact h3 {
             margin: 0 !important;
@@ -256,6 +289,7 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 16px;
+                position: relative;
             }
             .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-left,
             .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-left {
@@ -263,10 +297,26 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
                 align-items: flex-start;
                 gap: 12px;
                 width: 100%;
+                flex: none;
+            }
+            .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-middle,
+            .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-middle {
+                width: auto;
+                height: 0;
+                margin: 0;
+                padding: 0;
+                flex: none;
+            }
+            .<?php echo $block_id; ?> .wpc-promo-banner {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                max-width: 45%;
             }
             .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-right,
             .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-right {
                 width: 100%;
+                flex: none;
             }
             .<?php echo $block_id; ?>.wpc-layout-horizontal .wpc-card-button,
             .<?php echo $block_id; ?>.wpc-layout-compact .wpc-card-button {
@@ -316,16 +366,25 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
             }
             
             $target_direct = get_option('wpc_target_direct', '_blank');
-            $aff_link = get_post_meta( $post_id, '_wpc_affiliate_link', true ) ?: '#';
+            
+            // Link Override & Fallback Logic
+            if ( ! empty( $item_override['customLink'] ) ) {
+                $aff_link = $item_override['customLink'];
+            } else {
+                $aff_link = get_post_meta( $post_id, '_wpc_direct_link', true );
+                if ( empty( $aff_link ) ) {
+                    $aff_link = get_post_meta( $post_id, '_wpc_affiliate_link', true );
+                }
+                if ( empty( $aff_link ) ) {
+                    $aff_link = '#';
+                }
+            }
             
             // Calculate accurate star percentage
             $numeric_score = floatval($score);
             $star_percent  = min(100, max(0, ($numeric_score / 5) * 100));
         ?>
             <div class="wpc-card-item">
-                <?php if ( ! empty( $promo_banner_text ) ) : ?>
-                    <div class="wpc-promo-banner" style="background-color: <?php echo esc_attr($pb_bg); ?>; color: <?php echo esc_attr($pb_color); ?>;"><?php echo esc_html( $promo_banner_text ); ?></div>
-                <?php endif; ?>
                 <div class="wpc-card-left">
                     <?php if ( $logo_url ) : ?>
                     <div class="wpc-card-logo-wrap" style="width: 100px; display: flex; justify-content: <?php echo $layout === 'grid' ? 'center' : 'flex-start'; ?>;">
@@ -353,6 +412,12 @@ function wpc_comparison_cards_render_callback( $attributes, $content ) {
                             <?php endif; ?>
                         </div>
                     </div>
+                </div>
+                
+                <div class="wpc-card-middle">
+                    <?php if ( ! empty( $promo_banner_text ) ) : ?>
+                        <a href="<?php echo esc_url( $aff_link ); ?>" target="<?php echo esc_attr( $target_direct ); ?>" rel="nofollow noopener" class="wpc-promo-banner" style="background-color: <?php echo esc_attr($pb_bg); ?>; color: <?php echo esc_attr($pb_color); ?>;"><?php echo esc_html( $promo_banner_text ); ?></a>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="wpc-card-right">

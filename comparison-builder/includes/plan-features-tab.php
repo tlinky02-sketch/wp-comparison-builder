@@ -168,7 +168,10 @@ function wpc_render_plan_features_tab( $post ) {
                         </button>
                     <?php endforeach; ?>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <?php if ( class_exists( 'WPC_AI_Handler' ) && ! empty( WPC_AI_Handler::get_profiles() ) ) : ?>
+                    <button type="button" class="button button-small button-primary wpc-ai-generate-btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; display: inline-flex; align-items: center; gap: 4px;" onclick="wpcAIGenerateFeatures(wpcCurrentCategory)">✨ AI Generate Features</button>
+                    <?php endif; ?>
                     <button type="button" class="button button-small" onclick="wpcToggleBulkPaste()">📋 Bulk Paste</button>
                     <button type="button" class="button button-small" onclick="wpcAddCatFeatureRow()">+ Add Feature</button>
                 </div>
@@ -261,7 +264,10 @@ function wpc_render_plan_features_tab( $post ) {
         <!-- LEGACY MODE (No Variants) -->
         <h3 class="wpc-section-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <?php _e( 'Features List', 'wp-comparison-builder' ); ?>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <?php if ( class_exists( 'WPC_AI_Handler' ) && ! empty( WPC_AI_Handler::get_profiles() ) ) : ?>
+                <button type="button" class="button button-small button-primary wpc-ai-generate-btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; display: inline-flex; align-items: center; gap: 4px;" onclick="wpcAIGenerateFeatures('')">✨ AI Generate Features</button>
+                <?php endif; ?>
                 <button type="button" class="button button-small" onclick="wpcToggleBulkPaste()">📋 Bulk Paste</button>
                 <button type="button" class="button button-small" onclick="wpcAddFeatureRow()">+ Add Feature</button>
             </div>
@@ -354,6 +360,7 @@ function wpc_render_plan_features_tab( $post ) {
             }, $assigned_cats ? $assigned_cats : array())
         )
     ); ?>;
+    var wpcLegacyPlans = <?php echo json_encode($all_plan_names); ?>;
     
     //  Copy Shortcode
     function wpcCopyFeatureShortcode(id, category, btn) {
@@ -431,7 +438,7 @@ function wpc_render_plan_features_tab( $post ) {
     }
     
     // Add Single Feature Row (Category Mode)
-    function wpcAddCatFeatureRow(featureName) {
+    function wpcAddCatFeatureRow(featureName, checkedPlanIndices) {
         var tbody = document.querySelector('.wpc-cat-feature-table[data-category="' + wpcCurrentCategory + '"] .wpc-features-tbody-sortable');
         var plans = wpcCategoryPlans[wpcCurrentCategory];
         
@@ -447,7 +454,8 @@ function wpc_render_plan_features_tab( $post ) {
         html += '<td style="padding: 8px;"><input type="text" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][name]" value="' + (featureName || '') + '" placeholder="Feature name" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" /></td>';
         
         Object.keys(plans).forEach(function(planIdx) {
-            html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][plans][' + planIdx + ']" value="1" style="width: 18px; height: 18px;" /></td>';
+            var isChecked = checkedPlanIndices && checkedPlanIndices[planIdx] ? 'checked' : '';
+            html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][plans][' + planIdx + ']" value="1" ' + isChecked + ' style="width: 18px; height: 18px;" /></td>';
         });
         
         html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
@@ -492,7 +500,7 @@ function wpc_render_plan_features_tab( $post ) {
     }
     
     // Add Single Feature Row (Legacy Mode)
-    function wpcAddFeatureRow(featureName) {
+    function wpcAddFeatureRow(featureName, checkedPlanIndices) {
         var tbody = document.querySelector('.wpc-features-table .wpc-features-tbody-sortable');
         if (!tbody) return;
         
@@ -507,7 +515,8 @@ function wpc_render_plan_features_tab( $post ) {
         
         // Add checkboxes for all plans
         <?php foreach ( $all_plan_names as $plan_idx => $plan_name ) : ?>
-        html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features[' + idx + '][plans][<?php echo $plan_idx; ?>]" value="1" style="width: 18px; height: 18px;" /></td>';
+        var isChecked = checkedPlanIndices && checkedPlanIndices[<?php echo $plan_idx; ?>] ? 'checked' : '';
+        html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features[' + idx + '][plans][<?php echo $plan_idx; ?>]" value="1" ' + isChecked + ' style="width: 18px; height: 18px;" /></td>';
         <?php endforeach; ?>
         
         html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features[' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features[' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
@@ -569,6 +578,154 @@ function wpc_render_plan_features_tab( $post ) {
         
         const checkboxes = table.querySelectorAll(`input[name^="wpc_plan_features"][name$="[visible]"][type="checkbox"]`);
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    // AI Generate Features/Pricing
+    function wpcAIGenerateFeatures(categorySlug) {
+        var btns = document.querySelectorAll('.wpc-ai-generate-btn');
+        var firstBtn = btns[0];
+        var originalHtml = firstBtn ? firstBtn.innerHTML : '✨ AI Generate Features';
+        
+        var productName = document.getElementById('wpc-ai-product-name') ? document.getElementById('wpc-ai-product-name').value : '';
+        if (!productName) {
+            wpcShowToast('Please enter a product name in the AI Assistant panel first.', true);
+            return;
+        }
+        
+        var profileId = document.getElementById('wpc-ai-item-profile') ? document.getElementById('wpc-ai-item-profile').value : '';
+        var userContext = document.getElementById('wpc-ai-custom-context') ? document.getElementById('wpc-ai-custom-context').value : '';
+        var nonce = document.getElementById('wpc_ai_item_nonce') ? document.getElementById('wpc_ai_item_nonce').value : '';
+        
+        // Add plan context to prompt so the AI tries to use our exact plan names
+        var currentPlans = categorySlug ? wpcCategoryPlans[categorySlug] : wpcLegacyPlans;
+        var planNames = [];
+        if (currentPlans) {
+            Object.keys(currentPlans).forEach(function(k) {
+                planNames.push(currentPlans[k]);
+            });
+        }
+        var planContext = '';
+        if (planNames.length > 0) {
+            planContext = "\nNote: The target plans to generate features for are: " + planNames.join(', ') + ". Make sure features correspond to these plans.";
+        }
+        
+        btns.forEach(function(btn) {
+            btn.disabled = true;
+            btn.innerHTML = '✨ Generating...';
+        });
+        
+        jQuery.post(ajaxurl, {
+            action: 'wpc_ai_generate',
+            nonce: nonce,
+            prompt_type: 'pricing',
+            product_name: productName,
+            user_context: userContext + planContext,
+            profile_id: profileId
+        }, function(response) {
+            btns.forEach(function(btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            });
+            
+            if (response.success) {
+                var data = response.data;
+                var plans = data.pricing_plans;
+                if (!plans || plans.length === 0) {
+                    wpcShowToast('No features/plans returned by AI.', true);
+                    return;
+                }
+                
+                // Map of unique features to an array of lowercase AI plan names that contain this feature
+                var featurePlanMap = {}; 
+                plans.forEach(function(plan) {
+                    var aiPlanName = plan.name || '';
+                    if (plan.features && Array.isArray(plan.features)) {
+                        plan.features.forEach(function(f) {
+                            var cleanFeature = f.trim();
+                            if (cleanFeature) {
+                                if (!featurePlanMap[cleanFeature]) {
+                                    featurePlanMap[cleanFeature] = [];
+                                }
+                                featurePlanMap[cleanFeature].push(aiPlanName.toLowerCase());
+                            }
+                        });
+                    }
+                });
+                
+                var featureNames = Object.keys(featurePlanMap);
+                if (featureNames.length === 0) {
+                    wpcShowToast('No features list found in AI pricing data.', true);
+                    return;
+                }
+                
+                // Confirm before import
+                wpcAdmin.confirm(
+                    'Import Features',
+                    'Found ' + featureNames.length + ' features. Would you like to import them and automatically tick the plans they belong to? Existing features will be kept.',
+                    function() {
+                        var currentPlanIds = Object.keys(currentPlans || {});
+                        
+                        // Map AI plans to table plan indices
+                        var aiPlanToColumnIdx = {};
+                        plans.forEach(function(plan, aiIdx) {
+                            var aiPlanName = (plan.name || '').toLowerCase();
+                            var matchedIdx = null;
+                            
+                            // 1. Try exact or partial name match
+                            if (currentPlans) {
+                                for (var idx in currentPlans) {
+                                    if (currentPlans.hasOwnProperty(idx)) {
+                                        var colPlanName = currentPlans[idx].toLowerCase();
+                                        if (aiPlanName.indexOf(colPlanName) !== -1 || colPlanName.indexOf(aiPlanName) !== -1) {
+                                            matchedIdx = idx;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // 2. Fallback to index mapping if no name match and currentPlanIds has a column at this index
+                            if (matchedIdx === null && aiIdx < currentPlanIds.length) {
+                                matchedIdx = currentPlanIds[aiIdx];
+                            }
+                            
+                            if (matchedIdx !== null) {
+                                aiPlanToColumnIdx[aiPlanName] = matchedIdx;
+                            }
+                        });
+                        
+                        featureNames.forEach(function(featureName) {
+                            var checkedPlanIndices = {};
+                            var aiPlanNames = featurePlanMap[featureName] || [];
+                            aiPlanNames.forEach(function(aiName) {
+                                var colIdx = aiPlanToColumnIdx[aiName];
+                                if (colIdx !== undefined) {
+                                    checkedPlanIndices[colIdx] = true;
+                                }
+                            });
+                            
+                            if (categorySlug) {
+                                wpcAddCatFeatureRow(featureName, checkedPlanIndices);
+                            } else {
+                                wpcAddFeatureRow(featureName, checkedPlanIndices);
+                            }
+                        });
+                        wpcShowToast('Imported ' + featureNames.length + ' features and assigned plans successfully!');
+                    },
+                    'Import',
+                    '#6366f1'
+                );
+                
+            } else {
+                wpcShowToast(response.data || 'Failed to generate features.', true);
+            }
+        }).fail(function() {
+            btns.forEach(function(btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            });
+            wpcShowToast('Server error during generation.', true);
+        });
     }
     </script>
     
