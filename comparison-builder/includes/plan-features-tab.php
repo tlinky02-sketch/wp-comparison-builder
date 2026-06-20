@@ -34,6 +34,9 @@ function wpc_render_plan_features_tab( $post ) {
     $plan_features_by_category = get_post_meta( $post->ID, '_wpc_plan_features_by_category', true );
     if ( ! is_array( $plan_features_by_category ) ) $plan_features_by_category = array();
     
+    // Get features format
+    $features_format = get_post_meta( $post->ID, '_wpc_features_format', true ) ?: 'boolean';
+    
     // Get display options
     $feature_table_options = get_post_meta( $post->ID, '_wpc_feature_table_options', true );
     if ( ! is_array( $feature_table_options ) ) $feature_table_options = array();
@@ -106,6 +109,7 @@ function wpc_render_plan_features_tab( $post ) {
             <p style="margin: 5px 0 0;">Please add pricing plans in the "Pricing Plans" tab first. The plan names will become columns in the feature table.</p>
         </div>
     <?php else : ?>
+    <div class="wpc-features-editor-wrapper wpc-features-format-<?php echo esc_attr( $features_format ); ?>">
     
     <!-- Display Options -->
     <div class="wpc-row" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
@@ -169,6 +173,16 @@ function wpc_render_plan_features_tab( $post ) {
                     <?php endforeach; ?>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 600; color: #475569;">Format:</span>
+                    <div class="wpc-features-format-toggle-group" style="display: inline-flex; border: 1px solid #cbd5e1; border-radius: 8px; padding: 2px; background: #f8fafc; vertical-align: middle; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); margin-right: 5px;">
+                        <button type="button" class="wpc-features-format-btn <?php echo $features_format === 'boolean' ? 'active' : ''; ?>" data-value="boolean" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; background: <?php echo $features_format === 'boolean' ? '#4f46e5' : 'transparent'; ?>; color: <?php echo $features_format === 'boolean' ? '#fff' : '#64748b'; ?>; box-shadow: <?php echo $features_format === 'boolean' ? '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' : 'none'; ?>;">
+                            Ticks & Crosses
+                        </button>
+                        <button type="button" class="wpc-features-format-btn <?php echo $features_format === 'text' ? 'active' : ''; ?>" data-value="text" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; background: <?php echo $features_format === 'text' ? '#4f46e5' : 'transparent'; ?>; color: <?php echo $features_format === 'text' ? '#fff' : '#64748b'; ?>; box-shadow: <?php echo $features_format === 'text' ? '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' : 'none'; ?>;">
+                            Custom Texts
+                        </button>
+                        <input type="hidden" class="wpc-features-format-input" name="wpc_features_format" value="<?php echo esc_attr( $features_format ); ?>" />
+                    </div>
                     <?php if ( class_exists( 'WPC_AI_Handler' ) && ! empty( WPC_AI_Handler::get_profiles() ) ) : ?>
                     <button type="button" class="button button-small button-primary wpc-ai-generate-btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; display: inline-flex; align-items: center; gap: 4px;" onclick="wpcAIGenerateFeatures(wpcCurrentCategory)">✨ AI Generate Features</button>
                     <?php endif; ?>
@@ -238,8 +252,17 @@ function wpc_render_plan_features_tab( $post ) {
                                                 <input type="text" name="wpc_plan_features_by_category[<?php echo esc_attr($cat->slug); ?>][<?php echo $f_idx; ?>][name]" value="<?php echo esc_attr( $feature['name'] ?? '' ); ?>" placeholder="Feature name" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
                                             </td>
                                             <?php foreach ( $cat_plan_names as $plan_idx => $plan_name ) : ?>
-                                                <td style="padding: 8px; text-align: center;">
-                                                    <input type="checkbox" name="wpc_plan_features_by_category[<?php echo esc_attr($cat->slug); ?>][<?php echo $f_idx; ?>][plans][<?php echo $plan_idx; ?>]" value="1" <?php checked( ! empty( $feature['plans'][$plan_idx] ) ); ?> style="width: 18px; height: 18px;" />
+                                                <td style="padding: 8px; text-align: center; vertical-align: middle;">
+                                                    <?php 
+                                                    $val = $feature['plans'][$plan_idx] ?? '';
+                                                    $is_checked = ($val === '1' || $val === true || $val === 'true' || (!empty($val) && $val !== '0' && $val !== 'false'));
+                                                    $text_val = ($val !== '1' && $val !== '0' && $val !== true && $val !== false && $val !== 'true' && $val !== 'false') ? $val : '';
+                                                    ?>
+                                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                                        <input type="checkbox" class="wpc-feature-checkbox" <?php checked($is_checked); ?> style="width: 18px; height: 18px; margin: 0;" />
+                                                        <input type="text" class="wpc-feature-text" value="<?php echo esc_attr($text_val); ?>" placeholder="Text..." style="width: 80px; padding: 2px 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; text-align: center; margin: 0;" />
+                                                        <input type="hidden" class="wpc-feature-submit" name="wpc_plan_features_by_category[<?php echo esc_attr($cat->slug); ?>][<?php echo $f_idx; ?>][plans][<?php echo $plan_idx; ?>]" value="<?php echo esc_attr($val); ?>" />
+                                                    </div>
                                                 </td>
                                             <?php endforeach; ?>
                                             <td style="padding: 8px; text-align: center;">
@@ -265,6 +288,16 @@ function wpc_render_plan_features_tab( $post ) {
         <h3 class="wpc-section-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <?php _e( 'Features List', 'wp-comparison-builder' ); ?>
             <div style="display: flex; gap: 8px; align-items: center;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Format:</span>
+                <div class="wpc-features-format-toggle-group" style="display: inline-flex; border: 1px solid #cbd5e1; border-radius: 8px; padding: 2px; background: #f8fafc; vertical-align: middle; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); margin-right: 5px;">
+                    <button type="button" class="wpc-features-format-btn <?php echo $features_format === 'boolean' ? 'active' : ''; ?>" data-value="boolean" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; background: <?php echo $features_format === 'boolean' ? '#4f46e5' : 'transparent'; ?>; color: <?php echo $features_format === 'boolean' ? '#fff' : '#64748b'; ?>; box-shadow: <?php echo $features_format === 'boolean' ? '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' : 'none'; ?>;">
+                        Ticks & Crosses
+                    </button>
+                    <button type="button" class="wpc-features-format-btn <?php echo $features_format === 'text' ? 'active' : ''; ?>" data-value="text" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; background: <?php echo $features_format === 'text' ? '#4f46e5' : 'transparent'; ?>; color: <?php echo $features_format === 'text' ? '#fff' : '#64748b'; ?>; box-shadow: <?php echo $features_format === 'text' ? '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' : 'none'; ?>;">
+                        Custom Texts
+                    </button>
+                    <input type="hidden" class="wpc-features-format-input" name="wpc_features_format" value="<?php echo esc_attr( $features_format ); ?>" />
+                </div>
                 <?php if ( class_exists( 'WPC_AI_Handler' ) && ! empty( WPC_AI_Handler::get_profiles() ) ) : ?>
                 <button type="button" class="button button-small button-primary wpc-ai-generate-btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; display: inline-flex; align-items: center; gap: 4px;" onclick="wpcAIGenerateFeatures('')">✨ AI Generate Features</button>
                 <?php endif; ?>
@@ -313,8 +346,17 @@ function wpc_render_plan_features_tab( $post ) {
                                     <input type="text" name="wpc_plan_features[<?php echo $f_idx; ?>][name]" value="<?php echo esc_attr( $feature['name'] ?? '' ); ?>" placeholder="Feature name" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
                                 </td>
                                 <?php foreach ( $all_plan_names as $plan_idx => $plan_name ) : ?>
-                                    <td style="padding: 8px; text-align: center;">
-                                        <input type="checkbox" name="wpc_plan_features[<?php echo $f_idx; ?>][plans][<?php echo $plan_idx; ?>]" value="1" <?php checked( ! empty( $feature['plans'][$plan_idx] ) ); ?> style="width: 18px; height: 18px;" />
+                                    <td style="padding: 8px; text-align: center; vertical-align: middle;">
+                                        <?php 
+                                        $val = $feature['plans'][$plan_idx] ?? '';
+                                        $is_checked = ($val === '1' || $val === true || $val === 'true' || (!empty($val) && $val !== '0' && $val !== 'false'));
+                                        $text_val = ($val !== '1' && $val !== '0' && $val !== true && $val !== false && $val !== 'true' && $val !== 'false') ? $val : '';
+                                        ?>
+                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                            <input type="checkbox" class="wpc-feature-checkbox" <?php checked($is_checked); ?> style="width: 18px; height: 18px; margin: 0;" />
+                                            <input type="text" class="wpc-feature-text" value="<?php echo esc_attr($text_val); ?>" placeholder="Text..." style="width: 80px; padding: 2px 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; text-align: center; margin: 0;" />
+                                            <input type="hidden" class="wpc-feature-submit" name="wpc_plan_features[<?php echo $f_idx; ?>][plans][<?php echo $plan_idx; ?>]" value="<?php echo esc_attr($val); ?>" />
+                                        </div>
                                     </td>
                                 <?php endforeach; ?>
                                 <td style="padding: 8px; text-align: center;">
@@ -331,7 +373,7 @@ function wpc_render_plan_features_tab( $post ) {
             </table>
         </div>
         
-        
+    </div><!-- .wpc-features-editor-wrapper -->
     <?php endif; ?>
     
     <?php endif; // end if plans exist ?>
@@ -454,8 +496,21 @@ function wpc_render_plan_features_tab( $post ) {
         html += '<td style="padding: 8px;"><input type="text" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][name]" value="' + (featureName || '') + '" placeholder="Feature name" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" /></td>';
         
         Object.keys(plans).forEach(function(planIdx) {
-            var isChecked = checkedPlanIndices && checkedPlanIndices[planIdx] ? 'checked' : '';
-            html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][plans][' + planIdx + ']" value="1" ' + isChecked + ' style="width: 18px; height: 18px;" /></td>';
+            var val = (checkedPlanIndices && checkedPlanIndices[planIdx] !== undefined) ? checkedPlanIndices[planIdx] : '0';
+            var isTextFormat = jQuery('.wpc-features-format-input').val() === 'text';
+            if (isTextFormat && val === '1') {
+                val = 'Yes';
+            }
+            var isChecked = val !== '0' ? 'checked' : '';
+            var textVal = (val !== '1' && val !== '0') ? val : '';
+            
+            html += '<td style="padding: 8px; text-align: center; vertical-align: middle;">';
+            html += '  <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">';
+            html += '    <input type="checkbox" class="wpc-feature-checkbox" ' + isChecked + ' style="width: 18px; height: 18px; margin: 0;" />';
+            html += '    <input type="text" class="wpc-feature-text" value="' + textVal + '" placeholder="Text..." style="width: 80px; padding: 2px 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; text-align: center; margin: 0;" />';
+            html += '    <input type="hidden" class="wpc-feature-submit" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][plans][' + planIdx + ']" value="' + val + '" />';
+            html += '  </div>';
+            html += '</td>';
         });
         
         html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features_by_category[' + wpcCurrentCategory + '][' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
@@ -515,8 +570,21 @@ function wpc_render_plan_features_tab( $post ) {
         
         // Add checkboxes for all plans
         <?php foreach ( $all_plan_names as $plan_idx => $plan_name ) : ?>
-        var isChecked = checkedPlanIndices && checkedPlanIndices[<?php echo $plan_idx; ?>] ? 'checked' : '';
-        html += '<td style="padding: 8px; text-align: center;"><input type="checkbox" name="wpc_plan_features[' + idx + '][plans][<?php echo $plan_idx; ?>]" value="1" ' + isChecked + ' style="width: 18px; height: 18px;" /></td>';
+        var val = (checkedPlanIndices && checkedPlanIndices[<?php echo $plan_idx; ?>] !== undefined) ? checkedPlanIndices[<?php echo $plan_idx; ?>] : '0';
+        var isTextFormat = jQuery('.wpc-features-format-input').val() === 'text';
+        if (isTextFormat && val === '1') {
+            val = 'Yes';
+        }
+        var isChecked = val !== '0' ? 'checked' : '';
+        var textVal = (val !== '1' && val !== '0') ? val : '';
+        
+        html += '<td style="padding: 8px; text-align: center; vertical-align: middle;">';
+        html += '  <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">';
+        html += '    <input type="checkbox" class="wpc-feature-checkbox" ' + isChecked + ' style="width: 18px; height: 18px; margin: 0;" />';
+        html += '    <input type="text" class="wpc-feature-text" value="' + textVal + '" placeholder="Text..." style="width: 80px; padding: 2px 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; text-align: center; margin: 0;" />';
+        html += '    <input type="hidden" class="wpc-feature-submit" name="wpc_plan_features[' + idx + '][plans][<?php echo $plan_idx; ?>]" value="' + val + '" />';
+        html += '  </div>';
+        html += '</td>';
         <?php endforeach; ?>
         
         html += '<td style="padding: 8px; text-align: center;"><input type="hidden" name="wpc_plan_features[' + idx + '][visible]" value="0"><input type="checkbox" name="wpc_plan_features[' + idx + '][visible]" value="1" checked style="width: 18px; height: 18px;" title="Show in shortcode output" /></td>';
@@ -596,6 +664,9 @@ function wpc_render_plan_features_tab( $post ) {
         var userContext = document.getElementById('wpc-ai-custom-context') ? document.getElementById('wpc-ai-custom-context').value : '';
         var nonce = document.getElementById('wpc_ai_item_nonce') ? document.getElementById('wpc_ai_item_nonce').value : '';
         
+        // Read format from toggle group input
+        var featuresFormat = jQuery('.wpc-features-format-input').val() || 'boolean';
+        
         // Add plan context to prompt so the AI tries to use our exact plan names
         var currentPlans = categorySlug ? wpcCategoryPlans[categorySlug] : wpcLegacyPlans;
         var planNames = [];
@@ -620,7 +691,8 @@ function wpc_render_plan_features_tab( $post ) {
             prompt_type: 'pricing',
             product_name: productName,
             user_context: userContext + planContext,
-            profile_id: profileId
+            profile_id: profileId,
+            features_format: featuresFormat
         }, function(response) {
             btns.forEach(function(btn) {
                 btn.disabled = false;
@@ -629,24 +701,56 @@ function wpc_render_plan_features_tab( $post ) {
             
             if (response.success) {
                 var data = response.data;
-                var plans = data.pricing_plans;
+                if (typeof data === 'string') {
+                    var cleanData = data.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+                    if (cleanData.indexOf('{') !== 0 || cleanData.lastIndexOf('}') !== cleanData.length - 1) {
+                        var firstBrace = cleanData.indexOf('{');
+                        var lastBrace = cleanData.lastIndexOf('}');
+                        if (firstBrace !== -1 && lastBrace !== -1) {
+                            cleanData = cleanData.substring(firstBrace, lastBrace + 1);
+                        }
+                    }
+                    try {
+                        data = JSON.parse(cleanData);
+                    } catch (e) {
+                        console.error('Failed to parse AI response as JSON:', e);
+                        wpcShowToast('Failed to parse AI response: ' + e.message, true);
+                        return;
+                    }
+                }
+                
+                var plans = data ? data.pricing_plans : null;
                 if (!plans || plans.length === 0) {
                     wpcShowToast('No features/plans returned by AI.', true);
                     return;
                 }
                 
-                // Map of unique features to an array of lowercase AI plan names that contain this feature
-                var featurePlanMap = {}; 
+                // Map of unique features to plan values
+                var featurePlanMap = {}; // e.g. { "Storage": { "free": "10 GB", "pro": "50 GB" } }
                 plans.forEach(function(plan) {
-                    var aiPlanName = plan.name || '';
+                    var aiPlanName = String(plan.name || '').toLowerCase().trim();
                     if (plan.features && Array.isArray(plan.features)) {
                         plan.features.forEach(function(f) {
-                            var cleanFeature = f.trim();
-                            if (cleanFeature) {
-                                if (!featurePlanMap[cleanFeature]) {
-                                    featurePlanMap[cleanFeature] = [];
+                            if (f && typeof f === 'object' && f.name !== undefined && f.name !== null) {
+                                var cleanFeature = String(f.name).trim();
+                                var val = (f.value !== undefined && f.value !== null) ? String(f.value).trim() : '1';
+                                if (val === '1' && featuresFormat === 'text') {
+                                    val = 'Yes';
                                 }
-                                featurePlanMap[cleanFeature].push(aiPlanName.toLowerCase());
+                                if (cleanFeature) {
+                                    if (!featurePlanMap[cleanFeature]) {
+                                        featurePlanMap[cleanFeature] = {};
+                                    }
+                                    featurePlanMap[cleanFeature][aiPlanName] = val;
+                                }
+                            } else if (f !== undefined && f !== null) {
+                                var cleanFeature = String(f).trim();
+                                if (cleanFeature) {
+                                    if (!featurePlanMap[cleanFeature]) {
+                                        featurePlanMap[cleanFeature] = {};
+                                    }
+                                    featurePlanMap[cleanFeature][aiPlanName] = (featuresFormat === 'text') ? 'Yes' : '1';
+                                }
                             }
                         });
                     }
@@ -658,63 +762,108 @@ function wpc_render_plan_features_tab( $post ) {
                     return;
                 }
                 
-                // Confirm before import
-                wpcAdmin.confirm(
-                    'Import Features',
-                    'Found ' + featureNames.length + ' features. Would you like to import them and automatically tick the plans they belong to? Existing features will be kept.',
-                    function() {
-                        var currentPlanIds = Object.keys(currentPlans || {});
+                // Custom 3-button modal: Add vs. Replace vs. Cancel
+                var existing = document.getElementById('wpc-feature-import-modal');
+                if (existing) existing.remove();
+                
+                var modal = document.createElement('div');
+                modal.id = 'wpc-feature-import-modal';
+                modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;';
+                modal.innerHTML = `
+                    <div style="background:white;padding:25px;border-radius:12px;width:90%;max-width:480px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);transform:scale(0.95);opacity:0;transition:all 0.2s;">
+                        <h3 style="margin-top:0;font-size:18px;color:#1f2937;font-weight:600;">Import AI Features</h3>
+                        <p style="color:#4b5563;line-height:1.5;margin-bottom:25px;">Found <strong>` + featureNames.length + `</strong> features. How would you like to import them into the table?</p>
+                        <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+                            <button type="button" class="button" id="wpc-import-cancel" style="padding:6px 12px;">Cancel</button>
+                            <button type="button" class="button button-link-delete" id="wpc-import-replace" style="background:#ef4444;border-color:#ef4444;color:white;padding:6px 12px;font-weight:600;border-radius:4px;cursor:pointer;">Replace Existing</button>
+                            <button type="button" class="button button-primary" id="wpc-import-add" style="background:#6366f1;border-color:#6366f1;color:white;padding:6px 12px;font-weight:600;border-radius:4px;cursor:pointer;">Add / Append</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // Animation
+                requestAnimationFrame(function() {
+                    var inner = modal.querySelector('div');
+                    if (inner) {
+                        inner.style.transform = 'scale(1)';
+                        inner.style.opacity = '1';
+                    }
+                });
+                
+                var runImport = function(replaceExisting) {
+                    var currentPlanIds = Object.keys(currentPlans || {});
+                    
+                    // Clear existing features if replace is selected
+                    if (replaceExisting) {
+                        var tbody = categorySlug 
+                            ? document.querySelector('.wpc-cat-feature-table[data-category="' + categorySlug + '"] .wpc-features-tbody-sortable')
+                            : document.querySelector('.wpc-features-table .wpc-features-tbody-sortable');
+                        if (tbody) {
+                            tbody.innerHTML = '';
+                        }
+                    }
+                    
+                    // Map AI plans to table plan indices
+                    var aiPlanToColumnIdx = {};
+                    plans.forEach(function(plan, aiIdx) {
+                        var aiPlanName = String(plan.name || '').toLowerCase().trim();
+                        var matchedIdx = null;
                         
-                        // Map AI plans to table plan indices
-                        var aiPlanToColumnIdx = {};
-                        plans.forEach(function(plan, aiIdx) {
-                            var aiPlanName = (plan.name || '').toLowerCase();
-                            var matchedIdx = null;
-                            
-                            // 1. Try exact or partial name match
-                            if (currentPlans) {
-                                for (var idx in currentPlans) {
-                                    if (currentPlans.hasOwnProperty(idx)) {
-                                        var colPlanName = currentPlans[idx].toLowerCase();
-                                        if (aiPlanName.indexOf(colPlanName) !== -1 || colPlanName.indexOf(aiPlanName) !== -1) {
-                                            matchedIdx = idx;
-                                            break;
-                                        }
+                        // 1. Try exact or partial name match
+                        if (currentPlans) {
+                            for (var idx in currentPlans) {
+                                if (currentPlans.hasOwnProperty(idx)) {
+                                    var colPlanName = String(currentPlans[idx]).toLowerCase().trim();
+                                    if (aiPlanName.indexOf(colPlanName) !== -1 || colPlanName.indexOf(aiPlanName) !== -1) {
+                                        matchedIdx = idx;
+                                        break;
                                     }
                                 }
                             }
-                            
-                            // 2. Fallback to index mapping if no name match and currentPlanIds has a column at this index
-                            if (matchedIdx === null && aiIdx < currentPlanIds.length) {
-                                matchedIdx = currentPlanIds[aiIdx];
-                            }
-                            
-                            if (matchedIdx !== null) {
-                                aiPlanToColumnIdx[aiPlanName] = matchedIdx;
+                        }
+                        
+                        // 2. Fallback to index mapping if no name match and currentPlanIds has a column at this index
+                        if (matchedIdx === null && aiIdx < currentPlanIds.length) {
+                            matchedIdx = currentPlanIds[aiIdx];
+                        }
+                        
+                        if (matchedIdx !== null) {
+                            aiPlanToColumnIdx[aiPlanName] = matchedIdx;
+                        }
+                    });
+                    
+                    featureNames.forEach(function(featureName) {
+                        var checkedPlanIndices = {};
+                        var planValues = featurePlanMap[featureName] || {};
+                        Object.keys(planValues).forEach(function(aiName) {
+                            var colIdx = aiPlanToColumnIdx[aiName];
+                            if (colIdx !== undefined) {
+                                checkedPlanIndices[colIdx] = planValues[aiName];
                             }
                         });
                         
-                        featureNames.forEach(function(featureName) {
-                            var checkedPlanIndices = {};
-                            var aiPlanNames = featurePlanMap[featureName] || [];
-                            aiPlanNames.forEach(function(aiName) {
-                                var colIdx = aiPlanToColumnIdx[aiName];
-                                if (colIdx !== undefined) {
-                                    checkedPlanIndices[colIdx] = true;
-                                }
-                            });
-                            
-                            if (categorySlug) {
-                                wpcAddCatFeatureRow(featureName, checkedPlanIndices);
-                            } else {
-                                wpcAddFeatureRow(featureName, checkedPlanIndices);
-                            }
-                        });
-                        wpcShowToast('Imported ' + featureNames.length + ' features and assigned plans successfully!');
-                    },
-                    'Import',
-                    '#6366f1'
-                );
+                        if (categorySlug) {
+                            wpcAddCatFeatureRow(featureName, checkedPlanIndices);
+                        } else {
+                            wpcAddFeatureRow(featureName, checkedPlanIndices);
+                        }
+                    });
+                    wpcShowToast('Imported ' + featureNames.length + ' features successfully!');
+                    modal.remove();
+                };
+                
+                document.getElementById('wpc-import-cancel').onclick = function() {
+                    modal.remove();
+                };
+                
+                document.getElementById('wpc-import-replace').onclick = function() {
+                    runImport(true);
+                };
+                
+                document.getElementById('wpc-import-add').onclick = function() {
+                    runImport(false);
+                };
                 
             } else {
                 wpcShowToast(response.data || 'Failed to generate features.', true);
@@ -727,9 +876,87 @@ function wpc_render_plan_features_tab( $post ) {
             wpcShowToast('Server error during generation.', true);
         });
     }
+    
+    // Hybrid Feature Cells Handler: Checkbox & Text Sync
+    jQuery(document).ready(function($) {
+        // Toggle layout format on button group click
+        $(document).on('click', '.wpc-features-format-btn', function() {
+            var val = $(this).data('value');
+            $('.wpc-features-format-input').val(val);
+            
+            $('.wpc-features-format-btn').each(function() {
+                var btnVal = $(this).data('value');
+                if (btnVal === val) {
+                    $(this).addClass('active').css({
+                        'background': '#4f46e5',
+                        'color': '#fff',
+                        'box-shadow': '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)'
+                    });
+                } else {
+                    $(this).removeClass('active').css({
+                        'background': 'transparent',
+                        'color': '#64748b',
+                        'box-shadow': 'none'
+                    });
+                }
+            });
+            
+            $('.wpc-features-editor-wrapper')
+                .removeClass('wpc-features-format-boolean wpc-features-format-text')
+                .addClass('wpc-features-format-' + val);
+        });
+
+        $(document).on('change', '.wpc-feature-checkbox', function() {
+            var parent = $(this).closest('div');
+            var cb = this;
+            var textInput = parent.find('.wpc-feature-text')[0];
+            var hidden = parent.find('.wpc-feature-submit')[0];
+            
+            if (!cb.checked) {
+                textInput.value = '';
+                hidden.value = '0';
+            } else {
+                if (textInput.value.trim() !== '') {
+                    hidden.value = textInput.value.trim();
+                } else {
+                    hidden.value = '1';
+                }
+            }
+        });
+
+        $(document).on('keyup change', '.wpc-feature-text', function() {
+            var parent = $(this).closest('div');
+            var textInput = this;
+            var cb = parent.find('.wpc-feature-checkbox')[0];
+            var hidden = parent.find('.wpc-feature-submit')[0];
+            
+            if (textInput.value.trim() !== '') {
+                cb.checked = true;
+                hidden.value = textInput.value.trim();
+            } else {
+                // If in text format mode, clearing text should uncheck it
+                var isTextFormat = $('.wpc-features-format-input').val() === 'text';
+                if (isTextFormat) {
+                    cb.checked = false;
+                    hidden.value = '0';
+                } else {
+                    hidden.value = cb.checked ? '1' : '0';
+                }
+            }
+        });
+    });
     </script>
     
     <style>
+    .wpc-features-format-boolean .wpc-feature-text { display: none !important; }
+    .wpc-features-format-boolean .wpc-feature-checkbox { display: inline-block !important; }
+    .wpc-features-format-text .wpc-feature-checkbox { display: none !important; }
+    .wpc-features-format-text .wpc-feature-text { display: inline-block !important; }
+    .wpc-features-format-text .wpc-select-all-plan,
+    .wpc-features-format-text .wpc-select-all-plan-legacy { display: none !important; }
+    .wpc-features-format-btn:hover:not(.active) {
+        background: #f3f4f6 !important;
+    }
     .wpc-cat-tab:hover {
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);

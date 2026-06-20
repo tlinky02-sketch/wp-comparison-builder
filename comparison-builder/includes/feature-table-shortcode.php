@@ -91,6 +91,7 @@ function wpc_feature_table_shortcode( $atts ) {
     $check_color  = $options['check_color'] ?? get_option('wpc_ft_check_color', '#10b981');
     $x_color      = $options['x_color'] ?? get_option('wpc_ft_x_color', '#ef4444');
     $alt_row_bg   = $options['alt_row_bg'] ?? get_option('wpc_ft_alt_row_bg', 'hsl(var(--muted))');
+    $features_format = get_post_meta( $post_id, '_wpc_features_format', true ) ?: 'boolean';
 
     // Make sure JS is Enqueued for Tabs
     if ( $render_selector ) {
@@ -238,10 +239,14 @@ function wpc_feature_table_shortcode( $atts ) {
                                              <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid hsl(var(--border)); font-style: italic; color: hsl(var(--muted-foreground));">No plans match.</td>
                                         <?php else : ?>
                                             <?php foreach ( $plan_names as $plan_idx => $plan_name ) : 
-                                                $is_available = ! empty( $feature['plans'][$plan_idx] );
+                                                $val = $feature['plans'][$plan_idx] ?? '';
+                                                $is_available = ( $val !== '0' && $val !== '' && ! empty($val) );
+                                                $is_text = ( $features_format === 'text' && $is_available && $val !== '1' && $val !== true && $val !== 'true' );
                                             ?>
-                                                <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid hsl(var(--border));">
-                                                    <?php if ( $is_available ) : ?>
+                                                <td style="padding: 14px 20px; text-align: center; border-bottom: 1px solid hsl(var(--border)); font-size: var(--wpc-font-size-body, inherit); color: hsl(var(--foreground));">
+                                                    <?php if ( $is_text ) : ?>
+                                                        <span class="wpc-feature-text-val" style="font-weight: 500;"><?php echo esc_html( $val ); ?></span>
+                                                    <?php elseif ( $is_available ) : ?>
                                                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( $check_color ); ?>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><circle cx="12" cy="12" r="10"></circle><path d="M9 12l2 2 4-4"></path></svg>
                                                     <?php else : ?>
                                                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="<?php echo esc_attr( $x_color ); ?>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>

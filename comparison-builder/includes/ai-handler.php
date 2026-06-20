@@ -843,9 +843,17 @@ function wpc_ajax_ai_generate() {
             $prompt .= "Return a JSON object with two keys:\n";
             $prompt .= "1. 'billing_cycles': Array of ALL detected cycles including custom ones. Each cycle object must have 'slug' (lowercase, no spaces) and 'label' (Proper case).\n";
             $prompt .= "2. 'pricing_plans': Array of plans. Each plan MUST contain a 'prices' object where keys match the 'slugs' defined in 'billing_cycles'.\n";
-            $prompt .= "Each plan should also have: 'name', 'features' (array), 'badge', and 'button_text'.\n";
-            $prompt .= "Format Example:\n";
-            $prompt .= '{"billing_cycles": [{"slug":"monthly","label":"Monthly"},{"slug":"triennial","label":"Triennial"}], "pricing_plans": [{"name":"Growth", "prices":{"monthly":{"amount":"$1.99","period":"/mo"},"triennial":{"amount":"$69","period":"once"}}, "features":["Feature A", "Feature B"], "badge":"Save 80%", "button_text":"Launch Site"}]}';
+            
+            $features_format = sanitize_text_field( $_POST['features_format'] ?? 'boolean' );
+            if ( $features_format === 'text' ) {
+                $prompt .= "Each plan should also have: 'name', 'badge', 'button_text', and 'features' which must be an array of objects. Each feature object MUST contain: 'name' (the name of the feature) and 'value' (a custom text value representing the limit/value of this feature for this plan, e.g. '10 GB', '5 Sites', 'Unlimited', '24/7 Phone', or 'Yes' if it is a simple check).\n";
+                $prompt .= "Format Example:\n";
+                $prompt .= '{"billing_cycles": [{"slug":"monthly","label":"Monthly"}], "pricing_plans": [{"name":"Growth", "prices":{"monthly":{"amount":"$1.99","period":"/mo"}}, "features":[{"name":"Storage","value":"10 GB"},{"name":"Sites","value":"5 Sites"},{"name":"Free SSL","value":"Yes"}], "badge":"Save 80%", "button_text":"Launch Site"}]}';
+            } else {
+                $prompt .= "Each plan should also have: 'name', 'features' (array of strings), 'badge', and 'button_text'.\n";
+                $prompt .= "Format Example:\n";
+                $prompt .= '{"billing_cycles": [{"slug":"monthly","label":"Monthly"},{"slug":"triennial","label":"Triennial"}], "pricing_plans": [{"name":"Growth", "prices":{"monthly":{"amount":"$1.99","period":"/mo"},"triennial":{"amount":"$69","period":"once"}}, "features":["Feature A", "Feature B"], "badge":"Save 80%", "button_text":"Launch Site"}]}';
+            }
         } 
         elseif ( $prompt_type === 'pros_cons' ) {
              $prompt = "Generate a balanced list of Pros and Cons for '{$product_name}'.\n";

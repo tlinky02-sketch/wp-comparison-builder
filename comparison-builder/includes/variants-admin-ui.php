@@ -369,11 +369,12 @@ function wpc_save_variants_meta( $post_id ) {
                         'plans' => array()
                     );
                     
-                    // Save plan checkboxes
+                    // Save plan values
                     if ( isset( $feature['plans'] ) && is_array( $feature['plans'] ) ) {
                         foreach ( $feature['plans'] as $plan_idx => $val ) {
-                            if ( $val === '1' ) {
-                                $clean_feature['plans'][ intval($plan_idx) ] = true;
+                            $val_str = sanitize_text_field( $val );
+                            if ( $val_str !== '0' && $val_str !== '' ) {
+                                $clean_feature['plans'][ intval($plan_idx) ] = $val_str;
                             }
                         }
                     }

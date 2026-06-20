@@ -69,8 +69,8 @@ function wpc_render_meta_box( $post ) {
     
     <style>
         .wpc-tabs-wrapper { display: flex; flex-direction: column; background: #fff; border: 1px solid #ddd; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .wpc-tab-nav { display: flex; background: #f3f4f6; border-bottom: 1px solid #ddd; margin: 0; padding: 0; list-style: none; }
-        .wpc-tab-nav li { margin: 0; padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 13px; color: #64748b; border-right: 1px solid #eee; transition: all 0.2s; border-bottom: 2px solid transparent; }
+        .wpc-tab-nav { display: flex; flex-wrap: wrap; background: #f3f4f6; border-bottom: 1px solid #ddd; margin: 0; padding: 0; list-style: none; overflow-x: auto; }
+        .wpc-tab-nav li { margin: 0; padding: 10px 16px; cursor: pointer; font-weight: 600; font-size: 12px; color: #64748b; border-right: 1px solid #eee; transition: all 0.2s; border-bottom: 2px solid transparent; white-space: nowrap; }
         .wpc-tab-nav li:hover { background: #f9fafb; color: #3b82f6; }
         .wpc-tab-nav li.active { background: #fff; color: #2563eb; border-bottom: 2px solid #2563eb; margin-bottom: -1px; }
         .wpc-tab-content { display: none; padding: 20px; }
@@ -366,10 +366,11 @@ function wpc_render_meta_box( $post ) {
                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             }
             
-            /* Make Topbar scrollable on small screens */
+            /* Make Topbar wrap so all tabs stay visible */
             .wpc-tab-nav {
                 display: flex;
                 flex-wrap: wrap;
+                overflow-x: auto;
                 gap: 2px;
             }
             
@@ -3854,7 +3855,10 @@ function wpc_save_meta_box( $post_id ) {
                 );
                 if ( isset( $f['plans'] ) && is_array( $f['plans'] ) ) {
                     foreach ( $f['plans'] as $plan_idx => $val ) {
-                        $feature_data['plans'][ intval( $plan_idx ) ] = '1';
+                        $val_str = sanitize_text_field( $val );
+                        if ( $val_str !== '0' && $val_str !== '' ) {
+                            $feature_data['plans'][ intval( $plan_idx ) ] = $val_str;
+                        }
                     }
                 }
                 $features[] = $feature_data;
@@ -3876,6 +3880,11 @@ function wpc_save_meta_box( $post_id ) {
             'alt_row_bg'   => sanitize_hex_color( $_POST['wpc_feature_table_options']['alt_row_bg'] ?? '#f9fafb' ),
         );
         update_post_meta( $post_id, '_wpc_feature_table_options', $options );
+    }
+
+    // Save Features Format
+    if ( isset( $_POST['wpc_features_format'] ) ) {
+        update_post_meta( $post_id, '_wpc_features_format', sanitize_text_field( $_POST['wpc_features_format'] ) );
     }
 
     // Save Pricing Table Design
