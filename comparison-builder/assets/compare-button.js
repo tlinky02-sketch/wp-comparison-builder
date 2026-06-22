@@ -1,5 +1,19 @@
 (function () {
-    var selectedItems = {}; // id: name
+    window.wpcSelectedItems = window.wpcSelectedItems || {};
+
+    window.handleDirectCompare = function(dropdownId, primaryId, competitorId) {
+        var allIds = [String(primaryId), String(competitorId)];
+
+        var event = new CustomEvent('wpcCompareSelect', {
+            detail: { providerIds: allIds, autoShow: true, source: 'external-button', targetRootId: dropdownId + '-root' }
+        });
+        window.dispatchEvent(event);
+
+        var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
+            detail: { providerIds: allIds, autoShow: true, source: 'external-button', targetRootId: dropdownId + '-root' }
+        });
+        window.dispatchEvent(legacyEvent);
+    };
 
     window.toggleCompareDropdown = function (id) {
         var dropdown = document.getElementById(id);
@@ -9,6 +23,8 @@
     };
 
     window.toggleItemSelection = function (dropdownId, id, name, primaryId) {
+        window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+        var selectedItems = window.wpcSelectedItems[dropdownId];
         var errorDiv = document.getElementById(dropdownId + '-error');
         if (selectedItems[id]) {
             delete selectedItems[id];
@@ -27,6 +43,8 @@
     };
 
     function updateSelectionUI(dropdownId, primaryId) {
+        window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+        var selectedItems = window.wpcSelectedItems[dropdownId];
         var options = document.querySelectorAll('.compare-option-' + dropdownId);
         var mobileBtn = document.querySelector('#' + dropdownId + ' .mobile-compare-btn');
         var ids = Object.keys(selectedItems);
@@ -53,20 +71,21 @@
         var allIds = [String(primaryId)].concat(ids);
 
         // Dispatch new event
-        // Dispatch new event
         var event = new CustomEvent('wpcCompareSelect', {
-            detail: { providerIds: allIds, autoShow: false, source: 'external-button' }
+            detail: { providerIds: allIds, autoShow: false, source: 'external-button', targetRootId: dropdownId + '-root' }
         });
         window.dispatchEvent(event);
 
         // Legacy Event for compatibility
         var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-            detail: { providerIds: allIds, autoShow: false, source: 'external-button' }
+            detail: { providerIds: allIds, autoShow: false, source: 'external-button', targetRootId: dropdownId + '-root' }
         });
         window.dispatchEvent(legacyEvent);
     }
 
     window.handleFinalCompare = function (dropdownId, primaryId) {
+        window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+        var selectedItems = window.wpcSelectedItems[dropdownId];
         var ids = Object.keys(selectedItems);
         if (ids.length === 0) return;
 
@@ -78,13 +97,13 @@
         var allIds = [String(primaryId)].concat(ids);
 
         var event = new CustomEvent('wpcCompareSelect', {
-            detail: { providerIds: allIds, autoShow: true, source: 'external-button' }
+            detail: { providerIds: allIds, autoShow: true, source: 'external-button', targetRootId: dropdownId + '-root' }
         });
         window.dispatchEvent(event);
 
         // Legacy Event
         var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-            detail: { providerIds: allIds, autoShow: true, source: 'external-button' }
+            detail: { providerIds: allIds, autoShow: true, source: 'external-button', targetRootId: dropdownId + '-root' }
         });
         window.dispatchEvent(legacyEvent);
     };

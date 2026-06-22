@@ -29,7 +29,7 @@ declare global {
     }
 }
 
-const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) => {
+const ComparisonBuilderApp = ({ initialConfig = {}, rootId }: { initialConfig?: any; rootId?: string }) => {
     const config = initialConfig;
     // Helper to get text with global setting override
     const getText = (key: string, defaultText: string) => {
@@ -118,6 +118,25 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
     );
     const [selectedItemForDetails, setSelectedItemForDetails] = useState<string | null>(null);
     const [showComparison, setShowComparison] = useState(false);
+
+    // Helper: Check if ANY root on the page has compareButtonMode (Fallback for legacy/caching)
+    const getCurrentConfigFallback = () => {
+        const roots = document.querySelectorAll('.wpc-root, .ecommerce-guider-root, #ecommerce-guider-root, #hosting-guider-root');
+        for (let i = 0; i < roots.length; i++) {
+            const root = roots[i] as HTMLElement;
+            if (root && root.dataset.config) {
+                try {
+                    const cfg = JSON.parse(root.dataset.config);
+                    if (cfg.compareButtonMode === true) return true;
+                } catch (e) { }
+            }
+        }
+        return false;
+    };
+
+    // Check if in compare button mode (Priority: Local Config > Global Fallback)
+    const isCompareButtonMode = config.compareButtonMode === true || config.viewMode === 'button' || getCurrentConfigFallback();
+    const isMulti = config.isMulti === true;
 
     // Single Page Mode State
     const [viewMode, setViewMode] = useState<'list' | 'details'>('list');
@@ -253,6 +272,11 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                 return; // Ignored.
             }
 
+            // Target instance matching check:
+            if (isExternalTrigger && event.detail?.targetRootId && rootId && event.detail.targetRootId !== rootId) {
+                return; // Ignored. This event was sent for a different comparison button instance!
+            }
+
             if (config.enableComparison === false) return;
 
             // console.log('Compare event received:', event.detail);
@@ -273,6 +297,15 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                             comparisonRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
                     }, 300);
+                } else {
+                    // autoShow is false (selecting items)
+                    if (isCompareButtonMode) {
+                        if (ids.length === 2 && !isMulti) {
+                            setShowComparison(true);
+                        } else {
+                            setShowComparison(false);
+                        }
+                    }
                 }
             }
         };
@@ -306,6 +339,22 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
             }, 500);
         }
     }, []);
+
+    // Auto-show comparison when exactly 2 items are selected, and hide when less than 2
+    useEffect(() => {
+        if (!isCompareButtonMode) return; // Only apply smart compare to wpc_compare_button mode!
+
+        if (selectedItems.length === 2 && !isMulti) {
+            setShowComparison(true);
+            setTimeout(() => {
+                if (comparisonRef.current) {
+                    comparisonRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        } else if (selectedItems.length < 2) {
+            setShowComparison(false);
+        }
+    }, [selectedItems, isCompareButtonMode, isMulti]);
 
     // Derived State (Filtering & Sorting)
     const filteredItems = useMemo(() => {
@@ -564,8 +613,9 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
         // ALLOW selection even if showCheckboxes is false (User Request: Clean UI but selectable)
         // Checks removed.
 
-        if (selectedItems.includes(id)) {
-            const newSelection = selectedItems.filter((p) => p !== id);
+        const stringId = String(id);
+        if (selectedItems.includes(stringId)) {
+            const newSelection = selectedItems.filter((p) => p !== stringId);
             setSelectedItems(newSelection);
             if (newSelection.length === 0) setShowComparison(false);
         } else {
@@ -573,7 +623,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                 toast.error(`You can compare up to ${MAX_COMPARE} items at once.`);
                 return;
             }
-            setSelectedItems((prev) => [...prev, id]);
+            setSelectedItems((prev) => [...prev, stringId]);
         }
     };
 
@@ -620,29 +670,13 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
 
     // Inside component ...
 
-    const selectedItemObjects = items.filter(p => selectedItems.includes(p.id));
+    const selectedItemObjects = items.filter(p => selectedItems.includes(String(p.id)));
     const detailsItem = items.find(p => p.id === selectedItemForDetails);
 
     // Check if compare button shortcode is present on the page
     const shouldHideFilters = !!(window as any).wpcCompareButtonPresent || !!(window as any).ecommerceCompareButtonPresent;
 
-    // Helper: Check if ANY root on the page has compareButtonMode (Fallback for legacy/caching)
-    const getCurrentConfigFallback = () => {
-        const roots = document.querySelectorAll('.wpc-root, .ecommerce-guider-root, #ecommerce-guider-root, #hosting-guider-root');
-        for (let i = 0; i < roots.length; i++) {
-            const root = roots[i] as HTMLElement;
-            if (root && root.dataset.config) {
-                try {
-                    const cfg = JSON.parse(root.dataset.config);
-                    if (cfg.compareButtonMode === true) return true;
-                } catch (e) { }
-            }
-        }
-        return false;
-    };
 
-    // Check if in compare button mode (Priority: Local Config > Global Fallback)
-    const isCompareButtonMode = config.compareButtonMode === true || config.viewMode === 'button' || getCurrentConfigFallback();
 
     // RENDER: Single Pros/Cons Table Mode (New Shortcode)
     if (config.viewMode === 'pros-cons-table' && config.item) {
@@ -821,8 +855,8 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
         <div className="wpc-comparison-wrapper text-foreground min-h-[100px] py-4">
             <Toaster />
 
-            {/* Selection Bar - Show when providers selected (Only if Enabled) */}
-            {config.enableComparison !== false && selectedItems.length > 0 && (
+            {/* Selection Bar - Show when providers selected (Only if Enabled). Hide when exactly 2 are selected as it is redundant (ONLY in compare button mode). */}
+            {config.enableComparison !== false && selectedItems.length > 0 && (!isCompareButtonMode || selectedItems.length !== 2) && (
                 <div className="mb-6 p-4 bg-card rounded-xl border border-border shadow-sm sticky top-4 z-50">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex flex-wrap items-center gap-2">
@@ -851,27 +885,29 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                 );
                             })}
                         </div>
-                        <Button
-                            onClick={handleEnsureComparison}
-                            disabled={selectedItems.length < 2}
-                            className="font-bold shadow-lg"
-                            style={{
-                                backgroundColor: getColor('primary') || undefined,
-                                color: 'white',
-                            }}
-                            onMouseEnter={(e) => {
-                                const hoverColor = getColor('hoverButton');
-                                const primaryColor = getColor('primary');
-                                if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                                else if (primaryColor) e.currentTarget.style.filter = 'brightness(90%)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = getColor('primary') || '';
-                                e.currentTarget.style.filter = '';
-                            }}
-                        >
-                            {getText('compareNow', 'Compare Now')} <ArrowDown className="w-4 h-4 ml-2" />
-                        </Button>
+                        {(!isCompareButtonMode ? selectedItems.length >= 2 : selectedItems.length > 2) && (
+                            <Button
+                                onClick={handleEnsureComparison}
+                                disabled={selectedItems.length < 2}
+                                className="font-bold shadow-lg"
+                                style={{
+                                    backgroundColor: getColor('primary') || undefined,
+                                    color: 'white',
+                                }}
+                                onMouseEnter={(e) => {
+                                    const hoverColor = getColor('hoverButton');
+                                    const primaryColor = getColor('primary');
+                                    if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                                    else if (primaryColor) e.currentTarget.style.filter = 'brightness(90%)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = getColor('primary') || '';
+                                    e.currentTarget.style.filter = '';
+                                }}
+                            >
+                                {getText('compareNow', 'Compare Now')} <ArrowDown className="w-4 h-4 ml-2" />
+                            </Button>
+                        )}
                     </div>
                 </div>
             )}
@@ -1087,10 +1123,10 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                                 key: item.id,
                                                 item,
                                                 index,
-                                                isSelected: selectedItems.includes(item.id),
+                                                isSelected: selectedItems.includes(String(item.id)),
                                                 onSelect: handleSelectItem, // PlatformCard uses onSelect
                                                 onViewDetails: handleViewDetails,
-                                                disabled: selectedItems.length >= MAX_COMPARE && !selectedItems.includes(item.id),
+                                                disabled: selectedItems.length >= MAX_COMPARE && !selectedItems.includes(String(item.id)),
                                                 isFeatured,
                                                 activeCategories: selectedCategories,
                                                 enableComparison: config.enableComparison !== false,
@@ -1111,7 +1147,7 @@ const ComparisonBuilderApp = ({ initialConfig = {} }: { initialConfig?: any }) =
                                                 key: item.id,
                                                 item,
                                                 index,
-                                                isSelected: selectedItems.includes(item.id),
+                                                isSelected: selectedItems.includes(String(item.id)),
                                                 onToggleCompare: handleSelectItem, // New components use onToggleCompare
                                                 onViewDetails: handleViewDetails,
                                                 enableComparison: config.enableComparison !== false,
@@ -1239,7 +1275,7 @@ roots.forEach((el) => {
         root.setAttribute('data-react-mounted', 'true');
         const config = root.dataset.config ? JSON.parse(root.dataset.config) : {};
         ReactDOM.createRoot(root).render(
-            <ComparisonBuilderApp initialConfig={config} />
+            <ComparisonBuilderApp initialConfig={config} rootId={root.id} />
         );
     }
 });

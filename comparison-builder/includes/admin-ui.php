@@ -275,6 +275,12 @@ function wpc_render_meta_box( $post ) {
                     <button type="button" id="wpc-ai-generate-all" class="button" style="height: 36px; background: white; color: #6366f1; border: none; font-weight: 600; padding: 0 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 5px;">
                         &#x2728; Generate All
                     </button>
+                    
+                    <!-- Progress indicator (hidden by default) -->
+                    <div id="wpc-ai-progress" style="display: none; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;">
+                        <span class="wpc-spinner" style="width: 14px; height: 14px; border-color: rgba(255,255,255,0.4); border-top-color: #fff;"></span>
+                        <span id="wpc-ai-progress-text">Generating...</span>
+                    </div>
                 </div>
                 <?php else : ?>
                 <a href="<?php echo admin_url( 'edit.php?post_type=comparison_item&page=wpc-settings' ); ?>" class="button" style="background: white; color: #6366f1; border: none; font-weight: 600; padding: 8px 16px;">
@@ -293,6 +299,7 @@ function wpc_render_meta_box( $post ) {
             </div>
             <?php endif; ?>
         </div>
+
         
         <!-- AI Styles -->
         <style>
@@ -3103,8 +3110,13 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                     return;
                 }
                 
-                generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Core Data...';
                 generateAllBtn.disabled = true;
+                generateAllBtn.style.opacity = '0.6';
+                generateAllBtn.style.cursor = 'not-allowed';
+                var progressDiv = document.getElementById('wpc-ai-progress');
+                var progressText = document.getElementById('wpc-ai-progress-text');
+                if (progressDiv) { progressDiv.style.display = 'flex'; }
+                if (progressText) { progressText.textContent = 'Generating Core Data...'; }
                 
                 // --- Step 1: Core Data ---
                 var promptCore = aiPrompts.core.replace('{name}', productName);
@@ -3138,7 +3150,7 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                             }
                             
                             // --- Step 2: Use Cases ---
-                            generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Use Cases...';
+                            if (progressText) { progressText.textContent = 'Generating Use Cases...'; }
                             var promptUC = aiPrompts.use_cases.replace('{name}', productName);
                             
                             jQuery.post(ajaxurl, {
@@ -3159,7 +3171,7 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                                 
                                 // --- Step 3: Taxonomies (Conditional) ---
                                 if (shouldGenTax) {
-                                    generateAllBtn.innerHTML = '<span class="wpc-spinner"></span> Generating Categories...';
+                                    if (progressText) { progressText.textContent = 'Generating Categories...'; }
                                     var promptTax = aiPrompts.taxonomies.replace('{name}', productName);
                                     
                                     jQuery.post(ajaxurl, {
@@ -3205,7 +3217,11 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                 });
                 
                 function finishBatch() {
-                    generateAllBtn.innerHTML = '&#x2714; All Done!';
+                    if (progressDiv) { progressDiv.style.display = 'none'; }
+                    generateAllBtn.style.opacity = '1';
+                    generateAllBtn.style.cursor = 'pointer';
+                    generateAllBtn.disabled = false;
+                    generateAllBtn.textContent = '✅ All Done!';
                     wpcShowAIToast('Content generated & populated! Please Update post.');
                     setTimeout(function() {
                         resetBtn();
@@ -3213,8 +3229,11 @@ IMPORTANT: Categories should be high-level industry segments. Tags should be spe
                 }
                 
                 function resetBtn() {
-                    generateAllBtn.innerHTML = '&#x2728; Generate All';
+                    generateAllBtn.textContent = '✨ Generate All';
                     generateAllBtn.disabled = false;
+                    generateAllBtn.style.opacity = '1';
+                    generateAllBtn.style.cursor = 'pointer';
+                    if (progressDiv) { progressDiv.style.display = 'none'; }
                 }
             });
         }

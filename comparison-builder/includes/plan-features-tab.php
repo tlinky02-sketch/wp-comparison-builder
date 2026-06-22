@@ -373,8 +373,8 @@ function wpc_render_plan_features_tab( $post ) {
             </table>
         </div>
         
-    </div><!-- .wpc-features-editor-wrapper -->
     <?php endif; ?>
+    </div><!-- .wpc-features-editor-wrapper -->
     
     <?php endif; // end if plans exist ?>
     

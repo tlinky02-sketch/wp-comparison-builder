@@ -183,6 +183,14 @@ function wpc_compare_button_shortcode( $atts ) {
         $all_items = array(); // Table mode doesn't use the dropdown PHP loop
     }
     
+    // Smart compare check: if there's exactly 1 competitor, we can directly compare them
+    $is_direct_compare = false;
+    $single_competitor_id = 0;
+    if ( ! $is_table_mode && count( $all_items ) === 1 ) {
+        $is_direct_compare = true;
+        $single_competitor_id = $all_items[0]->ID;
+    }
+    
     // Generate unique ID for this button
     $unique_id = 'wpc-compare-' . $item_id . '-' . mt_rand();
 
@@ -199,6 +207,17 @@ function wpc_compare_button_shortcode( $atts ) {
     <?php if ( ! $is_table_mode ) : ?>
     <div class="wpc-compare-wrapper" style="margin-bottom: 24px;">
         <div class="wpc-compare-button-wrapper" style="display: inline-block; position: relative;">
+            <?php if ( $is_direct_compare ) : ?>
+            <button 
+                onclick="handleDirectCompare('<?php echo $unique_id; ?>', <?php echo $item_id; ?>, <?php echo $single_competitor_id; ?>)" 
+                class="wpc-compare-btn"
+                style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: <?php echo esc_attr($primary_color); ?>; color: white; border: none; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.background='<?php echo esc_attr($hover_color_css); ?>';"
+                onmouseout="this.style.background='<?php echo esc_attr($primary_color); ?>';"
+            >
+                <?php echo esc_html( $attributes['text'] ); ?>
+            </button>
+            <?php else : ?>
             <button 
                 onclick="toggleCompareDropdown('<?php echo $unique_id; ?>')" 
                 class="wpc-compare-btn"
@@ -285,13 +304,14 @@ function wpc_compare_button_shortcode( $atts ) {
                     <?php endforeach; endif; ?>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php endif; ?>
 
     <!-- React Comparison Container -->
     <!-- Debug: mode=<?php echo $attributes['mode']; ?> is_table=<?php echo $is_table_mode ? 'yes' : 'no'; ?> has_competitors=<?php echo !empty($competitor_ids) ? 'yes' : 'no'; ?> -->
-    <div id="wpc-compare-<?php echo $item_id; ?>" class="wpc-root" data-config='{
+    <div id="<?php echo $unique_id; ?>-root" class="wpc-root" data-config='{
         "ids": <?php echo $is_table_mode ? $json_ids : '[]'; ?>,
         "featured": [],
         "showFilters": false,
@@ -299,6 +319,7 @@ function wpc_compare_button_shortcode( $atts ) {
         "hideRemoveButton": <?php echo ($is_table_mode && !empty($competitor_ids)) ? 'true' : 'false'; ?>,
         "showItemsInitially": <?php echo $is_table_mode ? 'true' : 'false'; ?>,
         "compareButtonMode": <?php echo $is_table_mode ? 'false' : 'true'; ?>,
+        "isMulti": <?php echo ( count( $all_items ) > 1 ) ? 'true' : 'false'; ?>,
         "category": "<?php echo esc_js( $category_slug ); ?>",
         "disableShadow": <?php echo $disable_shadow_final ? 'true' : 'false'; ?>
     }' style="display: block; width: 100%; margin-top: 12px;"></div>
@@ -312,7 +333,21 @@ function wpc_compare_button_shortcode( $atts ) {
 
     <script type="text/javascript">
     (function () {
-        var selectedItems = {}; // id: name
+        window.wpcSelectedItems = window.wpcSelectedItems || {};
+
+        window.handleDirectCompare = function(dropdownId, primaryId, competitorId) {
+            var allIds = [String(primaryId), String(competitorId)];
+
+            var event = new CustomEvent('wpcCompareSelect', {
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
+            });
+            window.dispatchEvent(event);
+
+            var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
+            });
+            window.dispatchEvent(legacyEvent);
+        };
 
         window.toggleCompareDropdown = function (id) {
             var dropdown = document.getElementById(id);
@@ -322,6 +357,8 @@ function wpc_compare_button_shortcode( $atts ) {
         };
 
         window.toggleItemSelection = function (dropdownId, id, name, primaryId) {
+            window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+            var selectedItems = window.wpcSelectedItems[dropdownId];
             var errorDiv = document.getElementById(dropdownId + '-error');
             if (selectedItems[id]) {
                 delete selectedItems[id];
@@ -340,6 +377,8 @@ function wpc_compare_button_shortcode( $atts ) {
         };
 
         function updateSelectionUI(dropdownId, primaryId) {
+            window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+            var selectedItems = window.wpcSelectedItems[dropdownId];
             var options = document.querySelectorAll('.compare-option-' + dropdownId);
             var mobileBtn = document.querySelector('#' + dropdownId + ' .mobile-compare-btn');
             var ids = Object.keys(selectedItems);
@@ -367,18 +406,20 @@ function wpc_compare_button_shortcode( $atts ) {
 
             // Dispatch new event
             var event = new CustomEvent('wpcCompareSelect', {
-                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
+                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
             });
             window.dispatchEvent(event);
 
             // Legacy Event for compatibility
             var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
+                detail: { providerIds: allIds, autoShow: false, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
             });
             window.dispatchEvent(legacyEvent);
         }
 
         window.handleFinalCompare = function (dropdownId, primaryId) {
+            window.wpcSelectedItems[dropdownId] = window.wpcSelectedItems[dropdownId] || {};
+            var selectedItems = window.wpcSelectedItems[dropdownId];
             var ids = Object.keys(selectedItems);
             if (ids.length === 0) return;
 
@@ -390,13 +431,13 @@ function wpc_compare_button_shortcode( $atts ) {
             var allIds = [String(primaryId)].concat(ids);
 
             var event = new CustomEvent('wpcCompareSelect', {
-                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
             });
             window.dispatchEvent(event);
 
             // Legacy Event
             var legacyEvent = new CustomEvent('ecommerceCompareSelect', {
-                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>' }
+                detail: { providerIds: allIds, autoShow: true, source: 'external-button', category: '<?php echo esc_js( $category_slug ); ?>', targetRootId: dropdownId + '-root' }
             });
             window.dispatchEvent(legacyEvent);
         };
