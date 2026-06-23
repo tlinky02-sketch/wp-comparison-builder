@@ -99,6 +99,8 @@ function wpc_register_cpt() {
     ));
 
     // 5. Review Pages CPT (for custom editorial landing pages)
+    $reviews_enabled = get_option( 'wpc_enable_reviews_module', false ) === '1';
+    $show_reviews_in_menu = $reviews_enabled ? 'edit.php?post_type=comparison_item' : false;
     
     register_post_type( 'comparison_review', array(
         'labels' => array(
@@ -114,14 +116,14 @@ function wpc_register_cpt() {
             'not_found'             => __( 'No review pages found', 'wp-comparison-builder' ),
             'not_found_in_trash'    => __( 'No review pages found in Trash', 'wp-comparison-builder' ),
         ),
-        'public'             => true,
-        'show_ui'            => true,
-        'show_in_menu'       => 'edit.php?post_type=comparison_item',
+        'public'             => $reviews_enabled,
+        'show_ui'            => $reviews_enabled,
+        'show_in_menu'       => $show_reviews_in_menu,
         'capability_type'    => 'post',
         'has_archive'        => false,
         'hierarchical'       => false,
         'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail' ),
-        'show_in_rest'       => true,
+        'show_in_rest'       => $reviews_enabled,
         'rewrite'            => array( 'slug' => 'review' ), // Keep 'review' slug? Or generalize to 'item-review'? Let's keep 'review' for now.
     ));
 }

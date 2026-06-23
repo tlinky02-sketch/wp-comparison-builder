@@ -127,6 +127,21 @@ function wpc_render_modules_tab() {
                     </p>
                 </td>
             </tr>
+            <!-- Review Pages Module -->
+            <tr valign="top">
+                <th scope="row">
+                    <label for="wpc_enable_reviews_module"><?php _e( 'Review Pages', 'wp-comparison-builder' ); ?></label>
+                </th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="wpc_enable_reviews_module" id="wpc_enable_reviews_module" value="1" <?php checked( '1', get_option( 'wpc_enable_reviews_module', false ) ); ?> />
+                        <?php _e( 'Enable Review Pages Module', 'wp-comparison-builder' ); ?>
+                    </label>
+                    <p class="description">
+                        <?php _e( 'Adds a "Review Pages" custom post type to create custom editorial landing pages and reviews for comparison items.', 'wp-comparison-builder' ); ?>
+                    </p>
+                </td>
+            </tr>
         </table>
         
         <?php submit_button(); ?>

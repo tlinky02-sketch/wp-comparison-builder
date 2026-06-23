@@ -192,15 +192,10 @@ function wpc_use_cases_shortcode( $atts ) {
                 <?php else : ?>
                     <!-- Inline Responsive Styles per Grid (Scoped) -->
                     <style>
-                        #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-                        @media (min-width: 640px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 2); ?>, minmax(0, 1fr)); }
-                        }
-                        @media (min-width: 768px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, 3); ?>, minmax(0, 1fr)); }
-                        }
-                        @media (min-width: 1024px) {
-                            #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> { grid-template-columns: repeat(<?php echo min($count, $columns); ?>, minmax(0, 1fr)); }
+                        #<?php echo $wrapper_id; ?> .wpc-use-cases-grid.<?php echo esc_attr($grid_slug); ?> {
+                            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+                            max-width: <?php echo (240 * min($count, $columns)) + (24 * (min($count, $columns) - 1)); ?>px;
+                            margin: 0 auto;
                         }
                     </style>
 

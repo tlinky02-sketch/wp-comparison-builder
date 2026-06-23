@@ -18,14 +18,16 @@ function wpc_add_shortcode_metabox() {
     );
     
     // Also add to review pages
-    add_meta_box(
-        'wpc_review_shortcode',
-        __( 'Available Shortcodes', 'wp-comparison-builder' ),
-        'wpc_render_review_shortcodes',
-        'comparison_review',
-        'side',
-        'high'
-    );
+    if ( get_option( 'wpc_enable_reviews_module', false ) === '1' ) {
+        add_meta_box(
+            'wpc_review_shortcode',
+            __( 'Available Shortcodes', 'wp-comparison-builder' ),
+            'wpc_render_review_shortcodes',
+            'comparison_review',
+            'side',
+            'high'
+        );
+    }
 }
 add_action( 'add_meta_boxes', 'wpc_add_shortcode_metabox' );
 

@@ -68,6 +68,7 @@ function wpc_register_settings() {
     register_setting( 'wpc_settings_group', 'wpc_variants_remember_selection' );
     register_setting( 'wpc_settings_group', 'wpc_enable_coupon_module' );
     register_setting( 'wpc_settings_group', 'wpc_enable_cards_module' );
+    register_setting( 'wpc_settings_group', 'wpc_enable_reviews_module' );
 
     // Link Behavior (New Tab)
     register_setting( 'wpc_settings_group', 'wpc_target_details' );
@@ -379,7 +380,7 @@ function wpc_handle_export_data() {
             'wpc_target_details', 'wpc_target_direct', 'wpc_target_pricing',
             'wpc_pt_header_bg', 'wpc_pt_header_text', 'wpc_pt_btn_bg', 'wpc_pt_btn_text', 
             'wpc_pt_btn_pos_table', 'wpc_pt_btn_pos_popup', 'wpc_schema_settings', 'wpc_enable_tools_module',
-            'wpc_enable_tools_associated_items',
+            'wpc_enable_tools_associated_items', 'wpc_enable_reviews_module',
             'wpc_default_list_style', 'wpc_disable_shadow_elements',
             // Text Labels
             'wpc_text_view_details', 'wpc_text_compare_alternatives', 'wpc_text_compare_now', 
